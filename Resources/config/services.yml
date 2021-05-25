@@ -1,0 +1,30 @@
+parameters:
+#    foo.bar: baz
+    cache_refresh.loader.route_ignore_patterns: ['/^_assetic/','/^_wdt/','/^_profiler/','/^_configurator/','/^nelmio_api_doc/','/^fos_js_routing_js/']
+    cache_refresh.loader.cache_dir: '%kernel.cache_dir%'
+    cache_refresh.loader.cache.debug: '%kernel.debug%'
+
+services:
+    _defaults:
+        public: true # TODO: Remove this once all services are compatible
+
+    sofa.cache_refresh.loader.configuration:
+        class: SofaScore\CacheRefreshBundle\Mapping\Loader\Configuration
+        arguments: ['%kernel.environment%', '%cache_refresh.loader.cache.debug%']
+        calls:
+            - [setRouteIgnorePatterns, ['%cache_refresh.loader.route_ignore_patterns%']]
+            - [setCacheDir, ['%cache_refresh.loader.cache_dir%']]
+
+    sofa.cache_refresh.loader.annotations:
+        class: SofaScore\CacheRefreshBundle\Mapping\Loader\AnnotationsLoader
+        arguments: ["@sofa.cache_refresh.loader.configuration", "@router", "@controller_resolver", "@sofa.annotation_reader", "@doctrine.orm.entity_manager" ]
+
+    sofa.cache_refresh.warmer.annotations:
+        class: SofaScore\CacheRefreshBundle\Mapping\CacheWarmer\AnnotationsLoaderWarmer
+        arguments: ['@sofa.cache_refresh.loader.annotations']
+        tags:
+          - { name: kernel.cache_warmer, priority: 0 }
+
+    sofa.cache_refresh:
+        class: SofaScore\CacheRefreshBundle\CacheRefresh
+        arguments: ['@sofa.cache_refresh.loader.annotations', '@property_accessor']
