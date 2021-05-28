@@ -7,33 +7,57 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use SofaScore\CacheRefreshBundle\CacheRefresh;
 use SofaScore\CacheRefreshBundle\WebCache\WebCacheInterface;
-use SofaScore\ServicesBundle\Listeners\AbstractListener;
 use Symfony\Component\Routing\RouterInterface;
 
-class EntityChangeListener extends AbstractListener
+class EntityChangeListener
 {
-    /** @var RouterInterface */
-    protected $router;
+    protected EventManager $eventManager;
 
-    /** @var WebCacheInterface */
-    protected $webCache;
+    protected RouterInterface $router;
 
-    /** @var CacheRefresh */
-    protected $cacheRefreshService;
+    protected WebCacheInterface $webCache;
 
-    /** @var array */
-    protected $queuedUrls = [];
+    protected CacheRefresh $cacheRefreshService;
 
-    /** @var int */
-    protected $urlCount = 0;
+    protected array $queuedUrls = [];
 
-    public function __construct(EventManager $em, CacheRefresh $cacheRefresh, RouterInterface $router, WebCacheInterface $webCache)
-    {
-        parent::__construct($em);
+    protected int $urlCount = 0;
 
+    private bool $active = false;
+
+    public function __construct(
+        EventManager $eventManager,
+        CacheRefresh $cacheRefresh,
+        RouterInterface $router,
+        WebCacheInterface $webCache
+    ) {
+        $this->eventManager = $eventManager;
         $this->cacheRefreshService = $cacheRefresh;
         $this->router = $router;
         $this->webCache = $webCache;
+    }
+
+    public function activate()
+    {
+        if (!$this->active) {
+            $this->eventManager->addEventListener(self::EVENTS, $this);
+
+            $this->active = true;
+        }
+    }
+
+    public function deactivate()
+    {
+        if ($this->active) {
+            $this->eventManager->removeEventListener(self::EVENTS, $this);
+
+            $this->active = false;
+        }
+    }
+
+    public function disconnect()
+    {
+        $this->deactivate();
     }
 
     public function preRemove(LifecycleEventArgs $eventArgs)
@@ -88,18 +112,10 @@ class EntityChangeListener extends AbstractListener
         }
     }
 
-    public function getCacheRefreshService()
-    {
-        return $this->cacheRefreshService;
-    }
-
-    public function setCacheRefreshService(CacheRefresh $cacheRefreshService)
-    {
-        $this->cacheRefreshService = $cacheRefreshService;
-    }
-
     public function getUrlCount()
     {
         return $this->urlCount;
     }
+
+    private const EVENTS = ['preRemove', 'postPersist', 'postUpdate', 'postFlush'];
 }
