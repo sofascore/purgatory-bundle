@@ -15,5 +15,8 @@
             "name": "SofaScore backend",
             "email": "server@sofascore.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "vimeo/psalm": "^4.7"
+    }
 }
