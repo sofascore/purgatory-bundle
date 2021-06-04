@@ -9,7 +9,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
     /**
      * @var array<MappingValue[]>
      */
-    protected $mappings = [];
+    protected array $mappings = [];
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
@@ -59,9 +59,9 @@ class MappingCollection implements \IteratorAggregate, \Countable
     /**
      * Returns all mappings in this collection.
      *
-     * @return MappingValue[] An array of mappings
+     * @return array<MappingValue[]> An array of mappings
      */
-    public function all()
+    public function all(): array
     {
         return $this->mappings;
     }

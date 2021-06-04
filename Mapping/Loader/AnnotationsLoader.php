@@ -212,19 +212,8 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $subscriptions;
     }
 
-    /**
-     * @param string $routeName
-     * @param Route  $route
-     *
-     * @return PropertySubscription[]
-     */
-    public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions)
+    public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions): void
     {
-        /**
-         * @param $parameters
-         *
-         * @return array
-         */
         $resolveParameters = function ($parameters) {
             $resolved = [];
 
@@ -235,14 +224,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $resolved;
         };
 
-        /**
-         * @param SubscribeTo $annotation
-         * @param             $property
-         * @param             $routeName
-         * @param             $route
-         *
-         * @return PropertySubscription
-         */
         $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use ($resolveParameters) {
             // create subscription
             $subscription = new PropertySubscription($annotation->getObject(), $property);
@@ -370,7 +351,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     // update tags with association target
                     foreach ($subscription->getTags() as $key => $value) {
                         // if expression, replace obj
-                        if (is_string($value) && '@' !== substr($value, 0, 1)) {
+                        if (is_string($value) && '@' !== $value[0]) {
                             $value = str_replace('obj', 'obj.'.$this->getGetterCall($asscoiationTarget), $value);
                         }
 

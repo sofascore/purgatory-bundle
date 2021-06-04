@@ -9,10 +9,7 @@ class Configuration
      */
     protected $routeIgnorePatterns = [];
 
-    /**
-     * @var string
-     */
-    protected $cacheDir = null;
+    protected ?string $cacheDir = null;
 
     /**
      * @var string
@@ -47,18 +44,12 @@ class Configuration
         $this->routeIgnorePatterns = $routeIgnorePatterns;
     }
 
-    /**
-     * @return string
-     */
-    public function getCacheDir()
+    public function getCacheDir(): ?string
     {
         return $this->cacheDir;
     }
 
-    /**
-     * @param string $cacheDir
-     */
-    public function setCacheDir($cacheDir)
+    public function setCacheDir(?string $cacheDir): void
     {
         $this->cacheDir = $cacheDir;
     }
