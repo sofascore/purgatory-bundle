@@ -7,8 +7,12 @@
         }
     },
     "require": {
+        "php": ">=7.4",
         "doctrine/orm": "^2.8",
         "symfony/symfony": "^4.4"
+    },
+    "config": {
+        "sort-packages": true
     },
     "authors": [
         {
