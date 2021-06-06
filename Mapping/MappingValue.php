@@ -4,45 +4,18 @@ namespace SofaScore\CacheRefreshBundle\Mapping;
 
 class MappingValue
 {
-    /**
-     * @var string
-     */
-    protected $routeName;
+    protected string $routeName;
+    protected array $parameters = [];
+    protected ?string $priority = null;
+    protected ?string $if = null;
+    protected array $tags = [];
 
-    /**
-     * @var array
-     */
-    protected $parameters;
-
-    /**
-     * @var string|null
-     */
-    protected $priority;
-
-    /**
-     * @var string
-     */
-    protected $if;
-
-    /**
-     * @var array
-     */
-    protected $tags;
-
-    /**
-     * @param string $routeName
-     */
-    public function __construct($routeName)
+    public function __construct(string $routeName)
     {
         $this->routeName = $routeName;
     }
 
-    /**
-     * @param $values
-     *
-     * @return MappingValue
-     */
-    public static function __set_state($values)
+    public static function __set_state(array $values): self
     {
         $object = new MappingValue($values['routeName']);
         unset($values['routeName']);
@@ -57,52 +30,52 @@ class MappingValue
         return $object;
     }
 
-    public function getRouteName()
+    public function getRouteName(): string
     {
         return $this->routeName;
     }
 
-    public function setRouteName($routeName)
+    public function setRouteName(string $routeName): void
     {
         $this->routeName = $routeName;
     }
 
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    public function setParameters($parameters)
+    public function setParameters(array $parameters): void
     {
         $this->parameters = $parameters;
     }
 
-    public function getPriority()
+    public function getPriority(): ?string
     {
         return $this->priority;
     }
 
-    public function setPriority($priority)
+    public function setPriority(?string $priority): void
     {
         $this->priority = $priority;
     }
 
-    public function getIf()
+    public function getIf(): ?string
     {
         return $this->if;
     }
 
-    public function setIf($if)
+    public function setIf(?string $if): void
     {
         $this->if = $if;
     }
 
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }
 
-    public function setTags($tags)
+    public function setTags(array $tags): void
     {
         $this->tags = $tags;
     }

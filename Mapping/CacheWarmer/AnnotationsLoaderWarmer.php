@@ -8,10 +8,7 @@ use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 class AnnotationsLoaderWarmer implements CacheWarmerInterface
 {
-    /**
-     * @var AnnotationsLoader
-     */
-    protected $loader;
+    protected AnnotationsLoader $loader;
 
     public function __construct(AnnotationsLoader $loader)
     {

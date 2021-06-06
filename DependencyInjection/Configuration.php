@@ -18,15 +18,14 @@ class Configuration implements ConfigurationInterface
      * @psalm-suppress PossiblyNullReference
      * @psalm-suppress UndefinedMethod
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('sofa_score_cache_refresh');
+        $treeBuilder = new TreeBuilder('sofa_score_cache_refresh');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
-        $rootNode
+        $treeBuilder->getRootNode()
             ->children()
             ->arrayNode('cache')
             ->addDefaultsIfNotSet()

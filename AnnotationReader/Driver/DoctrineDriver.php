@@ -2,30 +2,15 @@
 
 namespace SofaScore\CacheRefreshBundle\AnnotationReader\Driver;
 
+use Doctrine\Common\Annotations\Reader;
 use SofaScore\CacheRefreshBundle\AnnotationReader\DriverInterface;
 
 class DoctrineDriver implements DriverInterface
 {
-    /**
-     * @var \Doctrine\Common\Annotations\Reader
-     */
-    protected $reader;
+    protected Reader $reader;
 
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $reader
-     *
-     * @throws \Exception
-     */
-    public function __construct($reader)
+    public function __construct(Reader $reader)
     {
-        if (!interface_exists('Doctrine\\Common\\Annotations\\Reader')) {
-            throw new \Exception("Interface '\\Doctrine\\Common\\Annotations\\Reader' does not exist.");
-        }
-
-        if (!($reader instanceof \Doctrine\Common\Annotations\Reader)) {
-            throw new \Exception("Doctrine Reader must be instance of '\\Doctrine\\Common\\Annotations\\Reader'");
-        }
-
         $this->reader = $reader;
     }
 
@@ -37,7 +22,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getClassAnnotations(\ReflectionClass $class)
+    public function getClassAnnotations(\ReflectionClass $class): array
     {
         return $this->reader->getClassAnnotations($class);
     }
@@ -51,7 +36,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getClassAnnotation(\ReflectionClass $class, $annotationName)
+    public function getClassAnnotation(\ReflectionClass $class, $annotationName): ?object
     {
         return $this->reader->getClassAnnotation($class, $annotationName);
     }
@@ -64,7 +49,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getMethodAnnotations(\ReflectionMethod $method)
+    public function getMethodAnnotations(\ReflectionMethod $method): array
     {
         return $this->reader->getMethodAnnotations($method);
     }
@@ -77,7 +62,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName)
+    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName): ?object
     {
         return $this->reader->getMethodAnnotation($method, $annotationName);
     }
@@ -90,7 +75,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getPropertyAnnotations(\ReflectionProperty $property)
+    public function getPropertyAnnotations(\ReflectionProperty $property): array
     {
         return $this->reader->getPropertyAnnotations($property);
     }
@@ -103,7 +88,7 @@ class DoctrineDriver implements DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName)
+    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName): ?object
     {
         return $this->reader->getPropertyAnnotation($property, $annotationName);
     }

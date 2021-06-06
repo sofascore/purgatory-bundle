@@ -31,7 +31,7 @@ class SofaScoreCacheRefreshExtension extends Extension
         }
     }
 
-    public function getAlias()
+    public function getAlias(): string
     {
         return 'sofa_score_cache_refresh';
     }

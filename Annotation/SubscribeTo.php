@@ -5,50 +5,24 @@ namespace SofaScore\CacheRefreshBundle\Annotation;
 /**
  * @Annotation
  * @Target("METHOD")
+ * @Repeatable
  */
 final class SubscribeTo
 {
-    /**
-     * @var mixed
-     */
-    private $object;
-
-    /**
-     * @var array
-     */
-    private $parameters;
-
-    /**
-     * @var
-     */
-    private $properties;
-
-    /**
-     * @var string
-     */
-    private $priority;
-
-    /**
-     * @var string
-     */
-    private $if;
-
-    /**
-     * @var array|null
-     */
-    private $routes;
-
-    /**
-     * @var array
-     */
-    private $tags;
+    private string $object;
+    private ?array $parameters = null;
+    private array $properties = [];
+    private ?string $priority;
+    private ?string $if;
+    private ?array $routes = null;
+    private array $tags;
 
     public function __construct(array $values)
     {
         $object = $values['value'];
 
         // if property is defined
-        if (false !== strpos($object, '.')) {
+        if (str_contains($object, '.')) {
             // split value to object and property
             [$object, $property] = explode('.', $object, 2);
 
@@ -61,7 +35,7 @@ final class SubscribeTo
 
         // set parameters if defined
         if (isset($values['parameters'])) {
-            $this->parameters = $values['parameters'];
+            $this->parameters = (array) $values['parameters'];
         }
 
         // set properties if defined (overriding one from 'value')
@@ -70,65 +44,56 @@ final class SubscribeTo
         }
 
         // set priority if defined
-        if (isset($values['priority'])) {
-            $this->priority = $values['priority'];
-        }
+        $this->priority = $values['priority'] ?? null;
 
         // set 'if' condition
-        if (isset($values['if'])) {
-            $this->if = $values['if'];
-        }
+        $this->if = $values['if'] ?? null;
 
         // set routes
         if (isset($values['routes'])) {
             $this->routes = (array) $values['routes'];
         }
 
-        // set properties default
-        if (null === $this->properties) {
-            $this->properties = [];
-        }
-
         // set tags
         $this->tags = $values['tags'] ?? [];
     }
 
-    public function getObject()
+    public function getObject(): string
     {
         return $this->object;
     }
 
-    public function getParameters()
+    public function getParameters(): array
     {
         return $this->parameters;
     }
 
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }
 
-    public function getPriority()
+    public function getPriority(): ?string
     {
         return $this->priority;
     }
 
-    public function getIf()
+    public function getIf(): ?string
     {
         return $this->if;
     }
 
-    public function getRoutes()
+    public function getRoutes(): ?array
     {
         return $this->routes;
     }
 
-    public function setRoutes($routes)
+    public function setRoutes(?array $routes): void
     {
         $this->routes = $routes;
     }
 
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }

@@ -6,8 +6,5 @@ use SofaScore\CacheRefreshBundle\Mapping\MappingCollection;
 
 interface LoaderInterface
 {
-    /**
-     * @return MappingCollection
-     */
-    public function load();
+    public function load(): MappingCollection;
 }

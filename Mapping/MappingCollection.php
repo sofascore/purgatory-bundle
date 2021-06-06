@@ -9,7 +9,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
     /**
      * @var array<MappingValue[]>
      */
-    protected $mappings = [];
+    protected array $mappings = [];
 
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
@@ -36,7 +36,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
      *             <p>
      *             The return value is cast to an integer.
      */
-    public function count()
+    public function count(): int
     {
         return count($this->mappings);
     }
@@ -47,7 +47,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
      * @param string       $name         The mapping name
      * @param MappingValue $mappingValue A MappingValue instance
      */
-    public function add($name, MappingValue $mappingValue)
+    public function add(string $name, MappingValue $mappingValue): void
     {
         if (!isset($this->mappings[$name])) {
             $this->mappings[$name] = [];
@@ -61,7 +61,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
      *
      * @return MappingValue[] An array of mappings
      */
-    public function all()
+    public function all(): array
     {
         return $this->mappings;
     }
@@ -73,7 +73,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
      *
      * @return MappingValue[]|null A MappingValue instance or null when not found
      */
-    public function get($name)
+    public function get(string $name): ?array
     {
         return $this->mappings[$name] ?? null;
     }
@@ -83,22 +83,17 @@ class MappingCollection implements \IteratorAggregate, \Countable
      *
      * @param string|array $name The mapping name or an array of mapping names
      */
-    public function remove($name)
+    public function remove($name): void
     {
         foreach ((array) $name as $n) {
             unset($this->mappings[$n]);
         }
     }
 
-    /**
-     * @param $values
-     *
-     * @return MappingCollection
-     */
-    public static function __set_state($values)
+    public static function __set_state(array $values): self
     {
-        $collection = new MappingCollection();
-        $collection->mappings = $values['mappings'];
+        $collection = new self();
+        $collection->mappings = $values['mappings'] ?? [];
 
         return $collection;
     }
