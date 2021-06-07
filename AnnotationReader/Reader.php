@@ -34,7 +34,6 @@ class Reader
 
         while (false !== $class) {
             $lookupItem = $this->getAnnotationLookupItem($item, $class);
-
             // if parent class does not have the item, means we've reached the top
             if (null === $lookupItem) {
                 break;
@@ -80,7 +79,7 @@ class Reader
      * @throws ReaderException
      * @throws \ReflectionException
      */
-    public function getAnnotationLookupItem($item, $class)
+    public function getAnnotationLookupItem($item, string $class)
     {
         if ($item instanceof \ReflectionClass) {
             return class_exists($class) ? new \ReflectionClass($class) : null;
@@ -101,8 +100,6 @@ class Reader
 
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
-     * @return array
      *
      * @throws ReaderException
      */
@@ -125,8 +122,6 @@ class Reader
 
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
-     * @return string
      *
      * @throws ReaderException
      */
