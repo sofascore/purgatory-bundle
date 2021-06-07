@@ -6,7 +6,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use SofaScore\CacheRefreshBundle\Annotation\Properties;
 use SofaScore\CacheRefreshBundle\Annotation\SubscribeTo;
-use SofaScore\CacheRefreshBundle\AnnotationReader\Reader as AnnotationReader;
+use SofaScore\CacheRefreshBundle\AnnotationReader\Reader;
 use SofaScore\CacheRefreshBundle\Mapping\MappingCollection;
 use SofaScore\CacheRefreshBundle\Mapping\MappingValue;
 use SofaScore\CacheRefreshBundle\Mapping\PropertySubscription;
@@ -22,14 +22,14 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     protected RouterInterface $router;
     protected Configuration $config;
     protected ControllerResolverInterface $controllerResolver;
-    protected AnnotationReader $annotationReader;
+    protected Reader $annotationReader;
     protected ObjectManager $manager;
 
     public function __construct(
         Configuration $config,
         RouterInterface $router,
         ControllerResolverInterface $controllerResolver,
-        AnnotationReader $annotationReader,
+        Reader $annotationReader,
         ObjectManager $manager
     ) {
         $this->config = $config;
@@ -92,6 +92,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     /**
      * @throws \ReflectionException
      * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
+     * @throws \Exception
      */
     public function loadMappings(): MappingCollection
     {
@@ -246,10 +247,10 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $subscription;
         };
 
-        // route will not be processd if it has routes array specified and current route name
+        // route will not be processed if it has routes array specified and current route name
         // is not in it
-        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes())) {
-            return;
+        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes(), true)) {
+            return [];
         }
 
         // add subscription for each property
@@ -451,6 +452,10 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $resolved;
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
+     */
     public function resolveClassMethod(PropertySubscription $subscription, string $method, array &$subscriptions): void
     {
         $methodProperties = $this->getMethodProperties($subscription->getClass(), $method);
@@ -518,11 +523,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @param string $association
-     *
      * @throws \Exception
      */
-    protected function validateAssociationInverse($association, ClassMetadata $metadata): void
+    protected function validateAssociationInverse(string $association, ClassMetadata $metadata): void
     {
         if (null === $metadata->getAssociationMappedByTargetField($association)) {
             throw new \Exception(sprintf("Association '%s' of class '%s' to class '%s' has no `mapped by` field.", $association, $metadata->getReflectionClass()->getName(), $metadata->getAssociationTargetClass($association)));
