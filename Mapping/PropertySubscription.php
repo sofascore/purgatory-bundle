@@ -8,12 +8,12 @@ class PropertySubscription
 {
     protected string $class;
     protected ?string $property = null;
-    protected array $parameters = [];
+    protected ?array $parameters = null;
     protected ?string $priority = null;
     protected ?string $if = null;
     protected string $routeName;
     protected Route $route;
-    protected array $tags = [];
+    protected ?array $tags = null;
 
     public function __construct(string $class, string $property = null)
     {
@@ -21,7 +21,7 @@ class PropertySubscription
         $this->property = $property;
     }
 
-    public function getClass(): string
+    public function getClass()
     {
         return $this->class;
     }
@@ -41,12 +41,12 @@ class PropertySubscription
         $this->property = $property;
     }
 
-    public function getParameters(): array
+    public function getParameters(): ?array
     {
         return $this->parameters;
     }
 
-    public function setParameters(array $parameters): void
+    public function setParameters(?array $parameters): void
     {
         $this->parameters = $parameters;
     }
@@ -91,12 +91,12 @@ class PropertySubscription
         $this->if = $if;
     }
 
-    public function getTags(): array
+    public function getTags(): ?array
     {
         return $this->tags;
     }
 
-    public function setTags(array $tags): void
+    public function setTags(?array $tags): void
     {
         $this->tags = $tags;
     }

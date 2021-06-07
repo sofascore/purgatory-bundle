@@ -11,11 +11,11 @@ final class SubscribeTo
 {
     private string $object;
     private ?array $parameters = null;
-    private array $properties = [];
+    private ?array $properties = null;
     private ?string $priority;
     private ?string $if;
     private ?array $routes = null;
-    private array $tags;
+    private ?array $tags;
 
     public function __construct(array $values)
     {
@@ -63,12 +63,12 @@ final class SubscribeTo
         return $this->object;
     }
 
-    public function getParameters(): array
+    public function getParameters(): ?array
     {
         return $this->parameters;
     }
 
-    public function getProperties(): array
+    public function getProperties(): ?array
     {
         return $this->properties;
     }
@@ -93,7 +93,7 @@ final class SubscribeTo
         $this->routes = $routes;
     }
 
-    public function getTags(): array
+    public function getTags(): ?array
     {
         return $this->tags;
     }

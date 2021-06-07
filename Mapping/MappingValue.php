@@ -5,10 +5,10 @@ namespace SofaScore\CacheRefreshBundle\Mapping;
 class MappingValue
 {
     protected string $routeName;
-    protected array $parameters = [];
+    protected ?array $parameters = null;
     protected ?string $priority = null;
     protected ?string $if = null;
-    protected array $tags = [];
+    protected ?array $tags = null;
 
     public function __construct(string $routeName)
     {
@@ -40,12 +40,12 @@ class MappingValue
         $this->routeName = $routeName;
     }
 
-    public function getParameters(): array
+    public function getParameters(): ?array
     {
         return $this->parameters;
     }
 
-    public function setParameters(array $parameters): void
+    public function setParameters(?array $parameters): void
     {
         $this->parameters = $parameters;
     }
@@ -70,12 +70,12 @@ class MappingValue
         $this->if = $if;
     }
 
-    public function getTags(): array
+    public function getTags(): ?array
     {
         return $this->tags;
     }
 
-    public function setTags(array $tags): void
+    public function setTags(?array $tags): void
     {
         $this->tags = $tags;
     }
