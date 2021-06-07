@@ -195,16 +195,8 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $subscriptions;
     }
 
-    /**
-     * @return PropertySubscription[]
-     */
-    public function parseSubscribeTo(SubscribeTo $annotation, string $routeName, Route $route, array &$subscriptions): array
+    public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions): void
     {
-        /**
-         * @param $parameters
-         *
-         * @return array
-         */
         $resolveParameters = static function ($parameters): array {
             $resolved = [];
 
@@ -215,14 +207,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $resolved;
         };
 
-        /**
-         * @param SubscribeTo $annotation
-         * @param             $property
-         * @param             $routeName
-         * @param             $route
-         *
-         * @return PropertySubscription
-         */
         $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use ($resolveParameters) {
             // create subscription
             $subscription = new PropertySubscription($annotation->getObject(), $property);
@@ -250,7 +234,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         // route will not be processed if it has routes array specified and current route name
         // is not in it
         if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes(), true)) {
-            return [];
+            return;
         }
 
         // add subscription for each property

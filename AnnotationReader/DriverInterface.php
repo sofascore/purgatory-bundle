@@ -19,11 +19,11 @@ interface DriverInterface
      *
      * @param \ReflectionClass $class          the ReflectionClass of the class from which
      *                                         the class annotations should be read
-     * @param string           $annotationName the name of the annotation
+     * @param class-string $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getClassAnnotation(\ReflectionClass $class, $annotationName);
+    public function getClassAnnotation(\ReflectionClass $class, string $annotationName);
 
     /**
      * Gets the annotations applied to a method.
@@ -39,11 +39,11 @@ interface DriverInterface
      * Gets a method annotation.
      *
      * @param \ReflectionMethod $method         the ReflectionMethod to read the annotations from
-     * @param string            $annotationName the name of the annotation
+     * @param class-string $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName);
+    public function getMethodAnnotation(\ReflectionMethod $method, string $annotationName);
 
     /**
      * Gets the annotations applied to a property.
@@ -59,9 +59,9 @@ interface DriverInterface
      * Gets a property annotation.
      *
      * @param \ReflectionProperty $property       the ReflectionProperty to read the annotations from
-     * @param string              $annotationName the name of the annotation
+     * @param class-string $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName);
+    public function getPropertyAnnotation(\ReflectionProperty $property, string $annotationName);
 }

@@ -59,7 +59,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
     /**
      * Returns all mappings in this collection.
      *
-     * @return MappingValue[] An array of mappings
+     * @return array<MappingValue[]> An array of mappings
      */
     public function all(): array
     {
