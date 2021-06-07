@@ -27,3 +27,16 @@ jobs:
 
       - name: Psalm
         run: vendor/bin/psalm --output-format=github --long-progress --no-diff
+
+      - name: PHPUnit
+        run: vendor/bin/phpunit --printer mheap\\GithubActionsReporter\\Printer --coverage-clover clover.xml -vvv
+
+      - name: Monitor coverage
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: slavcodev/coverage-monitor-action@1.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          clover_file: "clover.xml"
+          threshold_alert: 10
+          threshold_warning: 50
+          comment_mode: update
