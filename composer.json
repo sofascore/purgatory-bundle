@@ -17,6 +17,7 @@
         "symfony/symfony": "^4.4"
     },
     "require-dev": {
+        "mheap/phpunit-github-actions-printer": "^1.5",
         "phpunit/phpunit": "^9.5",
         "vimeo/psalm": "^4.7"
     },
