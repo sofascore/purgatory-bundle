@@ -181,7 +181,7 @@ class CacheRefresh
                         }
 
                         // if default value is fixed string set it and continue
-                        if ('@' === substr($propertyDefault, 0, 1)) {
+                        if ('@' === $propertyDefault[0]) {
                             $routeParameters[$param][] = substr($propertyDefault, 1);
                             continue;
                         }
@@ -197,7 +197,7 @@ class CacheRefresh
             $priority = null === $priority ? '@'.self::PRIORITY_DEFAULT : $priority;
 
             // if fixed string
-            if ('@' === substr($priority, 0, 1)) {
+            if ('@' === $priority[0]) {
                 $priority = substr($priority, 1);
             } else {
                 $priority = $this->expressionLanguage->evaluate($priority, ['obj' => $object]);
@@ -210,7 +210,7 @@ class CacheRefresh
                     continue;
                 }
 
-                if ('@' === substr($value, 0, 1)) {
+                if ('@' === $value[0]) {
                     $tags[$key] = substr($value, 1);
                 } else {
                     $tags[$key] = $this->expressionLanguage->evaluate($value, ['obj' => $object]);
@@ -232,36 +232,21 @@ class CacheRefresh
         }
     }
 
-    /**
-     * @param mixed $object
-     *
-     * @return string
-     */
-    protected function getObjectClass($object)
+    protected function getObjectClass(object $object): string
     {
-        if (false === $class = get_class($object)) {
-            return false;
-        }
-
-        $class = '\\'.ltrim($class, '\\');
-
-        return $class;
+        return '\\' . ltrim(get_class($object), '\\');
     }
 
     /**
-     * @param string $class
-     *
-     * @return string
+     * @return false|string
      */
-    protected function getParentClass($class)
+    protected function getParentClass(string $class)
     {
-        if (false === $class = get_parent_class($class)) {
+        if (false === $parentClass = get_parent_class($class)) {
             return false;
         }
 
-        $class = '\\'.ltrim($class, '\\');
-
-        return $class;
+        return '\\' . ltrim($parentClass, '\\');
     }
 
     /**

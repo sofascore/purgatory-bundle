@@ -11,10 +11,7 @@ class PropertySubscription
      */
     protected $class;
 
-    /**
-     * @var string
-     */
-    protected $property;
+    protected ?string $property;
 
     /**
      * @var array<array>
@@ -47,10 +44,10 @@ class PropertySubscription
     protected $tags;
 
     /**
-     * @param string $class
-     * @param string $property
+     * @param class-string $class
+     * @param string|null $property
      */
-    public function __construct($class, $property = null)
+    public function __construct(string $class, string $property = null)
     {
         $this->class = $class;
         $this->property = $property;
