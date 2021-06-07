@@ -29,7 +29,7 @@ jobs:
         run: vendor/bin/psalm --output-format=github --long-progress --no-diff
 
       - name: PHPUnit
-        run: vendor/bin/phpunit --printer mheap\\GithubActionsReporter\\Printer --coverage-clover clover.xml -vvv
+        run: vendor/bin/phpunit tests --printer mheap\\GithubActionsReporter\\Printer --coverage-clover clover.xml -vvv
 
       - name: Monitor coverage
         if: ${{ github.event_name == 'pull_request' }}
