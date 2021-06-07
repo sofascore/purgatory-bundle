@@ -10,6 +10,7 @@
 /.phpunit.result.cache
 /phpunit.xml
 /coverage/
+/.phpunit.cache/
 
 # Managed by Composer
 /bin/*
@@ -37,4 +38,3 @@ $ PHP CS Fixer
 .remote-sync.json
 yarn-error.log
 *.swp
-/.phpunit.cache/
