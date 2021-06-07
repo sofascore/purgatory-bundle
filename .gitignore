@@ -37,3 +37,4 @@ $ PHP CS Fixer
 .remote-sync.json
 yarn-error.log
 *.swp
+/.phpunit.cache/
