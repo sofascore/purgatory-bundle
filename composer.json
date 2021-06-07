@@ -17,8 +17,8 @@
         "symfony/symfony": "^4.4"
     },
     "require-dev": {
-        "vimeo/psalm": "^4.7",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.7"
     },
     "config": {
         "sort-packages": true
