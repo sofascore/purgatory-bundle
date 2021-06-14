@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class SofaScoreCacheRefreshExtension extends Extension
+class PurgatoryExtension extends Extension
 {
     /**
      * {@inheritDoc}
