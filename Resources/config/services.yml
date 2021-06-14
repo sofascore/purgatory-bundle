@@ -9,22 +9,22 @@ services:
         public: true # TODO: Remove this once all services are compatible
 
     sofa.cache_refresh.loader.configuration:
-        class: SofaScore\CacheRefreshBundle\Mapping\Loader\Configuration
+        class: SofaScore\Purgatory\Mapping\Loader\Configuration
         arguments: ['%kernel.environment%', '%cache_refresh.loader.cache.debug%']
         calls:
             - [setRouteIgnorePatterns, ['%cache_refresh.loader.route_ignore_patterns%']]
             - [setCacheDir, ['%cache_refresh.loader.cache_dir%']]
 
     sofa.cache_refresh.loader.annotations:
-        class: SofaScore\CacheRefreshBundle\Mapping\Loader\AnnotationsLoader
+        class: SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader
         arguments: ["@sofa.cache_refresh.loader.configuration", "@router", "@controller_resolver", "@sofa.annotation_reader", "@doctrine.orm.entity_manager" ]
 
     sofa.cache_refresh.warmer.annotations:
-        class: SofaScore\CacheRefreshBundle\Mapping\CacheWarmer\AnnotationsLoaderWarmer
+        class: SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer
         arguments: ['@sofa.cache_refresh.loader.annotations']
         tags:
           - { name: kernel.cache_warmer, priority: 0 }
 
     sofa.cache_refresh:
-        class: SofaScore\CacheRefreshBundle\CacheRefresh
+        class: SofaScore\Purgatory\CacheRefresh
         arguments: ['@sofa.cache_refresh.loader.annotations', '@property_accessor']

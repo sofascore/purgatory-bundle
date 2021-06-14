@@ -1,8 +1,8 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Mapping\Loader;
+namespace SofaScore\Purgatory\Mapping\Loader;
 
-use SofaScore\CacheRefreshBundle\Mapping\MappingCollection;
+use SofaScore\Purgatory\Mapping\MappingCollection;
 
 interface LoaderInterface
 {

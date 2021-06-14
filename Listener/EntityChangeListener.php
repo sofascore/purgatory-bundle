@@ -1,12 +1,12 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Listener;
+namespace SofaScore\Purgatory\Listener;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use SofaScore\CacheRefreshBundle\CacheRefresh;
-use SofaScore\CacheRefreshBundle\WebCache\WebCacheInterface;
+use SofaScore\Purgatory\CacheRefresh;
+use SofaScore\Purgatory\WebCache\WebCacheInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class EntityChangeListener

@@ -1,8 +1,8 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Mapping\CacheWarmer;
+namespace SofaScore\Purgatory\Mapping\CacheWarmer;
 
-use SofaScore\CacheRefreshBundle\Mapping\Loader\AnnotationsLoader;
+use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
