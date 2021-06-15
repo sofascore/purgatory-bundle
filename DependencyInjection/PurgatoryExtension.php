@@ -33,6 +33,6 @@ class PurgatoryExtension extends Extension
 
     public function getAlias()
     {
-        return 'sofa_score_cache_refresh';
+        return 'purgatory';
     }
 }

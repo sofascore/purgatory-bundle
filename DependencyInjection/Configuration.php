@@ -21,7 +21,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('sofa_score_cache_refresh');
+        $rootNode = $treeBuilder->root('purgatory');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
