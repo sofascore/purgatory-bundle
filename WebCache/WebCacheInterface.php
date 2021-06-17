@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\WebCache;
+namespace SofaScore\Purgatory\WebCache;
 
 interface WebCacheInterface
 {

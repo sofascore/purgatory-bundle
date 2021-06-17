@@ -1,8 +1,8 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\AnnotationReader\Driver;
+namespace SofaScore\Purgatory\AnnotationReader\Driver;
 
-use SofaScore\CacheRefreshBundle\AnnotationReader\DriverInterface;
+use SofaScore\Purgatory\AnnotationReader\DriverInterface;
 
 class DoctrineDriver implements DriverInterface
 {

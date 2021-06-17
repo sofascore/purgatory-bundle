@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Mapping\Loader;
+namespace SofaScore\Purgatory\Mapping\Loader;
 
 class Configuration
 {
