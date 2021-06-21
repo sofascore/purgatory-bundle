@@ -8,6 +8,9 @@ namespace AnnotationReader\Fixtures;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ExtendedEntity1 extends Entity1
 {
     /**

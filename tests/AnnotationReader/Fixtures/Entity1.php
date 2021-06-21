@@ -11,6 +11,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @Entity
+ * @codeCoverageIgnore
  */
 class Entity1
 {
