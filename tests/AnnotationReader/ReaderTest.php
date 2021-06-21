@@ -10,13 +10,13 @@ use AnnotationReader\Fixtures\Entity1;
 use AnnotationReader\Fixtures\ExtendedEntity1;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
-use SofaScore\CacheRefreshBundle\AnnotationReader\Driver\DoctrineDriver;
-use SofaScore\CacheRefreshBundle\AnnotationReader\Reader;
-use SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException;
+use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
+use SofaScore\Purgatory\AnnotationReader\Reader;
+use SofaScore\Purgatory\AnnotationReader\ReaderException;
 
 
 /**
- * @coversDefaultClass \SofaScore\CacheRefreshBundle\AnnotationReader\Reader
+ * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\Reader
  */
 final class ReaderTest extends TestCase
 {

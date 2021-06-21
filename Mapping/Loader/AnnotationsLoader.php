@@ -41,7 +41,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
      */
     public function load(): MappingCollection
     {
@@ -73,7 +72,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      *
      * @param string $cacheDir The cache directory
      * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
      */
     public function warmUp($cacheDir)
     {
@@ -91,7 +89,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
      * @throws \Exception
      */
     public function loadMappings(): MappingCollection
@@ -173,8 +170,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @return PropertySubscription[]
-     * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
+     * @throws \ReflectionException|\SofaScore\Purgatory\AnnotationReader\ReaderException
      */
     public function parseControllerMappings(
         callable $controllerCallable,
@@ -461,7 +457,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
      */
     public function resolveClassMethod(PropertySubscription $subscription, string $method, array &$subscriptions): void
     {
@@ -481,7 +476,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \SofaScore\CacheRefreshBundle\AnnotationReader\ReaderException
+     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
      */
     public function getMethodProperties($class, string $method): array
     {
@@ -489,9 +484,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
         $properties = [];
 
-        foreach ($methodAnnotations as $annotationClass => $annotations) {
-            // skip everything that's not Properties annotation
-            if (Properties::class !== $annotationClass) {
+        foreach ($methodAnnotations as $class => $annotations) {
+            // skip evenythiong that's not Properties annotation
+            if (false === strpos($class, 'SofaScore\CacheRefreshBundle\Annotation\Properties')) {
                 continue;
             }
 

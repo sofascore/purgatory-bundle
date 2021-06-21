@@ -24,7 +24,7 @@ class Reader
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @throws ReaderException
+     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
      * @throws \ReflectionException
      */
     protected function getItemAnnotationsDeep($item): array
