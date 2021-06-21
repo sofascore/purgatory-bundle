@@ -14,7 +14,7 @@
         <directory name="Mapping" />
         <directory name="WebCache" />
         <file name="CacheRefresh.php" />
-        <file name="SofaScoreCacheRefreshBundle.php" />
+        <file name="PurgatoryBundle.php" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>

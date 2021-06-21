@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\AnnotationReader;
+namespace SofaScore\Purgatory\AnnotationReader;
 
 class Reader
 {

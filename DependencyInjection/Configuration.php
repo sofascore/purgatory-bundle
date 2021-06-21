@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\DependencyInjection;
+namespace SofaScore\Purgatory\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -20,7 +20,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('sofa_score_cache_refresh');
+        $treeBuilder = new TreeBuilder('purgatory');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for

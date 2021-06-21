@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Mapping;
+namespace SofaScore\Purgatory\Mapping;
 
 class MappingValue
 {

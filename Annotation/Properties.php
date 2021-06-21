@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Annotation;
+namespace SofaScore\Purgatory\Annotation;
 
 /**
  * @Annotation

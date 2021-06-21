@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\DependencyInjection;
+namespace SofaScore\Purgatory\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class SofaScoreCacheRefreshExtension extends Extension
+class PurgatoryExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -33,6 +33,6 @@ class SofaScoreCacheRefreshExtension extends Extension
 
     public function getAlias(): string
     {
-        return 'sofa_score_cache_refresh';
+        return 'purgatory';
     }
 }

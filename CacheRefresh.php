@@ -1,10 +1,10 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle;
+namespace SofaScore\Purgatory;
 
-use SofaScore\CacheRefreshBundle\Mapping\Loader\LoaderInterface;
-use SofaScore\CacheRefreshBundle\Mapping\MappingCollection;
-use SofaScore\CacheRefreshBundle\Mapping\MappingValue;
+use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
+use SofaScore\Purgatory\Mapping\MappingCollection;
+use SofaScore\Purgatory\Mapping\MappingValue;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 

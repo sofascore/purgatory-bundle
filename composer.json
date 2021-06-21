@@ -3,7 +3,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "SofaScore\\CacheRefreshBundle\\": ""
+            "SofaScore\\Purgatory\\": ""
         }
     },
     "autoload-dev": {

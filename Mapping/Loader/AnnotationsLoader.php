@@ -1,15 +1,15 @@
 <?php
 
-namespace SofaScore\CacheRefreshBundle\Mapping\Loader;
+namespace SofaScore\Purgatory\Mapping\Loader;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use SofaScore\CacheRefreshBundle\Annotation\Properties;
-use SofaScore\CacheRefreshBundle\Annotation\SubscribeTo;
-use SofaScore\CacheRefreshBundle\AnnotationReader\Reader;
-use SofaScore\CacheRefreshBundle\Mapping\MappingCollection;
-use SofaScore\CacheRefreshBundle\Mapping\MappingValue;
-use SofaScore\CacheRefreshBundle\Mapping\PropertySubscription;
+use SofaScore\Purgatory\Annotation\Properties;
+use SofaScore\Purgatory\Annotation\SubscribeTo;
+use SofaScore\Purgatory\AnnotationReader\Reader;
+use SofaScore\Purgatory\Mapping\MappingCollection;
+use SofaScore\Purgatory\Mapping\MappingValue;
+use SofaScore\Purgatory\Mapping\PropertySubscription;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
