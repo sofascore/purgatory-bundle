@@ -12,12 +12,12 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use PHPUnit\Framework\TestCase;
-use SofaScore\CacheRefreshBundle\AnnotationReader\Driver\DoctrineDriver;
-use SofaScore\CacheRefreshBundle\AnnotationReader\DriverInterface;
+use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
+use SofaScore\Purgatory\AnnotationReader\DriverInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @coversDefaultClass \SofaScore\CacheRefreshBundle\AnnotationReader\Driver\DoctrineDriver
+ * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver
  */
 final class DoctrineDriverTest extends TestCase
 {
