@@ -92,6 +92,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * Warms up the cache.
      *
      * @param string $cacheDir The cache directory
+     * @return string[]
      */
     public function warmUp($cacheDir)
     {
@@ -105,6 +106,8 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         // restore cache dir
         $this->config->setCacheDir($currentCacheDir);
+
+        return [];
     }
 
     public function loadMappings(): MappingCollection

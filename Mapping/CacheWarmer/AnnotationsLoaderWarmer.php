@@ -4,14 +4,13 @@ namespace SofaScore\Purgatory\Mapping\CacheWarmer;
 
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
-use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
 
 class AnnotationsLoaderWarmer implements CacheWarmerInterface
 {
     /**
      * @var AnnotationsLoader
      */
-    protected $loader;
+    protected AnnotationsLoader $loader;
 
     public function __construct(AnnotationsLoader $loader)
     {
@@ -22,12 +21,11 @@ class AnnotationsLoaderWarmer implements CacheWarmerInterface
      * Warms up the cache.
      *
      * @param string $cacheDir The cache directory
+     * @return string[]
      */
     public function warmUp($cacheDir)
     {
-        if ($this->loader instanceof WarmableInterface) {
-            $this->loader->warmUp($cacheDir);
-        }
+        return $this->loader->warmUp($cacheDir);
     }
 
     /**
