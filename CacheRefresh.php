@@ -148,7 +148,7 @@ class CacheRefresh
             }
 
             // set route parameters
-            foreach ($mappingValue->getParameters() as $param => $paramProperties) {
+            foreach ($mappingValue->getParameters() ?? [] as $param => $paramProperties) {
                 $routeParameters[$param] = [];
 
                 foreach ($paramProperties as $property) {
@@ -204,7 +204,7 @@ class CacheRefresh
             }
 
             // resolve tags
-            $tags = $mappingValue->getTags();
+            $tags = $mappingValue->getTags() ?? [];
             foreach ($tags as $key => $value) {
                 if (!is_string($value)) {
                     continue;

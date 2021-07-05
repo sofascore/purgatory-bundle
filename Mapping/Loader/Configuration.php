@@ -4,42 +4,23 @@ namespace SofaScore\Purgatory\Mapping\Loader;
 
 class Configuration
 {
-    /**
-     * @var array
-     */
-    protected $routeIgnorePatterns = [];
-
+    protected array $routeIgnorePatterns = [];
     protected ?string $cacheDir = null;
+    protected string $env;
+    protected bool $debug = false;
 
-    /**
-     * @var string
-     */
-    protected $env;
-
-    /**
-     * @var bool
-     */
-    protected $debug;
-
-    /**
-     * @param string $env   Environment
-     * @param bool   $debug
-     */
-    public function __construct($env = 'dev', $debug = true)
+    public function __construct(string $env = 'dev', bool $debug = true)
     {
         $this->env = $env;
         $this->debug = $debug;
     }
 
-    /**
-     * @return array
-     */
-    public function getRouteIgnorePatterns()
+    public function getRouteIgnorePatterns(): array
     {
         return $this->routeIgnorePatterns;
     }
 
-    public function setRouteIgnorePatterns(array $routeIgnorePatterns)
+    public function setRouteIgnorePatterns(array $routeIgnorePatterns): void
     {
         $this->routeIgnorePatterns = $routeIgnorePatterns;
     }
@@ -54,20 +35,9 @@ class Configuration
         $this->cacheDir = $cacheDir;
     }
 
-    /**
-     * @return string
-     */
-    public function getEnv()
+    public function getEnv(): string
     {
         return $this->env;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getDebug()
-    {
-        return $this->debug;
     }
 
     public function setEnv($env)
@@ -75,7 +45,12 @@ class Configuration
         $this->env = $env;
     }
 
-    public function setDebug($debug)
+    public function getDebug(): bool
+    {
+        return $this->debug;
+    }
+
+    public function setDebug(bool $debug): void
     {
         $this->debug = $debug;
     }

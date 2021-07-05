@@ -7,9 +7,6 @@ use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
 class AnnotationsLoaderWarmer implements CacheWarmerInterface
 {
-    /**
-     * @var AnnotationsLoader
-     */
     protected AnnotationsLoader $loader;
 
     public function __construct(AnnotationsLoader $loader)

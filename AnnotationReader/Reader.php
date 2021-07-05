@@ -4,10 +4,7 @@ namespace SofaScore\Purgatory\AnnotationReader;
 
 class Reader
 {
-    /**
-     * @var DriverInterface
-     */
-    protected $driver;
+    protected DriverInterface $driver;
 
     public function __construct(DriverInterface $driver)
     {
@@ -17,11 +14,9 @@ class Reader
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @return array
-     *
-     * @throws ReaderException
+     * @throws ReaderException|\ReflectionException
      */
-    public function getAnnotations($item)
+    public function getAnnotations($item): array
     {
         return $this->getItemAnnotationsDeep($item);
     }
@@ -29,18 +24,16 @@ class Reader
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @return array
-     *
-     * @throws ReaderException
+     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
+     * @throws \ReflectionException
      */
-    protected function getItemAnnotationsDeep($item)
+    protected function getItemAnnotationsDeep($item): array
     {
         $annotations = [];
         $class = $this->getItemClass($item);
 
         while (false !== $class) {
             $lookupItem = $this->getAnnotationLookupItem($item, $class);
-
             // if parent class does not have the item, means we've reached the top
             if (null === $lookupItem) {
                 break;
@@ -48,7 +41,7 @@ class Reader
 
             // if item is defined in parent class, lookupItem will be found but it's class will be set to
             // that of the parent, which causes annotations to double. Therefore annotations are
-            // fethched only when lookupItem's class matches currently itterated class in hierarchy.
+            // fetched only when lookupItem's class matches currently iterated class in hierarchy.
 
             if ($this->getItemClass($lookupItem) === $class) {
                 $itemAnnotations = $this->getItemAnnotations($lookupItem);
@@ -63,12 +56,7 @@ class Reader
         return $annotations;
     }
 
-    /**
-     * @param $annotations
-     *
-     * @return array<array>
-     */
-    public function groupAnnotationsByClass($annotations)
+    public function groupAnnotationsByClass(array $annotations): array
     {
         $groupedAnnotations = [];
 
@@ -86,73 +74,71 @@ class Reader
     }
 
     /**
-     * @param $item
-     * @param $class
-     *
      * @return \ReflectionClass|\ReflectionMethod|\ReflectionProperty|null
      *
      * @throws ReaderException
+     * @throws \ReflectionException
      */
     public function getAnnotationLookupItem($item, $class)
     {
-        $lookupItem = null;
-
         if ($item instanceof \ReflectionClass) {
-            $lookupItem = class_exists($class) ? new \ReflectionClass($class) : $lookupItem;
-        } elseif ($item instanceof \ReflectionMethod) {
-            $lookupItem = method_exists($class, $item->getName()) ?
-                new \ReflectionMethod($class, $item->getName()) : $lookupItem;
-        } elseif ($item instanceof \ReflectionProperty) {
-            $lookupItem = property_exists($class, $item->getName()) ?
-                new \ReflectionProperty($class, $item->getName()) : $lookupItem;
-        } else {
-            throw new ReaderException('Unsupported type.', $item);
+            return class_exists($class) ? new \ReflectionClass($class) : null;
         }
 
-        return $lookupItem;
+        if ($item instanceof \ReflectionMethod) {
+            return method_exists($class, $item->getName()) ?
+                new \ReflectionMethod($class, $item->getName()) : null;
+        }
+
+        if ($item instanceof \ReflectionProperty) {
+            return property_exists($class, $item->getName()) ?
+                new \ReflectionProperty($class, $item->getName()) : null;
+        }
+
+        throw new ReaderException('Unsupported type.', $item);
     }
 
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @return array
-     *
      * @throws ReaderException
      */
-    public function getItemAnnotations($item)
+    public function getItemAnnotations($item): array
     {
         if ($item instanceof \ReflectionClass) {
-            $annotations = $this->driver->getClassAnnotations($item);
-        } elseif ($item instanceof \ReflectionMethod) {
-            $annotations = $this->driver->getMethodAnnotations($item);
-        } elseif ($item instanceof \ReflectionProperty) {
-            $annotations = $this->driver->getPropertyAnnotations($item);
-        } else {
-            throw new ReaderException('Unsupported type.', $item);
+            return $this->driver->getClassAnnotations($item);
         }
 
-        return $annotations;
+        if ($item instanceof \ReflectionMethod) {
+            return $this->driver->getMethodAnnotations($item);
+        }
+
+        if ($item instanceof \ReflectionProperty) {
+            return $this->driver->getPropertyAnnotations($item);
+        }
+
+        throw new ReaderException('Unsupported type.', $item);
     }
 
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @return string
-     *
      * @throws ReaderException
      */
-    public function getItemClass($item)
+    public function getItemClass($item): string
     {
         if ($item instanceof \ReflectionClass) {
-            $class = $item->getName();
-        } elseif ($item instanceof \ReflectionMethod) {
-            $class = $item->class;
-        } elseif ($item instanceof \ReflectionProperty) {
-            $class = $item->class;
-        } else {
-            throw new ReaderException('Unsupported type.', $item);
+            return $item->getName();
         }
 
-        return $class;
+        if ($item instanceof \ReflectionMethod) {
+            return $item->class;
+        }
+
+        if ($item instanceof \ReflectionProperty) {
+            return $item->class;
+        }
+
+        throw new ReaderException('Unsupported type.', $item);
     }
 }

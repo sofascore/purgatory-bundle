@@ -8,23 +8,14 @@ namespace SofaScore\Purgatory\Annotation;
  */
 final class Properties
 {
-    /**
-     * @var array
-     */
-    private $properties = [];
+    private array $properties;
 
-    /**
-     * @param array $values
-     */
-    public function __construct($values)
+    public function __construct(array $values)
     {
-        $this->properties = (array) $values['value'];
+        $this->properties = (array) ($values['value'] ?? []);
     }
 
-    /**
-     * @return array
-     */
-    public function getProperties()
+    public function getProperties(): array
     {
         return $this->properties;
     }

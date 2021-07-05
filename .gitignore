@@ -10,6 +10,7 @@
 /.phpunit.result.cache
 /phpunit.xml
 /coverage/
+/.phpunit.cache/
 
 # Managed by Composer
 /bin/*

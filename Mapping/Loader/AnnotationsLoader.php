@@ -6,7 +6,7 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use SofaScore\Purgatory\Annotation\Properties;
 use SofaScore\Purgatory\Annotation\SubscribeTo;
-use SofaScore\Purgatory\AnnotationReader\Reader as AnnotationReader;
+use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\MappingValue;
 use SofaScore\Purgatory\Mapping\PropertySubscription;
@@ -19,36 +19,17 @@ use Symfony\Component\Routing\RouterInterface;
 
 class AnnotationsLoader implements LoaderInterface, WarmableInterface
 {
-    /**
-     * @var RouterInterface
-     */
-    protected $router;
-
-    /**
-     * @var Configuration
-     */
-    protected $config;
-
-    /**
-     * @var ControllerResolverInterface
-     */
-    protected $controllerResolver;
-
-    /**
-     * @var AnnotationReader
-     */
-    protected $annotationReader;
-
-    /**
-     * @var ObjectManager
-     */
-    protected $manager;
+    protected RouterInterface $router;
+    protected Configuration $config;
+    protected ControllerResolverInterface $controllerResolver;
+    protected Reader $annotationReader;
+    protected ObjectManager $manager;
 
     public function __construct(
         Configuration $config,
         RouterInterface $router,
         ControllerResolverInterface $controllerResolver,
-        AnnotationReader $annotationReader,
+        Reader $annotationReader,
         ObjectManager $manager
     ) {
         $this->config = $config;
@@ -59,9 +40,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @return MappingCollection
+     * @throws \ReflectionException
      */
-    public function load()
+    public function load(): MappingCollection
     {
         if (null === $this->config->getCacheDir()) {
             return $this->loadMappings();
@@ -69,7 +50,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         // instantiate cache
         $cache = new ConfigCache(
-            $this->config->getCacheDir().'/cache_refresh/mappings/collection.php', $this->config->getDebug()
+            $this->config->getCacheDir() . '/cache_refresh/mappings/collection.php', $this->config->getDebug()
         );
 
         // write cache if not fresh
@@ -77,15 +58,13 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             // dump cache
             $mappings = $this->loadMappings();
             $cache->write(
-                '<?php return '.var_export($mappings, true).';',
+                '<?php return ' . var_export($mappings, true) . ';',
                 $this->router->getRouteCollection()->getResources()
             );
         }
 
         // fetch from cache
-        $mappings = require $cache->getPath();
-
-        return $mappings;
+        return require $cache->getPath();
     }
 
     /**
@@ -93,8 +72,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      *
      * @param string $cacheDir The cache directory
      * @return string[]
+     * @throws \ReflectionException
      */
-    public function warmUp($cacheDir)
+    public function warmUp($cacheDir): array
     {
         // save current cache dir
         $currentCacheDir = $this->config->getCacheDir();
@@ -110,6 +90,10 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return [];
     }
 
+    /**
+     * @throws \ReflectionException
+     * @throws \Exception
+     */
     public function loadMappings(): MappingCollection
     {
         $mappingCollection = new MappingCollection();
@@ -119,7 +103,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         /**
          * @var string $routeName
-         * @var Route  $route
+         * @var Route $route
          */
         foreach ($routes as $routeName => $route) {
             // if route name matches one of the route ignore patterns ignore it
@@ -129,8 +113,10 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                 }
             }
 
+            $controllerCallable = $this->resolveController($route->getDefault('_controller'));
+
             // if controller cannot be resolved, skip route
-            if (false === $controllerCallable = $this->resolveController($route->getDefault('_controller'))) {
+            if (false === $controllerCallable) {
                 continue;
             }
 
@@ -144,11 +130,11 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         // add mappings
         foreach ($subscriptions as $subscription) {
             // prepare class and property
-            $class = '\\'.ltrim($subscription->getClass(), '\\');
+            $class = '\\' . ltrim($subscription->getClass(), '\\');
             $property = $subscription->getProperty();
 
             // set key
-            $key = $class.(null !== $property ? '::'.$property : '');
+            $key = $class . (null !== $property ? '::' . $property : '');
 
             // create mapping from subscription
             $mappingValue = new MappingValue($subscription->getRouteName());
@@ -186,14 +172,15 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @param callable $controllerCallable
-     * @param string   $routeName
-     * @param Route    $route
-     *
      * @return PropertySubscription[]
+     * @throws \ReflectionException|\SofaScore\Purgatory\AnnotationReader\ReaderException
      */
-    public function parseControllerMappings($controllerCallable, $routeName, $route, array &$subscriptions)
-    {
+    public function parseControllerMappings(
+        callable $controllerCallable,
+        string $routeName,
+        Route $route,
+        array &$subscriptions
+    ): array {
         if (!is_array($controllerCallable)) {
             return [];
         }
@@ -204,8 +191,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
 
         foreach ($methodAnnotations as $class => $annotations) {
-            // parse SubscribeTo annotation
-            if (false !== strpos($class, SubscribeTo::class)) {
+            if ($class === SubscribeTo::class) {
                 foreach ($annotations as $annotation) {
                     $this->parseSubscribeTo($annotation, $routeName, $route, $subscriptions);
                 }
@@ -217,7 +203,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions): void
     {
-        $resolveParameters = function ($parameters) {
+        $resolveParameters = static function ($parameters): array {
             $resolved = [];
 
             foreach ($parameters as $key => $param) {
@@ -227,7 +213,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $resolved;
         };
 
-        $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use ($resolveParameters) {
+        $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use (
+            $resolveParameters
+        ) {
             // create subscription
             $subscription = new PropertySubscription($annotation->getObject(), $property);
             $subscription->setParameters($annotation->getParameters());
@@ -251,14 +239,14 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $subscription;
         };
 
-        // route will not be processd if it has routes array specified and current route name
+        // route will not be processed if it has routes array specified and current route name
         // is not in it
-        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes())) {
+        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes(), true)) {
             return;
         }
 
         // add subscription for each property
-        foreach ($annotation->getProperties() as $property) {
+        foreach ($annotation->getProperties() ?? [] as $property) {
             $subscription = $createSubscriptionFromAnnotation($annotation, $property, $routeName, $route);
 
             // add to subscriptions list
@@ -266,7 +254,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         }
 
         // if no properties, add class subscription
-        if (count($annotation->getProperties()) <= 0) {
+        if (0 === count($annotation->getProperties() ?? [])) {
             $subscription = $createSubscriptionFromAnnotation($annotation, null, $routeName, $route);
 
             // add to subscriptions list
@@ -278,8 +266,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * @param PropertySubscription[] $subscriptions
      *
      * @return PropertySubscription[]
+     * @throws \Exception
      */
-    public function resolveSubscriptions($subscriptions)
+    public function resolveSubscriptions(array $subscriptions): array
     {
         /** @var PropertySubscription[] $resolved */
         $resolved = [];
@@ -307,13 +296,13 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             $associations = $metadata->getAssociationNames();
 
             // set initial property data
-            $property = $subscription->getProperty();
+            $property = (string)$subscription->getProperty();
             $subProperty = null;
 
-            // process properties and embeded properties
-            while (strlen($property) > 0) {
+            // process properties and embedded properties
+            while ($property !== '') {
                 // if property is class field
-                if (in_array($property, $fieldNames) && null == $subProperty) {
+                if (null === $subProperty && in_array($property, $fieldNames, true)) {
                     // add it to resolved
                     $resolved[] = $subscription;
 
@@ -321,14 +310,18 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     continue 2;
                 }
 
-                if (in_array($property, $associations) && $metadata->isSingleValuedAssociation($property) && !$metadata->isAssociationInverseSide($property)) {
+                if (in_array($property, $associations, true) && $metadata->isSingleValuedAssociation(
+                        $property
+                    ) && !$metadata->isAssociationInverseSide($property)) {
                     $resolved[] = $subscription;
                 }
 
                 // if property is class association
-                if (in_array($property, $associations)) {
+                if (in_array($property, $associations, true)) {
                     // If it's TO_ONE relation without inverse, don't throw
-                    if (!$metadata->getAssociationMappedByTargetField($property) && $metadata->isSingleValuedAssociation($property)) {
+                    if (!$metadata->getAssociationMappedByTargetField(
+                            $property
+                        ) && $metadata->isSingleValuedAssociation($property)) {
                         continue 2;
                     }
 
@@ -337,40 +330,50 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
                     // get data
                     $associationClass = $metadata->getAssociationTargetClass($property);
-                    $asscoiationTarget = $metadata->getAssociationMappedByTargetField($property);
+                    $associationTarget = $metadata->getAssociationMappedByTargetField($property);
                     $associationParameters = [];
                     $associationTags = [];
 
                     // update parameters with association target
-                    foreach ($subscription->getParameters() as $key => $values) {
+                    foreach ($subscription->getParameters() ?? [] as $key => $values) {
                         foreach ($values as $index => $value) {
                             // if value is not fixed string
-                            $prefix = '@' !== substr($value, 0, 1) ? $asscoiationTarget.'.' : '';
+                            $prefix = strpos($value, '@') !== 0 ? $associationTarget . '.' : '';
                             // add association target as prefix
-                            $associationParameters[$key][$index] = $prefix.$value;
+                            $associationParameters[$key][$index] = $prefix . $value;
                         }
                     }
 
                     // update tags with association target
-                    foreach ($subscription->getTags() as $key => $value) {
+                    foreach ($subscription->getTags() ?? [] as $key => $value) {
                         // if expression, replace obj
                         if (is_string($value) && '@' !== $value[0]) {
-                            $value = str_replace('obj', 'obj.'.$this->getGetterCall($asscoiationTarget), $value);
+                            $value = str_replace('obj', 'obj.' . $this->getGetterCall($associationTarget), $value);
                         }
 
-                        // set assoctiation tag value
+                        // set association tag value
                         $associationTags[$key] = $value;
                     }
 
                     // update if condition with association target
-                    $associationIf = null !== $subscription->getIf() ?
-                        str_replace('obj', 'obj.'.$this->getGetterCall($asscoiationTarget),
-                            $subscription->getIf()) : null;
+                    $associationIf = null;
+                    if (null !== $if = $subscription->getIf()) {
+                        $associationIf = str_replace(
+                            'obj',
+                            'obj.' . $this->getGetterCall($associationTarget),
+                            $if
+                        );
+                    }
 
                     // update association priority with association target
-                    $associationPriority = null !== $subscription->getPriority() ?
-                        str_replace('obj', 'obj.'.$this->getGetterCall($asscoiationTarget),
-                            $subscription->getPriority()) : null;
+                    $associationPriority = null;
+                    if (null !== $priority = $subscription->getPriority()) {
+                        str_replace(
+                            'obj',
+                            'obj.' . $this->getGetterCall($associationTarget),
+                            $priority
+                        );
+                    }
 
                     // add association subscription to subscriptions to process list
                     $associationSubscription = new PropertySubscription($associationClass, $subProperty);
@@ -389,14 +392,14 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     continue 2;
                 }
 
-                // if no subproperty, check for embeded class fields (field.subfield)
+                // if no subproperty, check for embedded class fields (field.subfield)
                 if (null === $subProperty) {
                     // init flag
                     $hadSubProperties = false;
 
                     foreach ($fieldNames as $fieldName) {
                         // if field name starts with property
-                        if (substr($fieldName, 0, strlen($property)) === $property) {
+                        if (strpos($fieldName, $property) === 0) {
                             // set subproperty subscription
                             $subPropertySubscription = clone $subscription;
                             $subPropertySubscription->setProperty($fieldName);
@@ -456,10 +459,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @param string $method
-     * @param array  $subscriptions
+     * @throws \ReflectionException
      */
-    public function resolveClassMethod(PropertySubscription $subscription, $method, &$subscriptions)
+    public function resolveClassMethod(PropertySubscription $subscription, string $method, array &$subscriptions): void
     {
         $methodProperties = $this->getMethodProperties($subscription->getClass(), $method);
 
@@ -476,12 +478,10 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @param $class
-     * @param $method
-     *
-     * @return array<array>
+     * @throws \ReflectionException
+     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
      */
-    public function getMethodProperties($class, $method)
+    public function getMethodProperties($class, string $method): array
     {
         $reflectionMethod = new \ReflectionMethod($class, $method);
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
@@ -489,7 +489,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         foreach ($methodAnnotations as $class => $annotations) {
             // skip evenythiong that's not Properties annotation
-            if (false === strpos($class, Properties::class)) {
+            if (false === strpos($class, 'SofaScore\CacheRefreshBundle\Annotation\Properties')) {
                 continue;
             }
 
@@ -507,11 +507,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             if (false === strpos($property, ':')) {
                 // add it to parsed list
                 $parsed[] = ['property' => $property];
-            }
-            //
-            // else if property is class property def
+            } // else if property is class property def
             else {
-                // separate class and property deff
+                // separate class and property def
                 $parts = explode('.', $property, 2);
 
                 // and add it to parsed list
@@ -528,46 +526,48 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
-     * @param string $association
-     *
      * @throws \Exception
      */
-    protected function validateAssociationInverse($association, ClassMetadata $metadata)
+    protected function validateAssociationInverse(string $association, ClassMetadata $metadata): void
     {
         if (null === $metadata->getAssociationMappedByTargetField($association)) {
-            throw new \Exception(sprintf("Association '%s' of class '%s' to class '%s' has no `mapped by` field.", $association, $metadata->getReflectionClass()->getName(), $metadata->getAssociationTargetClass($association)));
+            throw new \Exception(
+                sprintf(
+                    "Association '%s' of class '%s' to class '%s' has no `mapped by` field.",
+                    $association,
+                    $metadata->getReflectionClass()->getName(),
+                    $metadata->getAssociationTargetClass($association)
+                )
+            );
         }
     }
 
-    protected function setSubscriptionParametersFromRoute(PropertySubscription $subscription, Route $route)
+    protected function setSubscriptionParametersFromRoute(PropertySubscription $subscription, Route $route): void
     {
-        $parameters = [];
         $compiledRoute = $route->compile();
+        if (null === $compiledRoute) {
+            return;
+        }
 
+        $parameters = [];
         foreach ($compiledRoute->getPathVariables() as $param) {
-            $paramPath = str_replace('_', '.', $param);
-            $parameters[$param] = $paramPath;
+            $parameters[$param] = str_replace('_', '.', $param);
         }
 
         $subscription->setParameters($parameters);
     }
 
-    /**
-     * @param string $property
-     *
-     * @return string
-     */
-    protected function getGetterCall($property)
+    protected function getGetterCall(string $property): string
     {
-        return 'get'.ucfirst($property).'()';
+        return 'get' . ucfirst($property) . '()';
     }
 
-    public function getConfig()
+    public function getConfig(): Configuration
     {
         return $this->config;
     }
 
-    public function setConfig($config)
+    public function setConfig(Configuration $config): void
     {
         $this->config = $config;
     }

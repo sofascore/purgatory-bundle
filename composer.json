@@ -6,10 +6,20 @@
             "SofaScore\\Purgatory\\": ""
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "": "tests/"
+        }
+    },
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.8",
         "symfony/symfony": "^4.4 || ^5.3"
+    },
+    "require-dev": {
+        "mheap/phpunit-github-actions-printer": "^1.5",
+        "phpunit/phpunit": "^9.5",
+        "vimeo/psalm": "^4.7"
     },
     "config": {
         "sort-packages": true
@@ -19,8 +29,5 @@
             "name": "SofaScore backend",
             "email": "server@sofascore.com"
         }
-    ],
-    "require-dev": {
-        "vimeo/psalm": "^4.7"
-    }
+    ]
 }
