@@ -10,7 +10,8 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class CacheRefresh
 {
-    const PRIORITY_DEFAULT = '0';
+    public const PRIORITY_DEFAULT = '0';
+    public const ROUTE_TAG = 'route';
 
     /**
      * @var MappingCollection
@@ -215,6 +216,10 @@ class CacheRefresh
                 } else {
                     $tags[$key] = $this->expressionLanguage->evaluate($value, ['obj' => $object]);
                 }
+            }
+
+            if (isset($tags[self::ROUTE_TAG]) && $routeName !== $tags[self::ROUTE_TAG]) {
+                continue;
             }
 
             // get paramteres cartesian
