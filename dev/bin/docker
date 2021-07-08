@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly PROJECT_DIR="$(cd "$(dirname "$0")/../.."; pwd)"
+
+docker run \
+    --hostname purgatory \
+    --rm \
+    --env-file <(cat "${PROJECT_DIR}/.env.docker" 2> /dev/null) \
+    -e HOST_USER_ID="$(id -u)" \
+    -e HOST_GROUP_ID="$(id -g)" \
+    -e XDEBUG_MODE="${XDEBUG_MODE:-"off"}" \
+    --mount type=bind,source="${PROJECT_DIR}",target="/app/src",consistency=delegated \
+    sofascore/purgatory \
+    "$@"
