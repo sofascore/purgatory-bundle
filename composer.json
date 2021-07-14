@@ -15,7 +15,13 @@
     "require": {
         "php": ">=7.4",
         "doctrine/orm": "^2.8",
-        "symfony/symfony": "^4.4 || ^5.3"
+        "symfony/config": "^4.4 || ^5.3",
+        "symfony/dependency-injection": "^4.4 || ^5.3",
+        "symfony/expression-language": "^4.4 || ^5.3",
+        "symfony/http-kernel": "^4.4 || ^5.3",
+        "symfony/property-access": "^4.4 || ^5.3",
+        "symfony/routing": "^4.4 || ^5.3",
+        "symfony/serializer": "^4.4 || ^5.3"
     },
     "require-dev": {
         "mheap/phpunit-github-actions-printer": "^1.5",
