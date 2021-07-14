@@ -8,35 +8,40 @@ on:
   workflow_dispatch:
 
 jobs:
-  psalm:
+  test:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout the repository
+        uses: actions/checkout@v2
 
-      - name: Cache vendor directory
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+      - name: Determine Docker image tag
+        id: determine_image_tag
+        run: |
+          IMAGE_TAG="${GITHUB_REPOSITORY,,}:latest"
+          echo "::set-output name=image_tag::${IMAGE_TAG}"
+          echo -e "The image is going to get tagged as \033[31m${IMAGE_TAG}\e[0m."
 
-      - name: Check composer.lock
-        run: composer validate --no-check-all --no-check-publish
+      - name: Build Docker image
+        run: docker build -t ${{ steps.determine_image_tag.outputs.image_tag }} dev/docker
+
+      - name: Validate "composer.json" schema
+        run: dev/bin/docker composer validate --ansi
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: dev/bin/docker composer install --ansi --prefer-dist
 
-      - name: Psalm
-        run: vendor/bin/psalm --output-format=github --long-progress --no-diff
+      - name: Perform static code analysis
+        run: dev/bin/docker composer psalm -- --long-progress --no-diff --output-format=github
 
-      - name: PHPUnit
-        run: vendor/bin/phpunit --printer mheap\\GithubActionsReporter\\Printer --coverage-clover clover.xml -vvv
+      - name: Run tests
+        run: XDEBUG_MODE=coverage dev/bin/docker composer test -- --colors=always --coverage-clover=clover.xml --printer=mheap\\GithubActionsReporter\\Printer --verbose
 
-      - name: Monitor coverage
+      - name: Report test coverage
         if: ${{ github.event_name == 'pull_request' }}
-        uses: slavcodev/coverage-monitor-action@1.1.0
+        uses: slavcodev/coverage-monitor-action@v1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          clover_file: "clover.xml"
+          clover_file: clover.xml
           threshold_alert: 3
           threshold_warning: 50
           comment_mode: update
