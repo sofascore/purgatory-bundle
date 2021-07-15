@@ -488,8 +488,8 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $properties = [];
 
         foreach ($methodAnnotations as $class => $annotations) {
-            // skip evenythiong that's not Properties annotation
-            if (false === strpos($class, 'SofaScore\CacheRefreshBundle\Annotation\Properties')) {
+            // skip everything that's not Properties annotation
+            if (Properties::class !== $class) {
                 continue;
             }
 
