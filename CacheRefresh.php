@@ -2,53 +2,39 @@
 
 namespace SofaScore\Purgatory;
 
+use Exception;
+use RuntimeException;
 use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
 use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class CacheRefresh
 {
-    public const PRIORITY_DEFAULT = '0';
-    public const ROUTE_TAG = 'route';
+    private const PRIORITY_DEFAULT = '0';
+    private const ROUTE_TAG = 'route';
 
-    /**
-     * @var MappingCollection
-     */
-    protected $mappings;
+    private MappingCollection $mappings;
 
-    /**
-     * @var LoaderInterface
-     */
-    protected $mappingsLoader;
+    private LoaderInterface $mappingsLoader;
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    protected $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var ExpressionLanguage
-     */
-    protected $expressionLanguage;
+    private ExpressionLanguage $expressionLanguage;
 
     public function __construct(LoaderInterface $mappingsLoader, PropertyAccessorInterface $propertyAccessor)
     {
         $this->mappingsLoader = $mappingsLoader;
         $this->propertyAccessor = $propertyAccessor;
 
-        if (!class_exists('Symfony\Component\ExpressionLanguage\ExpressionLanguage')) {
-            throw new \RuntimeException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed.');
+        if (!class_exists(ExpressionLanguage::class)) {
+            throw new RuntimeException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed.');
         }
 
         $this->expressionLanguage = new ExpressionLanguage();
     }
 
-    /**
-     * @return MappingCollection
-     */
-    public function getMappings()
+    public function getMappings(): MappingCollection
     {
         if (null === $this->mappings) {
             $this->mappings = $this->mappingsLoader->load();
@@ -67,9 +53,8 @@ class CacheRefresh
      * @param mixed $object            Object that was changed
      * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
      *
-     * @return array
      */
-    public function getUrlsToRefresh($object, $changedProperties)
+    public function getUrlsToRefresh($object, array $changedProperties): array
     {
         // check if there are chages
         if (count($changedProperties) <= 0) {
@@ -128,11 +113,8 @@ class CacheRefresh
         return $urls;
     }
 
-    /**
-     * @param mixed          $object
-     * @param MappingValue[] $mappingValues
-     */
-    public function processMappingValues($object, array $mappingValues, array &$urls)
+
+    public function processMappingValues($object, array $mappingValues, array &$urls): void
     {
         foreach ($mappingValues as $mappingValue) {
             $routeName = $mappingValue->getRouteName();
@@ -154,7 +136,7 @@ class CacheRefresh
 
                 foreach ($paramProperties as $property) {
                     // if property is fixed string, just set parameter and continue
-                    if ('@' === substr($property, 0, 1)) {
+                    if (strpos($property, '@') === 0) {
                         $routeParameters[$param][] = substr($property, 1);
                         continue;
                     }
@@ -175,7 +157,7 @@ class CacheRefresh
                         } else {
                             $routeParameters[$param][] = $propertyValue;
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // continue if no default value
                         if (null === $propertyDefault) {
                             continue;
@@ -195,7 +177,7 @@ class CacheRefresh
 
             // resolve priority
             $priority = $mappingValue->getPriority();
-            $priority = null === $priority ? '@'.self::PRIORITY_DEFAULT : $priority;
+            $priority = $priority ?? ('@' . self::PRIORITY_DEFAULT);
 
             // if fixed string
             if ('@' === $priority[0]) {
@@ -237,7 +219,7 @@ class CacheRefresh
         }
     }
 
-    protected function getObjectClass(object $object): string
+    private function getObjectClass(object $object): string
     {
         return '\\' . ltrim(get_class($object), '\\');
     }
@@ -245,7 +227,7 @@ class CacheRefresh
     /**
      * @return false|string
      */
-    protected function getParentClass(string $class)
+    private function getParentClass(string $class)
     {
         if (false === $parentClass = get_parent_class($class)) {
             return false;
@@ -254,10 +236,7 @@ class CacheRefresh
         return '\\' . ltrim($parentClass, '\\');
     }
 
-    /**
-     * @return array
-     */
-    public function getCartesianProduct(array $input = [])
+    public function getCartesianProduct(array $input = []): array
     {
         // filter out empty values
         $input = array_filter($input);
