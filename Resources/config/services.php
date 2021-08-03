@@ -7,6 +7,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\CacheRefresh;
+use SofaScore\Purgatory\Command\DebugCommand;
 use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
@@ -65,5 +66,14 @@ return static function (ContainerConfigurator $container) {
             ref('router'),
             ref(WebCacheInterface::class),
         ])
+
+        ->set(LoaderInterface::class, AnnotationsLoader::class)
+        ->alias(
+            ref('sofascore.purgatory.mapping.annotation_loader')
+        )
+
+        ->set(DebugCommand::class)
+        ->autowire(true)
+        ->tag('console.command');
     ;
 };
