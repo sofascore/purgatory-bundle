@@ -14,7 +14,7 @@ class CacheRefresh
     private const PRIORITY_DEFAULT = '0';
     private const ROUTE_TAG = 'route';
 
-    private MappingCollection $mappings;
+    private ?MappingCollection $mappings = null;
 
     private LoaderInterface $mappingsLoader;
 
