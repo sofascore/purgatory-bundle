@@ -34,7 +34,7 @@ class CacheRefresh
         $this->expressionLanguage = new ExpressionLanguage();
     }
 
-    public function getMappings(): MappingCollection
+    private function getMappings(): MappingCollection
     {
         if (null === $this->mappings) {
             $this->mappings = $this->mappingsLoader->load();
@@ -114,7 +114,7 @@ class CacheRefresh
     }
 
 
-    public function processMappingValues($object, array $mappingValues, array &$urls): void
+    private function processMappingValues($object, array $mappingValues, array &$urls): void
     {
         foreach ($mappingValues as $mappingValue) {
             $routeName = $mappingValue->getRouteName();
@@ -236,7 +236,7 @@ class CacheRefresh
         return '\\' . ltrim($parentClass, '\\');
     }
 
-    public function getCartesianProduct(array $input = []): array
+    private function getCartesianProduct(array $input = []): array
     {
         // filter out empty values
         $input = array_filter($input);
