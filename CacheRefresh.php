@@ -26,11 +26,6 @@ class CacheRefresh
     {
         $this->mappingsLoader = $mappingsLoader;
         $this->propertyAccessor = $propertyAccessor;
-
-        if (!class_exists(ExpressionLanguage::class)) {
-            throw new RuntimeException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed.');
-        }
-
         $this->expressionLanguage = new ExpressionLanguage();
     }
 
