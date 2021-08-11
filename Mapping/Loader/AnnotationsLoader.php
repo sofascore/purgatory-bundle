@@ -329,7 +329,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     $this->validateAssociationInverse($property, $metadata);
 
                     // get data
-                    $associationClass = $metadata->getAssociationTargetClass($property);
+                    $associationClass = (string) $metadata->getAssociationTargetClass($property);
                     $associationTarget = $metadata->getAssociationMappedByTargetField($property);
                     $associationParameters = [];
                     $associationTags = [];
@@ -536,7 +536,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     "Association '%s' of class '%s' to class '%s' has no `mapped by` field.",
                     $association,
                     $metadata->getReflectionClass()->getName(),
-                    $metadata->getAssociationTargetClass($association)
+                    (string) $metadata->getAssociationTargetClass($association)
                 )
             );
         }

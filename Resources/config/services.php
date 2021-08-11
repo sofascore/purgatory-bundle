@@ -67,13 +67,11 @@ return static function (ContainerConfigurator $container) {
             ref(WebCacheInterface::class),
         ])
 
-        ->set(LoaderInterface::class, AnnotationsLoader::class)
-        ->alias(
-            ref('sofascore.purgatory.mapping.annotation_loader')
-        )
-
-        ->set(DebugCommand::class)
-        ->autowire(true)
-        ->tag('console.command');
+        ->set('sofascore.purgatory.command.debug', DebugCommand::class)
+        ->args([
+                   ref('sofascore.purgatory.mapping.annotation_loader'),
+                   ref('router')
+        ])
+        ->tag('console.command')
     ;
 };
