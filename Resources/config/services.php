@@ -69,9 +69,9 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
         ->args([
-                   ref('sofascore.purgatory.mapping.annotation_loader'),
-                   ref('router')
+            ref('sofascore.purgatory.mapping.annotation_loader'),
+            ref('router')
         ])
         ->tag('console.command')
-    ;
+        ;
 };
