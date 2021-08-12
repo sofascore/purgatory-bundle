@@ -22,6 +22,10 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('purger')
+                    ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
+                    ->cannotBeEmpty()
+                ->end()
                 ->booleanNode('entity_change_listener')
                     ->info('Determines whether entity changes should trigger the configured purge mechanism automatically.')
                     ->defaultTrue()

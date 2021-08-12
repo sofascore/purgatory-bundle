@@ -11,7 +11,6 @@ use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\WebCache\WebCacheInterface;
 
 return static function (ContainerConfigurator $container) {
     $container->parameters()
@@ -62,7 +61,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             ref('router'),
             ref('sofascore.purgatory.cache_refresh'),
-            ref(WebCacheInterface::class),
+            ref('sofascore.purgatory.purger'),
         ])
         ->tag('doctrine.event_listener', ['event' => 'preRemove'])
         ->tag('doctrine.event_listener', ['event' => 'postPersist'])

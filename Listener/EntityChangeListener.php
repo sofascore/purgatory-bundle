@@ -5,14 +5,14 @@ namespace SofaScore\Purgatory\Listener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use SofaScore\Purgatory\CacheRefresh;
-use SofaScore\Purgatory\WebCache\WebCacheInterface;
+use SofaScore\Purgatory\Purger\PurgerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener
 {
     private UrlGeneratorInterface $urlGenerator;
     private CacheRefresh $cacheRefreshService;
-    private WebCacheInterface $webCache;
+    private PurgerInterface $purger;
 
     /**
      * @var string[]
@@ -22,11 +22,11 @@ final class EntityChangeListener
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
         CacheRefresh $cacheRefresh,
-        WebCacheInterface $webCache
+        PurgerInterface $purger
     ) {
         $this->urlGenerator = $urlGenerator;
         $this->cacheRefreshService = $cacheRefresh;
-        $this->webCache = $webCache;
+        $this->purger = $purger;
     }
 
     public function preRemove(LifecycleEventArgs $eventArgs): void
@@ -51,11 +51,7 @@ final class EntityChangeListener
             return;
         }
 
-        $urls = array_unique($this->queuedUrls);
-
-        foreach ($urls as $url) {
-            $this->webCache->enqueueUrlRefresh($url);
-        }
+        $this->purger->purge(array_unique($this->queuedUrls));
 
         $this->queuedUrls = [];
     }
