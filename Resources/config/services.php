@@ -60,10 +60,13 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.cache_refresh.entity_change_listener', EntityChangeListener::class)
         ->args([
-            ref('doctrine.dbal.event_manager'),
-            ref('sofascore.purgatory.cache_refresh'),
             ref('router'),
+            ref('sofascore.purgatory.cache_refresh'),
             ref(WebCacheInterface::class),
         ])
+        ->tag('doctrine.event_listener', ['event' => 'preRemove'])
+        ->tag('doctrine.event_listener', ['event' => 'postPersist'])
+        ->tag('doctrine.event_listener', ['event' => 'postUpdate'])
+        ->tag('doctrine.event_listener', ['event' => 'postFlush'])
     ;
 };
