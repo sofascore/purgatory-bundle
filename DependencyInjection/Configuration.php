@@ -24,6 +24,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('purger')
                     ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
+                    ->isRequired()
                     ->cannotBeEmpty()
                 ->end()
                 ->booleanNode('entity_change_listener')
