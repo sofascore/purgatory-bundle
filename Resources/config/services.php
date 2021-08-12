@@ -57,7 +57,7 @@ return static function (ContainerConfigurator $container) {
             ref('property_accessor'),
         ])
 
-        ->set('sofascore.purgatory.cache_refresh.entity_change_listener', EntityChangeListener::class)
+        ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
         ->args([
             ref('router'),
             ref('sofascore.purgatory.cache_refresh'),

@@ -26,7 +26,7 @@ final class PurgatoryExtension extends Extension
         $this->configurePurgerService($container, $config['purger']);
 
         if (!$config['entity_change_listener']) {
-            $container->removeDefinition('sofascore.purgatory.cache_refresh.entity_change_listener');
+            $container->removeDefinition('sofascore.purgatory.entity_change_listener');
         }
     }
 
