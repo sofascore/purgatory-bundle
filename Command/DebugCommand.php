@@ -71,9 +71,7 @@ class DebugCommand extends Command
         $this->dumpMappingValueStringElement(null, $mappingValue->getRouteName(), $output, $indent);
         $this->dumpMappingValueStringElement('path', $this->describePath($mappingValue), $output, $indent + 1);
         $this->dumpMappingValueArrayElement('parameters', $mappingValue->getParameters(), $output, $indent + 1);
-        $this->dumpMappingValueStringElement('priority', $mappingValue->getPriority(), $output, $indent + 1);
         $this->dumpMappingValueStringElement('if', $mappingValue->getIf(), $output, $indent + 1);
-        $this->dumpMappingValueArrayElement('tags', $mappingValue->getTags(), $output, $indent + 1);
     }
 
     private function dumpMappingValueStringElement(
