@@ -21,7 +21,8 @@
         "symfony/http-kernel": "^4.4 || ^5.3",
         "symfony/property-access": "^4.4 || ^5.3",
         "symfony/routing": "^4.4 || ^5.3",
-        "symfony/serializer": "^4.4 || ^5.3"
+        "symfony/serializer": "^4.4 || ^5.3",
+        "symfony/console": "^4.4 || ^5.3"
     },
     "require-dev": {
         "mheap/phpunit-github-actions-printer": "^1.5",

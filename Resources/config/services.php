@@ -7,6 +7,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\CacheRefresh;
+use SofaScore\Purgatory\Command\DebugCommand;
 use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
@@ -67,5 +68,12 @@ return static function (ContainerConfigurator $container) {
         ->tag('doctrine.event_listener', ['event' => 'postPersist'])
         ->tag('doctrine.event_listener', ['event' => 'postUpdate'])
         ->tag('doctrine.event_listener', ['event' => 'postFlush'])
+
+        ->set('sofascore.purgatory.command.debug', DebugCommand::class)
+        ->args([
+            ref('sofascore.purgatory.mapping.annotation_loader'),
+            ref('router')
+        ])
+        ->tag('console.command')
     ;
 };
