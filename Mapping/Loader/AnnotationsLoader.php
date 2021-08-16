@@ -189,6 +189,13 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $reflectionMethod = new \ReflectionMethod($controller, $method);
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
 
+        if (\PHP_VERSION_ID >= 80000 && count($attributes = $reflectionMethod->getAttributes(SubscribeTo::class, \ReflectionAttribute::IS_INSTANCEOF)) > 0) {
+            foreach ($attributes as $attribute) {
+                $annotation = $attribute->newInstance();
+                $this->parseSubscribeTo($annotation, $routeName, $route, $subscriptions);
+            }
+        }
+
         foreach ($methodAnnotations as $class => $annotations) {
             if ($class === SubscribeTo::class) {
                 foreach ($annotations as $annotation) {
