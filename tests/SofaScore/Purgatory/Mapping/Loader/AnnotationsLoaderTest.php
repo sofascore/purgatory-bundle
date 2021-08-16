@@ -15,10 +15,14 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
+use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 
 /**
  * @covers \SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader
+ * @covers \SofaScore\Purgatory\Mapping\MappingCollection
+ * @covers \SofaScore\Purgatory\Mapping\MappingValue
+ * @covers \SofaScore\Purgatory\Mapping\PropertySubscription
  */
 class AnnotationsLoaderTest extends TestCase
 {
@@ -45,7 +49,7 @@ class AnnotationsLoaderTest extends TestCase
         $loader->load();
     }
 
-    public function testLoadOnConfiguredCacheDirSavesMappingsToCache()
+    public function testLoadOnConfiguredCacheDirSavesMappingsToCacheNoPropertySubscription()
     {
         $mocks = [
             $configurationMock,
@@ -79,7 +83,48 @@ class AnnotationsLoaderTest extends TestCase
         /** @var MappingCollection $result */
         $result = require './cache_refresh/mappings/collection.php';
         self::assertNotEmpty($result);
+        assertCount(1, $result);
         assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1')[0]->getRouteName());
+    }
+
+    public function testLoadOnConfiguredCacheDirSavesMappingsToCacheNoPropertySubscriptionWithProperties()
+    {
+        $mocks = [
+            $configurationMock,
+            $routerMock,
+            $controllerResolverMock,
+            $readerMock,
+            $objectManagerMock
+        ] = $this->getMocks();
+
+        self::assertDirectoryDoesNotExist('./cache_refresh');
+
+        $routeCollection = $this->getRouteCollection();
+        $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
+        $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
+        $routerMock->method('getRouteCollection')->willReturn($routeCollection);
+
+        $controllerResolverMock->method('getController')->willReturn(
+            [self::class, 'mockCallable']
+        );
+        $readerMock->method('getAnnotations')->willReturn(
+            [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class, 'properties'=>['name']])]]
+        );
+        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass(Entity1::class));
+        $metadata->method('getFieldNames')->willReturn(['name', 'id', 'createdAt']);
+        $metadata->method('getAssociationNames')->willReturn([]);
+        $objectManagerMock->method('getClassMetadata')->willReturn($metadata);
+
+        $loader = new AnnotationsLoader(...$mocks);
+        $loader->load();
+
+        self::assertDirectoryExists('./cache_refresh');
+        /** @var MappingCollection $result */
+        $result = require './cache_refresh/mappings/collection.php';
+        self::assertNotEmpty($result);
+        assertCount(1, $result);
+        assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1::name')[0]->getRouteName());
     }
 
     protected function setUp(): void
