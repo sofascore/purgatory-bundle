@@ -7,6 +7,7 @@ namespace SofaScore\Purgatory\Annotation;
  * @Target("METHOD")
  * @Repeatable
  */
+#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
 final class SubscribeTo
 {
     private string $object;
@@ -15,9 +16,18 @@ final class SubscribeTo
     private ?string $if;
     private ?array $tags;
 
-    public function __construct(array $values)
+    /**
+     * @param array|string $value
+     */
+    public function __construct(/* array|string */$value = [], ?array $parameters = null, ?array $properties = null, ?string $if = null, ?array $tags = [])
     {
-        $object = $values['value'];
+        if (is_string($value)) {
+            $object = $value;
+        } elseif (is_array($value)) {
+            $object = $value['value'];
+        } else {
+            throw new \TypeError(sprintf('"%s": Argument $value is expected to be a string or array, got "%s".', __METHOD__, get_debug_type($value)));
+        }
 
         // if property is defined
         if (str_contains($object, '.')) {
@@ -32,20 +42,16 @@ final class SubscribeTo
         $this->object = $object;
 
         // set parameters if defined
-        if (isset($values['parameters'])) {
-            $this->parameters = (array) $values['parameters'];
-        }
+        $this->parameters = $value['parameters'] ?? $parameters;
 
         // set properties if defined (overriding one from 'value')
-        if (isset($values['properties'])) {
-            $this->properties = (array) $values['properties'];
-        }
+        $this->properties = $value['properties'] ?? $properties ?? $this->properties;
 
         // set 'if' condition
-        $this->if = $values['if'] ?? null;
+        $this->if = $value['if'] ?? $if;
 
         // set tags
-        $this->tags = $values['tags'] ?? [];
+        $this->tags = $value['tags'] ?? $tags ?? [];
     }
 
     public function getObject(): string
