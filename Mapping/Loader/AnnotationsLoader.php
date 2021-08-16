@@ -139,7 +139,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             // create mapping from subscription
             $mappingValue = new MappingValue($subscription->getRouteName());
             $mappingValue->setParameters($subscription->getParameters());
-            $mappingValue->setPriority($subscription->getPriority());
             $mappingValue->setIf($subscription->getIf());
             $mappingValue->setTags($subscription->getTags());
 
@@ -219,7 +218,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             // create subscription
             $subscription = new PropertySubscription($annotation->getObject(), $property);
             $subscription->setParameters($annotation->getParameters());
-            $subscription->setPriority($annotation->getPriority());
             $subscription->setIf($annotation->getIf());
             $subscription->setTags($annotation->getTags());
 
@@ -365,20 +363,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                         );
                     }
 
-                    // update association priority with association target
-                    $associationPriority = null;
-                    if (null !== $priority = $subscription->getPriority()) {
-                        str_replace(
-                            'obj',
-                            'obj.' . $this->getGetterCall($associationTarget),
-                            $priority
-                        );
-                    }
-
                     // add association subscription to subscriptions to process list
                     $associationSubscription = new PropertySubscription($associationClass, $subProperty);
                     $associationSubscription->setParameters($associationParameters);
-                    $associationSubscription->setPriority($associationPriority);
                     $associationSubscription->setIf($associationIf);
                     $associationSubscription->setTags($associationTags);
 

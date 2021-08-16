@@ -10,7 +10,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 class CacheRefresh
 {
-    public const PRIORITY_DEFAULT = '0';
     public const ROUTE_TAG = 'route';
 
     /**
@@ -60,7 +59,7 @@ class CacheRefresh
     /**
      * Returns array of url definitions:
      * [
-     *      [ route => 'route_name', params => ['parama1' => 'param_value', ... ], priority => 'priority' ],
+     *      [ route => 'route_name', params => ['parama1' => 'param_value', ... ] ],
      *      ...
      * ].
      *
@@ -193,17 +192,6 @@ class CacheRefresh
                 }
             }
 
-            // resolve priority
-            $priority = $mappingValue->getPriority();
-            $priority = null === $priority ? '@'.self::PRIORITY_DEFAULT : $priority;
-
-            // if fixed string
-            if ('@' === $priority[0]) {
-                $priority = substr($priority, 1);
-            } else {
-                $priority = $this->expressionLanguage->evaluate($priority, ['obj' => $object]);
-            }
-
             // resolve tags
             $tags = $mappingValue->getTags() ?? [];
             foreach ($tags as $key => $value) {
@@ -230,7 +218,6 @@ class CacheRefresh
                 $urls[] = [
                     'route' => $routeName,
                     'params' => $parametersCombination,
-                    'priority' => $priority,
                     'tags' => $tags,
                 ];
             }

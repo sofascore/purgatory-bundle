@@ -12,7 +12,6 @@ final class SubscribeTo
     private string $object;
     private ?array $parameters = null;
     private ?array $properties = null;
-    private ?string $priority;
     private ?string $if;
     private ?array $routes = null;
     private ?array $tags;
@@ -43,9 +42,6 @@ final class SubscribeTo
             $this->properties = (array) $values['properties'];
         }
 
-        // set priority if defined
-        $this->priority = $values['priority'] ?? null;
-
         // set 'if' condition
         $this->if = $values['if'] ?? null;
 
@@ -71,11 +67,6 @@ final class SubscribeTo
     public function getProperties(): ?array
     {
         return $this->properties;
-    }
-
-    public function getPriority(): ?string
-    {
-        return $this->priority;
     }
 
     public function getIf(): ?string
