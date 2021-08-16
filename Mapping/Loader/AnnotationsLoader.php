@@ -237,12 +237,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $subscription;
         };
 
-        // route will not be processed if it has routes array specified and current route name
-        // is not in it
-        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes(), true)) {
-            return;
-        }
-
         // add subscription for each property
         foreach ($annotation->getProperties() ?? [] as $property) {
             $subscription = $createSubscriptionFromAnnotation($annotation, $property, $routeName, $route);

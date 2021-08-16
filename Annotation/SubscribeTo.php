@@ -13,7 +13,6 @@ final class SubscribeTo
     private ?array $parameters = null;
     private ?array $properties = null;
     private ?string $if;
-    private ?array $routes = null;
     private ?array $tags;
 
     public function __construct(array $values)
@@ -45,11 +44,6 @@ final class SubscribeTo
         // set 'if' condition
         $this->if = $values['if'] ?? null;
 
-        // set routes
-        if (isset($values['routes'])) {
-            $this->routes = (array) $values['routes'];
-        }
-
         // set tags
         $this->tags = $values['tags'] ?? [];
     }
@@ -72,16 +66,6 @@ final class SubscribeTo
     public function getIf(): ?string
     {
         return $this->if;
-    }
-
-    public function getRoutes(): ?array
-    {
-        return $this->routes;
-    }
-
-    public function setRoutes(?array $routes): void
-    {
-        $this->routes = $routes;
     }
 
     public function getTags(): ?array
