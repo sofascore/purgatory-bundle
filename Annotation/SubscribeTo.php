@@ -19,7 +19,7 @@ final class SubscribeTo
     /**
      * @param array|string $value
      */
-    public function __construct(/* array|string */$value = [], ?array $parameters = null, ?array $properties = null, ?string $if = null, ?array $tags = [])
+    public function __construct($value = [], ?array $properties = null, ?array $parameters = null, ?string $if = null, ?array $tags = [])
     {
         if (is_string($value)) {
             $object = $value;
