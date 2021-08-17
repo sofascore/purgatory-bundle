@@ -11,9 +11,29 @@ final class Configuration implements ConfigurationInterface
 {
     /**
      * {@inheritdoc}
+     *
+     * @psalm-suppress PossiblyNullReference
+     * @psalm-suppress PossiblyUndefinedMethod
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        return new TreeBuilder('purgatory');
+        $treeBuilder = new TreeBuilder('purgatory');
+        $rootNode = $treeBuilder->getRootNode();
+
+        $rootNode
+            ->children()
+                ->scalarNode('purger')
+                    ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+                ->booleanNode('entity_change_listener')
+                    ->info('Determines whether entity changes should trigger the configured purge mechanism automatically.')
+                    ->defaultTrue()
+                ->end()
+            ->end()
+        ;
+
+        return $treeBuilder;
     }
 }

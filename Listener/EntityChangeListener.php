@@ -2,101 +2,64 @@
 
 namespace SofaScore\Purgatory\Listener;
 
-use Doctrine\Common\EventManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use SofaScore\Purgatory\CacheRefresh;
-use SofaScore\Purgatory\WebCache\WebCacheInterface;
-use Symfony\Component\Routing\RouterInterface;
+use SofaScore\Purgatory\Purger\PurgerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class EntityChangeListener
+final class EntityChangeListener
 {
-    protected EventManager $eventManager;
+    private UrlGeneratorInterface $urlGenerator;
+    private CacheRefresh $cacheRefreshService;
+    private PurgerInterface $purger;
 
-    protected RouterInterface $router;
-
-    protected WebCacheInterface $webCache;
-
-    protected CacheRefresh $cacheRefreshService;
-
-    protected array $queuedUrls = [];
-
-    protected int $urlCount = 0;
-
-    private bool $active = false;
+    /**
+     * @var string[]
+     */
+    private array $queuedUrls = [];
 
     public function __construct(
-        EventManager $eventManager,
+        UrlGeneratorInterface $urlGenerator,
         CacheRefresh $cacheRefresh,
-        RouterInterface $router,
-        WebCacheInterface $webCache
+        PurgerInterface $purger
     ) {
-        $this->eventManager = $eventManager;
+        $this->urlGenerator = $urlGenerator;
         $this->cacheRefreshService = $cacheRefresh;
-        $this->router = $router;
-        $this->webCache = $webCache;
+        $this->purger = $purger;
     }
 
-    public function activate()
-    {
-        if (!$this->active) {
-            $this->eventManager->addEventListener(self::EVENTS, $this);
-
-            $this->active = true;
-        }
-    }
-
-    public function deactivate()
-    {
-        if ($this->active) {
-            $this->eventManager->removeEventListener(self::EVENTS, $this);
-
-            $this->active = false;
-        }
-    }
-
-    public function disconnect()
-    {
-        $this->deactivate();
-    }
-
-    public function preRemove(LifecycleEventArgs $eventArgs)
+    public function preRemove(LifecycleEventArgs $eventArgs): void
     {
         $this->handleChanges($eventArgs, true);
     }
 
-    public function postPersist(LifecycleEventArgs $eventArgs)
+    public function postPersist(LifecycleEventArgs $eventArgs): void
     {
         $this->handleChanges($eventArgs);
     }
 
-    public function postUpdate(LifecycleEventArgs $eventArgs)
+    public function postUpdate(LifecycleEventArgs $eventArgs): void
     {
         $this->handleChanges($eventArgs);
     }
 
-    public function postFlush(PostFlushEventArgs $args)
+    public function postFlush(PostFlushEventArgs $args): void
     {
-        // If the transaction is not complete don't do anything to avoid race condition with refreshing before commit
+        // If the transaction is not complete don't do anything to avoid race condition with refreshing before commit.
         if ($args->getEntityManager()->getConnection()->getTransactionNestingLevel() > 0) {
             return;
         }
 
-        $urls = array_unique($this->queuedUrls);
-
-        $this->urlCount = count($urls);
-
-        foreach ($urls as $url) {
-            $this->webCache->enqueueUrlRefresh($url);
-        }
+        $this->purger->purge(array_unique($this->queuedUrls));
 
         $this->queuedUrls = [];
     }
 
-    protected function handleChanges(LifecycleEventArgs $eventArgs, $allFields = false)
+    private function handleChanges(LifecycleEventArgs $eventArgs, bool $allFields = false): void
     {
-        // get entity and changes
         $entity = $eventArgs->getEntity();
+
         if ($allFields) {
             $changes = $eventArgs->getEntityManager()->getUnitOfWork()->getOriginalEntityData($entity);
         } else {
@@ -108,14 +71,7 @@ class EntityChangeListener
         $routes = $this->cacheRefreshService->getUrlsToRefresh($entity, $changes);
 
         foreach ($routes as $route) {
-            $this->queuedUrls[] = $this->router->generate($route['route'], $route['params']);
+            $this->queuedUrls[] = $this->urlGenerator->generate($route['route'], $route['params']);
         }
     }
-
-    public function getUrlCount()
-    {
-        return $this->urlCount;
-    }
-
-    private const EVENTS = ['preRemove', 'postPersist', 'postUpdate', 'postFlush'];
 }
