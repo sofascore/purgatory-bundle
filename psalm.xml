@@ -12,7 +12,7 @@
         <directory name="DependencyInjection" />
         <directory name="Listener" />
         <directory name="Mapping" />
-        <directory name="WebCache" />
+        <directory name="Purger" />
         <file name="CacheRefresh.php" />
         <file name="PurgatoryBundle.php" />
         <ignoreFiles>

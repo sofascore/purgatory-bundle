@@ -12,7 +12,6 @@ use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\WebCache\WebCacheInterface;
 
 return static function (ContainerConfigurator $container) {
     $container->parameters()
@@ -59,13 +58,16 @@ return static function (ContainerConfigurator $container) {
             ref('property_accessor'),
         ])
 
-        ->set('sofascore.purgatory.cache_refresh.entity_change_listener', EntityChangeListener::class)
+        ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
         ->args([
-            ref('doctrine.dbal.event_manager'),
-            ref('sofascore.purgatory.cache_refresh'),
             ref('router'),
-            ref(WebCacheInterface::class),
+            ref('sofascore.purgatory.cache_refresh'),
+            ref('sofascore.purgatory.purger'),
         ])
+        ->tag('doctrine.event_listener', ['event' => 'preRemove'])
+        ->tag('doctrine.event_listener', ['event' => 'postPersist'])
+        ->tag('doctrine.event_listener', ['event' => 'postUpdate'])
+        ->tag('doctrine.event_listener', ['event' => 'postFlush'])
 
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
         ->args([
@@ -73,5 +75,5 @@ return static function (ContainerConfigurator $container) {
             ref('router')
         ])
         ->tag('console.command')
-        ;
+    ;
 };
