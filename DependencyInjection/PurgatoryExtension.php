@@ -19,6 +19,12 @@ final class PurgatoryExtension extends Extension
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__).'/Resources/config'));
         $loader->load('services.php');
 
-        $this->processConfiguration(new Configuration(), $configs);
+        $config = $this->processConfiguration(new Configuration(), $configs);
+
+        $container->setParameter('sofascore.purgatory.purger', $config['purger']);
+
+        if (!$config['entity_change_listener']) {
+            $container->removeDefinition('sofascore.purgatory.entity_change_listener');
+        }
     }
 }

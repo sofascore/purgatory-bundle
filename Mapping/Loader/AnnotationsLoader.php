@@ -50,7 +50,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         // instantiate cache
         $cache = new ConfigCache(
-            $this->config->getCacheDir() . '/cache_refresh/mappings/collection.php', $this->config->getDebug()
+            $this->config->getCacheDir() . '/purgatory/mappings/collection.php', $this->config->getDebug()
         );
 
         // write cache if not fresh
