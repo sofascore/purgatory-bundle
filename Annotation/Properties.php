@@ -13,7 +13,7 @@ final class Properties
 
     public function __construct(array $value = [])
     {
-        $this->properties = $value['value'] ?? $value ?? [];
+        $this->properties = $value['value'] ?? $value;
     }
 
     public function getProperties(): array
