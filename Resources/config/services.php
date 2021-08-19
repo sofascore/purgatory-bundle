@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
+use SofaScore\Purgatory\AnnotationReader\Driver\DualDriver;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\CacheRefresh;
 use SofaScore\Purgatory\Command\DebugCommand;
@@ -44,10 +44,10 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.annotation_reader', Reader::class)
         ->args([
-            ref('sofascore.purgatory.annotation_reader.doctrine'),
+            ref('sofascore.purgatory.annotation_reader.dual'),
         ])
 
-        ->set('sofascore.purgatory.annotation_reader.doctrine', DoctrineDriver::class)
+        ->set('sofascore.purgatory.annotation_reader.dual', DualDriver::class)
         ->args([
             ref('annotation_reader'),
         ])
