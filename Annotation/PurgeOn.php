@@ -8,7 +8,7 @@ namespace SofaScore\Purgatory\Annotation;
  * @Repeatable
  */
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
-final class SubscribeTo
+final class PurgeOn
 {
     private string $object;
     private ?array $parameters = null;
