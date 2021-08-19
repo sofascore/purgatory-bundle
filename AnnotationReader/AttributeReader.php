@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace SofaScore\Purgatory\AnnotationReader;
 
 use Doctrine\Common\Annotations\Reader;
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionProperty;
 
 class AttributeReader implements Reader
 {
 
-    public function getClassAnnotations(ReflectionClass $class): array
+    public function getClassAnnotations(\ReflectionClass $class): array
     {
         $reflectionAttributes = $class->getAttributes();
         $attributes = [];
@@ -24,9 +21,9 @@ class AttributeReader implements Reader
         return $attributes;
     }
 
-    public function getClassAnnotation(ReflectionClass $class, $annotationName): ?object
+    public function getClassAnnotation(\ReflectionClass $class, $annotationName): ?object
     {
-        $attributes = $class->getAttributes($annotationName, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = $class->getAttributes($annotationName, \ReflectionAttribute::IS_INSTANCEOF);
         if (isset($attributes[0])) {
             return $attributes[0]->newInstance();
         }
@@ -34,7 +31,7 @@ class AttributeReader implements Reader
         return null;
     }
 
-    public function getMethodAnnotations(ReflectionMethod $method): array
+    public function getMethodAnnotations(\ReflectionMethod $method): array
     {
         $reflectionAttributes = $method->getAttributes();
         $attributes = [];
@@ -45,9 +42,9 @@ class AttributeReader implements Reader
         return $attributes;
     }
 
-    public function getMethodAnnotation(ReflectionMethod $method, $annotationName): ?object
+    public function getMethodAnnotation(\ReflectionMethod $method, $annotationName): ?object
     {
-        $attributes = $method->getAttributes($annotationName, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = $method->getAttributes($annotationName, \ReflectionAttribute::IS_INSTANCEOF);
         if (isset($attributes[0])) {
             return $attributes[0]->newInstance();
         }
@@ -55,7 +52,7 @@ class AttributeReader implements Reader
         return null;
     }
 
-    public function getPropertyAnnotations(ReflectionProperty $property): array
+    public function getPropertyAnnotations(\ReflectionProperty $property): array
     {
         $reflectionAttributes = $property->getAttributes();
         $attributes = [];
@@ -66,9 +63,9 @@ class AttributeReader implements Reader
         return $attributes;
     }
 
-    public function getPropertyAnnotation(ReflectionProperty $property, $annotationName): ?object
+    public function getPropertyAnnotation(\ReflectionProperty $property, $annotationName): ?object
     {
-        $attributes = $property->getAttributes($annotationName, ReflectionAttribute::IS_INSTANCEOF);
+        $attributes = $property->getAttributes($annotationName, \ReflectionAttribute::IS_INSTANCEOF);
         if (isset($attributes[0])) {
             return $attributes[0]->newInstance();
         }
