@@ -6,13 +6,17 @@ namespace SofaScore\Purgatory\Annotation;
  * @Annotation
  * @Target("METHOD")
  */
+#[\Attribute(\Attribute::TARGET_METHOD)]
 final class Properties
 {
     private array $properties;
 
-    public function __construct(array $values)
+    /**
+     * @param array|string $value
+     */
+    public function __construct($value = [])
     {
-        $this->properties = (array) ($values['value'] ?? []);
+        $this->properties = $value['value'] ?? $value;
     }
 
     public function getProperties(): array
