@@ -9,7 +9,6 @@ class PropertySubscription
     protected string $class;
     protected ?string $property = null;
     protected ?array $parameters = null;
-    protected ?string $priority = null;
     protected ?string $if = null;
     protected string $routeName;
     protected Route $route;
@@ -49,16 +48,6 @@ class PropertySubscription
     public function setParameters(?array $parameters): void
     {
         $this->parameters = $parameters;
-    }
-
-    public function getPriority(): ?string
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(?string $priority): void
-    {
-        $this->priority = $priority;
     }
 
     public function getRouteName(): string

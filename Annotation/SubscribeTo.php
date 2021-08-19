@@ -12,9 +12,7 @@ final class SubscribeTo
     private string $object;
     private ?array $parameters = null;
     private ?array $properties = null;
-    private ?string $priority;
     private ?string $if;
-    private ?array $routes = null;
     private ?array $tags;
 
     public function __construct(array $values)
@@ -43,16 +41,8 @@ final class SubscribeTo
             $this->properties = (array) $values['properties'];
         }
 
-        // set priority if defined
-        $this->priority = $values['priority'] ?? null;
-
         // set 'if' condition
         $this->if = $values['if'] ?? null;
-
-        // set routes
-        if (isset($values['routes'])) {
-            $this->routes = (array) $values['routes'];
-        }
 
         // set tags
         $this->tags = $values['tags'] ?? [];
@@ -73,24 +63,9 @@ final class SubscribeTo
         return $this->properties;
     }
 
-    public function getPriority(): ?string
-    {
-        return $this->priority;
-    }
-
     public function getIf(): ?string
     {
         return $this->if;
-    }
-
-    public function getRoutes(): ?array
-    {
-        return $this->routes;
-    }
-
-    public function setRoutes(?array $routes): void
-    {
-        $this->routes = $routes;
     }
 
     public function getTags(): ?array
