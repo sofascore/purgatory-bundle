@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SofaScore\Purgatory\AnnotationReader\Driver;
 
 use Doctrine\Common\Annotations\Reader;
