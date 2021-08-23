@@ -29,15 +29,6 @@ final class PurgeOn
             throw new \TypeError(sprintf('"%s": Argument $value is expected to be a string or array, got "%s".', __METHOD__, get_debug_type($value)));
         }
 
-        // if property is defined
-        if (str_contains($object, '.')) {
-            // split value to object and property
-            [$object, $property] = explode('.', $object, 2);
-
-            // add property to properties list
-            $this->properties = [$property];
-        }
-
         // set object class
         $this->object = $object;
 
@@ -45,7 +36,7 @@ final class PurgeOn
         $this->parameters = $value['parameters'] ?? $parameters;
 
         // set properties if defined (overriding one from 'value')
-        $this->properties = $value['properties'] ?? $properties ?? $this->properties;
+        $this->properties = $value['properties'] ?? $properties;
 
         // set 'if' condition
         $this->if = $value['if'] ?? $if;
