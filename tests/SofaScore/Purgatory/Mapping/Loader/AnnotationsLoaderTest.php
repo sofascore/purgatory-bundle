@@ -4,6 +4,7 @@ namespace SofaScore\Purgatory\Mapping\Loader;
 
 use AnnotationReader\Fixtures\Entity1;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Entity;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -27,6 +28,7 @@ use function PHPUnit\Framework\assertEquals;
 class AnnotationsLoaderTest extends TestCase
 {
     private const TEST_CONTROLLER = 'App\\Controller\\TestController';
+    private RouteCollection $routeCollection;
 
     public static function mockCallable(): void
     {
@@ -43,7 +45,6 @@ class AnnotationsLoaderTest extends TestCase
         ] = $this->getMocks();
 
         $configurationMock->expects(self::once())->method('getCacheDir')->willReturn(null);
-        $routerMock->expects(self::once())->method('getRouteCollection')->willReturn(new RouteCollection());
 
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
@@ -51,6 +52,8 @@ class AnnotationsLoaderTest extends TestCase
 
     public function testLoadOnConfiguredCacheDirSavesMappingsToCacheNoPropertySubscription()
     {
+        $this->addRouteToCollection('app_api_v1_sport_list', '/api/v1/sport/list', self::TEST_CONTROLLER);
+
         $mocks = [
             $configurationMock,
             $routerMock,
@@ -61,20 +64,13 @@ class AnnotationsLoaderTest extends TestCase
 
         self::assertDirectoryDoesNotExist('./cache_refresh');
 
-        $routeCollection = $this->getRouteCollection();
         $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
-        $routerMock->method('getRouteCollection')->willReturn($routeCollection);
 
-        $controllerResolverMock->method('getController')->willReturn(
-            [self::class, 'mockCallable']
-        );
         $readerMock->method('getAnnotations')->willReturn(
             [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class])]]
         );
-        $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass(Entity1::class));
-        $objectManagerMock->method('getClassMetadata')->willReturn($metadata);
+        $objectManagerMock->method('getClassMetadata')->willReturn($this->mockClassMetadata(Entity1::class));
 
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
@@ -87,8 +83,10 @@ class AnnotationsLoaderTest extends TestCase
         assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1')[0]->getRouteName());
     }
 
-    public function testLoadOnConfiguredCacheDirSavesMappingsToCacheNoPropertySubscriptionWithProperties()
+    public function testLoadOnConfiguredCacheDirSavesMappingsToCache()
     {
+        $this->addRouteToCollection('app_api_v1_sport_list', '/api/v1/sport/list', self::TEST_CONTROLLER);
+
         $mocks = [
             $configurationMock,
             $routerMock,
@@ -99,22 +97,15 @@ class AnnotationsLoaderTest extends TestCase
 
         self::assertDirectoryDoesNotExist('./cache_refresh');
 
-        $routeCollection = $this->getRouteCollection();
         $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
-        $routerMock->method('getRouteCollection')->willReturn($routeCollection);
 
-        $controllerResolverMock->method('getController')->willReturn(
-            [self::class, 'mockCallable']
-        );
         $readerMock->method('getAnnotations')->willReturn(
-            [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class, 'properties'=>['name']])]]
+            [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class, 'properties' => ['name']])]]
         );
-        $metadata = $this->createMock(ClassMetadata::class);
-        $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass(Entity1::class));
-        $metadata->method('getFieldNames')->willReturn(['name', 'id', 'createdAt']);
-        $metadata->method('getAssociationNames')->willReturn([]);
-        $objectManagerMock->method('getClassMetadata')->willReturn($metadata);
+        $objectManagerMock->method('getClassMetadata')->willReturn(
+            $this->mockClassMetadata(Entity::class, ['name', 'id', 'createdAt'])
+        );
 
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
@@ -141,6 +132,8 @@ class AnnotationsLoaderTest extends TestCase
         if (is_dir('./cache_refresh')) {
             rmdir('./cache_refresh');
         }
+
+        $this->routeCollection = new RouteCollection();
     }
 
     /**
@@ -148,10 +141,18 @@ class AnnotationsLoaderTest extends TestCase
      */
     private function getMocks(): array
     {
+        $routerMock = $this->createMock(RouterInterface::class);
+        $routerMock->method('getRouteCollection')->willReturn($this->routeCollection);
+
+        $controllerResolverMock = $this->createMock(ControllerResolverInterface::class);
+        $controllerResolverMock->method('getController')->willReturn(
+            [self::class, 'mockCallable']
+        );
+
         return [
             $this->createMock(Configuration::class),
-            $this->createMock(RouterInterface::class),
-            $this->createMock(ControllerResolverInterface::class),
+            $routerMock,
+            $controllerResolverMock,
             $this->createMock(Reader::class),
             $this->createMock(ObjectManager::class)
         ];
@@ -165,5 +166,25 @@ class AnnotationsLoaderTest extends TestCase
             new Route('/api/v1/sport/list', ['_controller' => self::TEST_CONTROLLER])
         );
         return $collection;
+    }
+
+    private function addRouteToCollection(string $routeName, string $routePath, string $controller): void
+    {
+        $this->routeCollection->add(
+            $routeName,
+            new Route($routePath, ['_controller' => $controller])
+        );
+    }
+
+    /**
+     * @return ClassMetadata|MockObject
+     */
+    private function mockClassMetadata(string $class, ?array $fieldNames = null, ?array $associationNames = null)
+    {
+        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass($class));
+        $metadata->method('getFieldNames')->willReturn($fieldNames);
+        $metadata->method('getAssociationNames')->willReturn($associationNames);
+        return $metadata;
     }
 }
