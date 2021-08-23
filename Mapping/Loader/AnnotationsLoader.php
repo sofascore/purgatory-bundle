@@ -5,7 +5,7 @@ namespace SofaScore\Purgatory\Mapping\Loader;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use SofaScore\Purgatory\Annotation\Properties;
-use SofaScore\Purgatory\Annotation\SubscribeTo;
+use SofaScore\Purgatory\Annotation\PurgeOn;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\MappingValue;
@@ -190,9 +190,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
 
         foreach ($methodAnnotations as $class => $annotations) {
-            if ($class === SubscribeTo::class) {
+            if ($class === PurgeOn::class) {
                 foreach ($annotations as $annotation) {
-                    $this->parseSubscribeTo($annotation, $routeName, $route, $subscriptions);
+                    $this->parsePurgeOn($annotation, $routeName, $route, $subscriptions);
                 }
             }
         }
@@ -200,7 +200,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $subscriptions;
     }
 
-    public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions): void
+    public function parsePurgeOn(PurgeOn $annotation, $routeName, $route, array &$subscriptions): void
     {
         $resolveParameters = static function ($parameters): array {
             $resolved = [];
@@ -212,7 +212,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $resolved;
         };
 
-        $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use (
+        $createSubscriptionFromAnnotation = function (PurgeOn $annotation, $property, $routeName, $route) use (
             $resolveParameters
         ) {
             // create subscription

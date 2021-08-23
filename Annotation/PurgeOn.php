@@ -8,7 +8,7 @@ namespace SofaScore\Purgatory\Annotation;
  * @Repeatable
  */
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
-final class SubscribeTo
+final class PurgeOn
 {
     private string $object;
     private ?array $parameters = null;
@@ -29,23 +29,14 @@ final class SubscribeTo
             throw new \TypeError(sprintf('"%s": Argument $value is expected to be a string or array, got "%s".', __METHOD__, get_debug_type($value)));
         }
 
-        // if property is defined
-        if (str_contains($object, '.')) {
-            // split value to object and property
-            [$object, $property] = explode('.', $object, 2);
-
-            // add property to properties list
-            $this->properties = [$property];
-        }
-
         // set object class
         $this->object = $object;
 
         // set parameters if defined
         $this->parameters = $value['parameters'] ?? $parameters;
 
-        // set properties if defined (overriding one from 'value')
-        $this->properties = $value['properties'] ?? $properties ?? $this->properties;
+        // set properties if defined
+        $this->properties = $value['properties'] ?? $properties;
 
         // set 'if' condition
         $this->if = $value['if'] ?? $if;
