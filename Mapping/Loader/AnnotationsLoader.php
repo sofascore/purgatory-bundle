@@ -5,7 +5,7 @@ namespace SofaScore\Purgatory\Mapping\Loader;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use SofaScore\Purgatory\Annotation\Properties;
-use SofaScore\Purgatory\Annotation\SubscribeTo;
+use SofaScore\Purgatory\Annotation\PurgeOn;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\MappingValue;
@@ -50,7 +50,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
         // instantiate cache
         $cache = new ConfigCache(
-            $this->config->getCacheDir() . '/cache_refresh/mappings/collection.php', $this->config->getDebug()
+            $this->config->getCacheDir() . '/purgatory/mappings/collection.php', $this->config->getDebug()
         );
 
         // write cache if not fresh
@@ -139,7 +139,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             // create mapping from subscription
             $mappingValue = new MappingValue($subscription->getRouteName());
             $mappingValue->setParameters($subscription->getParameters());
-            $mappingValue->setPriority($subscription->getPriority());
             $mappingValue->setIf($subscription->getIf());
             $mappingValue->setTags($subscription->getTags());
 
@@ -191,9 +190,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
 
         foreach ($methodAnnotations as $class => $annotations) {
-            if ($class === SubscribeTo::class) {
+            if ($class === PurgeOn::class) {
                 foreach ($annotations as $annotation) {
-                    $this->parseSubscribeTo($annotation, $routeName, $route, $subscriptions);
+                    $this->parsePurgeOn($annotation, $routeName, $route, $subscriptions);
                 }
             }
         }
@@ -201,7 +200,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $subscriptions;
     }
 
-    public function parseSubscribeTo(SubscribeTo $annotation, $routeName, $route, array &$subscriptions): void
+    public function parsePurgeOn(PurgeOn $annotation, $routeName, $route, array &$subscriptions): void
     {
         $resolveParameters = static function ($parameters): array {
             $resolved = [];
@@ -213,13 +212,12 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
             return $resolved;
         };
 
-        $createSubscriptionFromAnnotation = function (SubscribeTo $annotation, $property, $routeName, $route) use (
+        $createSubscriptionFromAnnotation = function (PurgeOn $annotation, $property, $routeName, $route) use (
             $resolveParameters
         ) {
             // create subscription
             $subscription = new PropertySubscription($annotation->getObject(), $property);
             $subscription->setParameters($annotation->getParameters());
-            $subscription->setPriority($annotation->getPriority());
             $subscription->setIf($annotation->getIf());
             $subscription->setTags($annotation->getTags());
 
@@ -238,12 +236,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
             return $subscription;
         };
-
-        // route will not be processed if it has routes array specified and current route name
-        // is not in it
-        if (null !== $annotation->getRoutes() && !in_array($routeName, $annotation->getRoutes(), true)) {
-            return;
-        }
 
         // add subscription for each property
         foreach ($annotation->getProperties() ?? [] as $property) {
@@ -329,7 +321,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     $this->validateAssociationInverse($property, $metadata);
 
                     // get data
-                    $associationClass = $metadata->getAssociationTargetClass($property);
+                    $associationClass = (string) $metadata->getAssociationTargetClass($property);
                     $associationTarget = $metadata->getAssociationMappedByTargetField($property);
                     $associationParameters = [];
                     $associationTags = [];
@@ -365,20 +357,9 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                         );
                     }
 
-                    // update association priority with association target
-                    $associationPriority = null;
-                    if (null !== $priority = $subscription->getPriority()) {
-                        str_replace(
-                            'obj',
-                            'obj.' . $this->getGetterCall($associationTarget),
-                            $priority
-                        );
-                    }
-
                     // add association subscription to subscriptions to process list
                     $associationSubscription = new PropertySubscription($associationClass, $subProperty);
                     $associationSubscription->setParameters($associationParameters);
-                    $associationSubscription->setPriority($associationPriority);
                     $associationSubscription->setIf($associationIf);
                     $associationSubscription->setTags($associationTags);
 
@@ -536,7 +517,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                     "Association '%s' of class '%s' to class '%s' has no `mapped by` field.",
                     $association,
                     $metadata->getReflectionClass()->getName(),
-                    $metadata->getAssociationTargetClass($association)
+                    (string) $metadata->getAssociationTargetClass($association)
                 )
             );
         }

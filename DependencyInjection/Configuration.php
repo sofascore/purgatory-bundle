@@ -1,41 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace SofaScore\Purgatory\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
-/**
- * This is the class that validates and merges configuration from your app/config files.
- *
- * To learn more see {@link * http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
- */
-class Configuration implements ConfigurationInterface
+final class Configuration implements ConfigurationInterface
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * @psalm-suppress PossiblyNullReference
-     * @psalm-suppress UndefinedMethod
+     * @psalm-suppress PossiblyUndefinedMethod
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('purgatory');
+        $rootNode = $treeBuilder->getRootNode();
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
-        $treeBuilder->getRootNode()
+        $rootNode
             ->children()
-            ->arrayNode('cache')
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->booleanNode('debug')
-            ->defaultNull()
-            ->end()// debug
+                ->scalarNode('purger')
+                    ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+                ->booleanNode('entity_change_listener')
+                    ->info('Determines whether entity changes should trigger the configured purge mechanism automatically.')
+                    ->defaultTrue()
+                ->end()
             ->end()
-            ->end()// cache
-            ->end();
+        ;
 
         return $treeBuilder;
     }

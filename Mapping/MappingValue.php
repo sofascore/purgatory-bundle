@@ -6,7 +6,6 @@ class MappingValue
 {
     protected string $routeName;
     protected ?array $parameters = null;
-    protected ?string $priority = null;
     protected ?string $if = null;
     protected ?array $tags = null;
 
@@ -48,16 +47,6 @@ class MappingValue
     public function setParameters(?array $parameters): void
     {
         $this->parameters = $parameters;
-    }
-
-    public function getPriority(): ?string
-    {
-        return $this->priority;
-    }
-
-    public function setPriority(?string $priority): void
-    {
-        $this->priority = $priority;
     }
 
     public function getIf(): ?string
