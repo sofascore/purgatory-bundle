@@ -8,7 +8,7 @@ use SofaScore\Purgatory\Mapping\MappingCollection;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class CacheRefresh
+class Purgatory
 {
     public const ROUTE_TAG = 'route';
 

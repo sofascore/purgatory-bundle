@@ -13,7 +13,7 @@
         <directory name="Listener" />
         <directory name="Mapping" />
         <directory name="Purger" />
-        <file name="CacheRefresh.php" />
+        <file name="Purgatory.php" />
         <file name="PurgatoryBundle.php" />
         <ignoreFiles>
             <directory name="vendor" />
