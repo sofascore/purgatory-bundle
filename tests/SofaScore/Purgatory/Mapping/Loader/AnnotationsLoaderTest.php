@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Annotation\SubscribeTo;
+use SofaScore\Purgatory\Annotation\PurgeOn;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
@@ -62,22 +62,22 @@ class AnnotationsLoaderTest extends TestCase
             $objectManagerMock
         ] = $this->getMocks();
 
-        self::assertDirectoryDoesNotExist('./cache_refresh');
+        self::assertDirectoryDoesNotExist('./purgatory');
 
         $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
-            [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class])]]
+            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class])]]
         );
         $objectManagerMock->method('getClassMetadata')->willReturn($this->mockClassMetadata(Entity1::class));
 
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
 
-        self::assertDirectoryExists('./cache_refresh');
+        self::assertDirectoryExists('./purgatory');
         /** @var MappingCollection $result */
-        $result = require './cache_refresh/mappings/collection.php';
+        $result = require './purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
         assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1')[0]->getRouteName());
@@ -95,24 +95,24 @@ class AnnotationsLoaderTest extends TestCase
             $objectManagerMock
         ] = $this->getMocks();
 
-        self::assertDirectoryDoesNotExist('./cache_refresh');
+        self::assertDirectoryDoesNotExist('./purgatory');
 
         $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
-            [SubscribeTo::class => [new SubscribeTo(['value' => Entity1::class, 'properties' => ['name']])]]
+            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class, 'properties' => ['name']])]]
         );
         $objectManagerMock->method('getClassMetadata')->willReturn(
-            $this->mockClassMetadata(Entity::class, ['name', 'id', 'createdAt'])
+            $this->mockClassMetadata(Entity1::class, ['name', 'id', 'createdAt'])
         );
 
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
 
-        self::assertDirectoryExists('./cache_refresh');
+        self::assertDirectoryExists('./purgatory');
         /** @var MappingCollection $result */
-        $result = require './cache_refresh/mappings/collection.php';
+        $result = require './purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
         assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1::name')[0]->getRouteName());
@@ -120,17 +120,17 @@ class AnnotationsLoaderTest extends TestCase
 
     protected function setUp(): void
     {
-        if (file_exists('./cache_refresh/mappings/collection.php')) {
-            unlink('./cache_refresh/mappings/collection.php');
+        if (file_exists('./purgatory/mappings/collection.php')) {
+            unlink('./purgatory/mappings/collection.php');
         }
-        if (file_exists('./cache_refresh/mappings/collection.php.meta')) {
-            unlink('./cache_refresh/mappings/collection.php.meta');
+        if (file_exists('./purgatory/mappings/collection.php.meta')) {
+            unlink('./purgatory/mappings/collection.php.meta');
         }
-        if (is_dir('./cache_refresh/mappings')) {
-            rmdir('./cache_refresh/mappings');
+        if (is_dir('./purgatory/mappings')) {
+            rmdir('./purgatory/mappings');
         }
-        if (is_dir('./cache_refresh')) {
-            rmdir('./cache_refresh');
+        if (is_dir('./purgatory')) {
+            rmdir('./purgatory');
         }
 
         $this->routeCollection = new RouteCollection();
