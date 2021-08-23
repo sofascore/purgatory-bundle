@@ -39,7 +39,7 @@ class CacheRefresh
     /**
      * Returns array of url definitions:
      * [
-     *      [ route => 'route_name', params => ['parama1' => 'param_value', ... ] ],
+     *      [ route => 'route_name', params => ['param1' => 'param_value', ... ] ],
      *      ...
      * ].
      *
@@ -47,9 +47,9 @@ class CacheRefresh
      * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
      *
      */
-    public function getUrlsToRefresh($object, array $changedProperties): array
+    public function getUrlsToPurge($object, array $changedProperties): array
     {
-        // check if there are chages
+        // check if there are changes
         if (count($changedProperties) <= 0) {
             return [];
         }
@@ -97,7 +97,7 @@ class CacheRefresh
                 $stack[] = [$this->getObjectClass($object), $newProperty];
             }
 
-            // move to next porperty if it exists
+            // move to next property if it exists
             if (count($changedProperties) > 0) {
                 $stack[] = [$this->getObjectClass($object), array_shift($changedProperties)];
             }
@@ -186,7 +186,7 @@ class CacheRefresh
                 continue;
             }
 
-            // get paramteres cartesian
+            // get parameters cartesian
             $parameterCombinations = $this->getCartesianProduct($routeParameters);
 
             // add route data to urls list

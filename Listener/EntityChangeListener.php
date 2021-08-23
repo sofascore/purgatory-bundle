@@ -68,7 +68,7 @@ final class EntityChangeListener
 
         $changes = array_keys($changes);
 
-        $routes = $this->cacheRefreshService->getUrlsToRefresh($entity, $changes);
+        $routes = $this->cacheRefreshService->getUrlsToPurge($entity, $changes);
 
         foreach ($routes as $route) {
             $this->queuedUrls[] = $this->urlGenerator->generate($route['route'], $route['params']);
