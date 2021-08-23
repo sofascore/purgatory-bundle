@@ -35,7 +35,7 @@ final class PurgeOn
         // set parameters if defined
         $this->parameters = $value['parameters'] ?? $parameters;
 
-        // set properties if defined (overriding one from 'value')
+        // set properties if defined
         $this->properties = $value['properties'] ?? $properties;
 
         // set 'if' condition
