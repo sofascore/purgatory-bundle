@@ -68,7 +68,7 @@ final class EntityChangeListener
 
         $changes = array_keys($changes);
 
-        $routes = $this->purgatoryService->getUrlsToPurge($entity, $changes);
+        $routes = $this->purgatoryService->getRoutesToPurge($entity, $changes);
 
         foreach ($routes as $route) {
             $this->queuedUrls[] = $this->urlGenerator->generate($route['route'], $route['params']);

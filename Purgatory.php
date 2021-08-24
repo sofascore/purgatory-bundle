@@ -37,7 +37,7 @@ class Purgatory
     }
 
     /**
-     * Returns array of url definitions:
+     * Returns array of route definitions:
      * [
      *      [ route => 'route_name', params => ['param1' => 'param_value', ... ] ],
      *      ...
@@ -47,7 +47,7 @@ class Purgatory
      * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
      *
      */
-    public function getUrlsToPurge($object, array $changedProperties): array
+    public function getRoutesToPurge($object, array $changedProperties): array
     {
         // check if there are changes
         if (count($changedProperties) <= 0) {
@@ -59,7 +59,7 @@ class Purgatory
 
         // set data
         $stack = [];
-        $urls = [];
+        $routes = [];
 
         // init stack
         $stack[] = [$this->getObjectClass($object), array_shift($changedProperties)];
@@ -75,13 +75,13 @@ class Purgatory
             // process class
             if (null !== $mappingValues = $mappings->get($class)) {
                 // process and continue
-                $this->processMappingValues($object, $mappingValues, $urls);
+                $this->processMappingValues($object, $mappingValues, $routes);
             }
 
             // if mappings defined
             if (null !== $mappingValues = $mappings->get($mappingKey)) {
                 // process values
-                $this->processMappingValues($object, $mappingValues, $urls);
+                $this->processMappingValues($object, $mappingValues, $routes);
             }
             // check if class has parent
             if (false !== $parent = $this->getParentClass($class)) {
@@ -103,7 +103,7 @@ class Purgatory
             }
         }
 
-        return $urls;
+        return $routes;
     }
 
 
