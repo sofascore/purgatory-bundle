@@ -4,14 +4,14 @@ namespace SofaScore\Purgatory\Listener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use SofaScore\Purgatory\CacheRefresh;
+use SofaScore\Purgatory\Purgatory;
 use SofaScore\Purgatory\Purger\PurgerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener
 {
     private UrlGeneratorInterface $urlGenerator;
-    private CacheRefresh $cacheRefreshService;
+    private Purgatory $purgatoryService;
     private PurgerInterface $purger;
 
     /**
@@ -21,11 +21,11 @@ final class EntityChangeListener
 
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
-        CacheRefresh $cacheRefresh,
+        Purgatory $purgatory,
         PurgerInterface $purger
     ) {
         $this->urlGenerator = $urlGenerator;
-        $this->cacheRefreshService = $cacheRefresh;
+        $this->purgatoryService = $purgatory;
         $this->purger = $purger;
     }
 
@@ -68,7 +68,7 @@ final class EntityChangeListener
 
         $changes = array_keys($changes);
 
-        $routes = $this->cacheRefreshService->getUrlsToRefresh($entity, $changes);
+        $routes = $this->purgatoryService->getUrlsToPurge($entity, $changes);
 
         foreach ($routes as $route) {
             $this->queuedUrls[] = $this->urlGenerator->generate($route['route'], $route['params']);
