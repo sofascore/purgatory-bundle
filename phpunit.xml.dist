@@ -24,6 +24,7 @@
         </include>
         <exclude>
             <directory>vendor</directory>
+            <directory>tests</directory>
         </exclude>
     </coverage>
 </phpunit>
