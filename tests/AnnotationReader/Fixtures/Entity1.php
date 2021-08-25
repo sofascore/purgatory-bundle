@@ -75,6 +75,4 @@ class Entity1
     {
         return $this->enabled;
     }
-
-
 }
