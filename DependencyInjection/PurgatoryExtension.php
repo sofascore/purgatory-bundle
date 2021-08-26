@@ -22,6 +22,7 @@ final class PurgatoryExtension extends Extension
         $config = $this->processConfiguration(new Configuration(), $configs);
 
         $container->setParameter('sofascore.purgatory.purger', $config['purger']);
+        $container->setParameter('sofascore.purgatory.host', $config['host']);
 
         if (!$config['entity_change_listener']) {
             $container->removeDefinition('sofascore.purgatory.entity_change_listener');

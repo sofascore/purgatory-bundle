@@ -2,6 +2,7 @@
     "name": "sofascore/purgatory",
     "description": "Library for easy construction of cache purge requests.",
     "type": "library",
+    "version": "0.0.2",
     "autoload": {
         "psr-4": {
             "SofaScore\\Purgatory\\": ""
