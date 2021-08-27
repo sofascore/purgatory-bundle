@@ -2,52 +2,32 @@
 
 namespace SofaScore\Purgatory;
 
+use Exception;
 use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
 use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-class CacheRefresh
+class Purgatory
 {
     public const ROUTE_TAG = 'route';
 
-    /**
-     * @var MappingCollection
-     */
-    protected $mappings;
+    private ?MappingCollection $mappings = null;
 
-    /**
-     * @var LoaderInterface
-     */
-    protected $mappingsLoader;
+    private LoaderInterface $mappingsLoader;
 
-    /**
-     * @var PropertyAccessorInterface
-     */
-    protected $propertyAccessor;
+    private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @var ExpressionLanguage
-     */
-    protected $expressionLanguage;
+    private ExpressionLanguage $expressionLanguage;
 
     public function __construct(LoaderInterface $mappingsLoader, PropertyAccessorInterface $propertyAccessor)
     {
         $this->mappingsLoader = $mappingsLoader;
         $this->propertyAccessor = $propertyAccessor;
-
-        if (!class_exists('Symfony\Component\ExpressionLanguage\ExpressionLanguage')) {
-            throw new \RuntimeException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed.');
-        }
-
         $this->expressionLanguage = new ExpressionLanguage();
     }
 
-    /**
-     * @return MappingCollection
-     */
-    public function getMappings()
+    private function getMappings(): MappingCollection
     {
         if (null === $this->mappings) {
             $this->mappings = $this->mappingsLoader->load();
@@ -59,18 +39,17 @@ class CacheRefresh
     /**
      * Returns array of url definitions:
      * [
-     *      [ route => 'route_name', params => ['parama1' => 'param_value', ... ] ],
+     *      [ route => 'route_name', params => ['param1' => 'param_value', ... ] ],
      *      ...
      * ].
      *
      * @param mixed $object            Object that was changed
      * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
      *
-     * @return array
      */
-    public function getUrlsToRefresh($object, $changedProperties)
+    public function getUrlsToPurge($object, array $changedProperties): array
     {
-        // check if there are chages
+        // check if there are changes
         if (count($changedProperties) <= 0) {
             return [];
         }
@@ -118,7 +97,7 @@ class CacheRefresh
                 $stack[] = [$this->getObjectClass($object), $newProperty];
             }
 
-            // move to next porperty if it exists
+            // move to next property if it exists
             if (count($changedProperties) > 0) {
                 $stack[] = [$this->getObjectClass($object), array_shift($changedProperties)];
             }
@@ -127,11 +106,8 @@ class CacheRefresh
         return $urls;
     }
 
-    /**
-     * @param mixed          $object
-     * @param MappingValue[] $mappingValues
-     */
-    public function processMappingValues($object, array $mappingValues, array &$urls)
+
+    private function processMappingValues($object, array $mappingValues, array &$urls): void
     {
         foreach ($mappingValues as $mappingValue) {
             $routeName = $mappingValue->getRouteName();
@@ -153,7 +129,7 @@ class CacheRefresh
 
                 foreach ($paramProperties as $property) {
                     // if property is fixed string, just set parameter and continue
-                    if ('@' === substr($property, 0, 1)) {
+                    if (strpos($property, '@') === 0) {
                         $routeParameters[$param][] = substr($property, 1);
                         continue;
                     }
@@ -174,7 +150,7 @@ class CacheRefresh
                         } else {
                             $routeParameters[$param][] = $propertyValue;
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // continue if no default value
                         if (null === $propertyDefault) {
                             continue;
@@ -210,7 +186,7 @@ class CacheRefresh
                 continue;
             }
 
-            // get paramteres cartesian
+            // get parameters cartesian
             $parameterCombinations = $this->getCartesianProduct($routeParameters);
 
             // add route data to urls list
@@ -224,7 +200,7 @@ class CacheRefresh
         }
     }
 
-    protected function getObjectClass(object $object): string
+    private function getObjectClass(object $object): string
     {
         return '\\' . ltrim(get_class($object), '\\');
     }
@@ -232,7 +208,7 @@ class CacheRefresh
     /**
      * @return false|string
      */
-    protected function getParentClass(string $class)
+    private function getParentClass(string $class)
     {
         if (false === $parentClass = get_parent_class($class)) {
             return false;
@@ -241,10 +217,7 @@ class CacheRefresh
         return '\\' . ltrim($parentClass, '\\');
     }
 
-    /**
-     * @return array
-     */
-    public function getCartesianProduct(array $input = [])
+    private function getCartesianProduct(array $input = []): array
     {
         // filter out empty values
         $input = array_filter($input);

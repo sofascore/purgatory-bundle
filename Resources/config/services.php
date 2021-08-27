@@ -7,7 +7,7 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use SofaScore\Purgatory\AnnotationReader\AttributeReader;
 use SofaScore\Purgatory\AnnotationReader\Driver\DualDriver;
 use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\CacheRefresh;
+use SofaScore\Purgatory\Purgatory;
 use SofaScore\Purgatory\Command\DebugCommand;
 use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
@@ -59,31 +59,28 @@ return static function (ContainerConfigurator $container) {
             ref('sofascore.purgatory.annotation_reader.attribute_reader')
         ])
 
-        ->set('sofascore.purgatory.cache_refresh', CacheRefresh::class)
+        ->set('sofascore.purgatory.purgatory', Purgatory::class)
         ->args([
             ref('sofascore.purgatory.mapping.annotation_loader'),
             ref('property_accessor'),
         ])
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
-        ->args(
-            [
-                ref('router'),
-                ref('sofascore.purgatory.cache_refresh'),
-                ref('sofascore.purgatory.purger'),
-            ]
-        )
+        ->args([
+            ref('router'),
+            ref('sofascore.purgatory.purgatory'),
+            ref('sofascore.purgatory.purger'),
+        ])
         ->tag('doctrine.event_listener', ['event' => 'preRemove'])
         ->tag('doctrine.event_listener', ['event' => 'postPersist'])
         ->tag('doctrine.event_listener', ['event' => 'postUpdate'])
         ->tag('doctrine.event_listener', ['event' => 'postFlush'])
+
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
-        ->args(
-            [
-                ref('sofascore.purgatory.mapping.annotation_loader'),
-                ref('router')
-            ]
-        )
+        ->args([
+            ref('sofascore.purgatory.mapping.annotation_loader'),
+            ref('router')
+        ])
         ->tag('console.command')
         ->set('sofascore.purgatory.purger.default', DefaultPurger::class);
 
