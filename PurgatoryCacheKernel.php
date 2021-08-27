@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 
 if (class_exists('Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache')) {
-    class PurgatoryCacheKernel extends Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache
+    class PurgatoryCacheKernel extends \Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache
     {
         protected function invalidate(Request $request, bool $catch = false)
         {

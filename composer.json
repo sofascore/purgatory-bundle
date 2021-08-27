@@ -28,6 +28,7 @@
     "require-dev": {
         "mheap/phpunit-github-actions-printer": "^1.5",
         "phpunit/phpunit": "^9.5",
+        "symfony/framework-bundle": "^5.3",
         "vimeo/psalm": "^4.7"
     },
     "config": {
