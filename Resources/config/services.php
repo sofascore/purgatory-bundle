@@ -14,6 +14,7 @@ use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\Loader\Configuration;
 use SofaScore\Purgatory\PurgatoryCacheKernel;
+use SofaScore\Purgatory\Purger\DefaultPurger;
 use SofaScore\Purgatory\Purger\SymfonyPurger;
 
 return static function (ContainerConfigurator $container) {
@@ -65,32 +66,37 @@ return static function (ContainerConfigurator $container) {
         ])
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
-        ->args([
-            ref('router'),
-            ref('sofascore.purgatory.cache_refresh'),
-            ref('sofascore.purgatory.purger'),
-        ])
+        ->args(
+            [
+                ref('router'),
+                ref('sofascore.purgatory.cache_refresh'),
+                ref('sofascore.purgatory.purger'),
+            ]
+        )
         ->tag('doctrine.event_listener', ['event' => 'preRemove'])
         ->tag('doctrine.event_listener', ['event' => 'postPersist'])
         ->tag('doctrine.event_listener', ['event' => 'postUpdate'])
         ->tag('doctrine.event_listener', ['event' => 'postFlush'])
-
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
-        ->args([
-            ref('sofascore.purgatory.mapping.annotation_loader'),
-            ref('router')
-        ])
+        ->args(
+            [
+                ref('sofascore.purgatory.mapping.annotation_loader'),
+                ref('router')
+            ]
+        )
         ->tag('console.command')
+        ->set('sofascore.purgatory.purger.default', DefaultPurger::class);
 
+    if (class_exists('Symfony\Component\HttpKernel\HttpCache\HttpCache')) {
+        $container->services()
         ->set('sofascore.purgatory.kernel.symfony', PurgatoryCacheKernel::class)
-        ->args([ref('kernel')])
-
+            ->args([ref('kernel')])
         ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
-        ->args([
-            ref('sofascore.purgatory.kernel.symfony'),
-            param('sofascore.purgatory.host')
-        ])
-
-        ->set('sofascore.purgatory.purger.default', SymfonyPurger::class)
-    ;
+            ->args(
+                [
+                    ref('sofascore.purgatory.kernel.symfony'),
+                    param('sofascore.purgatory.host')
+                ]
+            );
+    }
 };
