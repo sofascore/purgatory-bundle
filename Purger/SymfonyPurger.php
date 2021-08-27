@@ -2,25 +2,24 @@
 
 namespace SofaScore\Purgatory\Purger;
 
-use SofaScore\Purgatory\PurgatoryCacheKernel;
+use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
-if (class_exists('Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache')) {
-    class SymfonyPurger implements PurgerInterface
+class SymfonyPurger implements PurgerInterface
+{
+    private StoreInterface $store;
+    private string $host;
+
+    public function __construct(StoreInterface $store, string $host)
     {
-        private PurgatoryCacheKernel $kernel;
-        private string $host;
+        $this->store = $store;
+        $this->host = $host;
+    }
 
-        public function __construct(PurgatoryCacheKernel $kernel, string $host)
-        {
-            $this->kernel = $kernel;
-            $this->host = $host;
-        }
-
-        public function purge(iterable $urls): void
-        {
-            foreach ($urls as $url) {
-                $this->kernel->invalidateUrl($this->host . $url);
-            }
+    public function purge(iterable $urls): void
+    {
+        foreach ($urls as $url) {
+            $this->store->purge($this->host . $url);
         }
     }
 }
+

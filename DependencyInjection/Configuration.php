@@ -24,11 +24,7 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('purger')
                     ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
-                    ->defaultValue(
-                    class_exists(
-                        'Symfony\Bundle\FrameworkBundle\HttpCache\HttpCache'
-                        ) ? 'sofascore.purgatory.purger.symfony' : 'sofascore.purgatory.purger.default'
-                    )
+                    ->defaultValue('sofascore.purgatory.purger.default')
                 ->end()
                 ->booleanNode('entity_change_listener')
                     ->info('Determines whether entity changes should trigger the configured purge mechanism automatically.')

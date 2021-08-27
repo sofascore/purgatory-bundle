@@ -13,7 +13,6 @@ use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\PurgatoryCacheKernel;
 use SofaScore\Purgatory\Purger\DefaultPurger;
 use SofaScore\Purgatory\Purger\SymfonyPurger;
 
@@ -86,12 +85,10 @@ return static function (ContainerConfigurator $container) {
 
     if (class_exists('Symfony\Component\HttpKernel\HttpCache\HttpCache')) {
         $container->services()
-        ->set('sofascore.purgatory.kernel.symfony', PurgatoryCacheKernel::class)
-            ->args([ref('kernel')])
         ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
             ->args(
                 [
-                    ref('sofascore.purgatory.kernel.symfony'),
+                    ref('http_cache.store'),
                     param('sofascore.purgatory.host')
                 ]
             );
