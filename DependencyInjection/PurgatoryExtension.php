@@ -8,7 +8,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Symfony\Component\HttpKernel\HttpCache\Store;
 
 final class PurgatoryExtension extends Extension
 {
@@ -29,7 +29,7 @@ final class PurgatoryExtension extends Extension
             $container->removeDefinition('sofascore.purgatory.entity_change_listener');
         }
 
-        if (!class_exists(HttpCache::class)) {
+        if (!$container->has(Store::class)) {
             $container->removeDefinition('sofascore.purgatory.purger.symfony');
         }
     }
