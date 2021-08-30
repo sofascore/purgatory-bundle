@@ -24,7 +24,6 @@ final class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('purger')
                     ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
-                    ->isRequired()
                     ->cannotBeEmpty()
                     ->defaultValue('sofascore.purgatory.purger.default')
                 ->end()
