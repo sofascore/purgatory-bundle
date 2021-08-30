@@ -4,7 +4,7 @@ namespace SofaScore\Purgatory\Purger;
 
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
 
-class SymfonyPurger implements PurgerInterface
+final class SymfonyPurger implements PurgerInterface
 {
     private StoreInterface $store;
     private string $host;

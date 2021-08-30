@@ -81,16 +81,12 @@ return static function (ContainerConfigurator $container) {
             ref('router')
         ])
         ->tag('console.command')
-        ->set('sofascore.purgatory.purger.default', DefaultPurger::class);
-
-    if (class_exists('Symfony\Component\HttpKernel\HttpCache\HttpCache')) {
-        $container->services()
+        ->set('sofascore.purgatory.purger.default', DefaultPurger::class)
         ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
             ->args(
                 [
                     ref('http_cache.store'),
-                    param('sofascore.purgatory.host')
+                    '%sofascore.purgatory.host%'
                 ]
             );
-    }
 };
