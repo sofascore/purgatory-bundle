@@ -13,6 +13,8 @@ use SofaScore\Purgatory\Listener\EntityChangeListener;
 use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\Loader\Configuration;
+use SofaScore\Purgatory\Purger\DefaultPurger;
+use SofaScore\Purgatory\Purger\SymfonyPurger;
 
 return static function (ContainerConfigurator $container) {
     $container->parameters()
@@ -79,5 +81,12 @@ return static function (ContainerConfigurator $container) {
             ref('router')
         ])
         ->tag('console.command')
-    ;
+        ->set('sofascore.purgatory.purger.default', DefaultPurger::class)
+        ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
+            ->args(
+                [
+                    ref('http_cache.store'),
+                    '%sofascore.purgatory.host%'
+                ]
+            );
 };
