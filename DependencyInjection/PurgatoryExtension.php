@@ -8,7 +8,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\HttpKernel\HttpCache\Store;
 
 final class PurgatoryExtension extends Extension
 {
@@ -27,10 +26,6 @@ final class PurgatoryExtension extends Extension
 
         if (!$config['entity_change_listener']) {
             $container->removeDefinition('sofascore.purgatory.entity_change_listener');
-        }
-
-        if (!$container->has(Store::class)) {
-            $container->removeDefinition('sofascore.purgatory.purger.symfony');
         }
     }
 }
