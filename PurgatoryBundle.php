@@ -4,7 +4,6 @@ namespace SofaScore\Purgatory;
 
 use SofaScore\Purgatory\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
 use SofaScore\Purgatory\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
