@@ -18,6 +18,6 @@ final class PurgatoryBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new RegisterPurgerImplementationCompilerPass());
-        $container->addCompilerPass(new SymfonyPurgerRemovalCompilerPass(), PassConfig::TYPE_REMOVE, 30);
+        $container->addCompilerPass(new SymfonyPurgerRemovalCompilerPass());
     }
 }
