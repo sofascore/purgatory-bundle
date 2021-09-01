@@ -28,9 +28,5 @@ final class PurgatoryExtension extends Extension
         if (!$config['entity_change_listener']) {
             $container->removeDefinition('sofascore.purgatory.entity_change_listener');
         }
-
-        if (!$container->has(Store::class)) {
-            $container->removeDefinition('sofascore.purgatory.purger.symfony');
-        }
     }
 }
