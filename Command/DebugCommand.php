@@ -104,8 +104,8 @@ class DebugCommand extends Command
             $this->writeIndentent($name . ': ', $indent, $output);
             $output->writeln('');
         }
-        foreach ($arrayValue as $value) {
-            $this->dumpMappingValueStringElement(null, $value[0], $output, $indent + 1);
+        foreach ($arrayValue as $key => $value) {
+            $this->dumpMappingValueStringElement($key, $value[0], $output, $indent + 1);
         }
     }
 
