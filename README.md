@@ -148,3 +148,13 @@ Workflow
 --------
 When property of `Post` entity is changed and flushed to database, Purgatory goes through PurgeOn annotations where changed property is in list of properties, checks the `if` expression, injects the parameters and purges the route.
 
+Debugging
+---------
+
+
+Examples
+--------
+
+```php
+@PurgeOn()
+```
