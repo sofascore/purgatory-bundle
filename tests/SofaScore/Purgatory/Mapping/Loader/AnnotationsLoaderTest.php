@@ -4,13 +4,13 @@ namespace SofaScore\Purgatory\Mapping\Loader;
 
 use AnnotationReader\Fixtures\Entity1;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Entity;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\Annotation\PurgeOn;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
+use SofaScore\Purgatory\Mapping\PropertySubscription;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -118,6 +118,96 @@ class AnnotationsLoaderTest extends TestCase
         assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1::name')[0]->getRouteName());
     }
 
+    public function testCreatingSubscriptionFromAnnotation(): void
+    {
+        $testClass = 'SofaScore\\Purgatory\\SomeEntity';
+        $testProperties = ['propertea1', 'propertea2'];
+        $testRouteName = 'test_route';
+        $testRoute = new Route('/api/v1/test/route', ['_controller' => self::TEST_CONTROLLER]);
+
+        /** @var PropertySubscription[] $subscriptions */
+        $subscriptions = [];
+        $sample = new PurgeOn(
+            $testClass,
+            $testProperties,
+            ['entityId' => 'id']
+        );
+
+        $annotationsLoader = new AnnotationsLoader(...$this->getMocks());
+        $annotationsLoader->parsePurgeOn(
+            $sample,
+            $testRouteName,
+            $testRoute,
+            $subscriptions
+        );
+
+        self::assertCount(2, $subscriptions);
+        self::assertInstanceOf(PropertySubscription::class, $subscriptions[0]);
+        self::assertInstanceOf(PropertySubscription::class, $subscriptions[1]);
+        self::assertEquals($testClass, $subscriptions[0]->getClass());
+        self::assertEquals($testClass, $subscriptions[1]->getClass());
+        self::assertEquals($testProperties[0], $subscriptions[0]->getProperty());
+        self::assertEquals($testProperties[1], $subscriptions[1]->getProperty());
+        $expArr = [
+            'entityId' => ['id']
+        ];
+        self::assertEquals($expArr, $subscriptions[0]->getParameters());
+        self::assertEquals($expArr, $subscriptions[1]->getParameters());
+        self::assertEquals($testRouteName, $subscriptions[0]->getRouteName());
+        self::assertEquals($testRouteName, $subscriptions[1]->getRouteName());
+        self::assertEquals($testRoute->getPath(), $subscriptions[0]->getRoute()->getPath());
+        self::assertEquals($testRoute->getPath(), $subscriptions[1]->getRoute()->getPath());
+    }
+
+    /**
+     * @throws \ReflectionException|\Exception
+     */
+    public function testResolveSubscriptionsWithEmbeddedProperties(): void
+    {
+        $testClass = Entity1::class;
+        $testProperty = 'propeteeh';
+        $testRouteName = 'test_route';
+        $testRoute = new Route('/api/v1/test/route', ['_controller' => self::TEST_CONTROLLER]);
+
+        $subscription = new PropertySubscription($testClass, $testProperty);
+        $subscription->setParameters(['entityId' => ['id']]);
+        $subscription->setRoute($testRoute);
+        $subscription->setRouteName($testRouteName);
+
+        $mocks = [
+            $configurationMock,
+            $routerMock,
+            $controllerResolverMock,
+            $readerMock,
+            $objectManagerMock
+        ] = $this->getMocks();
+
+        $mockedMetadata = $this->mockClassMetadata(
+            $testClass,
+            ['name', 'id', 'createdAt'],
+            [$testProperty]
+        );
+        $mockedMetadata->method('getAssociationMappedByTargetField')->willReturn('name');
+        $mockedMetadata->method('getAssociationTargetClass')->willReturn($testClass);
+
+        $objectManagerMock->method('getClassMetadata')->willReturn(
+            $mockedMetadata
+        );
+
+        $annotationsLoader = new AnnotationsLoader(...$mocks);
+
+        $output = $annotationsLoader->resolveSubscriptions([$subscription]);
+
+        self::assertCount(1, $output);
+        $outputSubscription = $output[0];
+        self::assertInstanceOf(PropertySubscription::class, $outputSubscription);
+        self::assertEquals($testClass, $outputSubscription->getClass());
+        self::assertNull($outputSubscription->getProperty());
+        self::assertEquals(['entityId' => ['name.id']], $outputSubscription->getParameters());
+        self::assertEquals($testRouteName, $outputSubscription->getRouteName());
+        self::assertEquals($testRoute->getPath(), $outputSubscription->getRoute()->getPath());
+    }
+
     protected function setUp(): void
     {
         if (file_exists('./purgatory/mappings/collection.php')) {
@@ -178,6 +268,7 @@ class AnnotationsLoaderTest extends TestCase
 
     /**
      * @return ClassMetadata|MockObject
+     * @throws \ReflectionException
      */
     private function mockClassMetadata(string $class, ?array $fieldNames = null, ?array $associationNames = null)
     {

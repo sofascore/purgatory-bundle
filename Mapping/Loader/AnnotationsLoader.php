@@ -94,7 +94,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * @throws \ReflectionException
      * @throws \Exception
      */
-    public function loadMappings(): MappingCollection
+    private function loadMappings(): MappingCollection
     {
         $mappingCollection = new MappingCollection();
         $routeIgnorePatterns = $this->config->getRouteIgnorePatterns();
@@ -174,7 +174,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * @return PropertySubscription[]
      * @throws \ReflectionException|\SofaScore\Purgatory\AnnotationReader\ReaderException
      */
-    public function parseControllerMappings(
+    private function parseControllerMappings(
         callable $controllerCallable,
         string $routeName,
         Route $route,
@@ -442,7 +442,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     /**
      * @throws \ReflectionException
      */
-    public function resolveClassMethod(PropertySubscription $subscription, string $method, array &$subscriptions): void
+    private function resolveClassMethod(PropertySubscription $subscription, string $method, array &$subscriptions): void
     {
         $methodProperties = $this->getMethodProperties($subscription->getClass(), $method);
 
@@ -462,7 +462,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * @throws \ReflectionException
      * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
      */
-    public function getMethodProperties($class, string $method): array
+    private function getMethodProperties($class, string $method): array
     {
         $reflectionMethod = new \ReflectionMethod($class, $method);
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
