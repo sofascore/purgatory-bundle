@@ -6,6 +6,7 @@ namespace SofaScore\Purgatory\Annotation;
  * @Annotation
  * @Target("METHOD")
  * @Repeatable
+ * @codeCoverageIgnore
  */
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
 final class PurgeOn

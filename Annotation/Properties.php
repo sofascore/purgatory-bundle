@@ -5,6 +5,7 @@ namespace SofaScore\Purgatory\Annotation;
 /**
  * @Annotation
  * @Target("METHOD")
+ * @codeCoverageIgnore
  */
 #[\Attribute(\Attribute::TARGET_METHOD)]
 final class Properties
