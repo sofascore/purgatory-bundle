@@ -188,6 +188,23 @@ purgatory:
   purger: App\Service\VarnishPurger
 ```
 
+Add purge capability to varnish
+```
+acl purge {
+        "localhost";
+        "172.0.0.0"/8; # if behind docker
+        # add more whitelisted ips here
+}
+
+sub vcl_recv {
+        if (req.method == "PURGE") {
+                if (!client.ip ~ purge) {
+                        return(synth(405,"Not allowed."));
+                }
+                return (purge);
+        }
+}
+```
 That's it!
 
 Examples
