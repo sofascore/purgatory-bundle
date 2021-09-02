@@ -151,6 +151,61 @@ When property of `Post` entity is changed and flushed to database, Purgatory goe
 Debugging
 ---------
 
+Custom Purger
+---------
+If you have a more complex setup or use varnish (recommended) you should implement your own purger
+that will be aware of your infrastructure.
+
+Example purger:
+```php
+namespace App\Service;
+
+
+use GuzzleHttp\Client;
+use SofaScore\Purgatory\Purger\PurgerInterface;
+
+class VarnishPurger implements PurgerInterface
+{
+    private Client $client;
+
+    public function __construct()
+    {
+        $this->client = new Client();
+    }
+
+    public function purge(iterable $urls): void
+    {
+        foreach ($urls as $url) {
+            $this->client->request('PURGE', 'http://varnish_host' . $url);
+        }
+    }
+}
+```
+
+You must also register that Purger with the configuration:
+```yaml
+purgatory:
+  purger: App\Service\VarnishPurger
+```
+
+Add purge capability to varnish
+```
+acl purge {
+        "localhost";
+        "172.0.0.0"/8; # if behind docker
+        # add more whitelisted ips here
+}
+
+sub vcl_recv {
+        if (req.method == "PURGE") {
+                if (!client.ip ~ purge) {
+                        return(synth(405,"Not allowed."));
+                }
+                return (purge);
+        }
+}
+```
+That's it!
 
 Examples
 --------
