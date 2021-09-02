@@ -88,7 +88,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+/**
+ * @Route("/post")
+ */
 class PostController extends AbstractController
 {
 
@@ -97,12 +99,12 @@ class PostController extends AbstractController
     }
 
     /**
-     * @Route("/post/{id<\d+>}", methods={"GET"})
+     * @Route("/{postId<\d+>}", methods={"GET"})
      */
-    public function indexAction(int $id)
+    public function detailsAction(int $postId)
     {
         /** @var Post $post */
-        $post = $this->entityManager->getRepository(Post::class)->find($id);
+        $post = $this->entityManager->getRepository(Post::class)->find($postId);
         if (null === $post) {
             return new Response(status: 404);
         }
@@ -126,7 +128,7 @@ Purgatory has an annotation which defines rules for cache invalidation when a st
 use SofaScore\Purgatory\Annotation\PurgeOn;
 
     /**
-    * @Route("/post/{postId<\d+>}", methods={"GET"})
+    * @Route("/{postId<\d+>}", methods={"GET"})
     * @PurgeOn(Post::class, parameters={"postId":"id"}, properties={"title", "content"}, if="obj.title !== null")
     */ 
     public function indexAction(int $id) //...
@@ -147,9 +149,6 @@ Parameters:
 Workflow
 --------
 When property of `Post` entity is changed and flushed to database, Purgatory goes through PurgeOn annotations where changed property is in list of properties, checks the `if` expression, injects the parameters and purges the route.
-
-Debugging
----------
 
 Custom Purger
 ---------
@@ -209,7 +208,60 @@ That's it!
 
 Examples
 --------
+Endpoint which fetches all properties of a single post.
+
+Use `PurgeOn` with FQCN and map route parameters with property of an entity.
+On change of any property of a post, endpoint with entity id injected as route parameter `postId` gets invalidated. 
+```php
+    /**
+     * @Route("/{postId<\d+>}", methods={"GET"})
+     * @PurgeOn(Post::class, parameters={"postId":"id"})
+     */
+    public function detailsAction(int $postId) {
+```
+Endpoint which fetches all featured Posts.
+
+Use `PurgeOn` and specify a single property - cache invalidation happens every time when property `featured` changes on any of the posts.
 
 ```php
-@PurgeOn()
+    /**
+     * @Route("/featured", methods={"GET"})
+     * @PurgeOn(Post::class, properties={"featured"})
+     */
+    public function featuredAction() {
 ```
+Endpoint which fetches a list of all popular posts with more than 3000 upvotes.
+
+Use `PurgeOn` with a condition - cache invalidation happens every time when any of the properties on a Post with more than 3000 upvotes changes.  
+```php
+    /**
+     * @Route("/popular", methods={"GET"})
+     * @PurgeOn(Post::class, if="obj.upvotes > 3000")
+     */
+    public function popularAction(int $postId) {
+```
+
+Debugging
+--------- 
+```bash
+php bin/console purgatory:debug Post
+```
+Purgatory debug command groups all defined purging rules and dumps it on the screen. 
+Its argument is an entity name or entity and property
+```bash
+php bin/console purgatory:debug Post::upvotes
+```
+Command with defined entity and property dumps all routes which get refreshed by change of that property.
+```
+\App\Entity\Post
+	app_post_details
+		path: /post/{postId}
+		parameters:
+			postId: id
+
+\App\Entity\Post::upvotes
+	app_post_popular
+		path: /post/popular
+		if: obj.upvotes > 3000
+```
+Observe that change of upvotes causes a cache invalidation on popular posts route as well as on post details route. 
