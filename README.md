@@ -1,8 +1,10 @@
 Purgatory
 =========
 
-Bundle for easy HTTP caching with Symfony. Can be easily set up with Symfony reverse proxy (HttpCache) or Varnish
-reverse proxy.
+Purgatory is extension which makes it possible for Symfony applications to handle enormous load using minimal infrastructure. 
+Infrastructure meant to be used with this bundle along with Symfony application is a HTTP caching reverse proxy. 
+
+This bundle implements an easy and maintainable way to invalidate cache on an endpoints based on changes in Doctrine entities.
 
 Installation
 ------------
