@@ -2,6 +2,9 @@
 
 namespace SofaScore\Purgatory\AnnotationReader;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ReaderException extends \Exception
 {
     /**
