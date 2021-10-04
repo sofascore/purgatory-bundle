@@ -49,7 +49,7 @@ purgatory:
 Usage
 -----
 
-Suppose we have a simple entity and controller.
+Suppose you have a simple entity and controller.
 
 ```php
 namespace App\Entity;
