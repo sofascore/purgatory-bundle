@@ -1,10 +1,10 @@
 Purgatory
 =========
 
-Purgatory is extension which makes it possible for Symfony applications to handle enormous load using minimal infrastructure. 
+Purgatory is an extension which makes it possible for Symfony applications to handle enormous load using minimal infrastructure. 
 Infrastructure meant to be used with this bundle along with Symfony application is a HTTP caching reverse proxy. 
 
-This bundle implements an easy and maintainable way to invalidate cache on an endpoints based on changes in Doctrine entities.
+This bundle implements an easy and maintainable way to invalidate cache on endpoints based on changes in Doctrine entities.
 
 Installation
 ------------
@@ -49,7 +49,7 @@ purgatory:
 Usage
 -----
 
-Suppose we have a simple entity and controller.
+Suppose you have a simple entity and controller.
 
 ```php
 namespace App\Entity;
@@ -118,8 +118,8 @@ class PostController extends AbstractController
 }
 ```
 
-When we send request on an endpoint for first time, reverse proxy saves the response and serves the same response until
-it expires (1 hour in this example). If the state of an entity changes in the meantime, content on our website stays the
+When a request is sent to an endpoint for first time, reverse proxy saves the response and serves the same response until
+it expires (1 hour in this example). If the state of an entity changes in the meantime, content on the website stays the
 same until cache expires.
 
 Purgatory has an annotation which defines rules for cache invalidation when a state of an object changes.
@@ -142,13 +142,13 @@ Parameters:
     - defines an associative array where keys are route parameters and values are property names.
 - `properties` 
     - list of properties which are required to change in order to purge the endpoint.
-    - if omitted, change of any property purges the cache
+    - if omitted, change of any property purges the cache.
 - `if` 
     - an expression which has to be true in order to purge the endpoint with specified parameters.
 
 Workflow
 --------
-When property of `Post` entity is changed and flushed to database, Purgatory goes through PurgeOn annotations where changed property is in list of properties, checks the `if` expression, injects the parameters and purges the route.
+When property of `Post` entity is changed and flushed to a database, Purgatory goes through PurgeOn annotations where changed property is in list of properties, checks the `if` expression, injects the parameters and purges the route.
 
 Custom Purger
 ---------
@@ -211,7 +211,7 @@ Examples
 Endpoint which fetches all properties of a single post.
 
 Use `PurgeOn` with FQCN and map route parameters with property of an entity.
-On change of any property of a post, endpoint with entity id injected as route parameter `postId` gets invalidated. 
+On change of any property of a `Post`, endpoint with entity `id` injected as route parameter `postId` gets invalidated. 
 ```php
     /**
      * @Route("/{postId<\d+>}", methods={"GET"})
@@ -221,7 +221,7 @@ On change of any property of a post, endpoint with entity id injected as route p
 ```
 Endpoint which fetches all featured Posts.
 
-Use `PurgeOn` and specify a single property - cache invalidation happens every time when property `featured` changes on any of the posts.
+Use `PurgeOn` and specify a single property - cache invalidation happens every time property `featured` changes on any of the `Posts`.
 
 ```php
     /**
@@ -232,7 +232,7 @@ Use `PurgeOn` and specify a single property - cache invalidation happens every t
 ```
 Endpoint which fetches a list of all popular posts with more than 3000 upvotes.
 
-Use `PurgeOn` with a condition - cache invalidation happens every time when any of the properties on a Post with more than 3000 upvotes changes.  
+Use `PurgeOn` with a condition - cache invalidation happens every time property `upvotes` on a `Post` with more than 3000 upvotes changes.  
 ```php
     /**
      * @Route("/popular", methods={"GET"})
@@ -247,7 +247,7 @@ Debugging
 php bin/console purgatory:debug Post
 ```
 Purgatory debug command groups all defined purging rules and dumps it on the screen. 
-Its argument is an entity name or entity and property
+Its argument is an entity name or entity and property.
 ```bash
 php bin/console purgatory:debug Post::upvotes
 ```
