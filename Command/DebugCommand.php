@@ -105,6 +105,10 @@ class DebugCommand extends Command
             $output->writeln('');
         }
         foreach ($arrayValue as $key => $value) {
+            if (count($value) > 1) {
+                $this->dumpMappingValueStringElement($key, "{" . implode(", ", $value) . "}", $output, $indent + 1);
+                continue;
+            }
             $this->dumpMappingValueStringElement($key, $value[0], $output, $indent + 1);
         }
     }
