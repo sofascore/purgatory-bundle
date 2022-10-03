@@ -16,8 +16,8 @@ final class RegisterPurgerImplementationCompilerPass implements CompilerPassInte
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var string $serviceId */
         $serviceId = $container->getParameter('sofascore.purgatory.purger');
+        assert(is_string($serviceId));
 
         // Don't pollute the container with unnecessary metadata.
         $container->getParameterBag()->remove('sofascore.purgatory.purger');
