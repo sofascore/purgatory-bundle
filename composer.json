@@ -9,7 +9,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "": "tests/"
+            "SofaScore\\Purgatory\\Tests\\": "tests/"
         }
     },
     "require": {

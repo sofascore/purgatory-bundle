@@ -2,10 +2,9 @@
 declare(strict_types=1);
 
 
-namespace AnnotationReader\Driver;
+namespace SofaScore\Purgatory\Tests\AnnotationReader\Driver;
 
 
-use AnnotationReader\Fixtures\Entity1;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -14,6 +13,7 @@ use Doctrine\ORM\Mapping\Id;
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
 use SofaScore\Purgatory\AnnotationReader\DriverInterface;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
