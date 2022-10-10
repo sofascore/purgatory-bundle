@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DependencyInjection\CompilerPass;
+namespace SofaScore\Purgatory\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;

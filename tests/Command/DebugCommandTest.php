@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Command\DebugCommand;
+namespace SofaScore\Purgatory\Tests\Command;
 
 
 use PHPUnit\Framework\TestCase;

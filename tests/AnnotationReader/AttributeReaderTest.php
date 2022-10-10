@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace AnnotationReader;
+namespace SofaScore\Purgatory\Tests\AnnotationReader;
 
-use AnnotationReader\Fixtures\DualClass;
-use AnnotationReader\Fixtures\SillyLittleAnnotation;
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\AnnotationReader\AttributeReader;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\DualClass;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\SillyLittleAnnotation;
 
 /**
  * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\AttributeReader

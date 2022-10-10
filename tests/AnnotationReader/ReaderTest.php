@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 
-namespace AnnotationReader;
+namespace SofaScore\Purgatory\Tests\AnnotationReader;
 
 
-use AnnotationReader\Fixtures\Entity1;
-use AnnotationReader\Fixtures\ExtendedEntity1;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
 use SofaScore\Purgatory\AnnotationReader\Reader;
 use SofaScore\Purgatory\AnnotationReader\ReaderException;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\ExtendedEntity1;
 
 
 /**

@@ -1,8 +1,9 @@
 <?php
 
-namespace SofaScore\Purgatory\Purger;
+namespace SofaScore\Purgatory\Tests\Purger;
 
 use PHPUnit\Framework\TestCase;
+use SofaScore\Purgatory\Purger\SymfonyPurger;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 
 /**

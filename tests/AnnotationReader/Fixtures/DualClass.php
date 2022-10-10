@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AnnotationReader\Fixtures;
+namespace SofaScore\Purgatory\Tests\AnnotationReader\Fixtures;
 
 /**
  * @SillyLittleAnnotation("annotation")

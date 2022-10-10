@@ -1,16 +1,18 @@
 <?php
 
-namespace SofaScore\Purgatory\Mapping\Loader;
+namespace SofaScore\Purgatory\Tests\Mapping\Loader;
 
-use AnnotationReader\Fixtures\Entity1;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\Annotation\PurgeOn;
 use SofaScore\Purgatory\AnnotationReader\Reader;
+use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
+use SofaScore\Purgatory\Mapping\Loader\Configuration;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\PropertySubscription;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -80,7 +82,7 @@ class AnnotationsLoaderTest extends TestCase
         $result = require './purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
-        assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1')[0]->getRouteName());
+        assertEquals('app_api_v1_sport_list', $result->get('\\'.Entity1::class)[0]->getRouteName());
     }
 
     public function testLoadOnConfiguredCacheDirSavesMappingsToCache()
@@ -115,7 +117,7 @@ class AnnotationsLoaderTest extends TestCase
         $result = require './purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
-        assertEquals('app_api_v1_sport_list', $result->get('\AnnotationReader\Fixtures\Entity1::name')[0]->getRouteName());
+        assertEquals('app_api_v1_sport_list', $result->get(sprintf('\\%s::name', Entity1::class))[0]->getRouteName());
     }
 
     public function testCreatingSubscriptionFromAnnotation(): void

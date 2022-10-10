@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
-use AnnotationReader\Fixtures\Entity1;
-use AnnotationReader\Fixtures\Entity2;
+namespace SofaScore\Purgatory\Tests;
+
 use PHPUnit\Framework\TestCase;
 use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\MappingValue;
 use SofaScore\Purgatory\Purgatory;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
+use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity2;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 
