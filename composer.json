@@ -13,7 +13,7 @@
         }
     },
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "doctrine/annotations": "^1.13",
         "doctrine/orm": "^2.8",
         "symfony/config": "^5.3 || ^6.1",
