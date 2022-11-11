@@ -30,6 +30,8 @@ class Reader
     protected function getItemAnnotationsDeep($item): array
     {
         $annotations = [];
+
+        /** @var class-string $class */
         $class = $this->getItemClass($item);
 
         while (false !== $class) {

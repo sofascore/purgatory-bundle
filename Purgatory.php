@@ -84,6 +84,7 @@ class Purgatory
                 $this->processMappingValues($object, $mappingValues, $routes);
             }
             // check if class has parent
+            /** @var class-string $class */
             if (false !== $parent = $this->getParentClass($class)) {
                 // add parent class and current property to stack to be checked
                 $stack[] = [$parent, $property];
@@ -205,6 +206,9 @@ class Purgatory
         return '\\' . ltrim(get_class($object), '\\');
     }
 
+    /**
+     * @param class-string $class
+     */
     private function getParentClass(string $class): false|string
     {
         if (false === $parentClass = get_parent_class($class)) {

@@ -523,9 +523,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     protected function setSubscriptionParametersFromRoute(PropertySubscription $subscription, Route $route): void
     {
         $compiledRoute = $route->compile();
-        if (null === $compiledRoute) {
-            return;
-        }
 
         $parameters = [];
         foreach ($compiledRoute->getPathVariables() as $param) {
