@@ -205,10 +205,7 @@ class Purgatory
         return '\\' . ltrim(get_class($object), '\\');
     }
 
-    /**
-     * @return false|string
-     */
-    private function getParentClass(string $class)
+    private function getParentClass(string $class): false|string
     {
         if (false === $parentClass = get_parent_class($class)) {
             return false;

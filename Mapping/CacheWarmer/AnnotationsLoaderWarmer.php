@@ -20,7 +20,7 @@ class AnnotationsLoaderWarmer implements CacheWarmerInterface
      * @param string $cacheDir The cache directory
      * @return string[]
      */
-    public function warmUp($cacheDir)
+    public function warmUp(string $cacheDir): array
     {
         return $this->loader->warmUp($cacheDir);
     }
@@ -35,7 +35,7 @@ class AnnotationsLoaderWarmer implements CacheWarmerInterface
      *
      * @return bool true if the warmer is optional, false otherwise
      */
-    public function isOptional()
+    public function isOptional(): bool
     {
         return true;
     }

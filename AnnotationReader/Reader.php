@@ -79,7 +79,7 @@ class Reader
      * @throws ReaderException
      * @throws \ReflectionException
      */
-    public function getAnnotationLookupItem($item, $class)
+    public function getAnnotationLookupItem($item, $class): \ReflectionClass|\ReflectionMethod|\ReflectionProperty|null
     {
         if ($item instanceof \ReflectionClass) {
             return class_exists($class) ? new \ReflectionClass($class) : null;

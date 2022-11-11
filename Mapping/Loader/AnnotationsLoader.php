@@ -149,10 +149,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $mappingCollection;
     }
 
-    /**
-     * @return callable|false
-     */
-    protected function resolveController(?string $controllerPath)
+    protected function resolveController(?string $controllerPath): callable|false
     {
         if (null === $controllerPath) {
             return false;

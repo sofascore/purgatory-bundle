@@ -12,7 +12,7 @@ interface DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getClassAnnotations(\ReflectionClass $class);
+    public function getClassAnnotations(\ReflectionClass $class): array;
 
     /**
      * Gets a class annotation.
@@ -23,7 +23,7 @@ interface DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getClassAnnotation(\ReflectionClass $class, string $annotationName);
+    public function getClassAnnotation(\ReflectionClass $class, string $annotationName): ?object;
 
     /**
      * Gets the annotations applied to a method.
@@ -33,7 +33,7 @@ interface DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getMethodAnnotations(\ReflectionMethod $method);
+    public function getMethodAnnotations(\ReflectionMethod $method): array;
 
     /**
      * Gets a method annotation.
@@ -43,7 +43,7 @@ interface DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getMethodAnnotation(\ReflectionMethod $method, string $annotationName);
+    public function getMethodAnnotation(\ReflectionMethod $method, string $annotationName): ?object;
 
     /**
      * Gets the annotations applied to a property.
@@ -53,7 +53,7 @@ interface DriverInterface
      *
      * @return array an array of Annotations
      */
-    public function getPropertyAnnotations(\ReflectionProperty $property);
+    public function getPropertyAnnotations(\ReflectionProperty $property): array;
 
     /**
      * Gets a property annotation.
@@ -63,5 +63,5 @@ interface DriverInterface
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
-    public function getPropertyAnnotation(\ReflectionProperty $property, string $annotationName);
+    public function getPropertyAnnotation(\ReflectionProperty $property, string $annotationName): ?object;
 }
