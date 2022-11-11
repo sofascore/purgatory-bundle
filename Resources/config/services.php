@@ -33,43 +33,43 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.mapping.annotation_loader', AnnotationsLoader::class)
         ->args([
-            ref('sofascore.purgatory.mapping.configuration'),
-            ref('router'),
-            ref('controller_resolver'),
-            ref('sofascore.purgatory.annotation_reader'),
-            ref('doctrine.orm.entity_manager'),
+            service('sofascore.purgatory.mapping.configuration'),
+            service('router'),
+            service('controller_resolver'),
+            service('sofascore.purgatory.annotation_reader'),
+            service('doctrine.orm.entity_manager'),
         ])
 
         ->set('sofascore.purgatory.mapping.annotation_loader.warmer', AnnotationsLoaderWarmer::class)
         ->args([
-            ref('sofascore.purgatory.mapping.annotation_loader'),
+            service('sofascore.purgatory.mapping.annotation_loader'),
         ])
         ->tag('kernel.cache_warmer', ['priority' => 0])
 
         ->set('sofascore.purgatory.annotation_reader', Reader::class)
         ->args([
-            ref('sofascore.purgatory.annotation_reader.driver.dual'),
+            service('sofascore.purgatory.annotation_reader.driver.dual'),
         ])
 
         ->set('sofascore.purgatory.annotation_reader.attribute_reader', AttributeReader::class)
 
         ->set('sofascore.purgatory.annotation_reader.driver.dual', DualDriver::class)
         ->args([
-            ref('annotation_reader'),
-            ref('sofascore.purgatory.annotation_reader.attribute_reader')
+            service('annotation_reader'),
+            service('sofascore.purgatory.annotation_reader.attribute_reader')
         ])
 
         ->set('sofascore.purgatory.purgatory', Purgatory::class)
         ->args([
-            ref('sofascore.purgatory.mapping.annotation_loader'),
-            ref('property_accessor'),
+            service('sofascore.purgatory.mapping.annotation_loader'),
+            service('property_accessor'),
         ])
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
         ->args([
-            ref('router'),
-            ref('sofascore.purgatory.purgatory'),
-            ref('sofascore.purgatory.purger'),
+            service('router'),
+            service('sofascore.purgatory.purgatory'),
+            service('sofascore.purgatory.purger'),
         ])
         ->tag('doctrine.event_listener', ['event' => 'preRemove'])
         ->tag('doctrine.event_listener', ['event' => 'postPersist'])
@@ -78,8 +78,8 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
         ->args([
-            ref('sofascore.purgatory.mapping.annotation_loader'),
-            ref('router')
+            service('sofascore.purgatory.mapping.annotation_loader'),
+            service('router')
         ])
         ->tag('console.command')
         ->set('sofascore.purgatory.purger.default', DefaultPurger::class)
@@ -87,7 +87,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
             ->args(
                 [
-                    ref('http_cache.store'),
+                    service('http_cache.store'),
                     '%sofascore.purgatory.host%'
                 ]
             );
