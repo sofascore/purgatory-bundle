@@ -7,6 +7,7 @@ namespace SofaScore\Purgatory\Command;
 use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
 use SofaScore\Purgatory\Mapping\MappingCollection;
 use SofaScore\Purgatory\Mapping\MappingValue;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +15,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
-
+#[AsCommand(
+    name: 'purgatory:debug'
+)]
 class DebugCommand extends Command
 {
     private const ARGUMENT_FILTER = 'filter';
-
-    protected static $defaultName = 'purgatory:debug';
 
     private LoaderInterface $loader;
     private RouterInterface $router;

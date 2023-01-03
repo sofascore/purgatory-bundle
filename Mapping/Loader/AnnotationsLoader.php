@@ -149,10 +149,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $mappingCollection;
     }
 
-    /**
-     * @return callable|false
-     */
-    protected function resolveController(?string $controllerPath)
+    protected function resolveController(?string $controllerPath): callable|false
     {
         if (null === $controllerPath) {
             return false;
@@ -526,9 +523,6 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     protected function setSubscriptionParametersFromRoute(PropertySubscription $subscription, Route $route): void
     {
         $compiledRoute = $route->compile();
-        if (null === $compiledRoute) {
-            return;
-        }
 
         $parameters = [];
         foreach ($compiledRoute->getPathVariables() as $param) {

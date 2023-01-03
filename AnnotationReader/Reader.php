@@ -30,6 +30,8 @@ class Reader
     protected function getItemAnnotationsDeep($item): array
     {
         $annotations = [];
+
+        /** @var class-string $class */
         $class = $this->getItemClass($item);
 
         while (false !== $class) {
@@ -79,7 +81,7 @@ class Reader
      * @throws ReaderException
      * @throws \ReflectionException
      */
-    public function getAnnotationLookupItem($item, $class)
+    public function getAnnotationLookupItem($item, $class): \ReflectionClass|\ReflectionMethod|\ReflectionProperty|null
     {
         if ($item instanceof \ReflectionClass) {
             return class_exists($class) ? new \ReflectionClass($class) : null;

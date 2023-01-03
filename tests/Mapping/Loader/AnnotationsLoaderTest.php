@@ -272,7 +272,7 @@ class AnnotationsLoaderTest extends TestCase
      * @return ClassMetadata|MockObject
      * @throws \ReflectionException
      */
-    private function mockClassMetadata(string $class, ?array $fieldNames = null, ?array $associationNames = null)
+    private function mockClassMetadata(string $class, ?array $fieldNames = null, ?array $associationNames = null): ClassMetadata|MockObject
     {
         $metadata = $this->createMock(ClassMetadata::class);
         $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass($class));
