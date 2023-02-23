@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-
 namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures;
-
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
@@ -11,13 +10,16 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @Entity
+ *
  * @codeCoverageIgnore
  */
 class Entity1
 {
     /**
      * @ORM\Column(type="integer")
+     *
      * @ORM\GeneratedValue()
+     *
      * @ORM\Id()
      */
     protected int $id;
@@ -36,7 +38,6 @@ class Entity1
      * @ORM\Column(type="datetime_immutable")
      */
     protected \DateTime $createdAt;
-
 
     public function getId(): int
     {

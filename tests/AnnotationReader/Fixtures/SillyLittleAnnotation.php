@@ -14,9 +14,9 @@ class SillyLittleAnnotation
 
     public function __construct($value = null)
     {
-        if (is_array($value)) {
+        if (\is_array($value)) {
             $this->value = $value['value'] ?? null;
-        } elseif (is_string($value)) {
+        } elseif (\is_string($value)) {
             $this->value = $value;
         } else {
             throw new \TypeError('Expected string or array');

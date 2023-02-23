@@ -6,8 +6,8 @@ namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
 
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class RegisterPurgerImplementationCompilerPass implements CompilerPassInterface
 {
@@ -26,7 +26,7 @@ final class RegisterPurgerImplementationCompilerPass implements CompilerPassInte
 
         if (!is_a($purgerImplementation->getClass(), PurgerInterface::class, true)) {
             throw new \LogicException(
-                sprintf('The purger service should implement the \'%s\' interface.', PurgerInterface::class)
+                sprintf('The purger service should implement the \'%s\' interface.', PurgerInterface::class),
             );
         }
 

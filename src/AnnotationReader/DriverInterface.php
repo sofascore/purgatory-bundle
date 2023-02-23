@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 interface DriverInterface
@@ -19,7 +21,7 @@ interface DriverInterface
      *
      * @param \ReflectionClass $class          the ReflectionClass of the class from which
      *                                         the class annotations should be read
-     * @param class-string $annotationName the name of the annotation
+     * @param class-string     $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
@@ -39,7 +41,7 @@ interface DriverInterface
      * Gets a method annotation.
      *
      * @param \ReflectionMethod $method         the ReflectionMethod to read the annotations from
-     * @param class-string $annotationName the name of the annotation
+     * @param class-string      $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */
@@ -59,7 +61,7 @@ interface DriverInterface
      * Gets a property annotation.
      *
      * @param \ReflectionProperty $property       the ReflectionProperty to read the annotations from
-     * @param class-string $annotationName the name of the annotation
+     * @param class-string        $annotationName the name of the annotation
      *
      * @return object|null the Annotation or NULL, if the requested annotation does not exist
      */

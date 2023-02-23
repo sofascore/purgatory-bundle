@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Mapping;
 
 use Symfony\Component\Routing\Route;
@@ -14,7 +16,7 @@ class PropertySubscription
     protected Route $route;
     protected ?array $tags = null;
 
-    public function __construct(string $class, string $property = null)
+    public function __construct(string $class, ?string $property = null)
     {
         $this->class = $class;
         $this->property = $property;

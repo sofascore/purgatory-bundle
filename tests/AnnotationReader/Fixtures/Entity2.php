@@ -2,22 +2,23 @@
 
 declare(strict_types=1);
 
-
 namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures;
-
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 
 /**
  * @Entity
+ *
  * @codeCoverageIgnore
  */
 class Entity2
 {
     /**
      * @ORM\Column(type="integer")
+     *
      * @ORM\GeneratedValue()
+     *
      * @ORM\Id()
      */
     private int $id;
@@ -34,10 +35,10 @@ class Entity2
 
     /**
      * @ORM\ManyToOne(targetEntity="AnnotationReader\Fixtures\Entity1")
+     *
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private ?Entity1 $entity1 = null;
-
 
     public function getId(): int
     {

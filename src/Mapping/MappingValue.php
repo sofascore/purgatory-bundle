@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Mapping;
 
 class MappingValue
@@ -16,7 +18,7 @@ class MappingValue
 
     public static function __set_state(array $values): self
     {
-        $object = new MappingValue($values['routeName']);
+        $object = new self($values['routeName']);
         unset($values['routeName']);
 
         // set object properties

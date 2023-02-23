@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-
 namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Driver;
-
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Mapping\Column;
@@ -36,7 +35,7 @@ final class DoctrineDriverTest extends TestCase
     /**
      * @covers ::getClassAnnotations
      */
-    public function testGetClassAnnotations():void
+    public function testGetClassAnnotations(): void
     {
         $annotations = $this->driver->getClassAnnotations(new \ReflectionClass(Entity1::class));
 
@@ -88,7 +87,7 @@ final class DoctrineDriverTest extends TestCase
      */
     public function testGetPropertyAnnotation(): void
     {
-        $idProperty =new \ReflectionProperty(Entity1::class, 'id');
+        $idProperty = new \ReflectionProperty(Entity1::class, 'id');
 
         $column = $this->driver->getPropertyAnnotation($idProperty, Column::class);
         self::assertInstanceOf(Column::class, $column);

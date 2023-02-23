@@ -16,7 +16,7 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
 #[AsCommand(
-    name: 'purgatory:debug'
+    name: 'purgatory:debug',
 )]
 class DebugCommand extends Command
 {
@@ -42,13 +42,14 @@ class DebugCommand extends Command
         $this->addArgument(
             'filter',
             InputArgument::OPTIONAL,
-            "Entity class name with optional property name and sub-properties (e.g. Event, Event::startDate, Event::homeScore.period1)"
+            'Entity class name with optional property name and sub-properties (e.g. Event, Event::startDate, Event::homeScore.period1)',
         );
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->dump($this->loader->load(), $output, $input->getArgument(self::ARGUMENT_FILTER));
+
         return 0;
     }
 
@@ -79,11 +80,11 @@ class DebugCommand extends Command
         ?string $name,
         ?string $value,
         OutputInterface $output,
-        int $indent = 0
+        int $indent = 0,
     ): void {
         if (null !== $value) {
             if (null !== $name) {
-                $this->writeIndentent($name . ': ', $indent, $output);
+                $this->writeIndentent($name.': ', $indent, $output);
             } else {
                 $this->writeIndentent('', $indent, $output);
             }
@@ -96,18 +97,18 @@ class DebugCommand extends Command
         ?array $arrayValue,
         OutputInterface $output,
         int $indent = 0,
-        bool $noKey = true
+        bool $noKey = true,
     ): void {
-        if (null === $arrayValue || 0 === count($arrayValue)) {
+        if (null === $arrayValue || 0 === \count($arrayValue)) {
             return;
         }
         if (null !== $name) {
-            $this->writeIndentent($name . ': ', $indent, $output);
+            $this->writeIndentent($name.': ', $indent, $output);
             $output->writeln('');
         }
         foreach ($arrayValue as $key => $value) {
-            if (count($value) > 1) {
-                $this->dumpMappingValueStringElement($key, "{" . implode(", ", $value) . "}", $output, $indent + 1);
+            if (\count($value) > 1) {
+                $this->dumpMappingValueStringElement($key, '{'.implode(', ', $value).'}', $output, $indent + 1);
                 continue;
             }
             $this->dumpMappingValueStringElement($key, $value[0], $output, $indent + 1);
@@ -118,9 +119,9 @@ class DebugCommand extends Command
         string $text,
         int $indent,
         OutputInterface $output,
-        string $indentText = "\t"
+        string $indentText = "\t",
     ): void {
-        $output->write(str_repeat($indentText, $indent) . $text);
+        $output->write(str_repeat($indentText, $indent).$text);
     }
 
     private function itemMatchesFilter(string $entityOrProperty, string $filter): bool
@@ -133,7 +134,7 @@ class DebugCommand extends Command
         }
 
         if (!str_starts_with($filterClass, '\\')) {
-            $filterClass = '\\' . $filterClass;
+            $filterClass = '\\'.$filterClass;
         }
 
         $entityClass = $entityOrProperty;
@@ -151,11 +152,11 @@ class DebugCommand extends Command
             return true;
         }
 
-        if ($property === null) {
+        if (null === $property) {
             return true;
         }
 
-        return $property === $filterProperty || str_starts_with($property, $filterProperty . '.');
+        return $property === $filterProperty || str_starts_with($property, $filterProperty.'.');
     }
 
     private function describePath(MappingValue $value): string

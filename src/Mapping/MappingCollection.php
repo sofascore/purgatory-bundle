@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Mapping;
 
 class MappingCollection implements \IteratorAggregate, \Countable
@@ -22,7 +24,7 @@ class MappingCollection implements \IteratorAggregate, \Countable
      */
     public function count(): int
     {
-        return count($this->mappings);
+        return \count($this->mappings);
     }
 
     /**

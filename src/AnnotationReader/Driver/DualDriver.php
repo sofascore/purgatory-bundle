@@ -18,7 +18,7 @@ class DualDriver implements DriverInterface
     {
         $this->annotationReader = $annotationReader;
         $this->attributeReader = $attributeReader;
-        $this->isPHP8 = PHP_VERSION_ID >= 80000;
+        $this->isPHP8 = \PHP_VERSION_ID >= 80000;
     }
 
     public function getClassAnnotations(\ReflectionClass $class): array

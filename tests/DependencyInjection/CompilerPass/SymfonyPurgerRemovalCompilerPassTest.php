@@ -47,7 +47,7 @@ class SymfonyPurgerRemovalCompilerPassTest extends TestCase
     {
         $this->container->addDefinitions([
             'http_cache.store' => new Definition('TestClass'),
-            'sofascore.purgatory.purger.symfony' => new Definition(SymfonyPurger::class)
+            'sofascore.purgatory.purger.symfony' => new Definition(SymfonyPurger::class),
         ]);
 
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));
