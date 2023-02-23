@@ -33,14 +33,11 @@
         "symfony/serializer": "^5.4 || ^6.2"
     },
     "require-dev": {
-        "mheap/phpunit-github-actions-printer": "^1.5",
-        "phpunit/phpunit": "^9.5",
         "symfony/framework-bundle": "^5.4 || ^6.2",
-        "vimeo/psalm": "^4.7"
+        "symfony/phpunit-bridge": "^6.2"
     },
     "scripts": {
-        "psalm": "psalm",
-        "test": "phpunit"
+        "test": "simple-phpunit"
     },
     "config": {
         "sort-packages": true
