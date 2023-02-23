@@ -1,11 +1,11 @@
 {
-    "name": "sofascore/purgatory",
+    "name": "sofascore/purgatory-bundle",
     "description": "Library for easy construction of cache purge requests.",
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
         {
-            "name": "Sofascore backend",
+            "name": "Sofascore",
             "email": "server@sofascore.com"
         }
     ],
