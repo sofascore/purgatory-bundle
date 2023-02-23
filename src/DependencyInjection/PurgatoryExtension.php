@@ -19,7 +19,7 @@ final class PurgatoryExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__).'/Resources/config'));
+        $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));
         $loader->load('services.php');
 
         $config = $this->processConfiguration(new Configuration(), $configs);
