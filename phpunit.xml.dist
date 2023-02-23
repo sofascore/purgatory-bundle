@@ -11,6 +11,11 @@
          failOnRisky="true"
          failOnWarning="true"
          verbose="true">
+    <php>
+        <env name="SYMFONY_PHPUNIT_REQUIRE" value="mheap/phpunit-github-actions-printer:^1.5" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="baselineFile=./phpunit-deprecation-baseline.json" />
+    </php>
+
     <testsuites>
         <testsuite name="default">
             <directory>tests</directory>
