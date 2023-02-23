@@ -7,12 +7,12 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Sofascore\PurgatoryBundle\AnnotationReader\AttributeReader;
 use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DualDriver;
 use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
-use Sofascore\PurgatoryBundle\Purgatory;
 use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
 use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
 use Sofascore\PurgatoryBundle\Mapping\Loader\Configuration;
+use Sofascore\PurgatoryBundle\Purgatory;
 use Sofascore\PurgatoryBundle\Purger\DefaultPurger;
 use Sofascore\PurgatoryBundle\Purger\NullPurger;
 use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
@@ -56,7 +56,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.annotation_reader.driver.dual', DualDriver::class)
         ->args([
             service('annotation_reader'),
-            service('sofascore.purgatory.annotation_reader.attribute_reader')
+            service('sofascore.purgatory.annotation_reader.attribute_reader'),
         ])
 
         ->set('sofascore.purgatory.purgatory', Purgatory::class)
@@ -79,7 +79,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.command.debug', DebugCommand::class)
         ->args([
             service('sofascore.purgatory.mapping.annotation_loader'),
-            service('router')
+            service('router'),
         ])
         ->tag('console.command')
         ->set('sofascore.purgatory.purger.default', DefaultPurger::class)
@@ -88,7 +88,7 @@ return static function (ContainerConfigurator $container) {
             ->args(
                 [
                     service('http_cache.store'),
-                    '%sofascore.purgatory.host%'
-                ]
+                    '%sofascore.purgatory.host%',
+                ],
             );
 };

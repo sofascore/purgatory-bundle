@@ -8,7 +8,6 @@ use Doctrine\Common\Annotations\Reader;
 
 class AttributeReader implements Reader
 {
-
     public function getClassAnnotations(\ReflectionClass $class): array
     {
         $reflectionAttributes = $class->getAttributes();

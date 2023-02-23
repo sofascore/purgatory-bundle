@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader;
-
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +11,6 @@ use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
 use Sofascore\PurgatoryBundle\AnnotationReader\ReaderException;
 use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\ExtendedEntity1;
-
 
 /**
  * @coversDefaultClass \Sofascore\PurgatoryBundle\AnnotationReader\Reader

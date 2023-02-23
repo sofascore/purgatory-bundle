@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 class Reader
@@ -63,7 +65,7 @@ class Reader
         $groupedAnnotations = [];
 
         foreach ($annotations as $annotation) {
-            $annotationClass = get_class($annotation);
+            $annotationClass = $annotation::class;
 
             if (!isset($groupedAnnotations[$annotationClass])) {
                 $groupedAnnotations[$annotationClass] = [];
@@ -76,8 +78,6 @@ class Reader
     }
 
     /**
-     * @return \ReflectionClass|\ReflectionMethod|\ReflectionProperty|null
-     *
      * @throws ReaderException
      * @throws \ReflectionException
      */
