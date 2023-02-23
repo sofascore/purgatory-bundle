@@ -22,10 +22,11 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class DebugCommandTest extends TestCase
 {
-    private Command $command;
-    private CommandTester $commandTester;
     private LoaderInterface $loaderMock;
     private RouteCollection $routeCollection;
+    private Command $command;
+    private CommandTester $commandTester;
+
 
     protected function setUp(): void
     {
@@ -39,6 +40,16 @@ class DebugCommandTest extends TestCase
         $application->add(new DebugCommand($this->loaderMock, $routerMock));
         $this->command = $application->find('purgatory:debug');
         $this->commandTester = new CommandTester($this->command);
+    }
+
+    protected function tearDown(): void
+    {
+        unset(
+            $this->loaderMock,
+            $this->routeCollection,
+            $this->command,
+            $this->commandTester,
+        );
     }
 
     /** @dataProvider executeData */

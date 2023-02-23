@@ -24,9 +24,12 @@ final class ReaderTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->reader = new Reader(new DoctrineDriver(new AnnotationReader()));
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->reader);
     }
 
     /**

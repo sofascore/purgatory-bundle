@@ -54,6 +54,7 @@ class AnnotationsLoaderTest extends TestCase
             @rmdir($directory);
         };
         $remove($this->cacheDir);
+
         unset(
             $this->cacheDir,
             $this->routeCollection,
