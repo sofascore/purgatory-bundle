@@ -1,9 +1,13 @@
 # Composer
 composer.lock
-vendor/ 
+vendor/
 
 # Docker
 .env.docker
+
+# PHP Coding Standards Fixer
+.php-cs-fixer.cache
+.php-cs-fixer.php
 
 # PHPUnit
 clover.xml

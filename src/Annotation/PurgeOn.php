@@ -1,11 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Annotation;
 
 /**
  * @Annotation
+ *
  * @Target("METHOD")
+ *
  * @Repeatable
+ *
  * @codeCoverageIgnore
  */
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
@@ -22,9 +27,9 @@ final class PurgeOn
      */
     public function __construct($value = [], ?array $properties = null, ?array $parameters = null, ?string $if = null, ?array $tags = [])
     {
-        if (is_string($value)) {
+        if (\is_string($value)) {
             $object = $value;
-        } elseif (is_array($value)) {
+        } elseif (\is_array($value)) {
             $object = $value['value'];
         } else {
             throw new \TypeError(sprintf('"%s": Argument $value is expected to be a string or array, got "%s".', __METHOD__, get_debug_type($value)));

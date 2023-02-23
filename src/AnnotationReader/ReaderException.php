@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 /**
@@ -9,7 +11,6 @@ class ReaderException extends \Exception
 {
     /**
      * @param string $message
-     * @param mixed  $item
      */
     public function __construct($message, $item)
     {
@@ -21,16 +22,16 @@ class ReaderException extends \Exception
         return sprintf(
             "Error with message '%s' occured on item of type '%s'",
             $message,
-            $this->getItemType($item)
+            $this->getItemType($item),
         );
     }
 
     protected function getItemType($item)
     {
-        if (is_object($item)) {
-            return get_class($item);
+        if (\is_object($item)) {
+            return $item::class;
         }
 
-        return gettype($item);
+        return \gettype($item);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\TestCase;
@@ -11,7 +13,6 @@ use Symfony\Component\HttpKernel\HttpCache\Store;
  */
 class SymfonyPurgerTest extends TestCase
 {
-
     public function testPurge()
     {
         $store = $this->createMock(Store::class);

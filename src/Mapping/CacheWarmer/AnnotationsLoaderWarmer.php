@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Mapping\CacheWarmer;
 
 use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
@@ -18,6 +20,7 @@ class AnnotationsLoaderWarmer implements CacheWarmerInterface
      * Warms up the cache.
      *
      * @param string $cacheDir The cache directory
+     *
      * @return string[]
      */
     public function warmUp(string $cacheDir): array
