@@ -11,7 +11,7 @@ Installation
 
 Prerequisite - doctrine/orm
 
-`composer require sofascore/purgatory`
+`composer require sofascore/purgatory-bundle`
 
 Setup - Symfony reverse proxy
 -----
