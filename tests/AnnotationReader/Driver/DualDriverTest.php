@@ -20,8 +20,12 @@ class DualDriverTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->driver = new DualDriver(new AnnotationReader(), new AttributeReader());
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->driver);
     }
 
     /**

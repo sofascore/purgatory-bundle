@@ -25,9 +25,12 @@ final class DoctrineDriverTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->driver = new DoctrineDriver(new AnnotationReader());
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->driver);
     }
 
     /**

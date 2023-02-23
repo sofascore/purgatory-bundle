@@ -18,8 +18,12 @@ class AttributeReaderTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->reader = new AttributeReader();
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->reader);
     }
 
     /**
