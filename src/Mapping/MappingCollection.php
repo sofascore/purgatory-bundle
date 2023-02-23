@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Mapping;
 
+/**
+ * @template-implements \IteratorAggregate<string, MappingValue[]>
+ */
 class MappingCollection implements \IteratorAggregate, \Countable
 {
     /**

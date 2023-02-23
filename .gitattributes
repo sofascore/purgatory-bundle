@@ -5,4 +5,5 @@
 /.gitignore export-ignore
 /.php-cs-fixer.dist.php export-ignore
 /phpunit.xml.dist export-ignore
+/phpunit-deprecation-baseline.json export-ignore
 /psalm.xml export-ignore
