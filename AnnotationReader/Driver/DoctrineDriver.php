@@ -1,9 +1,9 @@
 <?php
 
-namespace SofaScore\Purgatory\AnnotationReader\Driver;
+namespace Sofascore\PurgatoryBundle\AnnotationReader\Driver;
 
 use Doctrine\Common\Annotations\Reader;
-use SofaScore\Purgatory\AnnotationReader\DriverInterface;
+use Sofascore\PurgatoryBundle\AnnotationReader\DriverInterface;
 
 class DoctrineDriver implements DriverInterface
 {

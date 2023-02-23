@@ -1,8 +1,8 @@
 <?php
 
-namespace SofaScore\Purgatory\Mapping\Loader;
+namespace Sofascore\PurgatoryBundle\Mapping\Loader;
 
-use SofaScore\Purgatory\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
 
 interface LoaderInterface
 {

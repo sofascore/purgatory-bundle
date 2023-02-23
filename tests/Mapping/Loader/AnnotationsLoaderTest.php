@@ -1,18 +1,18 @@
 <?php
 
-namespace SofaScore\Purgatory\Tests\Mapping\Loader;
+namespace Sofascore\PurgatoryBundle\Tests\Mapping\Loader;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Annotation\PurgeOn;
-use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
-use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\PropertySubscription;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
+use Sofascore\PurgatoryBundle\Annotation\PurgeOn;
+use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
+use Sofascore\PurgatoryBundle\Mapping\Loader\Configuration;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\PropertySubscription;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -22,10 +22,10 @@ use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 
 /**
- * @covers \SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader
- * @covers \SofaScore\Purgatory\Mapping\MappingCollection
- * @covers \SofaScore\Purgatory\Mapping\MappingValue
- * @covers \SofaScore\Purgatory\Mapping\PropertySubscription
+ * @covers \Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader
+ * @covers \Sofascore\PurgatoryBundle\Mapping\MappingCollection
+ * @covers \Sofascore\PurgatoryBundle\Mapping\MappingValue
+ * @covers \Sofascore\PurgatoryBundle\Mapping\PropertySubscription
  */
 class AnnotationsLoaderTest extends TestCase
 {
@@ -122,7 +122,7 @@ class AnnotationsLoaderTest extends TestCase
 
     public function testCreatingSubscriptionFromAnnotation(): void
     {
-        $testClass = 'SofaScore\\Purgatory\\SomeEntity';
+        $testClass = 'Sofascore\\PurgatoryBundle\\SomeEntity';
         $testProperties = ['propertea1', 'propertea2'];
         $testRouteName = 'test_route';
         $testRoute = new Route('/api/v1/test/route', ['_controller' => self::TEST_CONTROLLER]);

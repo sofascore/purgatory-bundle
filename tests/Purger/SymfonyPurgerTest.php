@@ -1,13 +1,13 @@
 <?php
 
-namespace SofaScore\Purgatory\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 
 /**
- * @covers \SofaScore\Purgatory\Purger\SymfonyPurger
+ * @covers \Sofascore\PurgatoryBundle\Purger\SymfonyPurger
  */
 class SymfonyPurgerTest extends TestCase
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace SofaScore\Purgatory;
+namespace Sofascore\PurgatoryBundle;
 
-use SofaScore\Purgatory\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
-use SofaScore\Purgatory\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

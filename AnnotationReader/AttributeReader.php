@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\AnnotationReader;
+namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 use Doctrine\Common\Annotations\Reader;
 

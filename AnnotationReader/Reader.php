@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\AnnotationReader;
+namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 class Reader
 {
@@ -24,7 +24,7 @@ class Reader
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
+     * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
      * @throws \ReflectionException
      */
     protected function getItemAnnotationsDeep($item): array

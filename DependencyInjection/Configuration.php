@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -26,7 +26,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('purger')
-                    ->info('ID of the service implementing the \'SofaScore\Purgatory\Purger\PurgerInterface\' interface.')
+                    ->info('ID of the service implementing the \'Sofascore\PurgatoryBundle\Purger\PurgerInterface\' interface.')
                     ->cannotBeEmpty()
                     ->defaultValue('sofascore.purgatory.purger.default')
                 ->end()

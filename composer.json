@@ -5,18 +5,18 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "SofaScore backend",
+            "name": "Sofascore backend",
             "email": "server@sofascore.com"
         }
     ],
     "autoload": {
         "psr-4": {
-            "SofaScore\\Purgatory\\": ""
+            "Sofascore\\PurgatoryBundle\\": ""
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SofaScore\\Purgatory\\Tests\\": "tests/"
+            "Sofascore\\PurgatoryBundle\\Tests\\": "tests/"
         }
     },
     "require": {

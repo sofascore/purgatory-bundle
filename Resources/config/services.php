@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use SofaScore\Purgatory\AnnotationReader\AttributeReader;
-use SofaScore\Purgatory\AnnotationReader\Driver\DualDriver;
-use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\Purgatory;
-use SofaScore\Purgatory\Command\DebugCommand;
-use SofaScore\Purgatory\Listener\EntityChangeListener;
-use SofaScore\Purgatory\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
-use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
-use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\Purger\DefaultPurger;
-use SofaScore\Purgatory\Purger\NullPurger;
-use SofaScore\Purgatory\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle\AnnotationReader\AttributeReader;
+use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DualDriver;
+use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\Purgatory;
+use Sofascore\PurgatoryBundle\Command\DebugCommand;
+use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Mapping\CacheWarmer\AnnotationsLoaderWarmer;
+use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
+use Sofascore\PurgatoryBundle\Mapping\Loader\Configuration;
+use Sofascore\PurgatoryBundle\Purger\DefaultPurger;
+use Sofascore\PurgatoryBundle\Purger\NullPurger;
+use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
 
 return static function (ContainerConfigurator $container) {
     $container->parameters()

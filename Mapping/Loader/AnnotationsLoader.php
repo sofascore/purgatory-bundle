@@ -1,15 +1,15 @@
 <?php
 
-namespace SofaScore\Purgatory\Mapping\Loader;
+namespace Sofascore\PurgatoryBundle\Mapping\Loader;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
-use SofaScore\Purgatory\Annotation\Properties;
-use SofaScore\Purgatory\Annotation\PurgeOn;
-use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
-use SofaScore\Purgatory\Mapping\PropertySubscription;
+use Sofascore\PurgatoryBundle\Annotation\Properties;
+use Sofascore\PurgatoryBundle\Annotation\PurgeOn;
+use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\MappingValue;
+use Sofascore\PurgatoryBundle\Mapping\PropertySubscription;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
@@ -169,7 +169,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @return PropertySubscription[]
-     * @throws \ReflectionException|\SofaScore\Purgatory\AnnotationReader\ReaderException
+     * @throws \ReflectionException|\Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
      */
     private function parseControllerMappings(
         callable $controllerCallable,
@@ -457,7 +457,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \SofaScore\Purgatory\AnnotationReader\ReaderException
+     * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
      */
     private function getMethodProperties($class, string $method): array
     {

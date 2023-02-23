@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
 
 final class NullPurger implements PurgerInterface

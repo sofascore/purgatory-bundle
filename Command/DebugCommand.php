@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Command;
+namespace Sofascore\PurgatoryBundle\Command;
 
-use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
+use Sofascore\PurgatoryBundle\Mapping\Loader\LoaderInterface;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\MappingValue;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

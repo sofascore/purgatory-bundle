@@ -3,20 +3,20 @@
 declare(strict_types=1);
 
 
-namespace SofaScore\Purgatory\Tests\AnnotationReader;
+namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
-use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\AnnotationReader\ReaderException;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\ExtendedEntity1;
+use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DoctrineDriver;
+use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\AnnotationReader\ReaderException;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\ExtendedEntity1;
 
 
 /**
- * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\Reader
+ * @coversDefaultClass \Sofascore\PurgatoryBundle\AnnotationReader\Reader
  */
 final class ReaderTest extends TestCase
 {

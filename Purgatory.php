@@ -1,10 +1,10 @@
 <?php
 
-namespace SofaScore\Purgatory;
+namespace Sofascore\PurgatoryBundle;
 
 use Exception;
-use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
-use SofaScore\Purgatory\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\Loader\LoaderInterface;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 

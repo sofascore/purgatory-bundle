@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
 interface PurgerInterface
 {

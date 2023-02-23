@@ -1,11 +1,11 @@
 <?php
 
-namespace SofaScore\Purgatory\Listener;
+namespace Sofascore\PurgatoryBundle\Listener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use SofaScore\Purgatory\Purgatory;
-use SofaScore\Purgatory\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purgatory;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener

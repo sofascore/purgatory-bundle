@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SofaScore\Purgatory\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
 
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

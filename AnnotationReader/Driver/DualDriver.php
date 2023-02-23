@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\AnnotationReader\Driver;
+namespace Sofascore\PurgatoryBundle\AnnotationReader\Driver;
 
 use Doctrine\Common\Annotations\Reader;
-use SofaScore\Purgatory\AnnotationReader\DriverInterface;
+use Sofascore\PurgatoryBundle\AnnotationReader\DriverInterface;
 
 class DualDriver implements DriverInterface
 {

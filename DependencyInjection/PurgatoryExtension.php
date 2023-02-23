@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

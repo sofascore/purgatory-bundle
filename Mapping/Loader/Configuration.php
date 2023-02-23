@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\Mapping\Loader;
+namespace Sofascore\PurgatoryBundle\Mapping\Loader;
 
 class Configuration
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\Annotation;
+namespace Sofascore\PurgatoryBundle\Annotation;
 
 /**
  * @Annotation

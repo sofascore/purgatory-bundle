@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
-use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
-use SofaScore\Purgatory\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
+use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
 /**
- * @covers \SofaScore\Purgatory\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass
+ * @covers \Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass
  */
 class RegisterPurgerImplementationCompilerPassTest extends TestCase
 {

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
 
-use SofaScore\Purgatory\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SofaScore\Purgatory\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
 
 final class DefaultPurger implements PurgerInterface

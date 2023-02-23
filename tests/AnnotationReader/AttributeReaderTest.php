@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests\AnnotationReader;
+namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader;
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\AnnotationReader\AttributeReader;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\DualClass;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\SillyLittleAnnotation;
+use Sofascore\PurgatoryBundle\AnnotationReader\AttributeReader;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\DualClass;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\SillyLittleAnnotation;
 
 /**
- * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\AttributeReader
+ * @coversDefaultClass \Sofascore\PurgatoryBundle\AnnotationReader\AttributeReader
  */
 class AttributeReaderTest extends TestCase
 {

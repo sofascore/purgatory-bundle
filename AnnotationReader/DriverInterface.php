@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\AnnotationReader;
+namespace Sofascore\PurgatoryBundle\AnnotationReader;
 
 interface DriverInterface
 {

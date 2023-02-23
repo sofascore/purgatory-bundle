@@ -1,6 +1,6 @@
 <?php
 
-namespace SofaScore\Purgatory\Mapping;
+namespace Sofascore\PurgatoryBundle\Mapping;
 
 use Symfony\Component\Routing\Route;
 

@@ -125,7 +125,7 @@ same until cache expires.
 Purgatory has an annotation which defines rules for cache invalidation when a state of an object changes.
 
 ```php
-use SofaScore\Purgatory\Annotation\PurgeOn;
+use Sofascore\PurgatoryBundle\Annotation\PurgeOn;
 
     /**
     * @Route("/{postId<\d+>}", methods={"GET"})
@@ -161,7 +161,7 @@ namespace App\Service;
 
 
 use GuzzleHttp\Client;
-use SofaScore\Purgatory\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 
 class VarnishPurger implements PurgerInterface
 {
