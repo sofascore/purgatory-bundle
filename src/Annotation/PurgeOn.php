@@ -17,26 +17,15 @@ namespace Sofascore\PurgatoryBundle\Annotation;
 final class PurgeOn
 {
     private string $object;
-    private ?array $parameters = null;
-    private ?array $properties = null;
+    private ?array $parameters;
+    private ?array $properties;
     private ?string $if;
     private ?array $tags;
 
-    /**
-     * @param array|string $value
-     */
-    public function __construct($value = [], ?array $properties = null, ?array $parameters = null, ?string $if = null, ?array $tags = [])
+    public function __construct(array|string $value = [], ?array $properties = null, ?array $parameters = null, ?string $if = null, ?array $tags = [])
     {
-        if (\is_string($value)) {
-            $object = $value;
-        } elseif (\is_array($value)) {
-            $object = $value['value'];
-        } else {
-            throw new \TypeError(sprintf('"%s": Argument $value is expected to be a string or array, got "%s".', __METHOD__, get_debug_type($value)));
-        }
-
         // set object class
-        $this->object = $object;
+        $this->object = \is_array($value) ? $value['value'] : $value;
 
         // set parameters if defined
         $this->parameters = $value['parameters'] ?? $parameters;

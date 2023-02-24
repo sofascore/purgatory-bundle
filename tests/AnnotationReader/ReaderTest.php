@@ -8,7 +8,6 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DoctrineDriver;
 use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
-use Sofascore\PurgatoryBundle\AnnotationReader\ReaderException;
 use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\ExtendedEntity1;
 
@@ -90,8 +89,5 @@ final class ReaderTest extends TestCase
 
         $item = new \ReflectionProperty(Entity1::class, 'id');
         self::assertSame(Entity1::class, $this->reader->getItemClass($item));
-
-        $this->expectException(ReaderException::class);
-        $this->reader->getItemClass(new \stdClass());
     }
 }

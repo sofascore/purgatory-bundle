@@ -14,22 +14,18 @@ class Reader
     }
 
     /**
-     * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
      * @throws ReaderException|\ReflectionException
      */
-    public function getAnnotations($item): array
+    public function getAnnotations(\ReflectionMethod|\ReflectionClass|\ReflectionProperty $item): array
     {
         return $this->getItemAnnotationsDeep($item);
     }
 
     /**
-     * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
      * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
      * @throws \ReflectionException
      */
-    protected function getItemAnnotationsDeep($item): array
+    protected function getItemAnnotationsDeep(\ReflectionMethod|\ReflectionClass|\ReflectionProperty $item): array
     {
         $annotations = [];
 
@@ -101,11 +97,9 @@ class Reader
     }
 
     /**
-     * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
      * @throws ReaderException
      */
-    public function getItemAnnotations($item): array
+    public function getItemAnnotations(\ReflectionMethod|\ReflectionClass|\ReflectionProperty $item): array
     {
         if ($item instanceof \ReflectionClass) {
             return $this->driver->getClassAnnotations($item);
@@ -123,11 +117,9 @@ class Reader
     }
 
     /**
-     * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
-     *
      * @throws ReaderException
      */
-    public function getItemClass($item): string
+    public function getItemClass(\ReflectionMethod|\ReflectionClass|\ReflectionProperty $item): string
     {
         if ($item instanceof \ReflectionClass) {
             return $item->getName();

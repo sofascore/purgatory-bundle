@@ -84,9 +84,9 @@ class DebugCommand extends Command
     ): void {
         if (null !== $value) {
             if (null !== $name) {
-                $this->writeIndentent($name.': ', $indent, $output);
+                $this->writeIndented($name.': ', $indent, $output);
             } else {
-                $this->writeIndentent('', $indent, $output);
+                $this->writeIndented('', $indent, $output);
             }
             $output->writeln($value);
         }
@@ -97,13 +97,12 @@ class DebugCommand extends Command
         ?array $arrayValue,
         OutputInterface $output,
         int $indent = 0,
-        bool $noKey = true,
     ): void {
         if (null === $arrayValue || 0 === \count($arrayValue)) {
             return;
         }
         if (null !== $name) {
-            $this->writeIndentent($name.': ', $indent, $output);
+            $this->writeIndented($name.': ', $indent, $output);
             $output->writeln('');
         }
         foreach ($arrayValue as $key => $value) {
@@ -115,13 +114,12 @@ class DebugCommand extends Command
         }
     }
 
-    private function writeIndentent(
+    private function writeIndented(
         string $text,
         int $indent,
         OutputInterface $output,
-        string $indentText = "\t",
     ): void {
-        $output->write(str_repeat($indentText, $indent).$text);
+        $output->write(str_repeat("\t", $indent).$text);
     }
 
     private function itemMatchesFilter(string $entityOrProperty, string $filter): bool
@@ -139,7 +137,7 @@ class DebugCommand extends Command
 
         $entityClass = $entityOrProperty;
         $property = null;
-        if (($pos = strrpos($entityOrProperty, '::')) !== false) {
+        if (false !== $pos = strrpos($entityOrProperty, '::')) {
             $property = substr($entityOrProperty, $pos + 2);
             $entityClass = substr($entityOrProperty, 0, $pos);
         }

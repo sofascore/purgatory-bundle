@@ -12,15 +12,9 @@ class SillyLittleAnnotation
 {
     private ?string $value;
 
-    public function __construct($value = null)
+    public function __construct(array|string $value = null)
     {
-        if (\is_array($value)) {
-            $this->value = $value['value'] ?? null;
-        } elseif (\is_string($value)) {
-            $this->value = $value;
-        } else {
-            throw new \TypeError('Expected string or array');
-        }
+        $this->value = \is_array($value) ? ($value['value'] ?? null) : $value;
     }
 
     public function getValue(): ?string

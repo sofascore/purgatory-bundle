@@ -16,10 +16,7 @@ final class Properties
 {
     private array $properties;
 
-    /**
-     * @param array|string $value
-     */
-    public function __construct($value = [])
+    public function __construct(array|string $value = [])
     {
         $this->properties = $value['value'] ?? $value;
     }

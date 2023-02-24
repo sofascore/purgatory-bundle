@@ -44,10 +44,10 @@ class Purgatory
      *      ...
      * ].
      *
-     * @param mixed $object            Object that was changed
-     * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
+     * @param object $object            Object that was changed
+     * @param array  $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
      */
-    public function getRoutesToPurge($object, array $changedProperties): array
+    public function getRoutesToPurge(object $object, array $changedProperties): array
     {
         // check if there are changes
         if (\count($changedProperties) <= 0) {
@@ -107,7 +107,7 @@ class Purgatory
         return $routes;
     }
 
-    private function processMappingValues($object, array $mappingValues, array &$urls): void
+    private function processMappingValues(object $object, array $mappingValues, array &$urls): void
     {
         foreach ($mappingValues as $mappingValue) {
             $routeName = $mappingValue->getRouteName();

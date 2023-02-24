@@ -70,9 +70,9 @@ class MappingCollection implements \IteratorAggregate, \Countable
     /**
      * Removes a mapping or an array of mappings by name from the collection.
      *
-     * @param string|array $name The mapping name or an array of mapping names
+     * @param array|string $name The mapping name or an array of mapping names
      */
-    public function remove($name): void
+    public function remove(array|string $name): void
     {
         foreach ((array) $name as $n) {
             unset($this->mappings[$n]);

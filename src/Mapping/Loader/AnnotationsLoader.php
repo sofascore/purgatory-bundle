@@ -78,7 +78,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      *
      * @throws \ReflectionException
      */
-    public function warmUp($cacheDir): array
+    public function warmUp(string $cacheDir): array
     {
         // save current cache dir
         $currentCacheDir = $this->config->getCacheDir();
@@ -202,7 +202,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $subscriptions;
     }
 
-    public function parsePurgeOn(PurgeOn $annotation, $routeName, $route, array &$subscriptions): void
+    public function parsePurgeOn(PurgeOn $annotation, string $routeName, Route $route, array &$subscriptions): void
     {
         $resolveParameters = static function ($parameters): array {
             $resolved = [];
@@ -462,10 +462,12 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     }
 
     /**
+     * @param class-string $class
+     *
      * @throws \ReflectionException
      * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
      */
-    private function getMethodProperties($class, string $method): array
+    private function getMethodProperties(string $class, string $method): array
     {
         $reflectionMethod = new \ReflectionMethod($class, $method);
         $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);

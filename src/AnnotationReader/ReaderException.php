@@ -9,29 +9,17 @@ namespace Sofascore\PurgatoryBundle\AnnotationReader;
  */
 class ReaderException extends \Exception
 {
-    /**
-     * @param string $message
-     */
-    public function __construct($message, $item)
+    public function __construct(string $message, $item)
     {
         parent::__construct($this->constructMessage($message, $item));
     }
 
-    protected function constructMessage($message, $item)
+    protected function constructMessage(string $message, $item): string
     {
         return sprintf(
-            "Error with message '%s' occured on item of type '%s'",
+            "Error with message '%s' occurred on item of type '%s'",
             $message,
-            $this->getItemType($item),
+            get_debug_type($item),
         );
-    }
-
-    protected function getItemType($item)
-    {
-        if (\is_object($item)) {
-            return $item::class;
-        }
-
-        return \gettype($item);
     }
 }

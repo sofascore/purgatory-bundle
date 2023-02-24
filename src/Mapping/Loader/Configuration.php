@@ -42,7 +42,7 @@ class Configuration
         return $this->env;
     }
 
-    public function setEnv($env)
+    public function setEnv(string $env)
     {
         $this->env = $env;
     }

@@ -16,13 +16,16 @@ class PropertySubscription
     protected Route $route;
     protected ?array $tags = null;
 
+    /**
+     * @param class-string $class
+     */
     public function __construct(string $class, ?string $property = null)
     {
         $this->class = $class;
         $this->property = $property;
     }
 
-    public function getClass()
+    public function getClass(): string
     {
         return $this->class;
     }
