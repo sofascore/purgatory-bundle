@@ -9,6 +9,7 @@ use Doctrine\Persistence\ObjectManager;
 use Sofascore\PurgatoryBundle\Annotation\Properties;
 use Sofascore\PurgatoryBundle\Annotation\PurgeOn;
 use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\AnnotationReader\ReaderException;
 use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
 use Sofascore\PurgatoryBundle\Mapping\MappingValue;
 use Sofascore\PurgatoryBundle\Mapping\PropertySubscription;
@@ -174,7 +175,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
     /**
      * @return PropertySubscription[]
      *
-     * @throws \ReflectionException|\Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
+     * @throws \ReflectionException|ReaderException
      */
     private function parseControllerMappings(
         callable $controllerCallable,
@@ -463,7 +464,7 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 
     /**
      * @throws \ReflectionException
-     * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
+     * @throws ReaderException
      */
     private function getMethodProperties($class, string $method): array
     {

@@ -26,7 +26,7 @@ class Reader
     /**
      * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $item
      *
-     * @throws \Sofascore\PurgatoryBundle\AnnotationReader\ReaderException
+     * @throws ReaderException
      * @throws \ReflectionException
      */
     protected function getItemAnnotationsDeep($item): array
