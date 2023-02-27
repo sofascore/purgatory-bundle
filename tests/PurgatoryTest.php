@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests;
+namespace Sofascore\PurgatoryBundle\Tests;
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
-use SofaScore\Purgatory\Purgatory;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity2;
+use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\MappingValue;
+use Sofascore\PurgatoryBundle\Purgatory;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity2;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 
 /**
- * @coversDefaultClass \SofaScore\Purgatory\Purgatory
+ * @coversDefaultClass \Sofascore\PurgatoryBundle\Purgatory
  */
 final class PurgatoryTest extends TestCase
 {

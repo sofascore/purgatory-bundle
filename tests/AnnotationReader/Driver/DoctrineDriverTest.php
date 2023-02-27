@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace SofaScore\Purgatory\Tests\AnnotationReader\Driver;
+namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Driver;
 
 
 use Doctrine\Common\Annotations\AnnotationReader;
@@ -11,13 +11,13 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver;
-use SofaScore\Purgatory\AnnotationReader\DriverInterface;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
+use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DoctrineDriver;
+use Sofascore\PurgatoryBundle\AnnotationReader\DriverInterface;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\Driver\DoctrineDriver
+ * @coversDefaultClass \Sofascore\PurgatoryBundle\AnnotationReader\Driver\DoctrineDriver
  */
 final class DoctrineDriverTest extends TestCase
 {

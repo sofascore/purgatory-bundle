@@ -1,18 +1,18 @@
 <?php
 
-namespace SofaScore\Purgatory\Tests\Mapping\Loader;
+namespace Sofascore\PurgatoryBundle\Tests\Mapping\Loader;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ObjectManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Annotation\PurgeOn;
-use SofaScore\Purgatory\AnnotationReader\Reader;
-use SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader;
-use SofaScore\Purgatory\Mapping\Loader\Configuration;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\PropertySubscription;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\Entity1;
+use Sofascore\PurgatoryBundle\Annotation\PurgeOn;
+use Sofascore\PurgatoryBundle\AnnotationReader\Reader;
+use Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader;
+use Sofascore\PurgatoryBundle\Mapping\Loader\Configuration;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\PropertySubscription;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -22,15 +22,42 @@ use function PHPUnit\Framework\assertCount;
 use function PHPUnit\Framework\assertEquals;
 
 /**
- * @covers \SofaScore\Purgatory\Mapping\Loader\AnnotationsLoader
- * @covers \SofaScore\Purgatory\Mapping\MappingCollection
- * @covers \SofaScore\Purgatory\Mapping\MappingValue
- * @covers \SofaScore\Purgatory\Mapping\PropertySubscription
+ * @covers \Sofascore\PurgatoryBundle\Mapping\Loader\AnnotationsLoader
+ * @covers \Sofascore\PurgatoryBundle\Mapping\MappingCollection
+ * @covers \Sofascore\PurgatoryBundle\Mapping\MappingValue
+ * @covers \Sofascore\PurgatoryBundle\Mapping\PropertySubscription
  */
 class AnnotationsLoaderTest extends TestCase
 {
     private const TEST_CONTROLLER = 'App\\Controller\\TestController';
+    private string $cacheDir;
     private RouteCollection $routeCollection;
+
+    protected function setUp(): void
+    {
+        $this->cacheDir = sys_get_temp_dir().'/purgatory_cache';
+        $this->routeCollection = new RouteCollection();
+    }
+
+    protected function tearDown(): void
+    {
+        $remove = function (string $directory) use (&$remove) {
+            foreach (glob($directory.'/*') as $file) {
+                if (is_dir($file)) {
+                    $remove($file);
+                    continue;
+                }
+                unlink($file);
+            }
+            @rmdir($directory);
+        };
+        $remove($this->cacheDir);
+
+        unset(
+            $this->cacheDir,
+            $this->routeCollection,
+        );
+    }
 
     public static function mockCallable(): void
     {
@@ -64,9 +91,9 @@ class AnnotationsLoaderTest extends TestCase
             $objectManagerMock
         ] = $this->getMocks();
 
-        self::assertDirectoryDoesNotExist('./purgatory');
+        self::assertDirectoryDoesNotExist($this->cacheDir.'/purgatory');
 
-        $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
+        $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn($this->cacheDir);
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
@@ -77,9 +104,9 @@ class AnnotationsLoaderTest extends TestCase
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
 
-        self::assertDirectoryExists('./purgatory');
+        self::assertDirectoryExists($this->cacheDir.'/purgatory');
         /** @var MappingCollection $result */
-        $result = require './purgatory/mappings/collection.php';
+        $result = require $this->cacheDir.'/purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
         assertEquals('app_api_v1_sport_list', $result->get('\\'.Entity1::class)[0]->getRouteName());
@@ -97,9 +124,9 @@ class AnnotationsLoaderTest extends TestCase
             $objectManagerMock
         ] = $this->getMocks();
 
-        self::assertDirectoryDoesNotExist('./purgatory');
+        self::assertDirectoryDoesNotExist($this->cacheDir.'/purgatory');
 
-        $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn('.');
+        $configurationMock->expects(self::exactly(2))->method('getCacheDir')->willReturn($this->cacheDir);
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
@@ -112,9 +139,9 @@ class AnnotationsLoaderTest extends TestCase
         $loader = new AnnotationsLoader(...$mocks);
         $loader->load();
 
-        self::assertDirectoryExists('./purgatory');
+        self::assertDirectoryExists($this->cacheDir.'/purgatory');
         /** @var MappingCollection $result */
-        $result = require './purgatory/mappings/collection.php';
+        $result = require $this->cacheDir.'/purgatory/mappings/collection.php';
         self::assertNotEmpty($result);
         assertCount(1, $result);
         assertEquals('app_api_v1_sport_list', $result->get(sprintf('\\%s::name', Entity1::class))[0]->getRouteName());
@@ -122,7 +149,7 @@ class AnnotationsLoaderTest extends TestCase
 
     public function testCreatingSubscriptionFromAnnotation(): void
     {
-        $testClass = 'SofaScore\\Purgatory\\SomeEntity';
+        $testClass = 'Sofascore\\PurgatoryBundle\\SomeEntity';
         $testProperties = ['propertea1', 'propertea2'];
         $testRouteName = 'test_route';
         $testRoute = new Route('/api/v1/test/route', ['_controller' => self::TEST_CONTROLLER]);
@@ -210,23 +237,7 @@ class AnnotationsLoaderTest extends TestCase
         self::assertEquals($testRoute->getPath(), $outputSubscription->getRoute()->getPath());
     }
 
-    protected function setUp(): void
-    {
-        if (file_exists('./purgatory/mappings/collection.php')) {
-            unlink('./purgatory/mappings/collection.php');
-        }
-        if (file_exists('./purgatory/mappings/collection.php.meta')) {
-            unlink('./purgatory/mappings/collection.php.meta');
-        }
-        if (is_dir('./purgatory/mappings')) {
-            rmdir('./purgatory/mappings');
-        }
-        if (is_dir('./purgatory')) {
-            rmdir('./purgatory');
-        }
 
-        $this->routeCollection = new RouteCollection();
-    }
 
     /**
      * @return MockObject[]

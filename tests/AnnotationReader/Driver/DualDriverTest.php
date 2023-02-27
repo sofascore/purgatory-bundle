@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests\AnnotationReader\Driver;
+namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\AnnotationReader\AttributeReader;
-use SofaScore\Purgatory\AnnotationReader\Driver\DualDriver;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\DualClass;
-use SofaScore\Purgatory\Tests\AnnotationReader\Fixtures\SillyLittleAnnotation;
+use Sofascore\PurgatoryBundle\AnnotationReader\AttributeReader;
+use Sofascore\PurgatoryBundle\AnnotationReader\Driver\DualDriver;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\DualClass;
+use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\SillyLittleAnnotation;
 
 /**
- * @coversDefaultClass \SofaScore\Purgatory\AnnotationReader\Driver\DualDriver
+ * @coversDefaultClass \Sofascore\PurgatoryBundle\AnnotationReader\Driver\DualDriver
  */
 class DualDriverTest extends TestCase
 {

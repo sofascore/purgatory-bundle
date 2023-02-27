@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests\Command;
+namespace Sofascore\PurgatoryBundle\Tests\Command;
 
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\Command\DebugCommand;
-use SofaScore\Purgatory\Mapping\Loader\LoaderInterface;
-use SofaScore\Purgatory\Mapping\MappingCollection;
-use SofaScore\Purgatory\Mapping\MappingValue;
+use Sofascore\PurgatoryBundle\Command\DebugCommand;
+use Sofascore\PurgatoryBundle\Mapping\Loader\LoaderInterface;
+use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
+use Sofascore\PurgatoryBundle\Mapping\MappingValue;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -18,7 +18,7 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * @covers \SofaScore\Purgatory\Command\DebugCommand
+ * @covers \Sofascore\PurgatoryBundle\Command\DebugCommand
  */
 class DebugCommandTest extends TestCase
 {

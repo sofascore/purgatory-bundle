@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace SofaScore\Purgatory\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\TestCase;
-use SofaScore\Purgatory\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
-use SofaScore\Purgatory\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
+use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 
 /**
- * @covers \SofaScore\Purgatory\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass
+ * @covers \Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass
  */
 class SymfonyPurgerRemovalCompilerPassTest extends TestCase
 {

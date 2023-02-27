@@ -7,14 +7,7 @@
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
 >
     <projectFiles>
-        <directory name="Annotation" />
-        <directory name="AnnotationReader" />
-        <directory name="DependencyInjection" />
-        <directory name="Listener" />
-        <directory name="Mapping" />
-        <directory name="Purger" />
-        <file name="Purgatory.php" />
-        <file name="PurgatoryBundle.php" />
+        <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
         </ignoreFiles>

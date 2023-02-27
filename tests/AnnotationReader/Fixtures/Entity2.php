@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-namespace SofaScore\Purgatory\Tests\AnnotationReader\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures;
 
 
 use Doctrine\ORM\Mapping as ORM;
