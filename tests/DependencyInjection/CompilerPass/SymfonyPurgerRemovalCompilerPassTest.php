@@ -24,6 +24,14 @@ class SymfonyPurgerRemovalCompilerPassTest extends TestCase
         $this->compilerPass = new SymfonyPurgerRemovalCompilerPass();
     }
 
+    protected function tearDown(): void
+    {
+        unset(
+            $this->container,
+            $this->compilerPass,
+        );
+    }
+
     public function testCompilerPassProcessWithoutExistingHttpCache(): void
     {
         $this->container->addDefinitions(['sofascore.purgatory.purger.symfony' => new Definition(SymfonyPurger::class)]);
@@ -39,7 +47,7 @@ class SymfonyPurgerRemovalCompilerPassTest extends TestCase
     {
         $this->container->addDefinitions([
             'http_cache.store' => new Definition('TestClass'),
-            'sofascore.purgatory.purger.symfony' => new Definition(SymfonyPurger::class)
+            'sofascore.purgatory.purger.symfony' => new Definition(SymfonyPurger::class),
         ]);
 
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));

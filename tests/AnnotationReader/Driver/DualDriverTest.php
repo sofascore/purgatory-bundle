@@ -20,8 +20,12 @@ class DualDriverTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->driver = new DualDriver(new AnnotationReader(), new AttributeReader());
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->driver);
     }
 
     /**
@@ -43,7 +47,7 @@ class DualDriverTest extends TestCase
     {
         $annotation = $this->driver->getClassAnnotation(
             new \ReflectionClass(DualClass::class),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
 
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
@@ -56,28 +60,28 @@ class DualDriverTest extends TestCase
     public function testGetMethodAnnotations(): void
     {
         $annotations = $this->driver->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute')
+            new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute'),
         );
         self::assertCount(2, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[1]);
 
         $annotations = $this->driver->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithAnnotation')
+            new \ReflectionMethod(DualClass::class, 'methodWithAnnotation'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('annotation', $annotations[0]->getValue());
 
         $annotations = $this->driver->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithAttribute')
+            new \ReflectionMethod(DualClass::class, 'methodWithAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('attribute', $annotations[0]->getValue());
 
         $annotations = $this->driver->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations')
+            new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations'),
         );
         self::assertCount(0, $annotations);
     }
@@ -89,28 +93,28 @@ class DualDriverTest extends TestCase
     {
         $annotation = $this->driver->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('annotation', $annotation->getValue());
 
         $annotation = $this->driver->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithAnnotation'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('annotation', $annotation->getValue());
 
         $annotation = $this->driver->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->driver->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
     }
@@ -121,28 +125,28 @@ class DualDriverTest extends TestCase
     public function testGetPropertyAnnotations(): void
     {
         $annotations = $this->driver->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute')
+            new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute'),
         );
         self::assertCount(2, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[1]);
 
         $annotations = $this->driver->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation')
+            new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('annotation', $annotations[0]->getValue());
 
         $annotations = $this->driver->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithAttribute')
+            new \ReflectionProperty(DualClass::class, 'propertyWithAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('attribute', $annotations[0]->getValue());
 
         $annotations = $this->driver->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations')
+            new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations'),
         );
         self::assertCount(0, $annotations);
     }
@@ -154,28 +158,28 @@ class DualDriverTest extends TestCase
     {
         $annotation = $this->driver->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('annotation', $annotation->getValue());
 
         $annotation = $this->driver->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('annotation', $annotation->getValue());
 
         $annotation = $this->driver->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->driver->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
     }

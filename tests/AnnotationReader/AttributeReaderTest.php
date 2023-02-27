@@ -18,8 +18,12 @@ class AttributeReaderTest extends TestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
         $this->reader = new AttributeReader();
+    }
+
+    protected function tearDown(): void
+    {
+        unset($this->reader);
     }
 
     /**
@@ -40,7 +44,7 @@ class AttributeReaderTest extends TestCase
     {
         $annotation = $this->reader->getClassAnnotation(
             new \ReflectionClass(DualClass::class),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
 
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
@@ -53,25 +57,25 @@ class AttributeReaderTest extends TestCase
     public function testGetMethodAnnotations(): void
     {
         $annotations = $this->reader->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute')
+            new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
 
         $annotations = $this->reader->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithAnnotation')
+            new \ReflectionMethod(DualClass::class, 'methodWithAnnotation'),
         );
         self::assertCount(0, $annotations);
 
         $annotations = $this->reader->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithAttribute')
+            new \ReflectionMethod(DualClass::class, 'methodWithAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('attribute', $annotations[0]->getValue());
 
         $annotations = $this->reader->getMethodAnnotations(
-            new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations')
+            new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations'),
         );
         self::assertCount(0, $annotations);
     }
@@ -83,27 +87,27 @@ class AttributeReaderTest extends TestCase
     {
         $annotation = $this->reader->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithBothAnnotationAndAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->reader->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithAnnotation'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
 
         $annotation = $this->reader->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->reader->getMethodAnnotation(
             new \ReflectionMethod(DualClass::class, 'methodWithNoAnnotations'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
     }
@@ -114,25 +118,25 @@ class AttributeReaderTest extends TestCase
     public function testGetPropertyAnnotations(): void
     {
         $annotations = $this->reader->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute')
+            new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
 
         $annotations = $this->reader->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation')
+            new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation'),
         );
         self::assertCount(0, $annotations);
 
         $annotations = $this->reader->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithAttribute')
+            new \ReflectionProperty(DualClass::class, 'propertyWithAttribute'),
         );
         self::assertCount(1, $annotations);
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotations[0]);
         self::assertEquals('attribute', $annotations[0]->getValue());
 
         $annotations = $this->reader->getPropertyAnnotations(
-            new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations')
+            new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations'),
         );
         self::assertCount(0, $annotations);
     }
@@ -144,27 +148,27 @@ class AttributeReaderTest extends TestCase
     {
         $annotation = $this->reader->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithBothAnnotationAndAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->reader->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithAnnotation'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
 
         $annotation = $this->reader->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithAttribute'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertInstanceOf(SillyLittleAnnotation::class, $annotation);
         self::assertEquals('attribute', $annotation->getValue());
 
         $annotation = $this->reader->getPropertyAnnotation(
             new \ReflectionProperty(DualClass::class, 'propertyWithNoAnnotations'),
-            SillyLittleAnnotation::class
+            SillyLittleAnnotation::class,
         );
         self::assertNull($annotation);
     }

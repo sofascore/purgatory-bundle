@@ -13,13 +13,11 @@ use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity1;
 use Sofascore\PurgatoryBundle\Tests\AnnotationReader\Fixtures\Entity2;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
-
 /**
  * @coversDefaultClass \Sofascore\PurgatoryBundle\Purgatory
  */
 final class PurgatoryTest extends TestCase
 {
-
     /**
      * @covers ::getRoutesToPurge
      */
@@ -75,17 +73,16 @@ final class PurgatoryTest extends TestCase
         return $loader;
     }
 
-
     private function getMappingCollection(): MappingCollection
     {
         $collection = new MappingCollection();
 
-        $name = '\\' . ltrim(Entity2::class, '\\');
+        $name = '\\'.ltrim(Entity2::class, '\\');
         $mappingValue = $this->getMappingValue('app_api_v1_entity1_list_of_entities2', ['id' => ['entity1.id']]);
 
         $collection->add($name, $mappingValue);
 
-        $name = '\\' . ltrim(Entity2::class, '\\') . '::' . 'count';
+        $name = '\\'.ltrim(Entity2::class, '\\').'::count';
         $mappingValue = $this->getMappingValue('app_api_v1_entity2_count', ['id' => ['id']]);
 
         $collection->add($name, $mappingValue);
@@ -97,7 +94,7 @@ final class PurgatoryTest extends TestCase
         string $routeName,
         ?array $parameters = null,
         ?string $if = null,
-        ?array $tags = null
+        ?array $tags = null,
     ): MappingValue {
         $mappingValue = new MappingValue($routeName);
         $mappingValue->setParameters($parameters);

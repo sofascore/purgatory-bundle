@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle;
 
-use Exception;
 use Sofascore\PurgatoryBundle\Mapping\Loader\LoaderInterface;
 use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -45,12 +46,11 @@ class Purgatory
      *
      * @param mixed $object            Object that was changed
      * @param array $changedProperties List of property paths (ex. ['status.description', 'userCount', ...])
-     *
      */
     public function getRoutesToPurge($object, array $changedProperties): array
     {
         // check if there are changes
-        if (count($changedProperties) <= 0) {
+        if (\count($changedProperties) <= 0) {
             return [];
         }
 
@@ -65,7 +65,7 @@ class Purgatory
         $stack[] = [$this->getObjectClass($object), array_shift($changedProperties)];
 
         // process class properties
-        while (count($stack) > 0) {
+        while (\count($stack) > 0) {
             // get class and property
             [$class, $property] = array_pop($stack);
 
@@ -99,14 +99,13 @@ class Purgatory
             }
 
             // move to next property if it exists
-            if (count($changedProperties) > 0) {
+            if (\count($changedProperties) > 0) {
                 $stack[] = [$this->getObjectClass($object), array_shift($changedProperties)];
             }
         }
 
         return $routes;
     }
-
 
     private function processMappingValues($object, array $mappingValues, array &$urls): void
     {
@@ -130,7 +129,7 @@ class Purgatory
 
                 foreach ($paramProperties as $property) {
                     // if property is fixed string, just set parameter and continue
-                    if (strpos($property, '@') === 0) {
+                    if (str_starts_with($property, '@')) {
                         $routeParameters[$param][] = substr($property, 1);
                         continue;
                     }
@@ -144,14 +143,14 @@ class Purgatory
                         $propertyValue = $this->propertyAccessor->getValue($object, $property);
 
                         // if property value is an array then generate param for every element
-                        if (is_array($propertyValue)) {
+                        if (\is_array($propertyValue)) {
                             foreach ($propertyValue as $propertyParamValue) {
                                 $routeParameters[$param][] = $propertyParamValue;
                             }
                         } else {
                             $routeParameters[$param][] = $propertyValue;
                         }
-                    } catch (Exception $e) {
+                    } catch (\Exception $e) {
                         // continue if no default value
                         if (null === $propertyDefault) {
                             continue;
@@ -172,7 +171,7 @@ class Purgatory
             // resolve tags
             $tags = $mappingValue->getTags() ?? [];
             foreach ($tags as $key => $value) {
-                if (!is_string($value)) {
+                if (!\is_string($value)) {
                     continue;
                 }
 
@@ -203,7 +202,7 @@ class Purgatory
 
     private function getObjectClass(object $object): string
     {
-        return '\\' . ltrim(get_class($object), '\\');
+        return '\\'.ltrim($object::class, '\\');
     }
 
     /**
@@ -215,7 +214,7 @@ class Purgatory
             return false;
         }
 
-        return '\\' . ltrim($parentClass, '\\');
+        return '\\'.ltrim($parentClass, '\\');
     }
 
     private function getCartesianProduct(array $input = []): array

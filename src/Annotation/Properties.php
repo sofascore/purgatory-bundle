@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Annotation;
 
 /**
  * @Annotation
+ *
  * @Target("METHOD")
+ *
  * @codeCoverageIgnore
  */
 #[\Attribute(\Attribute::TARGET_METHOD)]

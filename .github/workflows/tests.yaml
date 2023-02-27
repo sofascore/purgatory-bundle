@@ -1,0 +1,52 @@
+name: Tests
+
+on:
+    push:
+    pull_request:
+        branches: [ master ]
+    workflow_dispatch:
+
+jobs:
+    phpunit:
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ '8.1', '8.2' ]
+                symfony: [ '5.4', '6.2' ]
+                dependencies: [ 'highest', 'lowest' ]
+        env:
+            SYMFONY_REQUIRE: ${{ matrix.symfony }}.*
+        name: PHP ${{ matrix.php }} & Symfony ${{ matrix.symfony }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }} Test
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    ini-values: zend.exception_ignore_args=false
+                    tools: flex
+
+            -   name: Install dependencies
+                uses: ramsey/composer-install@v2
+                with:
+                    composer-options: '--prefer-dist'
+                    dependency-versions: ${{ matrix.dependencies }}
+
+            -   name: Install PHPUnit dependencies
+                run: vendor/bin/simple-phpunit install
+
+            -   name: Run tests
+                run: vendor/bin/simple-phpunit --colors=always --coverage-clover=clover.xml --printer=mheap\\GithubActionsReporter\\Printer --verbose
+
+            -   name: Report test coverage
+                if: ${{ github.event_name == 'pull_request' }}
+                uses: slavcodev/coverage-monitor-action@v1
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    coverage_path: clover.xml
+                    threshold_alert: 3
+                    threshold_warning: 50
+                    comment_mode: update

@@ -12,21 +12,15 @@ class DualDriver implements DriverInterface
     private Reader $annotationReader;
     private Reader $attributeReader;
 
-    protected $isPHP8;
-
     public function __construct(Reader $annotationReader, Reader $attributeReader)
     {
         $this->annotationReader = $annotationReader;
         $this->attributeReader = $attributeReader;
-        $this->isPHP8 = PHP_VERSION_ID >= 80000;
     }
 
     public function getClassAnnotations(\ReflectionClass $class): array
     {
         $annotations = $this->annotationReader->getClassAnnotations($class);
-        if (!$this->isPHP8) {
-            return $annotations;
-        }
 
         return array_merge($annotations, $this->attributeReader->getClassAnnotations($class));
     }
@@ -38,19 +32,12 @@ class DualDriver implements DriverInterface
             return $annotation;
         }
 
-        if ($this->isPHP8) {
-            return $this->attributeReader->getClassAnnotation($class, $annotationName);
-        }
-
-        return null;
+        return $this->attributeReader->getClassAnnotation($class, $annotationName);
     }
 
     public function getMethodAnnotations(\ReflectionMethod $method): array
     {
         $annotations = $this->annotationReader->getMethodAnnotations($method);
-        if (!$this->isPHP8) {
-            return $annotations;
-        }
 
         return array_merge($annotations, $this->attributeReader->getMethodAnnotations($method));
     }
@@ -62,19 +49,12 @@ class DualDriver implements DriverInterface
             return $annotation;
         }
 
-        if ($this->isPHP8) {
-            return $this->attributeReader->getMethodAnnotation($method, $annotationName);
-        }
-
-        return null;
+        return $this->attributeReader->getMethodAnnotation($method, $annotationName);
     }
 
     public function getPropertyAnnotations(\ReflectionProperty $property): array
     {
         $annotations = $this->annotationReader->getPropertyAnnotations($property);
-        if (!$this->isPHP8) {
-            return $annotations;
-        }
 
         return array_merge($annotations, $this->attributeReader->getPropertyAnnotations($property));
     }
@@ -86,10 +66,6 @@ class DualDriver implements DriverInterface
             return $annotation;
         }
 
-        if ($this->isPHP8) {
-            return $this->attributeReader->getPropertyAnnotation($property, $annotationName);
-        }
-
-        return null;
+        return $this->attributeReader->getPropertyAnnotation($property, $annotationName);
     }
 }

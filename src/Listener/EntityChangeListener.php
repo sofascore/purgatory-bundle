@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Listener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -22,7 +24,7 @@ final class EntityChangeListener
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
         Purgatory $purgatory,
-        PurgerInterface $purger
+        PurgerInterface $purger,
     ) {
         $this->urlGenerator = $urlGenerator;
         $this->purgatoryService = $purgatory;

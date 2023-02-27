@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sofascore\PurgatoryBundle\Tests\Mapping\Loader;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -97,7 +99,7 @@ class AnnotationsLoaderTest extends TestCase
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
-            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class])]]
+            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class])]],
         );
         $objectManagerMock->method('getClassMetadata')->willReturn($this->mockClassMetadata(Entity1::class));
 
@@ -130,10 +132,10 @@ class AnnotationsLoaderTest extends TestCase
         $configurationMock->expects(self::once())->method('getDebug')->willReturn(true);
 
         $readerMock->method('getAnnotations')->willReturn(
-            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class, 'properties' => ['name']])]]
+            [PurgeOn::class => [new PurgeOn(['value' => Entity1::class, 'properties' => ['name']])]],
         );
         $objectManagerMock->method('getClassMetadata')->willReturn(
-            $this->mockClassMetadata(Entity1::class, ['name', 'id', 'createdAt'])
+            $this->mockClassMetadata(Entity1::class, ['name', 'id', 'createdAt']),
         );
 
         $loader = new AnnotationsLoader(...$mocks);
@@ -159,7 +161,7 @@ class AnnotationsLoaderTest extends TestCase
         $sample = new PurgeOn(
             $testClass,
             $testProperties,
-            ['entityId' => 'id']
+            ['entityId' => 'id'],
         );
 
         $annotationsLoader = new AnnotationsLoader(...$this->getMocks());
@@ -167,7 +169,7 @@ class AnnotationsLoaderTest extends TestCase
             $sample,
             $testRouteName,
             $testRoute,
-            $subscriptions
+            $subscriptions,
         );
 
         self::assertCount(2, $subscriptions);
@@ -178,7 +180,7 @@ class AnnotationsLoaderTest extends TestCase
         self::assertEquals($testProperties[0], $subscriptions[0]->getProperty());
         self::assertEquals($testProperties[1], $subscriptions[1]->getProperty());
         $expArr = [
-            'entityId' => ['id']
+            'entityId' => ['id'],
         ];
         self::assertEquals($expArr, $subscriptions[0]->getParameters());
         self::assertEquals($expArr, $subscriptions[1]->getParameters());
@@ -214,13 +216,13 @@ class AnnotationsLoaderTest extends TestCase
         $mockedMetadata = $this->mockClassMetadata(
             $testClass,
             ['name', 'id', 'createdAt'],
-            [$testProperty]
+            [$testProperty],
         );
         $mockedMetadata->method('getAssociationMappedByTargetField')->willReturn('name');
         $mockedMetadata->method('getAssociationTargetClass')->willReturn($testClass);
 
         $objectManagerMock->method('getClassMetadata')->willReturn(
-            $mockedMetadata
+            $mockedMetadata,
         );
 
         $annotationsLoader = new AnnotationsLoader(...$mocks);
@@ -237,8 +239,6 @@ class AnnotationsLoaderTest extends TestCase
         self::assertEquals($testRoute->getPath(), $outputSubscription->getRoute()->getPath());
     }
 
-
-
     /**
      * @return MockObject[]
      */
@@ -249,7 +249,7 @@ class AnnotationsLoaderTest extends TestCase
 
         $controllerResolverMock = $this->createMock(ControllerResolverInterface::class);
         $controllerResolverMock->method('getController')->willReturn(
-            [self::class, 'mockCallable']
+            [self::class, 'mockCallable'],
         );
 
         return [
@@ -257,7 +257,7 @@ class AnnotationsLoaderTest extends TestCase
             $routerMock,
             $controllerResolverMock,
             $this->createMock(Reader::class),
-            $this->createMock(ObjectManager::class)
+            $this->createMock(ObjectManager::class),
         ];
     }
 
@@ -266,8 +266,9 @@ class AnnotationsLoaderTest extends TestCase
         $collection = new RouteCollection();
         $collection->add(
             'app_api_v1_sport_list',
-            new Route('/api/v1/sport/list', ['_controller' => self::TEST_CONTROLLER])
+            new Route('/api/v1/sport/list', ['_controller' => self::TEST_CONTROLLER]),
         );
+
         return $collection;
     }
 
@@ -275,12 +276,11 @@ class AnnotationsLoaderTest extends TestCase
     {
         $this->routeCollection->add(
             $routeName,
-            new Route($routePath, ['_controller' => $controller])
+            new Route($routePath, ['_controller' => $controller]),
         );
     }
 
     /**
-     * @return ClassMetadata|MockObject
      * @throws \ReflectionException
      */
     private function mockClassMetadata(string $class, ?array $fieldNames = null, ?array $associationNames = null): ClassMetadata|MockObject
@@ -289,6 +289,7 @@ class AnnotationsLoaderTest extends TestCase
         $metadata->method('getReflectionClass')->willReturn(new \ReflectionClass($class));
         $metadata->method('getFieldNames')->willReturn($fieldNames);
         $metadata->method('getAssociationNames')->willReturn($associationNames);
+
         return $metadata;
     }
 }

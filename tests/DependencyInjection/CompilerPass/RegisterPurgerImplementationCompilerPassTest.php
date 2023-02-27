@@ -25,6 +25,14 @@ class RegisterPurgerImplementationCompilerPassTest extends TestCase
         $this->compilerPass = new RegisterPurgerImplementationCompilerPass();
     }
 
+    protected function tearDown(): void
+    {
+        unset(
+            $this->container,
+            $this->compilerPass,
+        );
+    }
+
     public function testCompilerPassProcess(): void
     {
         $this->container->setParameter('sofascore.purgatory.purger', 'purger_test');

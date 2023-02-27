@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Command;
 
-
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Mapping\Loader\LoaderInterface;
@@ -22,10 +21,10 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class DebugCommandTest extends TestCase
 {
-    private Command $command;
-    private CommandTester $commandTester;
     private LoaderInterface $loaderMock;
     private RouteCollection $routeCollection;
+    private Command $command;
+    private CommandTester $commandTester;
 
     protected function setUp(): void
     {
@@ -39,6 +38,16 @@ class DebugCommandTest extends TestCase
         $application->add(new DebugCommand($this->loaderMock, $routerMock));
         $this->command = $application->find('purgatory:debug');
         $this->commandTester = new CommandTester($this->command);
+    }
+
+    protected function tearDown(): void
+    {
+        unset(
+            $this->loaderMock,
+            $this->routeCollection,
+            $this->command,
+            $this->commandTester,
+        );
     }
 
     /** @dataProvider executeData */
@@ -55,14 +64,14 @@ class DebugCommandTest extends TestCase
         $this->loaderMock->method('load')->willReturn($mappingCollection);
 
         foreach ($filterData as $filter => $expectedRoutes) {
-            $this->commandTester->execute(array('command' => $this->command->getName(), 'filter' => $filter));
+            $this->commandTester->execute(['command' => $this->command->getName(), 'filter' => $filter]);
 
             $displayed = $this->commandTester->getDisplay();
             foreach ($expectedRoutes as $routeName => $expectedCount) {
                 $this->assertEquals(
                     $expectedCount,
                     substr_count($displayed, $routeName),
-                    sprintf('%s expected to be displayed %d times', $routeName, $expectedCount)
+                    sprintf('%s expected to be displayed %d times', $routeName, $expectedCount),
                 );
             }
         }
@@ -88,8 +97,8 @@ class DebugCommandTest extends TestCase
                 'Class1' => [
                     'sofa_route_1' => 1,
                     'sofa_route_2' => 1,
-                ]
-            ]
+                ],
+            ],
         ];
 
         yield [
@@ -100,7 +109,7 @@ class DebugCommandTest extends TestCase
                     'sofa_route_1' => 1,
                     'sofa_route_2' => 1,
                 ],
-            ]
+            ],
         ];
 
         yield [
@@ -111,7 +120,7 @@ class DebugCommandTest extends TestCase
                     'sofa_route_1' => 0,
                     'sofa_route_2' => 0,
                 ],
-            ]
+            ],
         ];
 
         yield [
@@ -122,7 +131,7 @@ class DebugCommandTest extends TestCase
                     'sofa_route_1' => 1,
                     'sofa_route_2' => 1,
                 ],
-            ]
+            ],
         ];
 
         yield [
@@ -133,8 +142,7 @@ class DebugCommandTest extends TestCase
                     'sofa_route_1' => 1,
                     'sofa_route_2' => 0,
                 ],
-            ]
+            ],
         ];
     }
-
 }

@@ -1,0 +1,12 @@
+[
+    {
+        "location": "Sofascore\\PurgatoryBundle\\Tests\\AnnotationReader\\AttributeReaderTest::testGetClassAnnotations",
+        "message": "The \"PHPUnit\\TextUI\\DefaultResultPrinter\" class is considered internal This class is not covered by the backward compatibility promise for PHPUnit. It may change without further notice. You should not use it from \"mheap\\GithubActionsReporter\\Printer9\".",
+        "count": 2
+    },
+    {
+        "location": "Sofascore\\PurgatoryBundle\\Tests\\Command\\DebugCommandTest::setUp",
+        "message": "Using ${var} in strings is deprecated, use {$var} instead",
+        "count": 2
+    }
+]
