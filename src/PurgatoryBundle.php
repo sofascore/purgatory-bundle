@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle;
 
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\ControllerClassMapPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerImplementationCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\SymfonyPurgerRemovalCompilerPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,5 +21,6 @@ final class PurgatoryBundle extends Bundle
 
         $container->addCompilerPass(new RegisterPurgerImplementationCompilerPass());
         $container->addCompilerPass(new SymfonyPurgerRemovalCompilerPass());
+        $container->addCompilerPass(new ControllerClassMapPass());
     }
 }
