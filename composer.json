@@ -21,7 +21,7 @@
     },
     "require": {
         "php": ">=8.1",
-        "doctrine/annotations": "^1.13",
+        "doctrine/annotations": "^1.13 || ^2",
         "doctrine/doctrine-bundle": "^2.1",
         "doctrine/orm": "^2.8",
         "symfony/config": "^5.4 || ^6.2",
