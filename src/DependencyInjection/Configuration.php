@@ -16,7 +16,7 @@ final class Configuration implements ConfigurationInterface
      * {@inheritdoc}
      *
      * @psalm-suppress PossiblyNullReference
-     * @psalm-suppress PossiblyUndefinedMethod
+     * @psalm-suppress UndefinedMethod
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
