@@ -14,9 +14,7 @@ use Sofascore\PurgatoryBundle\Mapping\MappingCollection;
 use Sofascore\PurgatoryBundle\Mapping\MappingValue;
 use Sofascore\PurgatoryBundle\Mapping\PropertySubscription;
 use Symfony\Component\Config\ConfigCache;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\CacheWarmer\WarmableInterface;
-use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -24,22 +22,22 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
 {
     protected RouterInterface $router;
     protected Configuration $config;
-    protected ControllerResolverInterface $controllerResolver;
     protected Reader $annotationReader;
     protected ObjectManager $manager;
+    protected array $serviceClassMap;
 
     public function __construct(
         Configuration $config,
         RouterInterface $router,
-        ControllerResolverInterface $controllerResolver,
         Reader $annotationReader,
         ObjectManager $manager,
+        array $serviceClassMap,
     ) {
         $this->config = $config;
         $this->router = $router;
-        $this->controllerResolver = $controllerResolver;
         $this->annotationReader = $annotationReader;
         $this->manager = $manager;
+        $this->serviceClassMap = $serviceClassMap;
     }
 
     /**
@@ -118,15 +116,17 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
                 }
             }
 
-            $controllerCallable = $this->resolveController($route->getDefault('_controller'));
+            if (null === $routeController = $route->getDefault('_controller')) {
+                continue;
+            }
 
             // if controller cannot be resolved, skip route
-            if (false === $controllerCallable) {
+            if (null === $controllerCallableReflection = $this->resolveControllerCallable($routeController)) {
                 continue;
             }
 
             // get class/property subscriptions
-            $this->parseControllerMappings($controllerCallable, $routeName, $route, $subscriptions);
+            $this->parseControllerMappings($controllerCallableReflection, $routeName, $route, $subscriptions);
         }
 
         // resolve subscription classes and properties
@@ -154,22 +154,46 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
         return $mappingCollection;
     }
 
-    protected function resolveController(?string $controllerPath): callable|false
+    private function resolveControllerCallable(array|object|string $controller): ?\ReflectionMethod
     {
-        if (null === $controllerPath) {
-            return false;
+        if (\is_array($controller) && isset($controller[0]) && \is_string($controller[0]) && isset($controller[1])) {
+            $resolvedClass = $this->resolveClass($controller[0]);
+
+            return $resolvedClass ? new \ReflectionMethod($resolvedClass, $controller[1]) : null;
         }
 
-        // set controller path
-        $request = new Request([], [], ['_controller' => $controllerPath]);
-
-        try {
-            // resolve controller path
-            return $this->controllerResolver->getController($request);
-        } catch (\Exception $e) {
-            // if error happens skip route
-            return false;
+        if (\is_object($controller) && \is_callable($controller)) {
+            return new \ReflectionMethod($controller, '__invoke');
         }
+
+        if (\function_exists($controller)) {
+            return null;
+        }
+
+        if (!str_contains($controller, '::')) {
+            $resolvedClass = $this->resolveClass($controller);
+
+            return $resolvedClass ? new \ReflectionMethod($resolvedClass, '__invoke') : null;
+        }
+
+        [$class, $method] = explode('::', $controller, 2);
+
+        $resolvedClass = $this->resolveClass($class);
+
+        return $resolvedClass ? new \ReflectionMethod($resolvedClass, $method) : null;
+    }
+
+    private function resolveClass(string $serviceIdOrClass): ?string
+    {
+        if (isset($this->serviceClassMap[$serviceIdOrClass])) {
+            return $this->serviceClassMap[$serviceIdOrClass];
+        }
+
+        if (class_exists($serviceIdOrClass)) {
+            return $serviceIdOrClass;
+        }
+
+        return null;
     }
 
     /**
@@ -178,19 +202,12 @@ class AnnotationsLoader implements LoaderInterface, WarmableInterface
      * @throws \ReflectionException|ReaderException
      */
     private function parseControllerMappings(
-        callable $controllerCallable,
+        \ReflectionMethod $controllerCallableReflection,
         string $routeName,
         Route $route,
         array &$subscriptions,
     ): array {
-        if (!\is_array($controllerCallable)) {
-            return [];
-        }
-
-        [$controller, $method] = $controllerCallable;
-
-        $reflectionMethod = new \ReflectionMethod($controller, $method);
-        $methodAnnotations = $this->annotationReader->getAnnotations($reflectionMethod);
+        $methodAnnotations = $this->annotationReader->getAnnotations($controllerCallableReflection);
 
         foreach ($methodAnnotations as $class => $annotations) {
             if (PurgeOn::class === $class) {

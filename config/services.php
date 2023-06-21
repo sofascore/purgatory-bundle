@@ -35,9 +35,9 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('sofascore.purgatory.mapping.configuration'),
                 service('router'),
-                service('controller_resolver'),
                 service('sofascore.purgatory.annotation_reader'),
                 service('doctrine.orm.entity_manager'),
+                abstract_arg('ControllerClassMapPass'),
             ])
 
         ->set('sofascore.purgatory.mapping.annotation_loader.warmer', AnnotationsLoaderWarmer::class)
