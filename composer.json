@@ -1,0 +1,38 @@
+{
+    "name": "sofascore/purgatory-bundle2",
+    "description": "Library for easy construction of cache purge requests.",
+    "type": "symfony-bundle",
+    "keywords": [
+        "todo",
+        "todo"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sofascore",
+            "email": "server@sofascore.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Sofascore\\PurgatoryBundle2\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sofascore\\PurgatoryBundle2\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.1",
+        "symfony/config": "^5.4 || ^6.4 || ^7.0",
+        "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
+        "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
