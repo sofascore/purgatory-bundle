@@ -55,7 +55,7 @@ jobs:
                 uses: slavcodev/coverage-monitor-action@v1
                 with:
                     github_token: ${{ secrets.GITHUB_TOKEN }}
-                    coverage_path: clover.xml
+                    coverage_path: coverage.xml
                     threshold_alert: 3
                     threshold_warning: 50
                     comment_mode: update
