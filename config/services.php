@@ -12,6 +12,7 @@ return static function (ContainerConfigurator $container) {
         ->args([
             service('router'),
             [],
+            [],
         ])
     ;
 };

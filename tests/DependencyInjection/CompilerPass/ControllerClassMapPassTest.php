@@ -33,6 +33,7 @@ class ControllerClassMapPassTest extends TestCase
             ->setArguments([
                 $this->createMock(RouterInterface::class),
                 [],
+                [],
             ]);
 
         $compilerPass = new ControllerClassMapPass();

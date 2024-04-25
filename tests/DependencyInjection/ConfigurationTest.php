@@ -17,6 +17,7 @@ final class ConfigurationTest extends TestCase
         $config = (new Processor())->processConfiguration(new Configuration(), ['sofascore_purgatory' => []]);
 
         $this->assertSame([
+            'route_ignore_patterns' => [],
         ], $config);
     }
 }

@@ -15,6 +15,9 @@ final class PurgatoryExtension extends ConfigurableExtension
     {
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));
         $loader->load('services.php');
+
+        $container->getDefinition('sofascore.purgatory.controller_metadata_provider')
+            ->setArgument(2, $mergedConfig['route_ignore_patterns']);
     }
 
     public function getAlias(): string

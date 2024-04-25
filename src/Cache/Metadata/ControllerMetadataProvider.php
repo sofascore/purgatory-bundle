@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
+use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;
 use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -17,6 +18,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
     public function __construct(
         private readonly RouterInterface $router,
         private readonly array $classMap,
+        private readonly array $routeIgnorePatterns,
     ) {
     }
 
@@ -28,7 +30,9 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
         $routeCollection = $this->router->getRouteCollection();
 
         foreach ($routeCollection as $routeName => $route) {
-            // TODO routeIgnorePatterns u nekon od idućih PRova
+            if ($this->shouldSkipRoute($routeName)) {
+                continue;
+            }
 
             $controller = $route->getDefault('_controller');
 
@@ -87,5 +91,22 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
         }
 
         throw new ClassNotResolvableException($serviceIdOrClass);
+    }
+
+    private function shouldSkipRoute(string $routeName): bool
+    {
+        foreach ($this->routeIgnorePatterns as $pattern) {
+            $result = preg_match($pattern, $routeName);
+
+            if (1 === $result) {
+                return true;
+            }
+
+            if (false === $result) {
+                throw new InvalidPatternException($pattern, $routeName);
+            }
+        }
+
+        return false;
     }
 }

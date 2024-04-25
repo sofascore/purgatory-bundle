@@ -49,6 +49,7 @@ class ControllerMetadataProviderTest extends TestCase
                 FooController::class => FooController::class,
                 'foo.controller' => FooController::class,
             ],
+            routeIgnorePatterns: [],
         );
 
         /** @var ControllerMetadata[] $metadata */
@@ -92,6 +93,7 @@ class ControllerMetadataProviderTest extends TestCase
         $provider = new ControllerMetadataProvider(
             router: $router,
             classMap: [],
+            routeIgnorePatterns: [],
         );
 
         $this->expectException(ClassNotResolvableException::class);
@@ -124,11 +126,51 @@ class ControllerMetadataProviderTest extends TestCase
             classMap: [
                 BarController::class => BarController::class,
             ],
+            routeIgnorePatterns: [],
         );
 
         $this->expectException(RouteNotFoundException::class);
         $this->expectExceptionMessage("Route 'nonexistent_route' not found.");
 
         [...$provider->provide()];
+    }
+
+    public function testRouteIgnorePattern(): void
+    {
+        $collection = new RouteCollection();
+
+        $fooBarRoute = new Route(
+            path: '/foo/bar',
+            defaults: [
+                '_controller' => sprintf('%s::%s', FooController::class, 'barAction'),
+            ],
+        );
+        $fooBazRoute = new Route(
+            path: '/foo/baz',
+            defaults: [
+                '_controller' => 'foo.controller::bazAction',
+            ],
+        );
+
+        $collection->add(name: 'foo_bar', route: $fooBarRoute);
+        $collection->add(name: 'foo_baz', route: $fooBazRoute);
+
+        $router = $this->createMock(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new ControllerMetadataProvider(
+            router: $router,
+            classMap: [
+                FooController::class => FooController::class,
+                'foo.controller' => FooController::class,
+            ],
+            routeIgnorePatterns: ['/^foo_/'],
+        );
+
+        /** @var ControllerMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertCount(0, $metadata);
     }
 }
