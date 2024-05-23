@@ -16,7 +16,7 @@ use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
 use Symfony\Component\Routing\Route;
 
 #[CoversClass(PurgeSubscriptionProvider::class)]
-class PurgeSubscriptionProviderTest extends TestCase
+final class PurgeSubscriptionProviderTest extends TestCase
 {
     #[DataProvider('provideControllerMetadata')]
     public function testPropertySubscription(ControllerMetadata $controllerMetadata, array $expectedSubscriptions): void

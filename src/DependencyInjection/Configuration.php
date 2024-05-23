@@ -17,7 +17,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->arrayNode('route_ignore_patterns')
-                    ->info('Route names that match given regular expressions will be ignored by purgatory.')
+                    ->info('Route names that match the given regular expressions will be ignored.')
                     ->example(['/^_profiler/', '/^_wdt/'])
                     ->scalarPrototype()
                     ->defaultValue([])

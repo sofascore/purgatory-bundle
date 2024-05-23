@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-class ControllerClassMapPass implements CompilerPassInterface
+final class ControllerClassMapPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

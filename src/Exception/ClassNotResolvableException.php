@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Exception;
 
 final class ClassNotResolvableException extends \LogicException implements PurgatoryException
 {
-    private const MESSAGE = 'Could not resolve "%s"';
+    private const MESSAGE = 'Unable to resolve the class for "%s".';
 
     public function __construct(
         string $serviceIdOrClass,

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Exception;
 
-class InvalidPatternException extends \RuntimeException implements PurgatoryException
+final class InvalidPatternException extends \RuntimeException implements PurgatoryException
 {
-    private const MESSAGE = "Could not perform a regular expression match on pattern '%s' and subject '%s'";
+    private const MESSAGE = 'Unable to perform a regular expression match on the pattern "%s" with the subject "%s".';
 
     public function __construct(
         string $pattern,

@@ -7,7 +7,6 @@ namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
 use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;
-use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -34,9 +33,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                 continue;
             }
 
-            $controller = $route->getDefault('_controller');
-
-            if (null === $controller) {
+            if (null === $controller = $route->getDefault('_controller')) {
                 continue;
             }
 
@@ -46,22 +43,10 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                 /** @var PurgeOn $purgeOn */
                 $purgeOn = $attribute->newInstance();
 
-                if (null === $purgeOn->route) {
+                if (null === $purgeOn->route || \in_array($routeName, (array) $purgeOn->route, true)) {
                     yield new ControllerMetadata(
                         routeName: $routeName,
                         route: $route,
-                        purgeOn: $purgeOn,
-                    );
-
-                    continue;
-                }
-
-                $routes = (array) $purgeOn->route;
-
-                foreach ($routes as $name) {
-                    yield new ControllerMetadata(
-                        routeName: $name,
-                        route: $routeCollection->get($name) ?? throw new RouteNotFoundException($name),
                         purgeOn: $purgeOn,
                     );
                 }
@@ -86,11 +71,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
 
     private function resolveClass(string $serviceIdOrClass): string
     {
-        if (isset($this->classMap[$serviceIdOrClass])) {
-            return $this->classMap[$serviceIdOrClass];
-        }
-
-        throw new ClassNotResolvableException($serviceIdOrClass);
+        return $this->classMap[$serviceIdOrClass] ?? throw new ClassNotResolvableException($serviceIdOrClass);
     }
 
     private function shouldSkipRoute(string $routeName): bool

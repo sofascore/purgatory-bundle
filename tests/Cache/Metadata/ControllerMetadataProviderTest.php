@@ -9,15 +9,13 @@ use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
-use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
-use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\BarController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
 #[CoversClass(ControllerMetadataProvider::class)]
-class ControllerMetadataProviderTest extends TestCase
+final class ControllerMetadataProviderTest extends TestCase
 {
     public function testControllerMetadata(): void
     {
@@ -97,40 +95,7 @@ class ControllerMetadataProviderTest extends TestCase
         );
 
         $this->expectException(ClassNotResolvableException::class);
-        $this->expectExceptionMessage('Could not resolve "nonexistent.controller"');
-
-        [...$provider->provide()];
-    }
-
-    public function testNonexistentRoute(): void
-    {
-        $router = $this->createMock(RouterInterface::class);
-
-        $collection = new RouteCollection();
-
-        $collection->add(
-            name: 'foo_bar',
-            route: new Route(
-                path: '/foo/bar',
-                defaults: [
-                    '_controller' => sprintf('%s::%s', BarController::class, 'fooAction'),
-                ],
-            ),
-        );
-
-        $router->method('getRouteCollection')
-            ->willReturn($collection);
-
-        $provider = new ControllerMetadataProvider(
-            router: $router,
-            classMap: [
-                BarController::class => BarController::class,
-            ],
-            routeIgnorePatterns: [],
-        );
-
-        $this->expectException(RouteNotFoundException::class);
-        $this->expectExceptionMessage("Route 'nonexistent_route' not found.");
+        $this->expectExceptionMessage('Unable to resolve the class for "nonexistent.controller".');
 
         [...$provider->provide()];
     }

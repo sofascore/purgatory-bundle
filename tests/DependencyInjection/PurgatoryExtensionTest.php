@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
 #[CoversClass(PurgatoryExtension::class)]
-class PurgatoryExtensionTest extends TestCase
+final class PurgatoryExtensionTest extends TestCase
 {
     public function testRouteIgnorePatternsIsSet(): void
     {

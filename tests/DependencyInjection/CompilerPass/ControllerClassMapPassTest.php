@@ -13,23 +13,19 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
 #[CoversClass(ControllerClassMapPass::class)]
-class ControllerClassMapPassTest extends TestCase
+final class ControllerClassMapPassTest extends TestCase
 {
     public function testPurgeOnCollection(): void
     {
         $container = new ContainerBuilder();
 
         $container->register(id: DummyService::class, class: DummyService::class)
-            ->setAutoconfigured(true)
             ->addTag('controller.service_arguments');
 
         $container->register(id: 'my.controller', class: DummyService::class)
-            ->setAutoconfigured(true)
             ->addTag('controller.service_arguments');
 
-        $container->register('sofascore.purgatory.controller_metadata_provider', ControllerMetadataProvider::class)
-            ->setAutoconfigured(true)
-            ->setPublic(true)
+        $definition = $container->register('sofascore.purgatory.controller_metadata_provider', ControllerMetadataProvider::class)
             ->setArguments([
                 $this->createMock(RouterInterface::class),
                 [],
@@ -39,13 +35,8 @@ class ControllerClassMapPassTest extends TestCase
         $compilerPass = new ControllerClassMapPass();
         $compilerPass->process($container);
 
-        self::assertTrue($container->has('sofascore.purgatory.controller_metadata_provider'));
-
-        $definition = $container->getDefinition('sofascore.purgatory.controller_metadata_provider');
-        self::assertSame(ControllerMetadataProvider::class, $definition->getClass());
-        self::assertInstanceOf(RouterInterface::class, $definition->getArgument(0));
-
         $classMap = $definition->getArgument(1);
+
         self::assertCount(2, $classMap);
         self::assertArrayHasKey(DummyService::class, $classMap);
         self::assertArrayHasKey('my.controller', $classMap);
