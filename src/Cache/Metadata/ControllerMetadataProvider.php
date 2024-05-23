@@ -14,6 +14,10 @@ use Symfony\Component\Routing\RouterInterface;
  */
 final class ControllerMetadataProvider implements ControllerMetadataProviderInterface
 {
+    /**
+     * @param array<string, class-string> $classMap
+     * @param list<non-empty-string>      $routeIgnorePatterns
+     */
     public function __construct(
         private readonly RouterInterface $router,
         private readonly array $classMap,
@@ -33,7 +37,9 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                 continue;
             }
 
-            if (null === $controller = $route->getDefault('_controller')) {
+            /** @var array{0: class-string, 1: string}|string|null $controller */
+            $controller = $route->getDefault('_controller');
+            if (null === $controller) {
                 continue;
             }
 
@@ -54,9 +60,12 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
         }
     }
 
+    /**
+     * @param array{0: class-string, 1: string}|string $controller
+     */
     private function resolveControllerCallable(array|string $controller): \ReflectionMethod
     {
-        if (\is_array($controller) && isset($controller[0], $controller[1])) {
+        if (\is_array($controller)) {
             return new \ReflectionMethod($this->resolveClass($controller[0]), $controller[1]);
         }
 
@@ -69,6 +78,9 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
         return new \ReflectionMethod($this->resolveClass($class), $method);
     }
 
+    /**
+     * @return class-string
+     */
     private function resolveClass(string $serviceIdOrClass): string
     {
         return $this->classMap[$serviceIdOrClass] ?? throw new ClassNotResolvableException($serviceIdOrClass);

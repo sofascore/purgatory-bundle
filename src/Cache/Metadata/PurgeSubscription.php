@@ -10,7 +10,8 @@ use Symfony\Component\Routing\Route;
 final class PurgeSubscription
 {
     /**
-     * @param class-string $class
+     * @param class-string                       $class
+     * @param array<string, string|list<string>> $routeParams
      */
     public function __construct(
         public readonly string $class,

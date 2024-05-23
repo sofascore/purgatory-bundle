@@ -11,6 +11,9 @@ use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class PurgatoryExtension extends ConfigurableExtension
 {
+    /**
+     * @param array<array-key, mixed> $mergedConfig
+     */
     protected function loadInternal(array $mergedConfig, ContainerBuilder $container): void
     {
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));

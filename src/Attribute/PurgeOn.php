@@ -11,7 +11,9 @@ use Symfony\Component\ExpressionLanguage\Expression;
 final class PurgeOn
 {
     /**
-     * @param class-string $class
+     * @param class-string                            $class
+     * @param array<string, string|list<string>>|null $routeParams
+     * @param string|list<string>|null                $route
      */
     public function __construct(
         public readonly string $class,

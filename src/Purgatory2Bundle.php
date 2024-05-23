@@ -19,6 +19,6 @@ final class Purgatory2Bundle extends Bundle
 
     public function getContainerExtension(): ?ExtensionInterface
     {
-        return $this->extension ??= new PurgatoryExtension();
+        return ($this->extension ??= new PurgatoryExtension()) ?: null;
     }
 }

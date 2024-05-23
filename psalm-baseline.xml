@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.22.1@e9dad66e11274315dac27e08349c628c7d6a1a43">
+<files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
+  <file src="src/Cache/Metadata/ControllerMetadataProvider.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$method]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
   <file src="src/DependencyInjection/Configuration.php">
+    <MixedMethodCall>
+      <code><![CDATA[arrayNode]]></code>
+      <code><![CDATA[defaultValue]]></code>
+      <code><![CDATA[end]]></code>
+      <code><![CDATA[end]]></code>
+      <code><![CDATA[example]]></code>
+      <code><![CDATA[info]]></code>
+      <code><![CDATA[scalarPrototype]]></code>
+    </MixedMethodCall>
     <UndefinedMethod>
       <code><![CDATA[children]]></code>
     </UndefinedMethod>

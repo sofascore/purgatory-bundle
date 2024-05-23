@@ -28,8 +28,10 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
 
             // if route parameters are not specified, they are same as path variables
             if (null === $purgeOn->routeParams) {
+                /** @var list<string> $pathVariables */
                 $pathVariables = $controllerMetadata->route->compile()->getPathVariables();
 
+                /** @var array<string, string> $routeParams */
                 $routeParams = array_combine($pathVariables, $pathVariables);
             } else {
                 $routeParams = $purgeOn->routeParams;
@@ -61,6 +63,9 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
+    /**
+     * @return list<string>
+     */
     private function getPropertiesFromPurgeOn(PurgeOn $purgeOn): array
     {
         if ($purgeOn->target instanceof ForProperties) {

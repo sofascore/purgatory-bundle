@@ -26,7 +26,7 @@ jobs:
 
     psalm:
         runs-on: ubuntu-latest
-        name: Static Analysis
+        name: Static Analysis (Psalm)
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -34,7 +34,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.1' # Let's run the tool on the lowest supported php version to ensure it passes
+                    php-version: '8.3'
                     coverage: none
                     tools: psalm
 
@@ -43,5 +43,27 @@ jobs:
                 with:
                     composer-options: '--prefer-dist'
 
-            -   name: Psalm
+            -   name: Run Psalm
                 run: psalm --long-progress --no-diff --output-format=github
+
+    phpstan:
+        runs-on: ubuntu-latest
+        name: Static Analysis (PHPStan)
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
+                    coverage: none
+                    tools: phpstan
+
+            -   name: Install Dependencies
+                uses: ramsey/composer-install@v2
+                with:
+                    composer-options: '--prefer-dist'
+
+            -   name: Run PHPStan
+                run: phpstan analyse --no-progress
