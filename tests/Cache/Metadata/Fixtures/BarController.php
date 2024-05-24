@@ -8,8 +8,13 @@ use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 
 class BarController
 {
-    #[PurgeOn('foo', route: 'nonexistent_route')]
+    #[PurgeOn('foo', route: 'foo_bar1')]
     public function fooAction(): void
+    {
+    }
+
+    #[PurgeOn('foo', route: ['foo_baz1', 'foo_baz3'])]
+    public function bazAction(): void
     {
     }
 }

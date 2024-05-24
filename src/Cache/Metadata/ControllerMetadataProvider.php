@@ -45,7 +45,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
 
             $reflection = $this->resolveControllerCallable($controller);
 
-            foreach ($reflection->getAttributes(PurgeOn::class, \ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            foreach ($reflection->getAttributes(PurgeOn::class) as $attribute) {
                 /** @var PurgeOn $purgeOn */
                 $purgeOn = $attribute->newInstance();
 
