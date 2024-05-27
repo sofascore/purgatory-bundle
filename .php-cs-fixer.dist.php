@@ -10,13 +10,14 @@ $finder = PhpCsFixer\Finder::create()
 ;
 
 return (new PhpCsFixer\Config())
+    ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setUsingCache(true)
     ->setRules([
         '@PSR12' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'array_indentation' => true,
-        'compact_nullable_typehint' => true,
+        'compact_nullable_type_declaration' => true,
         'declare_strict_types' => true,
         'heredoc_to_nowdoc' => true,
         'list_syntax' => ['syntax' => 'short'],
