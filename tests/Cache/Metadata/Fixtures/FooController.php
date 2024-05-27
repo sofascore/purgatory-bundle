@@ -9,13 +9,13 @@ use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 class FooController
 {
     #[PurgeOn('bar')]
-    public function barAction(): void
+    public function barAction()
     {
     }
 
     #[PurgeOn('baz1')]
     #[PurgeOn('baz2')]
-    public function bazAction(): void
+    public function bazAction()
     {
     }
 }

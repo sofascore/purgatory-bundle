@@ -43,18 +43,21 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                 continue;
             }
 
-            $reflection = $this->resolveControllerCallable($controller);
+            $reflectionMethod = $this->resolveControllerCallable($controller);
+            $reflectionClass = new \ReflectionClass($reflectionMethod->class);
 
-            foreach ($reflection->getAttributes(PurgeOn::class) as $attribute) {
-                /** @var PurgeOn $purgeOn */
-                $purgeOn = $attribute->newInstance();
+            foreach ([$reflectionClass, $reflectionMethod] as $reflection) {
+                foreach ($reflection->getAttributes(PurgeOn::class) as $attribute) {
+                    /** @var PurgeOn $purgeOn */
+                    $purgeOn = $attribute->newInstance();
 
-                if (null === $purgeOn->route || \in_array($routeName, (array) $purgeOn->route, true)) {
-                    yield new ControllerMetadata(
-                        routeName: $routeName,
-                        route: $route,
-                        purgeOn: $purgeOn,
-                    );
+                    if (null === $purgeOn->route || \in_array($routeName, (array) $purgeOn->route, true)) {
+                        yield new ControllerMetadata(
+                            routeName: $routeName,
+                            route: $route,
+                            purgeOn: $purgeOn,
+                        );
+                    }
                 }
             }
         }

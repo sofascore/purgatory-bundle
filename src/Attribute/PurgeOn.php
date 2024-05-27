@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Attribute;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
 use Symfony\Component\ExpressionLanguage\Expression;
 
-#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 final class PurgeOn
 {
     /**

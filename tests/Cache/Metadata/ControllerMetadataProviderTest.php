@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\BarController;
+use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\BazController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -148,6 +149,57 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('foo', $metadata[0]->purgeOn->class);
         self::assertSame('foo', $metadata[1]->purgeOn->class);
         self::assertSame('foo', $metadata[2]->purgeOn->class);
+    }
+
+    public function testControllerMetadataOnClass(): void
+    {
+        $collection = new RouteCollection();
+
+        $fooRoute = new Route(
+            path: '/foo',
+            defaults: [
+                '_controller' => BazController::class,
+            ],
+        );
+        $fooBarRoute = new Route(
+            path: '/foo/bar',
+            defaults: [
+                '_controller' => sprintf('%s::%s', BazController::class, 'barAction'),
+            ],
+        );
+
+        $collection->add(name: 'foo', route: $fooRoute);
+        $collection->add(name: 'foo_bar', route: $fooBarRoute);
+
+        $router = $this->createMock(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new ControllerMetadataProvider(
+            router: $router,
+            classMap: [
+                BazController::class => BazController::class,
+            ],
+            routeIgnorePatterns: [],
+        );
+
+        /** @var ControllerMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertContainsOnlyInstancesOf(ControllerMetadata::class, $metadata);
+        self::assertCount(3, $metadata);
+
+        self::assertSame('foo', $metadata[0]->routeName);
+        self::assertSame('foo_bar', $metadata[1]->routeName);
+        self::assertSame('foo_bar', $metadata[2]->routeName);
+
+        self::assertSame($fooRoute, $metadata[0]->route);
+        self::assertSame($fooBarRoute, $metadata[1]->route);
+        self::assertSame($fooBarRoute, $metadata[2]->route);
+
+        self::assertSame('foo', $metadata[0]->purgeOn->class);
+        self::assertSame('foo', $metadata[1]->purgeOn->class);
+        self::assertSame('bar', $metadata[2]->purgeOn->class);
     }
 
     public function testNotResolvableController(): void

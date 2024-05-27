@@ -6,15 +6,15 @@ namespace Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 
-class BarController
+#[PurgeOn('foo')]
+class BazController
 {
-    #[PurgeOn('foo', route: 'foo_bar1')]
-    public function fooAction()
+    public function __invoke()
     {
     }
 
-    #[PurgeOn('foo', route: ['foo_baz1', 'foo_baz3'])]
-    public function bazAction()
+    #[PurgeOn('bar')]
+    public function barAction()
     {
     }
 }
