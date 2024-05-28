@@ -7,6 +7,7 @@ use PhpCsFixer\Fixer\Import\OrderedImportsFixer;
 $finder = PhpCsFixer\Finder::create()
     ->in(__DIR__)
     ->append([__FILE__])
+    ->notPath('tests/Configuration/Fixtures/subscriptions.php')
 ;
 
 return (new PhpCsFixer\Config())

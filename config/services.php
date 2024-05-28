@@ -9,6 +9,8 @@ use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Configuration\CachedConfigurationLoader;
+use Sofascore\PurgatoryBundle2\Configuration\ConfigurationLoader;
 
 return static function (ContainerConfigurator $container) {
     $container->services()
@@ -37,6 +39,21 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 tagged_iterator('purgatory.subscription_resolver'),
                 service('property_info.reflection_extractor'),
+            ])
+
+        ->set('sofascore.purgatory.configuration_loader', ConfigurationLoader::class)
+            ->args([
+                service('sofascore.purgatory.purge_subscription_provider'),
+            ])
+
+        ->set('sofascore.purgatory.cached_configuration_loader', CachedConfigurationLoader::class)
+            ->tag('kernel.cache_warmer')
+            ->decorate('sofascore.purgatory.configuration_loader')
+            ->args([
+                service('.inner'),
+                service('router'),
+                '%kernel.build_dir%',
+                '%kernel.debug%',
             ])
     ;
 };

@@ -14,6 +14,17 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
+  <file src="src/Configuration/CachedConfigurationLoader.php">
+    <MixedInferredReturnType>
+      <code><![CDATA[array]]></code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement>
+      <code><![CDATA[require $cache->getPath()]]></code>
+    </MixedReturnStatement>
+    <UnresolvableInclude>
+      <code><![CDATA[require $cache->getPath()]]></code>
+    </UnresolvableInclude>
+  </file>
   <file src="src/DependencyInjection/Configuration.php">
     <MixedMethodCall>
       <code><![CDATA[arrayNode]]></code>
