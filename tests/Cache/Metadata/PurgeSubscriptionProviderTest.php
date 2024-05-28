@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\Cache\Metadata;
 
+use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -13,20 +14,26 @@ use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
+use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Symfony\Component\Routing\Route;
 
 #[CoversClass(PurgeSubscriptionProvider::class)]
 final class PurgeSubscriptionProviderTest extends TestCase
 {
     #[DataProvider('provideControllerMetadata')]
-    public function testPropertySubscription(ControllerMetadata $controllerMetadata, array $expectedSubscriptions): void
+    public function testNullTarget(ControllerMetadata $controllerMetadata, array $expectedSubscriptions): void
     {
         $controllerMetadataProvider = $this->createMock(ControllerMetadataProviderInterface::class);
         $controllerMetadataProvider->method('provide')
             ->willReturnCallback(function () use ($controllerMetadata) {
                 yield $controllerMetadata;
             });
-        $propertySubscriptionProvider = new PurgeSubscriptionProvider($controllerMetadataProvider);
+
+        $propertySubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            controllerMetadataProvider: $controllerMetadataProvider,
+            managerRegistry: $this->createMock(ManagerRegistry::class),
+        );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
         $propertySubscriptions = [...$propertySubscriptionProvider->provide()];
@@ -50,35 +57,6 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 new PurgeSubscription(
                     class: 'FooEntity',
                     property: null,
-                    routeParams: [],
-                    routeName: 'foo',
-                    route: $route,
-                    if: null,
-                ),
-            ],
-        ];
-
-        yield 'PurgeOn with multiple target properties for route without params' => [
-            'controllerMetadata' => new ControllerMetadata(
-                routeName: 'foo',
-                route: $route,
-                purgeOn: new PurgeOn(
-                    class: 'FooEntity',
-                    target: new ForProperties(['property1', 'property2']),
-                ),
-            ),
-            'expectedSubscriptions' => [
-                new PurgeSubscription(
-                    class: 'FooEntity',
-                    property: 'property1',
-                    routeParams: [],
-                    routeName: 'foo',
-                    route: $route,
-                    if: null,
-                ),
-                new PurgeSubscription(
-                    class: 'FooEntity',
-                    property: 'property2',
                     routeParams: [],
                     routeName: 'foo',
                     route: $route,
@@ -129,34 +107,36 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 ),
             ],
         ];
+    }
 
-        yield 'PurgeOn with multiple target properties and automatic route params resolving' => [
-            'controllerMetadata' => new ControllerMetadata(
-                routeName: 'foo',
-                route: $route,
-                purgeOn: new PurgeOn(
-                    class: 'FooEntity',
-                    target: new ForProperties(['property1', 'property2']),
-                ),
-            ),
-            'expectedSubscriptions' => [
-                new PurgeSubscription(
-                    class: 'FooEntity',
-                    property: 'property1',
-                    routeParams: ['bar' => 'bar', 'baz' => 'baz'],
+    public function testEntityMetadataNotFound(): void
+    {
+        $controllerMetadataProvider = $this->createMock(ControllerMetadataProviderInterface::class);
+        $controllerMetadataProvider->method('provide')
+            ->willReturnCallback(function () {
+                yield new ControllerMetadata(
                     routeName: 'foo',
-                    route: $route,
-                    if: null,
-                ),
-                new PurgeSubscription(
-                    class: 'FooEntity',
-                    property: 'property2',
-                    routeParams: ['bar' => 'bar', 'baz' => 'baz'],
-                    routeName: 'foo',
-                    route: $route,
-                    if: null,
-                ),
-            ],
-        ];
+                    route: new Route('/foo'),
+                    purgeOn: new PurgeOn(
+                        class: 'FooEntity',
+                        target: new ForProperties(['bar']),
+                    ),
+                );
+            });
+
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->method('getManager')
+            ->willReturn(null);
+
+        $propertySubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            controllerMetadataProvider: $controllerMetadataProvider,
+            managerRegistry: $managerRegistry,
+        );
+
+        $this->expectException(EntityMetadataNotFoundException::class);
+        $this->expectExceptionMessage('Unable to retrieve metadata for entity "FooEntity".');
+
+        [...$propertySubscriptionProvider->provide()];
     }
 }

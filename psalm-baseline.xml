@@ -5,6 +5,15 @@
       <code><![CDATA[$method]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
+  <file src="src/Cache/PropertyResolver/MethodResolver.php">
+    <InternalClass>
+      <code><![CDATA[PropertyReadInfo::TYPE_METHOD]]></code>
+    </InternalClass>
+    <InternalMethod>
+      <code><![CDATA[getName]]></code>
+      <code><![CDATA[getType]]></code>
+    </InternalMethod>
+  </file>
   <file src="src/DependencyInjection/Configuration.php">
     <MixedMethodCall>
       <code><![CDATA[arrayNode]]></code>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
+use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -21,6 +22,9 @@ final class PurgatoryExtension extends ConfigurableExtension
 
         $container->getDefinition('sofascore.purgatory.controller_metadata_provider')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
+
+        $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
+            ->addTag('purgatory.subscription_resolver');
     }
 
     public function getAlias(): string

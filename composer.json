@@ -25,9 +25,13 @@
     },
     "require": {
         "php": ">=8.1",
+        "doctrine/doctrine-bundle": "^2.12",
+        "doctrine/orm": "^2.19 || ^3.1",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",
         "symfony/dependency-injection": "^5.4 || ^6.4 || ^7.0",
+        "symfony/framework-bundle": "^5.4 || ^6.4 || ^7.0",
         "symfony/http-kernel": "^5.4 || ^6.4 || ^7.0",
+        "symfony/property-info": "^5.4 || ^6.4 || ^7.0",
         "symfony/routing": "^5.4 || ^6.4 || ^7.0"
     },
     "require-dev": {

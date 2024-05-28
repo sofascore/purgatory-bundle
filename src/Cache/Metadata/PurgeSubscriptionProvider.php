@@ -4,17 +4,26 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
 
 /**
  * @internal Used during cache warmup
  */
 final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterface
 {
+    /**
+     * @param iterable<SubscriptionResolverInterface> $subscriptionResolvers
+     */
     public function __construct(
+        private readonly iterable $subscriptionResolvers,
         private readonly ControllerMetadataProviderInterface $controllerMetadataProvider,
+        private readonly ManagerRegistry $managerRegistry,
     ) {
     }
 
@@ -50,15 +59,26 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 continue;
             }
 
+            $class = $purgeOn->class;
+
+            if (null === $entityMetadata = $this->managerRegistry->getManagerForClass($class)?->getClassMetadata($class)) {
+                throw new EntityMetadataNotFoundException($class);
+            }
+
             foreach ($this->getPropertiesFromPurgeOn($purgeOn) as $property) {
-                yield new PurgeSubscription(
-                    class: $purgeOn->class,
-                    property: $property,
-                    routeParams: $routeParams,
-                    routeName: $controllerMetadata->routeName,
-                    route: $controllerMetadata->route,
-                    if: $purgeOn->if,
-                );
+                $targetResolved = false;
+
+                foreach ($this->subscriptionResolvers as $resolver) {
+                    yield from $subscriptions = $resolver->resolveSubscription($controllerMetadata, $entityMetadata, $routeParams, $property);
+
+                    if (true === $subscriptions->getReturn()) {
+                        $targetResolved = true;
+                    }
+                }
+
+                if (!$targetResolved) {
+                    throw new TargetSubscriptionNotResolvableException($controllerMetadata->routeName, $class, $property);
+                }
             }
         }
     }

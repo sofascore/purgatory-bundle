@@ -9,8 +9,8 @@ final class InvalidPatternException extends \RuntimeException implements Purgato
     private const MESSAGE = 'Unable to perform a regular expression match on the pattern "%s" with the subject "%s".';
 
     public function __construct(
-        string $pattern,
-        string $subject,
+        public readonly string $pattern,
+        public readonly string $subject,
     ) {
         parent::__construct(
             message: sprintf(self::MESSAGE, $pattern, $subject),

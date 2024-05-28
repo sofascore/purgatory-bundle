@@ -228,7 +228,7 @@ final class ControllerMetadataProviderTest extends TestCase
         );
 
         $this->expectException(ClassNotResolvableException::class);
-        $this->expectExceptionMessage('Unable to resolve the class for "nonexistent.controller".');
+        $this->expectExceptionMessage('Unable to resolve class for "nonexistent.controller".');
 
         [...$provider->provide()];
     }
