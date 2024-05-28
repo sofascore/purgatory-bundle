@@ -7,10 +7,15 @@ namespace Sofascore\PurgatoryBundle2\Attribute\Target;
 final class ForProperties implements TargetInterface
 {
     /**
-     * @param list<string> $properties
+     * @var list<string>
      */
-    public function __construct(
-        public readonly array $properties,
-    ) {
+    public readonly array $properties;
+
+    /**
+     * @param string|list<string> $property
+     */
+    public function __construct(string|array $property)
+    {
+        $this->properties = (array) $property;
     }
 }

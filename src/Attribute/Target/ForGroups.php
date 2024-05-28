@@ -7,10 +7,15 @@ namespace Sofascore\PurgatoryBundle2\Attribute\Target;
 final class ForGroups implements TargetInterface
 {
     /**
-     * @param list<string> $groups
+     * @var list<string>
      */
-    public function __construct(
-        public readonly array $groups,
-    ) {
+    public readonly array $groups;
+
+    /**
+     * @param string|list<string> $group
+     */
+    public function __construct(string|array $group)
+    {
+        $this->groups = (array) $group;
     }
 }
