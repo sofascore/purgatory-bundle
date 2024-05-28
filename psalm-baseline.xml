@@ -14,7 +14,7 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
-  <file src="src/Configuration/CachedConfigurationLoader.php">
+  <file src="src/Cache/Configuration/CachedConfigurationLoader.php">
     <MixedInferredReturnType>
       <code><![CDATA[array]]></code>
     </MixedInferredReturnType>

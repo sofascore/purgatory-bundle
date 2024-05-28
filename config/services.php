@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
+use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
-use Sofascore\PurgatoryBundle2\Configuration\CachedConfigurationLoader;
-use Sofascore\PurgatoryBundle2\Configuration\ConfigurationLoader;
 
 return static function (ContainerConfigurator $container) {
     $container->services()

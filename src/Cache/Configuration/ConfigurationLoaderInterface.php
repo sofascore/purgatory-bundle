@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Configuration;
+namespace Sofascore\PurgatoryBundle2\Cache\Configuration;
 
 interface ConfigurationLoaderInterface
 {

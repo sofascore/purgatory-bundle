@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Configuration;
+namespace Sofascore\PurgatoryBundle2\Tests\Cache\Configuration;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
+use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
-use Sofascore\PurgatoryBundle2\Configuration\CachedConfigurationLoader;
-use Sofascore\PurgatoryBundle2\Configuration\ConfigurationLoader;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
