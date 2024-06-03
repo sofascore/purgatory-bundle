@@ -10,7 +10,7 @@
     "authors": [
         {
             "name": "Sofascore",
-            "email": "server@sofascore.com"
+            "email": "backend-team@sofascore.com"
         }
     ],
     "autoload": {
