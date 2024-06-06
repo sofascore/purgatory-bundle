@@ -32,6 +32,7 @@ return (new PhpCsFixer\Config())
                 OrderedImportsFixer::IMPORT_TYPE_CLASS,
             ],
         ],
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'self'],
         'pow_to_exponentiation' => true,
         'single_line_throw' => false,
         'ternary_to_null_coalescing' => true,
