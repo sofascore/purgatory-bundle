@@ -11,6 +11,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -71,5 +72,21 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->getDefinition(EmbeddableResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(MethodResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(PropertyResolver::class)->hasTag('purgatory.subscription_resolver'));
+    }
+
+    public function testPurgeRouteGeneratorIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+
+        $container->register(RemovedEntityRouteGenerator::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(RemovedEntityRouteGenerator::class)->hasTag('purgatory.purge_route_generator'));
     }
 }

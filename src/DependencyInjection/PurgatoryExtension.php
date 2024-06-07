@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\PurgeRouteGeneratorInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
 final class PurgatoryExtension extends ConfigurableExtension
@@ -25,6 +27,16 @@ final class PurgatoryExtension extends ConfigurableExtension
 
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
             ->addTag('purgatory.subscription_resolver');
+
+        $container->registerForAutoconfiguration(PurgeRouteGeneratorInterface::class)
+            ->addTag('purgatory.purge_route_generator');
+
+        if (!$container->hasDefinition('cache.system')) {
+            $container->removeDefinition('sofascore.purgatory.cache.expression_language');
+        }
+        if (!$container::willBeAvailable('symfony/expression-language', ExpressionLanguage::class, [])) {
+            $container->removeDefinition('sofascore.purgatory.expression_language');
+        }
     }
 
     public function getAlias(): string
