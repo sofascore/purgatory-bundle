@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\DependencyInjection\Configuration;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 #[CoversClass(Configuration::class)]
@@ -18,6 +19,24 @@ final class ConfigurationTest extends TestCase
 
         self::assertSame([
             'route_ignore_patterns' => [],
+            'purger' => [
+                'name' => null,
+                'host' => null,
+            ],
         ], $config);
+    }
+
+    public function testPurgerHostValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('A host must be provided when using the Symfony purger.');
+
+        (new Processor())->processConfiguration(new Configuration(), [
+            'sofascore_purgatory' => [
+                'purger' => [
+                    'name' => 'symfony',
+                ],
+            ],
+        ]);
     }
 }

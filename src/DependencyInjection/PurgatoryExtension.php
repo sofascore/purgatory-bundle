@@ -22,6 +22,11 @@ final class PurgatoryExtension extends ConfigurableExtension
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));
         $loader->load('services.php');
 
+        /** @var array{name: ?string, host: ?string} $purgerConfig */
+        $purgerConfig = $mergedConfig['purger'];
+        $container->setParameter('.sofascore.purgatory.purger.name', $purgerConfig['name']);
+        $container->setParameter('.sofascore.purgatory.purger.host', $purgerConfig['host']);
+
         $container->getDefinition('sofascore.purgatory.controller_metadata_provider')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
 

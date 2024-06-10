@@ -11,13 +11,14 @@ use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\PurgeRouteGeneratorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener
 {
-    /** @var list<string> */
-    private array $queuedUrls = []; /** @phpstan-ignore property.onlyWritten */ // TODO remove this
+    /** @var array<string, true> */
+    private array $queuedUrls = [];
 
     /**
      * @param iterable<PurgeRouteGeneratorInterface> $purgeRouteGenerators
@@ -25,6 +26,7 @@ final class EntityChangeListener
     public function __construct(
         private readonly iterable $purgeRouteGenerators,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly PurgerInterface $purger,
     ) {
     }
 
@@ -51,8 +53,7 @@ final class EntityChangeListener
         //    return;
         // }
 
-        // TODO PurgerInterface
-        // $this->purger->purge(array_unique($this->queuedUrls));
+        $this->purger->purge(array_keys($this->queuedUrls));
         $this->queuedUrls = [];
     }
 
@@ -71,10 +72,10 @@ final class EntityChangeListener
             }
 
             foreach ($purgeRouteGenerator->getRoutesToPurge($action, $entity, $entityChangeSet) as $route) {
-                $this->queuedUrls[] = $this->urlGenerator->generate(
+                $this->queuedUrls[$this->urlGenerator->generate(
                     name: $route['routeName'],
                     parameters: $route['routeParams'],
-                );
+                )] = true;
             }
         }
     }

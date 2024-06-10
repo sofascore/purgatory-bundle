@@ -25,19 +25,4 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
-  <file src="src/DependencyInjection/Configuration.php">
-    <MixedMethodCall>
-      <code><![CDATA[arrayNode]]></code>
-      <code><![CDATA[defaultValue]]></code>
-      <code><![CDATA[end]]></code>
-      <code><![CDATA[end]]></code>
-      <code><![CDATA[end]]></code>
-      <code><![CDATA[example]]></code>
-      <code><![CDATA[info]]></code>
-      <code><![CDATA[scalarPrototype]]></code>
-    </MixedMethodCall>
-    <UndefinedMethod>
-      <code><![CDATA[children]]></code>
-    </UndefinedMethod>
-  </file>
 </files>

@@ -13,6 +13,10 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle2\Purger\NullPurger;
+use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
 use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\AbstractEntityRouteGenerator;
 use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -90,10 +94,27 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 tagged_iterator('purgatory.purge_route_generator'),
                 service('router'),
+                service('sofascore.purgatory.purger'),
             ])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::preRemove])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postPersist])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postUpdate])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postFlush])
+
+        ->set('sofascore.purgatory.purger.null', NullPurger::class)
+            ->tag('purgatory.purge_route_generator', ['alias' => 'null'])
+
+        ->alias('sofascore.purgatory.purger', 'sofascore.purgatory.purger.null')
+        ->alias(PurgerInterface::class, 'sofascore.purgatory.purger')
+
+        ->set('sofascore.purgatory.purger.in_memory', InMemoryPurger::class)
+            ->tag('purgatory.purge_route_generator', ['alias' => 'in-memory'])
+
+        ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
+            ->tag('purgatory.purge_route_generator', ['alias' => 'symfony'])
+            ->args([
+                service('http_cache.store'),
+                '%.sofascore.purgatory.purger.host%',
+            ])
     ;
 };

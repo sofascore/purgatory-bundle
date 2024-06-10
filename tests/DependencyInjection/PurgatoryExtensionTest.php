@@ -11,6 +11,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
@@ -88,5 +89,47 @@ final class PurgatoryExtensionTest extends TestCase
         $container->compile();
 
         self::assertTrue($container->getDefinition(RemovedEntityRouteGenerator::class)->hasTag('purgatory.purge_route_generator'));
+    }
+
+    public function testPurgerConfig(): void
+    {
+        $container = new ContainerBuilder();
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => [
+                'purger' => [
+                    'name' => 'foo_purger',
+                    'host' => 'localhost:80',
+                ],
+            ],
+        ], $container);
+
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.name'));
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.host'));
+
+        self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory.purger.name'));
+        self::assertSame('localhost:80', $container->getParameter('.sofascore.purgatory.purger.host'));
+    }
+
+    public function testDefaultPurgerIsSetToNullPurger(): void
+    {
+        $container = new ContainerBuilder();
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => [
+                'purger' => [
+                    'name' => 'foo_purger',
+                    'host' => 'localhost:80',
+                ],
+            ],
+        ], $container);
+
+        self::assertTrue($container->hasAlias('sofascore.purgatory.purger'));
+        self::assertSame('sofascore.purgatory.purger.null', (string) $container->getAlias('sofascore.purgatory.purger'));
+
+        self::assertTrue($container->hasAlias(PurgerInterface::class));
+        self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
     }
 }
