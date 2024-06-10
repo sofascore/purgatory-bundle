@@ -8,7 +8,7 @@ use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class RegisterPurgerCompilerPass implements CompilerPassInterface
+final class RegisterPurgerPass implements CompilerPassInterface
 {
     /**
      * {@inheritDoc}

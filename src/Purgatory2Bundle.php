@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2;
 
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
+use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterPurgerPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -15,6 +16,7 @@ final class Purgatory2Bundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new ControllerClassMapPass());
+        $container->addCompilerPass(new RegisterPurgerPass());
     }
 
     public function getContainerExtension(): ?ExtensionInterface
