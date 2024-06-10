@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
+use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
@@ -65,6 +66,10 @@ final class PurgatoryExtensionTest extends TestCase
             ->setAutoconfigured(true)
             ->setPublic(true);
 
+        $container->register(AssociationResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
         $extension = new PurgatoryExtension();
         $extension->load([], $container);
 
@@ -73,6 +78,7 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->getDefinition(EmbeddableResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(MethodResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(PropertyResolver::class)->hasTag('purgatory.subscription_resolver'));
+        self::assertTrue($container->getDefinition(AssociationResolver::class)->hasTag('purgatory.subscription_resolver'));
     }
 
     public function testPurgeRouteGeneratorIsTagged(): void

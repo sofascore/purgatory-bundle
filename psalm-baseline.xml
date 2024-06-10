@@ -16,6 +16,17 @@
       <code><![CDATA[$method]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
+  <file src="src/Cache/PropertyResolver/AssociationResolver.php">
+    <InternalClass>
+      <code><![CDATA[PropertyReadInfo::TYPE_METHOD]]></code>
+      <code><![CDATA[PropertyReadInfo::TYPE_PROPERTY]]></code>
+    </InternalClass>
+    <InternalMethod>
+      <code><![CDATA[getName]]></code>
+      <code><![CDATA[getName]]></code>
+      <code><![CDATA[getType]]></code>
+    </InternalMethod>
+  </file>
   <file src="src/Cache/PropertyResolver/MethodResolver.php">
     <InternalClass>
       <code><![CDATA[PropertyReadInfo::TYPE_METHOD]]></code>

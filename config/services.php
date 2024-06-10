@@ -9,6 +9,7 @@ use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
+use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
@@ -50,6 +51,11 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.method_resolver', MethodResolver::class)
             ->args([
                 tagged_iterator('purgatory.subscription_resolver'),
+                service('property_info.reflection_extractor'),
+            ])
+
+        ->set('sofascore.purgatory.association_resolver', AssociationResolver::class)
+            ->args([
                 service('property_info.reflection_extractor'),
             ])
 
