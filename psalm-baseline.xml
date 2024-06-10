@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="5.24.0@462c80e31c34e58cc4f750c656be3927e80e550e">
+  <file src="src/Cache/Configuration/CachedConfigurationLoader.php">
+    <MixedInferredReturnType>
+      <code><![CDATA[array]]></code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement>
+      <code><![CDATA[require $cache->getPath()]]></code>
+    </MixedReturnStatement>
+    <UnresolvableInclude>
+      <code><![CDATA[require $cache->getPath()]]></code>
+    </UnresolvableInclude>
+  </file>
   <file src="src/Cache/Metadata/ControllerMetadataProvider.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$method]]></code>
@@ -14,21 +25,11 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
-  <file src="src/Cache/Configuration/CachedConfigurationLoader.php">
-    <MixedInferredReturnType>
-      <code><![CDATA[array]]></code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement>
-      <code><![CDATA[require $cache->getPath()]]></code>
-    </MixedReturnStatement>
-    <UnresolvableInclude>
-      <code><![CDATA[require $cache->getPath()]]></code>
-    </UnresolvableInclude>
-  </file>
   <file src="src/DependencyInjection/Configuration.php">
     <MixedMethodCall>
       <code><![CDATA[arrayNode]]></code>
       <code><![CDATA[defaultValue]]></code>
+      <code><![CDATA[end]]></code>
       <code><![CDATA[end]]></code>
       <code><![CDATA[end]]></code>
       <code><![CDATA[example]]></code>

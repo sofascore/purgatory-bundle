@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\AbstractEntityRouteGenerator;
 use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -73,18 +74,22 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory.cache.expression_language')->nullOnInvalid(),
             ])
 
-        ->set('sofascore.purgatory.purge_route_generator.removed_entity', RemovedEntityRouteGenerator::class)
+        ->set('sofascore.purgatory.purge_route_generator.abstract', AbstractEntityRouteGenerator::class)
+            ->abstract()
             ->args([
                 service('sofascore.purgatory.configuration_loader'),
                 service('property_accessor'),
-                service('doctrine'),
+                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
+
+        ->set('sofascore.purgatory.purge_route_generator.removed_entity', RemovedEntityRouteGenerator::class)
+            ->parent('sofascore.purgatory.purge_route_generator.abstract')
+            ->arg(3, service('doctrine'))
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([
                 tagged_iterator('purgatory.purge_route_generator'),
                 service('router'),
-                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::preRemove])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postPersist])

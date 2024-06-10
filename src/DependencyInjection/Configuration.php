@@ -19,7 +19,7 @@ final class Configuration implements ConfigurationInterface
                 ->arrayNode('route_ignore_patterns')
                     ->info('Route names that match the given regular expressions will be ignored.')
                     ->example(['/^_profiler/', '/^_wdt/'])
-                    ->scalarPrototype()
+                    ->scalarPrototype()->end()
                     ->defaultValue([])
                 ->end()
             ->end()
