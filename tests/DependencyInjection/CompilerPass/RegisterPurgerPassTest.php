@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterPurgerPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 
@@ -75,5 +76,15 @@ final class RegisterPurgerPassTest extends TestCase
         (new RegisterPurgerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.in_memory', (string) $this->container->getAlias('sofascore.purgatory.purger'));
+    }
+
+    public function testExceptionIsThrownOnInvalidService(): void
+    {
+        $this->container->setParameter('.sofascore.purgatory.purger.name', 'invalid');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('The configured purger service "invalid" does not exist.');
+
+        (new RegisterPurgerPass())->process($this->container);
     }
 }
