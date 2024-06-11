@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
@@ -85,6 +86,10 @@ final class PurgatoryExtensionTest extends TestCase
     {
         $container = new ContainerBuilder();
 
+        $container->register(CreatedEntityRouteProvider::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
         $container->register(RemovedEntityRouteProvider::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
@@ -94,6 +99,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
+        self::assertTrue($container->getDefinition(CreatedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
         self::assertTrue($container->getDefinition(RemovedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
     }
 
