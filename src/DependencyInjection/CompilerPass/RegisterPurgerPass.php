@@ -32,7 +32,7 @@ final class RegisterPurgerPass implements CompilerPassInterface
     private function setPurger(ContainerBuilder $container, string $purgerAlias): void
     {
         /** @var list<array{alias?: string}> $tags */
-        foreach ($container->findTaggedServiceIds('purgatory.route_provider') as $id => $tags) {
+        foreach ($container->findTaggedServiceIds('purgatory.purger') as $id => $tags) {
             foreach ($tags as $tag) {
                 if (isset($tag['alias']) && $tag['alias'] === $purgerAlias) {
                     $container->setAlias('sofascore.purgatory.purger', $id);
