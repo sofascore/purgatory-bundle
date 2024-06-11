@@ -30,6 +30,14 @@ final class PurgatoryExtension extends ConfigurableExtension
         $container->getDefinition('sofascore.purgatory.controller_metadata_provider')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
 
+        $container->getDefinition('sofascore.purgatory.doctrine_middleware')
+            ->addTag(
+                name: 'doctrine.middleware',
+                attributes: null !== $mergedConfig['doctrine_middleware_priority']
+                    ? ['priority' => $mergedConfig['doctrine_middleware_priority']]
+                    : [],
+            );
+
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
             ->addTag('purgatory.subscription_resolver');
 

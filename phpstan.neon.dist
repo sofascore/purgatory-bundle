@@ -2,6 +2,8 @@ parameters:
     level: 9
     paths:
         - src
+    excludePaths:
+        - src/Doctrine/DBAL/PurgatoryConnection.php
     ignoreErrors:
         -
             message: '#^Call to an undefined method Symfony\\Component\\Config\\Definition\\Builder\\NodeDefinition\:\:children\(\)\.$#'

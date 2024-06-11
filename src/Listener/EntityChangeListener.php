@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -45,15 +44,14 @@ final class EntityChangeListener
         $this->handleChanges($eventArgs, Action::Update);
     }
 
-    public function postFlush(PostFlushEventArgs $args): void
+    public function process(): void
     {
-        // If the transaction is not complete don't do anything to avoid race condition with refreshing before commit.
-        // TODO Doctrine middleware
-        // if ($args->getObjectManager()->getConnection()->getTransactionNestingLevel() > 0) {
-        //    return;
-        // }
-
         $this->purger->purge(array_keys($this->queuedUrls));
+        $this->reset();
+    }
+
+    public function reset(): void
+    {
         $this->queuedUrls = [];
     }
 
@@ -63,6 +61,7 @@ final class EntityChangeListener
     private function handleChanges(LifecycleEventArgs $eventArgs, Action $action): void
     {
         $entity = $eventArgs->getObject();
+
         /** @var array<string, array{mixed, mixed}> $entityChangeSet */
         $entityChangeSet = $eventArgs->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
 

@@ -19,6 +19,7 @@ final class ConfigurationTest extends TestCase
 
         self::assertSame([
             'route_ignore_patterns' => [],
+            'doctrine_middleware_priority' => null,
             'purger' => [
                 'name' => null,
                 'host' => null,

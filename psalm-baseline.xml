@@ -36,4 +36,9 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
+  <file src="src/Doctrine/DBAL/PurgatoryConnection.php">
+    <DuplicateClass>
+      <code><![CDATA[PurgatoryConnection]]></code>
+    </DuplicateClass>
+  </file>
 </files>

@@ -25,6 +25,7 @@
     },
     "require": {
         "php": ">=8.1",
+        "doctrine/dbal": "^3.8 || ^4.0",
         "doctrine/doctrine-bundle": "^2.12",
         "doctrine/orm": "^2.19 || ^3.1",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",

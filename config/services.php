@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\NullPurger;
@@ -79,6 +80,11 @@ return static function (ContainerConfigurator $container) {
                 '%kernel.debug%',
             ])
 
+        ->set('sofascore.purgatory.doctrine_middleware', Middleware::class)
+            ->args([
+                service('sofascore.purgatory.entity_change_listener'),
+            ])
+
         ->set('sofascore.purgatory.cache.expression_language')
             ->parent('cache.system')
             ->private()
@@ -115,7 +121,6 @@ return static function (ContainerConfigurator $container) {
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::preRemove])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postPersist])
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postUpdate])
-            ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postFlush])
 
         ->set('sofascore.purgatory.purger.null', NullPurger::class)
             ->tag('purgatory.purger', ['alias' => 'null'])
