@@ -12,7 +12,7 @@ use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
-use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\PurgeRouteGeneratorInterface;
+use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener
@@ -21,10 +21,10 @@ final class EntityChangeListener
     private array $queuedUrls = [];
 
     /**
-     * @param iterable<PurgeRouteGeneratorInterface> $purgeRouteGenerators
+     * @param iterable<RouteProviderInterface> $routeProviders
      */
     public function __construct(
-        private readonly iterable $purgeRouteGenerators,
+        private readonly iterable $routeProviders,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly PurgerInterface $purger,
     ) {
@@ -66,12 +66,12 @@ final class EntityChangeListener
         /** @var array<string, array{mixed, mixed}> $entityChangeSet */
         $entityChangeSet = $eventArgs->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
 
-        foreach ($this->purgeRouteGenerators as $purgeRouteGenerator) {
-            if (!$purgeRouteGenerator->supports($action, $entity)) {
+        foreach ($this->routeProviders as $routeProvider) {
+            if (!$routeProvider->supports($action, $entity)) {
                 continue;
             }
 
-            foreach ($purgeRouteGenerator->getRoutesToPurge($action, $entity, $entityChangeSet) as $route) {
+            foreach ($routeProvider->provideRoutesFor($action, $entity, $entityChangeSet) as $route) {
                 $this->queuedUrls[$this->urlGenerator->generate(
                     name: $route['routeName'],
                     parameters: $route['routeParams'],

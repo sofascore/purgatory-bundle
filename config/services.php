@@ -18,8 +18,8 @@ use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
-use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\AbstractEntityRouteGenerator;
-use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
+use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 return static function (ContainerConfigurator $container) {
@@ -84,7 +84,7 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory.cache.expression_language')->nullOnInvalid(),
             ])
 
-        ->set('sofascore.purgatory.purge_route_generator.abstract', AbstractEntityRouteGenerator::class)
+        ->set('sofascore.purgatory.route_provider.abstract', AbstractEntityRouteProvider::class)
             ->abstract()
             ->args([
                 service('sofascore.purgatory.configuration_loader'),
@@ -92,13 +92,13 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
 
-        ->set('sofascore.purgatory.purge_route_generator.removed_entity', RemovedEntityRouteGenerator::class)
-            ->parent('sofascore.purgatory.purge_route_generator.abstract')
+        ->set('sofascore.purgatory.route_provider.removed_entity', RemovedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory.route_provider.abstract')
             ->arg(3, service('doctrine'))
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([
-                tagged_iterator('purgatory.purge_route_generator'),
+                tagged_iterator('purgatory.route_provider'),
                 service('router'),
                 service('sofascore.purgatory.purger'),
             ])
@@ -108,16 +108,16 @@ return static function (ContainerConfigurator $container) {
             ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postFlush])
 
         ->set('sofascore.purgatory.purger.null', NullPurger::class)
-            ->tag('purgatory.purge_route_generator', ['alias' => 'null'])
+            ->tag('purgatory.route_provider', ['alias' => 'null'])
 
         ->alias('sofascore.purgatory.purger', 'sofascore.purgatory.purger.null')
         ->alias(PurgerInterface::class, 'sofascore.purgatory.purger')
 
         ->set('sofascore.purgatory.purger.in_memory', InMemoryPurger::class)
-            ->tag('purgatory.purge_route_generator', ['alias' => 'in-memory'])
+            ->tag('purgatory.route_provider', ['alias' => 'in-memory'])
 
         ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
-            ->tag('purgatory.purge_route_generator', ['alias' => 'symfony'])
+            ->tag('purgatory.route_provider', ['alias' => 'symfony'])
             ->args([
                 service('http_cache.store'),
                 '%.sofascore.purgatory.purger.host%',

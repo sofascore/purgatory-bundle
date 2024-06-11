@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\PurgeRouteGenerator;
+namespace Sofascore\PurgatoryBundle2\Tests\RouteProvider;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -12,16 +12,16 @@ use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\PurgeRouteGenerator\RemovedEntityRouteGenerator;
+use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-#[CoversClass(RemovedEntityRouteGenerator::class)]
-final class RemovedEntityGeneratorTest extends TestCase
+#[CoversClass(RemovedEntityRouteProvider::class)]
+final class RemovedEntityRouteProviderTest extends TestCase
 {
-    public function testGenerateRoutesToPurgeWithoutIf(): void
+    public function testProvideRoutesToPurgeWithoutIf(): void
     {
-        $generator = $this->createGenerator([
+        $routeProvider = $this->createRouteProvider([
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
@@ -48,11 +48,11 @@ final class RemovedEntityGeneratorTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($generator->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($generator->supports(Action::Create, new \stdClass()));
-        self::assertFalse($generator->supports(Action::Update, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Delete, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
 
-        $routes = [...$generator->getRoutesToPurge(Action::Delete, $entity, [])];
+        $routes = [...$routeProvider->provideRoutesFor(Action::Delete, $entity, [])];
 
         self::assertCount(4, $routes);
         self::assertSame(['routeName' => 'foo_route', 'routeParams' => []], $routes[0]);
@@ -61,9 +61,9 @@ final class RemovedEntityGeneratorTest extends TestCase
         self::assertSame(['routeName' => 'baz_route', 'routeParams' => ['param1' => 2, 'param2' => 3]], $routes[3]);
     }
 
-    public function testGenerateRoutesToPurgeWithIf(): void
+    public function testProvideRoutesToPurgeWithIf(): void
     {
-        $generator = $this->createGenerator([
+        $routeProvider = $this->createRouteProvider([
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
@@ -90,11 +90,11 @@ final class RemovedEntityGeneratorTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($generator->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($generator->supports(Action::Create, new \stdClass()));
-        self::assertFalse($generator->supports(Action::Update, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Delete, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
 
-        $routes = [...$generator->getRoutesToPurge(Action::Delete, $entity, [])];
+        $routes = [...$routeProvider->provideRoutesFor(Action::Delete, $entity, [])];
 
         self::assertCount(2, $routes);
         self::assertSame(['routeName' => 'foo_route', 'routeParams' => []], $routes[0]);
@@ -103,7 +103,7 @@ final class RemovedEntityGeneratorTest extends TestCase
 
     public function testExceptionIsThrownWhenIfIsUsedWithoutExpressionLangInstalled(): void
     {
-        $generator = $this->createGenerator([
+        $routeProvider = $this->createRouteProvider([
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
@@ -117,10 +117,10 @@ final class RemovedEntityGeneratorTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        iterator_to_array($generator->getRoutesToPurge(Action::Delete, $entity, []));
+        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, $entity, []));
     }
 
-    private function createGenerator(array $subscriptions, bool $withExpressionLang): RemovedEntityRouteGenerator
+    private function createRouteProvider(array $subscriptions, bool $withExpressionLang): RemovedEntityRouteProvider
     {
         $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
@@ -160,7 +160,7 @@ final class RemovedEntityGeneratorTest extends TestCase
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }
 
-        return new RemovedEntityRouteGenerator(
+        return new RemovedEntityRouteProvider(
             $configurationLoader,
             $propertyAccessor,
             $expressionLanguage,

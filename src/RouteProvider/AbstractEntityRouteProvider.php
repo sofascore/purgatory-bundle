@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\PurgeRouteGenerator;
+namespace Sofascore\PurgatoryBundle2\RouteProvider;
 
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
@@ -13,7 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 /**
  * @internal
  */
-abstract class AbstractEntityRouteGenerator implements PurgeRouteGeneratorInterface
+abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 {
     /**
      * @param array<string, array{mixed, mixed}> $entityChangeSet
@@ -44,7 +44,7 @@ abstract class AbstractEntityRouteGenerator implements PurgeRouteGeneratorInterf
     /**
      * {@inheritDoc}
      */
-    final public function getRoutesToPurge(Action $action, object $entity, array $entityChangeSet): iterable
+    final public function provideRoutesFor(Action $action, object $entity, array $entityChangeSet): iterable
     {
         $class = $entity::class;
         $properties = $this->getChangedProperties($entity, $entityChangeSet);

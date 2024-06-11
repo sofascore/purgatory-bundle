@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\PurgeRouteGenerator;
+namespace Sofascore\PurgatoryBundle2\RouteProvider;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
@@ -11,7 +11,7 @@ use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-final class RemovedEntityRouteGenerator extends AbstractEntityRouteGenerator
+final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function __construct(
         ConfigurationLoaderInterface $configurationLoader,
