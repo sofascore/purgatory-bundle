@@ -6,7 +6,34 @@ on:
         branches: [ 1.x ]
     workflow_dispatch:
 
+env:
+    PHP_VERSION: '8.3'
+
 jobs:
+    composer:
+        runs-on: ubuntu-latest
+        name: Composer Validations
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ env.PHP_VERSION }}
+                    coverage: none
+
+            -   name: Validate composer.json
+                run: composer validate --strict
+
+            -   name: Install Dependencies
+                uses: ramsey/composer-install@v2
+                with:
+                    composer-options: '--prefer-dist'
+
+            -   name: Check for PSR Violations
+                run: composer dump --optimize --strict-psr
+
     php-cs-fixer:
         runs-on: ubuntu-latest
         name: Coding Standards
@@ -17,7 +44,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.1' # Let's run the tool on the lowest supported php version to ensure it passes
+                    php-version: ${{ env.PHP_VERSION }}
                     coverage: none
                     tools: php-cs-fixer, cs2pr
 
@@ -34,7 +61,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.3'
+                    php-version: ${{ env.PHP_VERSION }}
                     coverage: none
                     tools: psalm
 
@@ -56,7 +83,7 @@ jobs:
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.3'
+                    php-version: ${{ env.PHP_VERSION }}
                     coverage: none
                     tools: phpstan
 
