@@ -37,8 +37,11 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5",
+        "doctrine/common": "^3.2",
         "symfony/cache": "^5.4 || ^6.4 || ^7.0",
-        "symfony/expression-language": "^5.4 || ^6.4 || ^7.0"
+        "symfony/expression-language": "^5.4 || ^6.4 || ^7.0",
+        "symfony/filesystem": "^5.4 || ^6.4 || ^7.0",
+        "symfony/yaml": "^5.4 || ^6.4 || ^7.0"
     },
     "conflict": {
         "symfony/expression-language": "<5.4"

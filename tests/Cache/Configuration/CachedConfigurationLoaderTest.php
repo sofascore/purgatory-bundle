@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -28,11 +29,7 @@ final class CachedConfigurationLoaderTest extends TestCase
 
     protected function tearDown(): void
     {
-        $cacheDir = \dirname($this->filepath);
-        array_map('unlink', glob($cacheDir.\DIRECTORY_SEPARATOR.'*'));
-        rmdir($cacheDir);
-        rmdir(\dirname($cacheDir));
-        rmdir(\dirname($cacheDir, 2));
+        (new Filesystem())->remove($this->tempDir);
         unset($this->tempDir, $this->filepath);
     }
 

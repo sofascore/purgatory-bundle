@@ -23,4 +23,9 @@ final class InMemoryPurger implements PurgerInterface
     {
         return $this->purgedUrls;
     }
+
+    public function reset(): void
+    {
+        $this->purgedUrls = [];
+    }
 }

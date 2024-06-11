@@ -19,6 +19,10 @@ final class InMemoryPurgerTest extends TestCase
         $purger->purge($urlsToPurge);
 
         self::assertSame(['/foo', '/bar', '/baz'], $purger->getPurgedUrls());
+
+        $purger->reset();
+
+        self::assertSame([], $purger->getPurgedUrls());
     }
 
     public static function urlsProvider(): iterable
