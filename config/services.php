@@ -19,6 +19,7 @@ use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
 use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
@@ -95,6 +96,10 @@ return static function (ContainerConfigurator $container) {
                 service('property_accessor'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
+
+        ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory.route_provider.abstract')
+            ->tag('purgatory.route_provider')
 
         ->set('sofascore.purgatory.route_provider.removed_entity', RemovedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
