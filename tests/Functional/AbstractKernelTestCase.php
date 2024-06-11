@@ -15,11 +15,13 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 {
     public static function tearDownAfterClass(): void
     {
-        if (!file_exists($dir = static::getVarDir())) {
+        $fileSystem = new Filesystem();
+
+        if (!$fileSystem->exists($dir = static::getVarDir())) {
             return;
         }
 
-        (new Filesystem())->remove($dir);
+        $fileSystem->remove($dir);
     }
 
     protected static function initializeApplication(array $options = []): void
