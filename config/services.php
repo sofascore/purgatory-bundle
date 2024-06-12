@@ -43,23 +43,23 @@ return static function (ContainerConfigurator $container) {
                 service('doctrine'),
             ])
 
-        ->set('sofascore.purgatory.field_resolver', PropertyResolver::class)
+        ->set('sofascore.purgatory.subscription_resolver.property', PropertyResolver::class)
             ->tag('purgatory.subscription_resolver')
 
-        ->set('sofascore.purgatory.method_resolver', MethodResolver::class)
+        ->set('sofascore.purgatory.subscription_resolver.method', MethodResolver::class)
             ->tag('purgatory.subscription_resolver')
             ->args([
                 tagged_iterator('purgatory.subscription_resolver'),
                 service('property_info.reflection_extractor'),
             ])
 
-        ->set('sofascore.purgatory.association_resolver', AssociationResolver::class)
+        ->set('sofascore.purgatory.subscription_resolver.association', AssociationResolver::class)
             ->tag('purgatory.subscription_resolver')
             ->args([
                 service('property_info.reflection_extractor'),
             ])
 
-        ->set('sofascore.purgatory.embeddable_resolver', EmbeddableResolver::class)
+        ->set('sofascore.purgatory.subscription_resolver.embeddable', EmbeddableResolver::class)
             ->tag('purgatory.subscription_resolver')
             ->args([
                 service('doctrine'),
