@@ -14,6 +14,9 @@ final class SymfonyPurger implements PurgerInterface
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function purge(iterable $urls): void
     {
         foreach ($urls as $url) {

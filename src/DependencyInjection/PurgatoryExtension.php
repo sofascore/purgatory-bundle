@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -40,6 +41,9 @@ final class PurgatoryExtension extends ConfigurableExtension
 
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
             ->addTag('purgatory.subscription_resolver');
+
+        $container->registerForAutoconfiguration(TargetResolverInterface::class)
+            ->addTag('purgatory.target_resolver');
 
         $container->registerForAutoconfiguration(RouteProviderInterface::class)
             ->addTag('purgatory.route_provider');

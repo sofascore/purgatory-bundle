@@ -22,6 +22,9 @@ final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
         parent::__construct($configurationLoader, $propertyAccessor, $expressionLanguage);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function supports(Action $action, object $entity): bool
     {
         return Action::Delete === $action;

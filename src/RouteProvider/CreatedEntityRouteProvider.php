@@ -8,6 +8,9 @@ use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 
 final class CreatedEntityRouteProvider extends AbstractEntityRouteProvider
 {
+    /**
+     * {@inheritDoc}
+     */
     public function supports(Action $action, object $entity): bool
     {
         return Action::Create === $action;

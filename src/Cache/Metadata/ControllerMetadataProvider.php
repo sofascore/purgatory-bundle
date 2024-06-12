@@ -56,6 +56,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                             routeName: $routeName,
                             route: $route,
                             purgeOn: $purgeOn,
+                            reflectionMethod: $reflectionMethod,
                         );
                     }
                 }

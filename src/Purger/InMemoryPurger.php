@@ -9,6 +9,9 @@ final class InMemoryPurger implements PurgerInterface
     /** @var list<string> */
     private array $purgedUrls = [];
 
+    /**
+     * {@inheritDoc}
+     */
     public function purge(iterable $urls): void
     {
         foreach ($urls as $url) {

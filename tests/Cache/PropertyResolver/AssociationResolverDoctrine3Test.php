@@ -97,6 +97,7 @@ final class AssociationResolverDoctrine3Test extends TestCase
                     target: new ForProperties(['fooProperty']),
                     if: new Expression('obj.isActive() === true'),
                 ),
+                reflectionMethod: $this->createMock(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [
@@ -179,6 +180,7 @@ final class AssociationResolverDoctrine3Test extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
+                reflectionMethod: $this->createMock(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -228,6 +230,7 @@ final class AssociationResolverDoctrine3Test extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
+                reflectionMethod: $this->createMock(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],

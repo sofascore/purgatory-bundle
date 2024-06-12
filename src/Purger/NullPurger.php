@@ -6,6 +6,9 @@ namespace Sofascore\PurgatoryBundle2\Purger;
 
 final class NullPurger implements PurgerInterface
 {
+    /**
+     * {@inheritDoc}
+     */
     public function purge(iterable $urls): void
     {
     }

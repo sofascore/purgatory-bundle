@@ -78,6 +78,7 @@ final class TestKernel extends Kernel
 
                 $container->loadFromExtension('framework', [
                     'test' => true,
+                    'serializer' => ['enabled' => true],
                     'router' => [
                         'resource' => $dir,
                         'type' => 5 === Kernel::MAJOR_VERSION ? 'annotation' : 'attribute',

@@ -11,6 +11,8 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
@@ -80,6 +82,27 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->getDefinition(MethodResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(PropertyResolver::class)->hasTag('purgatory.subscription_resolver'));
         self::assertTrue($container->getDefinition(AssociationResolver::class)->hasTag('purgatory.subscription_resolver'));
+    }
+
+    public function testTargetResolverIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+
+        $container->register(ForPropertiesResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->register(ForGroupsResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(ForPropertiesResolver::class)->hasTag('purgatory.target_resolver'));
+        self::assertTrue($container->getDefinition(ForGroupsResolver::class)->hasTag('purgatory.target_resolver'));
     }
 
     public function testRouteProviderIsTagged(): void

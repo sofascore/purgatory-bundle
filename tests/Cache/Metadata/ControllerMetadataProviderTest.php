@@ -69,6 +69,13 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('bar', $metadata[0]->purgeOn->class);
         self::assertSame('baz1', $metadata[1]->purgeOn->class);
         self::assertSame('baz2', $metadata[2]->purgeOn->class);
+
+        self::assertSame(FooController::class, $metadata[0]->reflectionMethod->class);
+        self::assertSame('barAction', $metadata[0]->reflectionMethod->name);
+        self::assertSame(FooController::class, $metadata[1]->reflectionMethod->class);
+        self::assertSame('bazAction', $metadata[1]->reflectionMethod->name);
+        self::assertSame(FooController::class, $metadata[2]->reflectionMethod->class);
+        self::assertSame('bazAction', $metadata[2]->reflectionMethod->name);
     }
 
     public function testControllerMetadataWitExplicitRoute(): void
@@ -149,6 +156,13 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('foo', $metadata[0]->purgeOn->class);
         self::assertSame('foo', $metadata[1]->purgeOn->class);
         self::assertSame('foo', $metadata[2]->purgeOn->class);
+
+        self::assertSame(BarController::class, $metadata[0]->reflectionMethod->class);
+        self::assertSame('fooAction', $metadata[0]->reflectionMethod->name);
+        self::assertSame(BarController::class, $metadata[1]->reflectionMethod->class);
+        self::assertSame('bazAction', $metadata[1]->reflectionMethod->name);
+        self::assertSame(BarController::class, $metadata[2]->reflectionMethod->class);
+        self::assertSame('bazAction', $metadata[2]->reflectionMethod->name);
     }
 
     public function testControllerMetadataOnClass(): void
@@ -200,6 +214,13 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('foo', $metadata[0]->purgeOn->class);
         self::assertSame('foo', $metadata[1]->purgeOn->class);
         self::assertSame('bar', $metadata[2]->purgeOn->class);
+
+        self::assertSame(BazController::class, $metadata[0]->reflectionMethod->class);
+        self::assertSame('__invoke', $metadata[0]->reflectionMethod->name);
+        self::assertSame(BazController::class, $metadata[1]->reflectionMethod->class);
+        self::assertSame('barAction', $metadata[1]->reflectionMethod->name);
+        self::assertSame(BazController::class, $metadata[2]->reflectionMethod->class);
+        self::assertSame('barAction', $metadata[2]->reflectionMethod->name);
     }
 
     public function testNotResolvableController(): void

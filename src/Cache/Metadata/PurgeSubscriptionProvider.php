@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
 
@@ -24,6 +23,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         private readonly iterable $subscriptionResolvers,
         private readonly ControllerMetadataProviderInterface $controllerMetadataProvider,
         private readonly ManagerRegistry $managerRegistry,
+        private readonly ContainerInterface $targetResolverLocator,
     ) {
     }
 
@@ -65,7 +65,10 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 throw new EntityMetadataNotFoundException($class);
             }
 
-            foreach ($this->getPropertiesFromPurgeOn($purgeOn) as $property) {
+            /** @var TargetResolverInterface $targetResolver */
+            $targetResolver = $this->targetResolverLocator->get($purgeOn->target::class);
+
+            foreach ($targetResolver->resolve($purgeOn->target, $controllerMetadata) as $property) {
                 $targetResolved = false;
 
                 foreach ($this->subscriptionResolvers as $resolver) {
@@ -81,22 +84,5 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 }
             }
         }
-    }
-
-    /**
-     * @return list<string>
-     */
-    private function getPropertiesFromPurgeOn(PurgeOn $purgeOn): array
-    {
-        if ($purgeOn->target instanceof ForProperties) {
-            return $purgeOn->target->properties;
-        }
-
-        if ($purgeOn->target instanceof ForGroups) {
-            // TODO
-            return [];
-        }
-
-        throw new \RuntimeException('Unsupported target');
     }
 }

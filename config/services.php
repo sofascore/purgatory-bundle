@@ -13,6 +13,8 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
+use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
@@ -36,11 +38,21 @@ return static function (ContainerConfigurator $container) {
                 [],
             ])
 
+        ->set('sofascore.purgatory.target_resolver.for_properties', ForPropertiesResolver::class)
+            ->tag('purgatory.target_resolver')
+
+        ->set('sofascore.purgatory.target_resolver.for_groups', ForGroupsResolver::class)
+            ->tag('purgatory.target_resolver')
+            ->args([
+                service('property_info.serializer_extractor'),
+            ])
+
         ->set('sofascore.purgatory.purge_subscription_provider', PurgeSubscriptionProvider::class)
             ->args([
                 tagged_iterator('purgatory.subscription_resolver'),
                 service('sofascore.purgatory.controller_metadata_provider'),
                 service('doctrine'),
+                tagged_locator('purgatory.target_resolver', defaultIndexMethod: 'for'),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.property', PropertyResolver::class)
