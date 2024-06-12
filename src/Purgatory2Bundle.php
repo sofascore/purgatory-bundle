@@ -19,6 +19,14 @@ final class Purgatory2Bundle extends Bundle
         $container->addCompilerPass(new RegisterPurgerPass());
     }
 
+    public function getPath(): string
+    {
+        return \dirname(__DIR__);
+    }
+
+    /**
+     * @TODO Remove this method when changing name to PurgatoryBundle
+     */
     public function getContainerExtension(): ?ExtensionInterface
     {
         return ($this->extension ??= new PurgatoryExtension()) ?: null;
