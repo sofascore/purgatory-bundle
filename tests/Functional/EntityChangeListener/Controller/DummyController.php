@@ -6,15 +6,15 @@ namespace Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Contr
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\TestEntity;
+use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class TestController
+class DummyController
 {
-    #[PurgeOn(TestEntity::class, new ForProperties('name'))]
+    #[PurgeOn(Dummy::class, new ForProperties('name'))]
     #[AnnotationRoute('/{name}', 'test_index')]
     #[Route('/{name}', 'test_index')]
     public function index()

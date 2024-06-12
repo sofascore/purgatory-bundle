@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entit
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-class TestEntity
+class Dummy
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

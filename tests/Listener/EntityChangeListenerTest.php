@@ -9,7 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\TestEntity;
+use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
 
 #[CoversClass(EntityChangeListener::class)]
 final class EntityChangeListenerTest extends AbstractKernelTestCase
@@ -24,7 +24,7 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         /** @var InMemoryPurger $purger */
         $purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
 
-        $test = new TestEntity($name = 'name_'.time());
+        $test = new Dummy($name = 'name_'.time());
 
         $em->persist($test);
         $em->flush();
