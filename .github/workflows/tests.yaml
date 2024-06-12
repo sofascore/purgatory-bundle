@@ -6,9 +6,14 @@ on:
         branches: [ 1.x ]
     workflow_dispatch:
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     phpunit:
-        runs-on: ubuntu-latest
+        # runs-on: ubuntu-latest TODO change this when going public
+        runs-on: [ self-hosted, k8s ]
         strategy:
             fail-fast: false
             matrix:
@@ -27,10 +32,14 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                env:
+                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ matrix.php }}
                     ini-values: zend.exception_ignore_args=false
                     tools: flex
+                    extensions: sqlite # TODO remove this when going public
+                    coverage: xdebug # TODO remove this when going public
 
             -   name: Install Dependencies
                 uses: ramsey/composer-install@v2

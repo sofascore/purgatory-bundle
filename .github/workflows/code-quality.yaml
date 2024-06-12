@@ -6,12 +6,17 @@ on:
         branches: [ 1.x ]
     workflow_dispatch:
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 env:
     PHP_VERSION: '8.3'
 
 jobs:
     composer:
-        runs-on: ubuntu-latest
+        # runs-on: ubuntu-latest TODO change this when going public
+        runs-on: [ self-hosted, k8s ]
         name: Composer Validations
         steps:
             -   name: Checkout
@@ -19,6 +24,8 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                env:
+                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ env.PHP_VERSION }}
                     coverage: none
@@ -35,7 +42,8 @@ jobs:
                 run: composer dump --optimize --strict-psr
 
     php-cs-fixer:
-        runs-on: ubuntu-latest
+        # runs-on: ubuntu-latest TODO change this when going public
+        runs-on: [ self-hosted, k8s ]
         name: Coding Standards
         steps:
             -   name: Checkout
@@ -43,6 +51,8 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                env:
+                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ env.PHP_VERSION }}
                     coverage: none
@@ -52,7 +62,8 @@ jobs:
                 run: php-cs-fixer fix --dry-run --format checkstyle | cs2pr
 
     psalm:
-        runs-on: ubuntu-latest
+        # runs-on: ubuntu-latest TODO change this when going public
+        runs-on: [ self-hosted, k8s ]
         name: Static Analysis (Psalm)
         steps:
             -   name: Checkout
@@ -60,6 +71,8 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                env:
+                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ env.PHP_VERSION }}
                     coverage: none
@@ -74,7 +87,8 @@ jobs:
                 run: psalm --long-progress --no-diff --output-format=github
 
     phpstan:
-        runs-on: ubuntu-latest
+        # runs-on: ubuntu-latest TODO change this when going public
+        runs-on: [ self-hosted, k8s ]
         name: Static Analysis (PHPStan)
         steps:
             -   name: Checkout
@@ -82,6 +96,8 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
+                env:
+                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ env.PHP_VERSION }}
                     coverage: none
