@@ -11,7 +11,7 @@ namespace Sofascore\PurgatoryBundle2\Attribute;
 final class TargetedProperties
 {
     /**
-     * @param list<string> $target
+     * @param non-empty-list<string> $target
      */
     public function __construct(
         public readonly array $target,

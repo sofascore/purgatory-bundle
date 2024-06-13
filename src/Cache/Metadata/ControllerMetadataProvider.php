@@ -51,7 +51,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                     /** @var PurgeOn $purgeOn */
                     $purgeOn = $attribute->newInstance();
 
-                    if (null === $purgeOn->route || \in_array($routeName, (array) $purgeOn->route, true)) {
+                    if (null === $purgeOn->route || \in_array($routeName, $purgeOn->route, true)) {
                         yield new ControllerMetadata(
                             routeName: $routeName,
                             route: $route,
