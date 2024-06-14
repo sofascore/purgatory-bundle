@@ -52,22 +52,26 @@ final class MethodResolver implements SubscriptionResolverInterface
 
         $reflection = new \ReflectionMethod($purgeOn->class, $readInfo->getName());
 
-        /** @var TargetedProperties $attribute */
-        foreach ($reflection->getAttributes(TargetedProperties::class) as $attribute) {
-            foreach ($attribute->target as $targetProperty) {
-                $targetResolved = false;
+        if (!$reflectionAttribute = $reflection->getAttributes(TargetedProperties::class)) {
+            return false;
+        }
 
-                foreach ($this->subscriptionResolvers as $resolver) {
-                    yield from $subscriptions = $resolver->resolveSubscription($controllerMetadata, $classMetadata, $routeParams, $targetProperty);
+        /** @var TargetedProperties $targetedProperties */
+        $targetedProperties = $reflectionAttribute[0]->newInstance();
 
-                    if (true === $subscriptions->getReturn()) {
-                        $targetResolved = true;
-                    }
+        foreach ($targetedProperties->target as $targetProperty) {
+            $targetResolved = false;
+
+            foreach ($this->subscriptionResolvers as $resolver) {
+                yield from $subscriptions = $resolver->resolveSubscription($controllerMetadata, $classMetadata, $routeParams, $targetProperty);
+
+                if (true === $subscriptions->getReturn()) {
+                    $targetResolved = true;
                 }
+            }
 
-                if (!$targetResolved) {
-                    throw new TargetSubscriptionNotResolvableException($controllerMetadata->routeName, $purgeOn->class, $targetProperty);
-                }
+            if (!$targetResolved) {
+                throw new TargetSubscriptionNotResolvableException($controllerMetadata->routeName, $purgeOn->class, $targetProperty);
             }
         }
 

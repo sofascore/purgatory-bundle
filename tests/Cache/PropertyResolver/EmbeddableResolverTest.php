@@ -24,6 +24,9 @@ final class EmbeddableResolverTest extends TestCase
     {
         $classMetadata = $this->createMock(ClassMetadata::class);
         // TODO split this into test for doctrine2 and doctrine3
+        $classMetadata->expects(self::once())
+            ->method('getName')
+            ->willReturn('ParentClass');
         $classMetadata->embeddedClasses = [
             'foo' => [
                 'class' => 'BarEntity',
@@ -35,13 +38,14 @@ final class EmbeddableResolverTest extends TestCase
             ->willReturn(['foo', 'bar']);
 
         $entityManager = $this->createMock(EntityManagerInterface::class);
-        $entityManager->method('getClassMetadata')
+        $entityManager->expects(self::once())
+            ->method('getClassMetadata')
             ->with('BarEntity')
             ->willReturn($embeddableClassMetadata);
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
         $managerRegistry->method('getManagerForClass')
-            ->with('BarEntity')
+            ->with('ParentClass')
             ->willReturn($entityManager);
 
         $resolver = new EmbeddableResolver($managerRegistry);
@@ -79,6 +83,9 @@ final class EmbeddableResolverTest extends TestCase
     public function testEmbeddableMetadataNotFound(): void
     {
         $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata->expects(self::once())
+            ->method('getName')
+            ->willReturn('ParentClass');
         $classMetadata->embeddedClasses = [
             'foo' => [
                 'class' => 'BarEntity',
@@ -86,8 +93,9 @@ final class EmbeddableResolverTest extends TestCase
         ];
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
-            ->with('BarEntity')
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
+            ->with('ParentClass')
             ->willReturn(null);
 
         $resolver = new EmbeddableResolver($managerRegistry);

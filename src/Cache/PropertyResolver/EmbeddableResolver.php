@@ -42,7 +42,7 @@ final class EmbeddableResolver implements SubscriptionResolverInterface
             ? $embeddedClassMapping->class
             : $embeddedClassMapping['class'];
 
-        if (null === $embeddableMetadata = $this->managerRegistry->getManagerForClass($class)?->getClassMetadata($class)) {
+        if (null === $embeddableMetadata = $this->managerRegistry->getManagerForClass($classMetadata->getName())?->getClassMetadata($class)) {
             throw new EntityMetadataNotFoundException($class);
         }
 
