@@ -48,6 +48,14 @@
     "conflict": {
         "symfony/expression-language": "<5.4"
     },
+    "scripts": {
+        "run-checks": [
+            "php-cs-fixer fix -vvv",
+            "phpunit",
+            "psalm --no-cache",
+            "phpstan"
+        ]
+    },
     "config": {
         "sort-packages": true
     }
