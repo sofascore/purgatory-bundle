@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -44,6 +45,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
+                    actions: [Action::Update],
                     if: null,
                 ),
             ]);
@@ -63,6 +65,9 @@ final class CachedConfigurationLoaderTest extends TestCase
 
         $cachedConfigurationLoader->load();
 
-        self::assertFileEquals(__DIR__.'/Fixtures/subscriptions.php', $this->filepath);
+        self::assertFileMatchesFormatFile(
+            formatFile: __DIR__.'/Fixtures/subscriptions.php',
+            actualFile: $this->filepath,
+        );
     }
 }

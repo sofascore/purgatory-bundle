@@ -32,6 +32,7 @@ final class PropertyResolver implements SubscriptionResolverInterface
             routeParams: $routeParams,
             routeName: $controllerMetadata->routeName,
             route: $controllerMetadata->route,
+            actions: $controllerMetadata->purgeOn->actions,
             if: $controllerMetadata->purgeOn->if,
         );
 

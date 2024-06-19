@@ -14,6 +14,7 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
@@ -43,6 +44,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
+                    actions: Action::cases(),
                     if: null,
                 ),
             ],
@@ -52,6 +54,7 @@ final class ConfigurationLoaderTest extends TestCase
                         'routeName' => 'app_route_foo',
                         'routeParams' => [],
                         'if' => null,
+                        'actions' => Action::cases(),
                     ],
                 ],
             ],
@@ -65,6 +68,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
+                    actions: [Action::Create],
                     if: null,
                 ),
             ],
@@ -74,6 +78,7 @@ final class ConfigurationLoaderTest extends TestCase
                         'routeName' => 'app_route_foo',
                         'routeParams' => [],
                         'if' => null,
+                        'actions' => [Action::Create],
                     ],
                 ],
             ],
@@ -87,6 +92,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
+                    actions: null,
                     if: null,
                 ),
                 new PurgeSubscription(
@@ -95,6 +101,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_bar',
                     route: new Route('/bar'),
+                    actions: null,
                     if: new Expression('expression'),
                 ),
                 new PurgeSubscription(
@@ -103,6 +110,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: [],
                     routeName: 'app_route_bar',
                     route: new Route('/bar'),
+                    actions: null,
                     if: new Expression('expression'),
                 ),
                 new PurgeSubscription(
@@ -111,6 +119,7 @@ final class ConfigurationLoaderTest extends TestCase
                     routeParams: ['param' => new PropertyValues('value')],
                     routeName: 'app_route_baz',
                     route: new Route('/bar'),
+                    actions: null,
                     if: null,
                 ),
             ],
@@ -161,6 +170,7 @@ final class ConfigurationLoaderTest extends TestCase
                     ],
                     routeName: 'app_route_foo',
                     route: new Route('/foo/{foo}/{bar}'),
+                    actions: null,
                     if: null,
                 ),
             ],

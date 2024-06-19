@@ -25,7 +25,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     /**
-     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}>>
+     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}>>
      */
     private ?array $subscriptions = null;
 
@@ -46,7 +46,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
         do {
             if (null !== $subscriptions = $this->getSubscriptions(key: $class)) {
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
             }
 
             foreach ($properties as $property) {
@@ -54,20 +54,24 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                     continue;
                 }
 
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
             }
         } while (false !== $class = get_parent_class($class));
     }
 
     /**
-     * @param list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}> $subscriptions
-     * @param array<string, array{mixed, mixed}>                                                                                                       $entityChangeSet @TODO ovo treba iskoristiti
+     * @param list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}> $subscriptions
+     * @param array<string, array{mixed, mixed}>                                                                                                                                         $entityChangeSet @TODO ovo treba iskoristiti
      *
      * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
      */
-    private function processValidSubscriptions(array $subscriptions, array $entityChangeSet, object $entity): iterable
+    private function processValidSubscriptions(array $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
     {
         foreach ($subscriptions as $subscription) {
+            if (isset($subscription['actions']) && !\in_array($action, $subscription['actions'], true)) {
+                continue;
+            }
+
             if (null !== $subscription['if'] && false === $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity])) {
                 continue;
             }
@@ -117,7 +121,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @return ?list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}>
+     * @return ?list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}>
      */
     private function getSubscriptions(string $key): ?array
     {

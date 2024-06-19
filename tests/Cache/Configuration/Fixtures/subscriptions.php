@@ -8,6 +8,11 @@
       array (
       ),
       'if' => NULL,
+      'actions' => 
+      array (
+        0 => 
+        %SSofascore\PurgatoryBundle2\Listener\Enum\Action::Update,
+      ),
     ),
   ),
 );

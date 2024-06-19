@@ -21,6 +21,7 @@ use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\DummyTarget;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
@@ -73,6 +74,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: [],
                     routeName: 'foo',
                     route: $route,
+                    actions: null,
                     if: null,
                 ),
             ],
@@ -96,6 +98,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('baz')],
                     routeName: 'foo',
                     route: $route,
+                    actions: null,
                     if: null,
                 ),
             ],
@@ -118,6 +121,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('bar'), 'baz' => new PropertyValues('baz')],
                     routeName: 'foo',
                     route: $route,
+                    actions: null,
                     if: null,
                 ),
             ],
@@ -200,6 +204,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: [],
                     routeName: 'foo',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
                 new PurgeSubscription(
@@ -208,6 +213,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: [],
                     routeName: 'bar',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
             ],
@@ -233,6 +239,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('baz')],
                     routeName: 'foo',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
                 new PurgeSubscription(
@@ -241,6 +248,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('baz')],
                     routeName: 'bar',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
             ],
@@ -265,6 +273,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('bar'), 'baz' => new PropertyValues('baz')],
                     routeName: 'foo',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
                 new PurgeSubscription(
@@ -273,6 +282,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     routeParams: ['bar' => new PropertyValues('bar'), 'baz' => new PropertyValues('baz')],
                     routeName: 'foo',
                     route: $route,
+                    actions: Action::cases(),
                     if: null,
                 ),
             ],

@@ -28,11 +28,17 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 $key .= '::'.$subscription->property;
             }
 
-            $purgatoryCache[$key][] = [
+            $config = [
                 'routeName' => $subscription->routeName,
                 'routeParams' => $this->getRouteParamConfigs($subscription->routeParams),
-                'if' => null === $subscription->if ? null : (string) $subscription->if,
+                'if' => null === $subscription->if ? null : (string) $subscription->if, // TODO do not store this if null
             ];
+
+            if (null !== $subscription->actions) {
+                $config['actions'] = $subscription->actions;
+            }
+
+            $purgatoryCache[$key][] = $config;
         }
 
         return $purgatoryCache;

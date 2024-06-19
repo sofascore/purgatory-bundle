@@ -11,6 +11,7 @@ use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 
 #[CoversClass(PurgeOn::class)]
 final class PurgeOnTest extends TestCase
@@ -26,6 +27,8 @@ final class PurgeOnTest extends TestCase
         ['prop' => new PropertyValues('foo'), 'prop2' => new RawValues('foo', 'bar')],
     ])]
     #[TestWith(['route', 'foo', ['foo']])]
+    #[TestWith(['actions', Action::Create, [Action::Create]])]
+    #[TestWith(['actions', null, null])]
     public function testValueNormalization(string $property, mixed $value, mixed $expectedValue): void
     {
         $purgeOn = new PurgeOn(
