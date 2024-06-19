@@ -11,7 +11,7 @@ interface RouteProviderInterface
     /**
      * @param array<string, array{mixed, mixed}> $entityChangeSet
      *
-     * @return iterable<int, array{routeName: string, routeParams: array<string, scalar>}>
+     * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
      */
     public function provideRoutesFor(
         Action $action,

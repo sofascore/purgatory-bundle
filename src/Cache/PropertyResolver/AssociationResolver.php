@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\PropertyNotAccessibleException;
@@ -64,15 +66,10 @@ final class AssociationResolver implements SubscriptionResolverInterface
 
         $associationClass = $classMetadata->getAssociationTargetClass($target);
 
-        /** @var array<string, list<string>> $transformedRouteParams */
+        /** @var array<string, ValuesInterface> $transformedRouteParams */
         $transformedRouteParams = [];
-        if ([] !== $routeParams) {
-            /** @var string|string[] $values */
-            foreach ($routeParams as $routeParam => $values) {
-                foreach ((array) $values as $value) {
-                    $transformedRouteParams[$routeParam][] = $this->transformRouteParameterValueForAssociation($value, $associationTarget);
-                }
-            }
+        foreach ($routeParams as $routeParam => $values) {
+            $transformedRouteParams[$routeParam] = $this->transformRouteParameterValueForAssociation($values, $associationTarget);
         }
 
         if (null !== $if = $controllerMetadata->purgeOn->if) {
@@ -92,9 +89,14 @@ final class AssociationResolver implements SubscriptionResolverInterface
         return true;
     }
 
-    private function transformRouteParameterValueForAssociation(string $value, string $associationTarget): string
+    private function transformRouteParameterValueForAssociation(ValuesInterface $values, string $associationTarget): ValuesInterface
     {
-        return '@' === $value[0] ? $value : sprintf('%s.%s', $associationTarget, $value);
+        return $values instanceof PropertyValues
+            ? new PropertyValues(...array_map(
+                static fn (string $property): string => sprintf('%s.%s', $associationTarget, $property),
+                $values->getValues(),
+            ))
+            : $values;
     }
 
     private function createGetter(string $class, string $property): string

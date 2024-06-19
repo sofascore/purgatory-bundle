@@ -8,6 +8,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
@@ -80,8 +82,8 @@ abstract class AssociationResolverTestCase extends TestCase
             ),
             classMetadata: $classMetadata,
             routeParams: [
-                'param1' => 'bazProperty',
-                'param2' => '@const',
+                'param1' => new PropertyValues('bazProperty'),
+                'param2' => new RawValues('const'),
             ],
             target: 'fooProperty',
         );
@@ -96,8 +98,8 @@ abstract class AssociationResolverTestCase extends TestCase
 
         self::assertNull($subscription[0]->property);
         self::assertSame('BarEntity', $subscription[0]->class);
-        self::assertSame(['barProperty.bazProperty'], $subscription[0]->routeParams['param1']);
-        self::assertSame(['@const'], $subscription[0]->routeParams['param2']);
+        self::assertEquals(new PropertyValues('barProperty.bazProperty'), $subscription[0]->routeParams['param1']);
+        self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);
         self::assertSame('obj.getFoo().isActive() === true', (string) $subscription[0]->if);
     }
 

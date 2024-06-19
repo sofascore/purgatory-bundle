@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\RouteProvider;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function __construct(
         ConfigurationLoaderInterface $configurationLoader,
-        PropertyAccessorInterface $propertyAccessor,
         ?ExpressionLanguage $expressionLanguage,
+        ContainerInterface $routeParamValueResolverLocator,
         private readonly ManagerRegistry $managerRegistry,
     ) {
-        parent::__construct($configurationLoader, $propertyAccessor, $expressionLanguage);
+        parent::__construct($configurationLoader, $expressionLanguage, $routeParamValueResolverLocator);
     }
 
     /**
@@ -42,13 +42,5 @@ final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
             $metadata->getFieldNames(),
             $metadata->getAssociationNames(),
         );
-    }
-
-    protected function getRouteParameterValues(object $entity, array $entityChangeSet, string $property): array
-    {
-        /** @var scalar $value */
-        $value = $this->propertyAccessor->getValue($entity, $property);
-
-        return [$value];
     }
 }

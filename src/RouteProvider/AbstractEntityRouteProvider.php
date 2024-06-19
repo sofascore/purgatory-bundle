@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\RouteProvider;
 
+use Psr\Container\ContainerInterface;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * @internal
@@ -23,21 +25,14 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     /**
-     * @param array<string, array{mixed, mixed}> $entityChangeSet
-     *
-     * @return list<scalar>
-     */
-    abstract protected function getRouteParameterValues(object $entity, array $entityChangeSet, string $property): array;
-
-    /**
-     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, string|list<string>>, if: ?string}>>
+     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}>>
      */
     private ?array $subscriptions = null;
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
-        protected readonly PropertyAccessorInterface $propertyAccessor,
         private readonly ?ExpressionLanguage $expressionLanguage,
+        private readonly ContainerInterface $routeParamValueResolverLocator,
     ) {
     }
 
@@ -65,10 +60,10 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param list<array{routeName: string, routeParams: array<string, string|list<string>>, if: ?string}> $subscriptions
-     * @param array<string, array{mixed, mixed}>                                                           $entityChangeSet
+     * @param list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}> $subscriptions
+     * @param array<string, array{mixed, mixed}>                                                                                                       $entityChangeSet @TODO ovo treba iskoristiti
      *
-     * @return iterable<int, array{routeName: string, routeParams: array<string, scalar>}>
+     * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
      */
     private function processValidSubscriptions(array $subscriptions, array $entityChangeSet, object $entity): iterable
     {
@@ -77,24 +72,13 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                 continue;
             }
 
-            /** @var array<string, list<scalar>> $resolvedRouteParameters */
+            /** @var array<string, list<?scalar>> $resolvedRouteParameters */
             $resolvedRouteParameters = [];
 
-            foreach ($subscription['routeParams'] as $param => $values) {
-                $resolvedRouteParameters[$param] = [];
-
-                foreach ((array) $values as $value) {
-                    // const value
-                    if ('@' === $value[0]) {
-                        $resolvedRouteParameters[$param][] = substr($value, 1);
-                        continue;
-                    }
-
-                    array_push(
-                        $resolvedRouteParameters[$param],
-                        ...$this->getRouteParameterValues($entity, $entityChangeSet, $value),
-                    );
-                }
+            foreach ($subscription['routeParams'] as $param => $config) {
+                /** @var ValuesResolverInterface<mixed> $routeParamValueResolver */
+                $routeParamValueResolver = $this->routeParamValueResolverLocator->get($config['type']);
+                $resolvedRouteParameters[$param] = $routeParamValueResolver->resolve($config['values'], $entity);
             }
 
             foreach ($this->getCartesianProduct($resolvedRouteParameters) as $routeParams) {
@@ -107,9 +91,9 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param array<string, list<scalar>> $input
+     * @param array<string, list<?scalar>> $input
      *
-     * @return list<array<string, scalar>>
+     * @return list<array<string, ?scalar>>
      */
     private function getCartesianProduct(array $input): array
     {
@@ -133,7 +117,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @return list<array{routeName: string, routeParams: array<string, string|list<string>>, if: ?string}>
+     * @return ?list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string}>
      */
     private function getSubscriptions(string $key): ?array
     {

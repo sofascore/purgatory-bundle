@@ -9,10 +9,20 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
@@ -38,8 +48,14 @@ final class RemovedEntityRouteProviderTest extends TestCase
                 [
                     'routeName' => 'baz_route',
                     'routeParams' => [
-                        'param1' => ['foo', 'bar'],
-                        'param2' => ['baz'],
+                        'param1' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['foo', 'bar'],
+                        ],
+                        'param2' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['baz'],
+                        ],
                     ],
                     'if' => null,
                 ],
@@ -80,8 +96,14 @@ final class RemovedEntityRouteProviderTest extends TestCase
                 [
                     'routeName' => 'baz_route',
                     'routeParams' => [
-                        'param1' => ['foo', 'bar'],
-                        'param2' => ['baz'],
+                        'param1' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['foo', 'bar'],
+                        ],
+                        'param2' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['baz'],
+                        ],
                     ],
                     'if' => 'obj.test == true',
                 ],
@@ -118,6 +140,53 @@ final class RemovedEntityRouteProviderTest extends TestCase
         $this->expectException(LogicException::class);
 
         iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, $entity, []));
+    }
+
+    public function testRouteParamsWithRawValuesAndEnumValues(): void
+    {
+        $routeProvider = $this->createRouteProvider([
+            'stdClass' => [
+                [
+                    'routeName' => 'foo_route',
+                    'routeParams' => [
+                        'foo' => [
+                            'type' => CompoundValues::class,
+                            'values' => [
+                                [
+                                    'type' => RawValues::class,
+                                    'values' => ['foo', 1, null],
+                                ],
+                                [
+                                    'type' => EnumValues::class,
+                                    'values' => [DummyStringEnum::class],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'if' => null,
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+
+        self::assertTrue($routeProvider->supports(Action::Delete, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+
+        $routes = [...$routeProvider->provideRoutesFor(Action::Delete, $entity, [])];
+
+        self::assertCount(6, $routes);
+
+        // RawValueResolver
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 'foo']], $routes[0]);
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 1]], $routes[1]);
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => null]], $routes[2]);
+
+        // EnumValueResolver
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 'case1']], $routes[3]);
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 'case2']], $routes[4]);
+        self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 'case3']], $routes[5]);
     }
 
     private function createRouteProvider(array $subscriptions, bool $withExpressionLang): RemovedEntityRouteProvider
@@ -160,10 +229,18 @@ final class RemovedEntityRouteProviderTest extends TestCase
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }
 
+        $routeParamValueResolvers = [
+            PropertyValues::class => static fn () => new PropertyValuesResolver($propertyAccessor),
+            EnumValues::class => static fn () => new EnumValuesResolver(),
+            RawValues::class => static fn () => new RawValuesResolver(),
+        ];
+
         return new RemovedEntityRouteProvider(
             $configurationLoader,
-            $propertyAccessor,
             $expressionLanguage,
+            new ServiceLocator($routeParamValueResolvers + [
+                CompoundValues::class => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
+            ]),
             $managerRegistry,
         );
     }

@@ -21,6 +21,10 @@ use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
@@ -111,8 +115,8 @@ return static function (ContainerConfigurator $container) {
             ->abstract()
             ->args([
                 service('sofascore.purgatory.configuration_loader'),
-                service('property_accessor'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
+                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
             ])
 
         ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
@@ -149,5 +153,23 @@ return static function (ContainerConfigurator $container) {
                 service('http_cache.store'),
                 '%.sofascore.purgatory.purger.host%',
             ])
+
+        ->set('sofascore.purgatory.route_param_value_resolver.compound', CompoundValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
+            ->args([
+                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+            ])
+
+        ->set('sofascore.purgatory.route_param_value_resolver.enum', EnumValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
+
+        ->set('sofascore.purgatory.route_param_value_resolver.property', PropertyValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
+            ->args([
+                service('property_accessor'),
+            ])
+
+        ->set('sofascore.purgatory.route_param_value_resolver.raw', RawValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
     ;
 };

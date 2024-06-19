@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
 use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -47,6 +48,9 @@ final class PurgatoryExtension extends ConfigurableExtension
 
         $container->registerForAutoconfiguration(RouteProviderInterface::class)
             ->addTag('purgatory.route_provider');
+
+        $container->registerForAutoconfiguration(ValuesResolverInterface::class)
+            ->addTag('purgatory.route_param_value_resolver');
 
         if (!$container->hasDefinition('cache.system')) {
             $container->removeDefinition('sofascore.purgatory.cache.expression_language');

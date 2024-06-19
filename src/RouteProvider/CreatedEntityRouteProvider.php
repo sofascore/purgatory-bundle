@@ -20,12 +20,4 @@ final class CreatedEntityRouteProvider extends AbstractEntityRouteProvider
     {
         return array_keys($entityChangeSet);
     }
-
-    protected function getRouteParameterValues(object $entity, array $entityChangeSet, string $property): array
-    {
-        /** @var scalar $value */
-        $value = $this->propertyAccessor->getValue($entity, $property);
-
-        return [$value];
-    }
 }

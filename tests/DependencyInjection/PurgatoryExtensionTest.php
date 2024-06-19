@@ -15,6 +15,10 @@ use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -124,6 +128,37 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertTrue($container->getDefinition(CreatedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
         self::assertTrue($container->getDefinition(RemovedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
+    }
+
+    public function testRouteParamValuesResolverIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+
+        $container->register(CompoundValuesResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->register(EnumValuesResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->register(PropertyValuesResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->register(RawValuesResolver::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(CompoundValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
+        self::assertTrue($container->getDefinition(EnumValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
+        self::assertTrue($container->getDefinition(PropertyValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
+        self::assertTrue($container->getDefinition(RawValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
     }
 
     public function testPurgerConfig(): void
