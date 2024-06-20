@@ -36,6 +36,18 @@
       <code><![CDATA[getType]]></code>
     </InternalMethod>
   </file>
+  <file src="src/DependencyInjection/PurgatoryExtension.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[static function (ChildDefinition $definition, PurgeOn $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
+                $definition->addTag(
+                    name: 'purgatory.purge_on',
+                    attributes: [
+                        'class' => $reflection instanceof \ReflectionMethod ? $reflection->class : $reflection->name,
+                    ],
+                );
+            }]]></code>
+    </ArgumentTypeCoercion>
+  </file>
   <file src="src/Doctrine/DBAL/PurgatoryConnection.php">
     <DuplicateClass>
       <code><![CDATA[PurgatoryConnection]]></code>

@@ -1,0 +1,11 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
+			count: 1
+			path: src/DependencyInjection/Configuration.php
+
+		-
+			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\PurgeOn, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\PurgeOn, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
+			count: 1
+			path: src/DependencyInjection/PurgatoryExtension.php

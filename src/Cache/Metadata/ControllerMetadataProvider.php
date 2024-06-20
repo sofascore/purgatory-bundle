@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
 use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -37,16 +36,17 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                 continue;
             }
 
-            /** @var array{0: class-string, 1: string}|string|null $controller */
+            /** @var array{0: string, 1: string}|string|null $controller */
             $controller = $route->getDefault('_controller');
             if (null === $controller) {
                 continue;
             }
 
-            $reflectionMethod = $this->resolveControllerCallable($controller);
-            $reflectionClass = new \ReflectionClass($reflectionMethod->class);
+            if (null === $reflectionMethod = $this->resolveControllerCallable($controller)) {
+                continue;
+            }
 
-            foreach ([$reflectionClass, $reflectionMethod] as $reflection) {
+            foreach ([new \ReflectionClass($reflectionMethod->class), $reflectionMethod] as $reflection) {
                 foreach ($reflection->getAttributes(PurgeOn::class) as $attribute) {
                     /** @var PurgeOn $purgeOn */
                     $purgeOn = $attribute->newInstance();
@@ -65,29 +65,17 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
     }
 
     /**
-     * @param array{0: class-string, 1: string}|string $controller
+     * @param array{0: string, 1: string}|string $controller
      */
-    private function resolveControllerCallable(array|string $controller): \ReflectionMethod
+    private function resolveControllerCallable(array|string $controller): ?\ReflectionMethod
     {
-        if (\is_array($controller)) {
-            return new \ReflectionMethod($this->resolveClass($controller[0]), $controller[1]);
-        }
+        [$class, $method] = match (true) {
+            \is_array($controller) => $controller,
+            !str_contains($controller, '::') => [$controller, '__invoke'],
+            default => explode('::', $controller, 2),
+        };
 
-        if (!str_contains($controller, '::')) {
-            return new \ReflectionMethod($this->resolveClass($controller), '__invoke');
-        }
-
-        [$class, $method] = explode('::', $controller, 2);
-
-        return new \ReflectionMethod($this->resolveClass($class), $method);
-    }
-
-    /**
-     * @return class-string
-     */
-    private function resolveClass(string $serviceIdOrClass): string
-    {
-        return $this->classMap[$serviceIdOrClass] ?? throw new ClassNotResolvableException($serviceIdOrClass);
+        return isset($this->classMap[$class]) ? new \ReflectionMethod($this->classMap[$class], $method) : null;
     }
 
     private function shouldSkipRoute(string $routeName): bool

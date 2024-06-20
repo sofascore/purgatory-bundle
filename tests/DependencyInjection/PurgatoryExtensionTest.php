@@ -22,12 +22,44 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyControllerWithPurgeOn;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
 #[CoversClass(PurgatoryExtension::class)]
 final class PurgatoryExtensionTest extends TestCase
 {
+    public function testControllerWithPurgeOnIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        $container->register(DummyController::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->register(DummyControllerWithPurgeOn::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(DummyController::class)->hasTag('purgatory.purge_on'));
+        self::assertSame(
+            [['class' => DummyController::class]],
+            $container->getDefinition(DummyController::class)->getTag('purgatory.purge_on'),
+        );
+
+        self::assertTrue($container->getDefinition(DummyControllerWithPurgeOn::class)->hasTag('purgatory.purge_on'));
+        self::assertSame(
+            [['class' => DummyControllerWithPurgeOn::class]],
+            $container->getDefinition(DummyControllerWithPurgeOn::class)->getTag('purgatory.purge_on'),
+        );
+    }
+
     public function testRouteIgnorePatternsIsSet(): void
     {
         $container = new ContainerBuilder();

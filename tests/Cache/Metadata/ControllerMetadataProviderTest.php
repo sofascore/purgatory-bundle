@@ -8,7 +8,6 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
-use Sofascore\PurgatoryBundle2\Exception\ClassNotResolvableException;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\BarController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\BazController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\FooController;
@@ -248,10 +247,7 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: [],
         );
 
-        $this->expectException(ClassNotResolvableException::class);
-        $this->expectExceptionMessage('Unable to resolve class for "nonexistent.controller".');
-
-        [...$provider->provide()];
+        self::assertCount(0, [...$provider->provide()]);
     }
 
     public function testRouteIgnorePattern(): void

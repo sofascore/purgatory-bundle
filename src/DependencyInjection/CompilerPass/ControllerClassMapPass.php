@@ -13,8 +13,11 @@ final class ControllerClassMapPass implements CompilerPassInterface
     {
         $classMap = [];
 
-        foreach ($container->findTaggedServiceIds('controller.service_arguments', true) as $id => $tags) {
-            $classMap[$id] = $container->getDefinition($id)->getClass();
+        /**
+         * @var list<array{class?: class-string}> $tags
+         */
+        foreach ($container->findTaggedServiceIds('purgatory.purge_on', true) as $id => $tags) {
+            $classMap[$id] = $tags[0]['class'] ?? $container->getDefinition($id)->getClass();
         }
 
         if ($classMap) {
