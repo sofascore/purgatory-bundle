@@ -28,6 +28,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 return static function (ContainerConfigurator $container) {
@@ -127,6 +128,10 @@ return static function (ContainerConfigurator $container) {
             ->parent('sofascore.purgatory.route_provider.abstract')
             ->tag('purgatory.route_provider')
             ->arg(3, service('doctrine'))
+
+        ->set('sofascore.purgatory.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory.route_provider.abstract')
+            ->tag('purgatory.route_provider')
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([

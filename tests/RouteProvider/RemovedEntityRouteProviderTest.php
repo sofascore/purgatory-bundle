@@ -145,7 +145,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
     public function testRouteParamsWithRawValuesAndEnumValues(): void
     {
         $routeProvider = $this->createRouteProvider([
-            'stdClass' => [
+            'stdClass::foo' => [
                 [
                     'routeName' => 'foo_route',
                     'routeParams' => [

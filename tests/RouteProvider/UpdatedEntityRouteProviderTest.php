@@ -17,14 +17,14 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
-#[CoversClass(CreatedEntityRouteProvider::class)]
-final class CreatedEntityRouteProviderTest extends TestCase
+#[CoversClass(UpdatedEntityRouteProvider::class)]
+final class UpdatedEntityRouteProviderTest extends TestCase
 {
     public function testProvideRoutesToPurgeWithoutIf(): void
     {
@@ -61,17 +61,15 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Update, new \stdClass()));
         self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
 
         $routes = [...$routeProvider->provideRoutesFor(
-            action: Action::Create,
+            action: Action::Update,
             entity: $entity,
             entityChangeSet: [
-                'foo' => [null, null],
-                'bar' => [null, null],
-                'baz' => [null, null],
+                'foo' => ['old', 'new'],
             ],
         )];
 
@@ -117,17 +115,15 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Update, new \stdClass()));
         self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
 
         $routes = [...$routeProvider->provideRoutesFor(
-            action: Action::Create,
+            action: Action::Update,
             entity: $entity,
             entityChangeSet: [
-                'foo' => [null, null],
-                'bar' => [null, null],
-                'baz' => [null, null],
+                'foo' => ['old', 'new'],
             ],
         )];
 
@@ -152,7 +148,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Create, $entity, []));
+        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, $entity, []));
     }
 
     public function testRouteParamsWithRawValuesAndEnumValues(): void
@@ -183,17 +179,15 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Update, new \stdClass()));
         self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertFalse($routeProvider->supports(Action::Create, new \stdClass()));
 
         $routes = [...$routeProvider->provideRoutesFor(
-            action: Action::Create,
+            action: Action::Update,
             entity: $entity,
             entityChangeSet: [
-                'foo' => [null, null],
-                'bar' => [null, null],
-                'baz' => [null, null],
+                'foo' => ['old', 'new'],
             ],
         )];
 
@@ -210,7 +204,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertSame(['routeName' => 'foo_route', 'routeParams' => ['foo' => 'case3']], $routes[5]);
     }
 
-    private function createRouteProvider(array $subscriptions, bool $withExpressionLang): CreatedEntityRouteProvider
+    private function createRouteProvider(array $subscriptions, bool $withExpressionLang): UpdatedEntityRouteProvider
     {
         $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
@@ -237,7 +231,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
             RawValues::class => static fn () => new RawValuesResolver(),
         ];
 
-        return new CreatedEntityRouteProvider(
+        return new UpdatedEntityRouteProvider(
             $configurationLoader,
             $expressionLanguage,
             new ServiceLocator($routeParamValueResolvers + [

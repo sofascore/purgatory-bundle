@@ -21,6 +21,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -121,6 +122,10 @@ final class PurgatoryExtensionTest extends TestCase
             ->setAutoconfigured(true)
             ->setPublic(true);
 
+        $container->register(UpdatedEntityRouteProvider::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
         $extension = new PurgatoryExtension();
         $extension->load([], $container);
 
@@ -128,6 +133,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertTrue($container->getDefinition(CreatedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
         self::assertTrue($container->getDefinition(RemovedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
+        self::assertTrue($container->getDefinition(UpdatedEntityRouteProvider::class)->hasTag('purgatory.route_provider'));
     }
 
     public function testRouteParamValuesResolverIsTagged(): void
