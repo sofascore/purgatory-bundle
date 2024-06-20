@@ -25,7 +25,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     /**
-     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}>>
+     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     private ?array $subscriptions = null;
 
@@ -60,7 +60,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}> $subscriptions
+     * @param list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}> $subscriptions
      * @param array<string, array{mixed, mixed}>                                                                                                                                         $entityChangeSet @TODO ovo treba iskoristiti
      *
      * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
@@ -72,7 +72,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                 continue;
             }
 
-            if (null !== $subscription['if'] && false === $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity])) {
+            if (isset($subscription['if']) && false === $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity])) {
                 continue;
             }
 
@@ -121,7 +121,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @return ?list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if: ?string, actions?: non-empty-list<Action>}>
+     * @return ?list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>
      */
     private function getSubscriptions(string $key): ?array
     {

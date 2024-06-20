@@ -7,7 +7,6 @@
       'routeParams' => 
       array (
       ),
-      'if' => NULL,
       'actions' => 
       array (
         0 => 
