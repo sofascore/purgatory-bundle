@@ -69,7 +69,7 @@ final class PurgatoryExtension extends ConfigurableExtension
         if (!$container->hasDefinition('cache.system')) {
             $container->removeDefinition('sofascore.purgatory.cache.expression_language');
         }
-        if (!$container::willBeAvailable('symfony/expression-language', ExpressionLanguage::class, [])) {
+        if (!class_exists(ExpressionLanguage::class)) {
             $container->removeDefinition('sofascore.purgatory.expression_language');
         }
     }

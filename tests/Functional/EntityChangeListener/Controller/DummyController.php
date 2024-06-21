@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DummyController
 {
     #[PurgeOn(Dummy::class, new ForProperties('name'))]
-    #[AnnotationRoute('/{name}', 'test_index')]
+    #[AnnotationRoute('/{name}', name: 'test_index')]
     #[Route('/{name}', 'test_index')]
     public function index()
     {
