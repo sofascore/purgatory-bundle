@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
@@ -140,6 +141,26 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [0, 1],
                     ],
                 ],
+            ],
+        ];
+
+        /* @see PersonController::deletedPersonsAction */
+        yield [
+            'entity' => Person::class,
+            'subscription' => [
+                'routeName' => 'deleted_persons',
+                'routeParams' => [],
+                'actions' => [Action::Delete],
+            ],
+        ];
+
+        /* @see PersonController::allIdsAction */
+        yield [
+            'entity' => Person::class,
+            'subscription' => [
+                'routeName' => 'all_ids',
+                'routeParams' => [],
+                'actions' => [Action::Create, Action::Delete],
             ],
         ];
     }

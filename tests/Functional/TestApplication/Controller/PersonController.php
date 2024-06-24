@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -79,6 +80,20 @@ class PersonController extends AbstractController
         ],
     )]
     public function petsPaginatedAction()
+    {
+    }
+
+    #[Route('/deleted', 'deleted_persons')]
+    #[AnnotationRoute('/deleted', name: 'deleted_persons')]
+    #[PurgeOn(Person::class, actions: Action::Delete)]
+    public function deletedPersonsAction()
+    {
+    }
+
+    #[Route('/all-ids', 'all_ids')]
+    #[AnnotationRoute('/all-ids', name: 'all_ids')]
+    #[PurgeOn(Person::class, actions: [Action::Create, Action::Delete])]
+    public function allIdsAction()
     {
     }
 }

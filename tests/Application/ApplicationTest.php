@@ -348,6 +348,54 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
     }
 
+    /**
+     * @see PersonController::deletedPersonsAction
+     */
+    public function testPurgeForActionDeleteOnly(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Purga';
+        $person->lastName = 'Tory';
+        $person->gender = 'male';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+        $this->assertUrlIsNotPurged('/person/deleted');
+
+        $person->gender = 'female';
+        $this->entityManager->flush();
+        $this->assertUrlIsNotPurged('/person/deleted');
+
+        $this->entityManager->remove($person);
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/person/deleted');
+    }
+
+    /**
+     * @see PersonController::allIdsAction
+     */
+    public function testPurgeForActionDeleteAndCreate(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Purga';
+        $person->lastName = 'Tory';
+        $person->gender = 'male';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/person/all-ids');
+
+        $this->purger->reset();
+
+        $person->gender = 'female';
+        $this->entityManager->flush();
+        $this->assertUrlIsNotPurged('/person/all-ids');
+
+        $this->entityManager->remove($person);
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/person/all-ids');
+    }
+
     private function assertUrlIsPurged(string $url): void
     {
         self::assertContains(
