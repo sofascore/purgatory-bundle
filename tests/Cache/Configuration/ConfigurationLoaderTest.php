@@ -52,7 +52,6 @@ final class ConfigurationLoaderTest extends TestCase
                 'Foo' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'routeParams' => [],
                         'actions' => Action::cases(),
                     ],
                 ],
@@ -75,7 +74,6 @@ final class ConfigurationLoaderTest extends TestCase
                 'Foo::bar' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'routeParams' => [],
                         'actions' => [Action::Create],
                     ],
                 ],
@@ -125,18 +123,15 @@ final class ConfigurationLoaderTest extends TestCase
                 'Foo::bar' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'routeParams' => [],
                     ],
                     [
                         'routeName' => 'app_route_bar',
-                        'routeParams' => [],
                         'if' => 'expression',
                     ],
                 ],
                 'Foo' => [
                     [
                         'routeName' => 'app_route_bar',
-                        'routeParams' => [],
                         'if' => 'expression',
                     ],
                 ],

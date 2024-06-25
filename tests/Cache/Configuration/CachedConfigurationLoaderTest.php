@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Cache\Configuration;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
@@ -46,6 +47,15 @@ final class CachedConfigurationLoaderTest extends TestCase
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
                     actions: [Action::Update],
+                    if: null,
+                ),
+                new PurgeSubscription(
+                    class: 'Foo',
+                    property: 'bar',
+                    routeParams: ['bar' => new PropertyValues('bar.id')],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo'),
+                    actions: [Action::Create],
                     if: null,
                 ),
             ]);

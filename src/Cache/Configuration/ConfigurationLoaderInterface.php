@@ -10,7 +10,7 @@ use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 interface ConfigurationLoaderInterface
 {
     /**
-     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
+     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     public function load(): array;
 }

@@ -93,7 +93,6 @@ final class ConfigurationTest extends AbstractKernelTestCase
             'entity' => Person::class,
             'subscription' => [
                 'routeName' => 'person_list_men',
-                'routeParams' => [],
                 'if' => 'obj.gender === "male"',
             ],
         ];
@@ -149,7 +148,6 @@ final class ConfigurationTest extends AbstractKernelTestCase
             'entity' => Person::class,
             'subscription' => [
                 'routeName' => 'deleted_persons',
-                'routeParams' => [],
                 'actions' => [Action::Delete],
             ],
         ];
@@ -159,7 +157,6 @@ final class ConfigurationTest extends AbstractKernelTestCase
             'entity' => Person::class,
             'subscription' => [
                 'routeName' => 'all_ids',
-                'routeParams' => [],
                 'actions' => [Action::Create, Action::Delete],
             ],
         ];

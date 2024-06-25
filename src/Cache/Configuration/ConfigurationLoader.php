@@ -30,8 +30,11 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
 
             $config = [
                 'routeName' => $subscription->routeName,
-                'routeParams' => $this->getRouteParamConfigs($subscription->routeParams),
             ];
+
+            if ($routeParams = $this->getRouteParamConfigs($subscription->routeParams)) {
+                $config['routeParams'] = $routeParams;
+            }
 
             if (null !== $subscription->if) {
                 $config['if'] = (string) $subscription->if;
