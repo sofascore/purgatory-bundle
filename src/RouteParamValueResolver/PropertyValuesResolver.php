@@ -34,9 +34,14 @@ final class PropertyValuesResolver implements ValuesResolverInterface
         $values = [];
 
         foreach ($unresolvedValues as $property) {
-            /** @var ?scalar $value */
+            /** @var scalar|list<?scalar>|null $value */
             $value = $this->propertyAccessor->getValue($entity, $property);
-            $values[] = $value;
+
+            if (\is_array($value)) {
+                array_push($values, ...$value);
+            } else {
+                $values[] = $value;
+            }
         }
 
         return $values;

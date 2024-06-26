@@ -27,6 +27,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -171,10 +172,15 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.route_param_value_resolver.property', PropertyValuesResolver::class)
             ->tag('purgatory.route_param_value_resolver')
             ->args([
-                service('property_accessor'),
+                service('sofascore.purgatory.property_accessor'),
             ])
 
         ->set('sofascore.purgatory.route_param_value_resolver.raw', RawValuesResolver::class)
             ->tag('purgatory.route_param_value_resolver')
+
+        ->set('sofascore.purgatory.property_accessor', PurgatoryPropertyAccessor::class)
+            ->args([
+                service('property_accessor'),
+            ])
     ;
 };

@@ -345,7 +345,43 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->purger->reset();
         $person->gender = 'female';
+        $person->numberOfPets = 1;
         $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
+        $this->assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details');
+    }
+
+    /**
+     * @see AnimalController::petOwnerDetailsAlternative
+     */
+    public function testArrayUnpackingRouteParamValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Purga';
+        $person->lastName = 'Tory';
+        $person->gender = 'male';
+
+        $pet1 = new Animal();
+        $pet1->name = 'HypeMC';
+        $pet1->owner = $person;
+        $person->pets->add($pet1);
+
+        $pet2 = new Animal();
+        $pet2->name = 'Brajk';
+        $pet2->owner = $person;
+        $person->pets->add($pet2);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->purger->reset();
+        $person->gender = 'female';
+        $person->numberOfPets = 1;
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details-alt');
+        $this->assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details-alt');
     }
 
     /**

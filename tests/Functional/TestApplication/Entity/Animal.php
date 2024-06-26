@@ -32,13 +32,6 @@ class Animal
     #[ORM\JoinColumn(nullable: false)]
     public Person $owner;
 
-    #[ORM\ManyToOne(
-        targetEntity: Person::class,
-        inversedBy: 'animalPatients',
-    )]
-    #[ORM\JoinColumn]
-    public ?Person $veterinarian = null;
-
     public function __construct()
     {
         $this->measurements = new Measurements();

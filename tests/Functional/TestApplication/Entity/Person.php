@@ -25,6 +25,9 @@ class Person
     #[ORM\Column]
     public string $gender;
 
+    #[ORM\Column(nullable: true)]
+    public ?int $numberOfPets = null;
+
     #[ORM\OneToMany(
         targetEntity: Animal::class,
         mappedBy: 'owner',
@@ -32,15 +35,18 @@ class Person
     )]
     public Collection $pets;
 
-    #[ORM\OneToMany(
-        targetEntity: Animal::class,
-        mappedBy: 'veterinarian',
-        cascade: ['PERSIST'],
-    )]
-    public Collection $animalPatients;
-
     public function __construct()
     {
         $this->pets = new ArrayCollection();
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getPetsIds(): array
+    {
+        return $this->pets->map(
+            static fn (Animal $animal): int => $animal->id,
+        )->toArray();
     }
 }

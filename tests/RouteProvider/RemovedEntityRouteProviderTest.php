@@ -20,6 +20,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
@@ -230,7 +231,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
         }
 
         $routeParamValueResolvers = [
-            PropertyValues::class => static fn () => new PropertyValuesResolver($propertyAccessor),
+            PropertyValues::class => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
             EnumValues::class => static fn () => new EnumValuesResolver(),
             RawValues::class => static fn () => new RawValuesResolver(),
         ];

@@ -143,6 +143,36 @@ final class ConfigurationTest extends AbstractKernelTestCase
             ],
         ];
 
+        /* @see AnimalController::petOwnerDetails */
+        yield [
+            'entity' => Person::class,
+            'subscription' => [
+                'routeName' => 'pet_owner_details',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::class,
+                        'values' => ['pets[*].id'],
+                    ],
+                ],
+                'if' => 'obj.numberOfPets > 0',
+            ],
+        ];
+
+        /* @see AnimalController::petOwnerDetailsAlternative() */
+        yield [
+            'entity' => Person::class,
+            'subscription' => [
+                'routeName' => 'pet_owner_details_alternative',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::class,
+                        'values' => ['petsIds'],
+                    ],
+                ],
+                'if' => 'obj.numberOfPets > 0',
+            ],
+        ];
+
         /* @see PersonController::deletedPersonsAction */
         yield [
             'entity' => Person::class,

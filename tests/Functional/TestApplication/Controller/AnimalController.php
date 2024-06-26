@@ -11,7 +11,9 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
@@ -88,6 +90,34 @@ class AnimalController
         ],
     )]
     public function petOfTheMonthAction(string $country)
+    {
+    }
+
+    #[Route('/{id}/owner-details', 'pet_owner_details')]
+    #[AnnotationRoute('/{id}/owner-details', name: 'pet_owner_details')]
+    #[PurgeOn(Person::class,
+        routeParams: [
+            'id' => 'pets[*].id',
+        ],
+        if: new Expression('obj.numberOfPets > 0'),
+        // TODO remove this 'if' when https://github.com/sofascore/purgatory-2/pull/50 is merged
+        // other tests shouldn't fail then
+    )]
+    public function petOwnerDetails(Animal $animal): void
+    {
+    }
+
+    #[Route('/{id}/owner-details-alt', 'pet_owner_details_alternative')]
+    #[AnnotationRoute('/{id}/owner-details-alt', name: 'pet_owner_details_alternative')]
+    #[PurgeOn(Person::class,
+        routeParams: [
+            'id' => 'petsIds',
+        ],
+        if: new Expression('obj.numberOfPets > 0'),
+        // TODO remove this 'if' when https://github.com/sofascore/purgatory-2/pull/50 is merged
+        // other tests shouldn't fail then
+    )]
+    public function petOwnerDetailsAlternative(Animal $animal): void
     {
     }
 }
