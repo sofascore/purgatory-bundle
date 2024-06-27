@@ -27,23 +27,23 @@ final class InMemoryPurgerTest extends TestCase
 
     public static function urlsProvider(): iterable
     {
+        $array = ['/foo', '/bar', '/baz'];
+
         yield 'array' => [
-            ['/foo', '/bar', '/baz'],
+            $array,
         ];
 
         yield 'ArrayObject' => [
-            new \ArrayObject(['/foo', '/bar', '/baz']),
+            new \ArrayObject($array),
         ];
 
         yield 'ArrayIterator' => [
-            new \ArrayIterator(['/foo', '/bar', '/baz']),
+            new \ArrayIterator($array),
         ];
 
         yield 'Generator' => [
-            (static function () {
-                yield '/foo';
-                yield '/bar';
-                yield '/baz';
+            (static function () use ($array) {
+                yield from $array;
             })(),
         ];
     }

@@ -1,0 +1,7 @@
+framework:
+    messenger:
+        transports:
+            async: 'in-memory://'
+
+sofascore_purgatory:
+    messenger: async

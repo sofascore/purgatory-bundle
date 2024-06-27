@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
@@ -14,6 +15,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
@@ -25,6 +27,7 @@ use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyControllerWithPurgeOn;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Routing\RouterInterface;
 
 #[CoversClass(PurgatoryExtension::class)]
@@ -239,5 +242,60 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertTrue($container->hasAlias(PurgerInterface::class));
         self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
+    }
+
+    public function testMessengerWhenTransportIsNotSet(): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $extension->prepend($container);
+
+        self::assertSame([], $container->getExtensionConfig('framework'));
+
+        $extension->load([], $container);
+
+        self::assertFalse($container->hasDefinition('sofascore.purgatory.purger.async'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+    }
+
+    #[TestWith([[], [new Reference('messenger.default_bus')], []])]
+    #[TestWith([['bus' => 'foo.bar'], [new Reference('foo.bar')], ['bus' => 'foo.bar']])]
+    #[TestWith([['batch_size' => 3], [new Reference('messenger.default_bus'), 3], []])]
+    public function testMessengerWhenTransportIsSet(array $extraConfig, array $expectedArguments, array $expectedTagAttributes): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->loadFromExtension('sofascore_purgatory', [
+            'messenger' => [
+                'transport' => 'foo',
+                ...$extraConfig,
+            ],
+        ]);
+
+        $extension->prepend($container);
+
+        self::assertSame([
+            [
+                'messenger' => [
+                    'routing' => [
+                        PurgeMessage::class => 'foo',
+                    ],
+                ],
+            ],
+        ], $container->getExtensionConfig('framework'));
+
+        $extension->load($container->getExtensionConfig('sofascore_purgatory'), $container);
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.purger.async'));
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+
+        $definition = $container->getDefinition('sofascore.purgatory.purger.async');
+        self::assertEquals($expectedArguments, $definition->getArguments());
+
+        $definition = $container->getDefinition('sofascore.purgatory.purge_message_handler');
+        self::assertTrue($definition->hasTag('messenger.message_handler'));
+        self::assertSame([$expectedTagAttributes], $definition->getTag('messenger.message_handler'));
     }
 }

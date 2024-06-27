@@ -17,7 +17,9 @@ use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessageHandler;
 use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
@@ -158,6 +160,17 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('http_cache.store'),
                 '%.sofascore.purgatory.purger.host%',
+            ])
+
+        ->set('sofascore.purgatory.purger.async', AsyncPurger::class)
+            ->decorate('sofascore.purgatory.purger', 'sofascore.purgatory.purger.sync')
+            ->args([
+                service('messenger.default_bus'),
+            ])
+
+        ->set('sofascore.purgatory.purge_message_handler', PurgeMessageHandler::class)
+            ->args([
+                service('sofascore.purgatory.purger.sync'),
             ])
 
         ->set('sofascore.purgatory.route_param_value_resolver.compound', CompoundValuesResolver::class)

@@ -1,0 +1,13 @@
+framework:
+    messenger:
+        transports:
+            async: 'in-memory://'
+        default_bus: foo.bus.default
+        buses:
+            foo.bus.default: []
+            bar.bus: []
+
+sofascore_purgatory:
+    messenger:
+        transport: async
+        bus: bar.bus

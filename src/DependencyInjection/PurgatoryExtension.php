@@ -7,17 +7,39 @@ namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
 use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-final class PurgatoryExtension extends ConfigurableExtension
+final class PurgatoryExtension extends ConfigurableExtension implements PrependExtensionInterface
 {
+    public function prepend(ContainerBuilder $container): void
+    {
+        /** @var array{messenger: array{transport: ?string}} $mergedConfig */
+        $mergedConfig = $this->processConfiguration(
+            new Configuration(),
+            $container->getExtensionConfig($this->getAlias()),
+        );
+
+        if (null !== $transport = $mergedConfig['messenger']['transport']) {
+            $container->prependExtensionConfig('framework', [
+                'messenger' => [
+                    'routing' => [
+                        PurgeMessage::class => $transport,
+                    ],
+                ],
+            ]);
+        }
+    }
+
     /**
      * @param array<array-key, mixed> $mergedConfig
      */
@@ -53,6 +75,27 @@ final class PurgatoryExtension extends ConfigurableExtension
                     ? ['priority' => $mergedConfig['doctrine_middleware_priority']]
                     : [],
             );
+
+        /** @var array{transport: ?string, bus: ?string, batch_size: ?positive-int} $messengerConfig */
+        $messengerConfig = $mergedConfig['messenger'];
+        if (null !== $messengerConfig['transport']) {
+            if (null !== $messengerConfig['bus']) {
+                $container->getDefinition('sofascore.purgatory.purger.async')
+                    ->replaceArgument(0, new Reference($messengerConfig['bus']));
+            }
+            if (null !== $messengerConfig['batch_size']) {
+                $container->getDefinition('sofascore.purgatory.purger.async')
+                    ->setArgument(1, $messengerConfig['batch_size']);
+            }
+            $container->getDefinition('sofascore.purgatory.purge_message_handler')
+                ->addTag(
+                    name: 'messenger.message_handler',
+                    attributes: null !== $messengerConfig['bus'] ? ['bus' => $messengerConfig['bus']] : [],
+                );
+        } else {
+            $container->removeDefinition('sofascore.purgatory.purger.async');
+            $container->removeDefinition('sofascore.purgatory.purge_message_handler');
+        }
 
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
             ->addTag('purgatory.subscription_resolver');
