@@ -46,7 +46,9 @@
         "symfony/yaml": "^5.4 || ^6.4 || ^7.0"
     },
     "conflict": {
-        "symfony/expression-language": "<5.4"
+        "symfony/cache": "<5.4",
+        "symfony/expression-language": "<5.4",
+        "symfony/serializer": "<5.4"
     },
     "scripts": {
         "run-checks": [
