@@ -1,6 +1,36 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Comparison operation \"\\>\\=\" between 1 and 1 is always true\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
+			message: "#^Comparison operation \"\\>\\=\" between 7 and 7 is always true\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
+			message: "#^Result of \\|\\| is always true\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between \\*NEVER\\* and 6 will always evaluate to false\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between 7 and 6 will always evaluate to false\\.$#"
+			count: 1
+			path: src/Command/DebugCommand.php
+
+		-
 			message: "#^Call to an undefined method Symfony\\\\Component\\\\Config\\\\Definition\\\\Builder\\\\NodeDefinition\\:\\:children\\(\\)\\.$#"
 			count: 1
 			path: src/DependencyInjection/Configuration.php

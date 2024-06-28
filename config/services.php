@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
+use Sofascore\PurgatoryBundle2\Command\DebugCommand;
 use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
@@ -195,5 +196,12 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('property_accessor'),
             ])
+
+        ->set('sofascore.purgatory.command.purge_on_debug', DebugCommand::class)
+            ->args([
+                service('sofascore.purgatory.configuration_loader'),
+                service('doctrine'),
+            ])
+            ->tag('console.command')
     ;
 };
