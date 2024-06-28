@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -94,6 +96,18 @@ class PersonController extends AbstractController
     #[AnnotationRoute('/all-ids', name: 'all_ids')]
     #[PurgeOn(Person::class, actions: [Action::Create, Action::Delete])]
     public function allIdsAction()
+    {
+    }
+
+    #[Route('/country/{country}', 'person_list_for_country')]
+    #[AnnotationRoute('/country/{country}', name: 'person_list_for_country')]
+    #[PurgeOn(Person::class,
+        target: 'country',
+        routeParams: [
+            'country' => new CompoundValues('alpha2', new RawValues(null)),
+        ],
+    )]
+    public function personListForCountryAction(?Country $country = null)
     {
     }
 }

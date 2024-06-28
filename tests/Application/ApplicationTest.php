@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\Perso
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 
 #[CoversNothing]
 final class ApplicationTest extends AbstractKernelTestCase
@@ -345,7 +346,6 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->purger->reset();
         $person->gender = 'female';
-        $person->numberOfPets = 1;
         $this->entityManager->flush();
 
         $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
@@ -377,7 +377,6 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->purger->reset();
         $person->gender = 'female';
-        $person->numberOfPets = 1;
         $this->entityManager->flush();
 
         $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details-alt');
@@ -430,6 +429,24 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->remove($person);
         $this->entityManager->flush();
         $this->assertUrlIsPurged('/person/all-ids');
+    }
+
+    /**
+     * @see PersonController::personListForCountryAction
+     */
+    public function testPurgeRouteWithOptionalRouteParam(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Purga';
+        $person->lastName = 'Tory';
+        $person->gender = 'male';
+        $person->country = Country::Croatia;
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/person/country/hr');
+        $this->assertUrlIsPurged('/person/country');
     }
 
     private function assertUrlIsPurged(string $url): void

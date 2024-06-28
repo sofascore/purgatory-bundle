@@ -36,15 +36,11 @@ final class RemovedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
-                    'if' => null,
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'routeParams' => [],
-                    'if' => null,
                 ],
                 [
                     'routeName' => 'baz_route',
@@ -58,7 +54,20 @@ final class RemovedEntityRouteProviderTest extends TestCase
                             'values' => ['baz'],
                         ],
                     ],
-                    'if' => null,
+                ],
+                [
+                    'routeName' => 'qux_route',
+                    'routeParams' => [
+                        'param1' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['foo', 'bar'],
+                        ],
+                        'param2' => [
+                            'type' => PropertyValues::class,
+                            'values' => ['qux'],
+                            'optional' => true,
+                        ],
+                    ],
                 ],
             ],
         ], false);
@@ -71,11 +80,13 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
         $routes = [...$routeProvider->provideRoutesFor(Action::Delete, $entity, [])];
 
-        self::assertCount(4, $routes);
+        self::assertCount(6, $routes);
         self::assertSame(['routeName' => 'foo_route', 'routeParams' => []], $routes[0]);
         self::assertSame(['routeName' => 'bar_route', 'routeParams' => []], $routes[1]);
         self::assertSame(['routeName' => 'baz_route', 'routeParams' => ['param1' => 1, 'param2' => 3]], $routes[2]);
         self::assertSame(['routeName' => 'baz_route', 'routeParams' => ['param1' => 2, 'param2' => 3]], $routes[3]);
+        self::assertSame(['routeName' => 'qux_route', 'routeParams' => ['param1' => 1, 'param2' => null]], $routes[4]);
+        self::assertSame(['routeName' => 'qux_route', 'routeParams' => ['param1' => 2, 'param2' => null]], $routes[5]);
     }
 
     public function testProvideRoutesToPurgeWithIf(): void
@@ -84,14 +95,12 @@ final class RemovedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
                 [
@@ -130,7 +139,6 @@ final class RemovedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
             ],
@@ -162,9 +170,9 @@ final class RemovedEntityRouteProviderTest extends TestCase
                                     'values' => [DummyStringEnum::class],
                                 ],
                             ],
+                            'optional' => true,
                         ],
                     ],
-                    'if' => null,
                 ],
             ],
         ], false);
@@ -221,6 +229,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
                 'foo' => 1,
                 'bar' => 2,
                 'baz' => 3,
+                'qux' => null,
             });
 
         $expressionLanguage = null;

@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\Kernel;
 )]
 final class DebugCommand extends Command
 {
-    /** @var ?array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>> */
+    /** @var ?array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>> */
     private ?array $subscriptions = null;
 
     public function __construct(
@@ -215,7 +215,7 @@ EOF
     /**
      * @param class-string|non-falsy-string $subscription
      *
-     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
+     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     private function findSubscriptions(string $subscription, bool $withProperties): array
     {
@@ -233,7 +233,7 @@ EOF
     }
 
     /**
-     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
+     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     private function findSubscriptionsForRoute(string $routeName): array
     {
@@ -249,7 +249,7 @@ EOF
     }
 
     /**
-     * @param array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>> $subscriptions
+     * @param array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>> $subscriptions
      */
     private function display(SymfonyStyle $io, array $subscriptions): void
     {
@@ -275,7 +275,7 @@ EOF
     }
 
     /**
-     * @param array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}> $routeParams
+     * @param array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}> $routeParams
      */
     private function formatRouteParams(array $routeParams): string
     {
@@ -324,7 +324,7 @@ EOF
     }
 
     /**
-     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
+     * @return array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     private function subscriptions(): array
     {

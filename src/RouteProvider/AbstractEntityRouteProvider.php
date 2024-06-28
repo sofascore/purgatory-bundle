@@ -25,7 +25,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     /**
-     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>>
+     * @var array<class-string|non-falsy-string, list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>>
      */
     private ?array $subscriptions = null;
 
@@ -60,8 +60,8 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}> $subscriptions
-     * @param array<string, array{mixed, mixed}>                                                                                                                                          $entityChangeSet @TODO ovo treba iskoristiti
+     * @param list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}> $subscriptions
+     * @param array<string, array{mixed, mixed}>                                                                                                                                                           $entityChangeSet @TODO ovo treba iskoristiti
      *
      * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
      */
@@ -83,6 +83,19 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                 /** @var ValuesResolverInterface<mixed> $routeParamValueResolver */
                 $routeParamValueResolver = $this->routeParamValueResolverLocator->get($config['type']);
                 $resolvedRouteParameters[$param] = $routeParamValueResolver->resolve($config['values'], $entity);
+
+                if (!($config['optional'] ?? false)) {
+                    $resolvedRouteParameters[$param] = array_values(
+                        array_filter(
+                            $resolvedRouteParameters[$param],
+                            static fn (mixed $value): bool => null !== $value,
+                        ),
+                    );
+
+                    if ([] === $resolvedRouteParameters[$param]) {
+                        continue 2; // skip whole subscription
+                    }
+                }
             }
 
             foreach ($this->getCartesianProduct($resolvedRouteParameters) as $routeParams) {
@@ -121,7 +134,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @return ?list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>, if?: string, actions?: non-empty-list<Action>}>
+     * @return ?list<array{routeName: string, routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>, if?: string, actions?: non-empty-list<Action>}>
      */
     private function getSubscriptions(string $key): ?array
     {

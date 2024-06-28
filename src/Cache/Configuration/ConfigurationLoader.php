@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\Configuration;
 
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
+use Symfony\Component\Routing\Route;
 
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
@@ -32,7 +33,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 'routeName' => $subscription->routeName,
             ];
 
-            if ($routeParams = $this->getRouteParamConfigs($subscription->routeParams)) {
+            if ($routeParams = $this->getRouteParamConfigs($subscription->route, $subscription->routeParams)) {
                 $config['routeParams'] = $routeParams;
             }
 
@@ -53,13 +54,21 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
     /**
      * @param array<string, ValuesInterface> $routeParams
      *
-     * @return array<string, array{type: class-string<ValuesInterface>, values: list<mixed>}>
+     * @return array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>
      */
-    private function getRouteParamConfigs(array $routeParams): array
+    private function getRouteParamConfigs(Route $route, array $routeParams): array
     {
-        return array_map(
-            static fn (ValuesInterface $values): array => $values->toArray(),
-            $routeParams,
-        );
+        $configs = [];
+        foreach ($routeParams as $routeParam => $values) {
+            $config = $values->toArray();
+
+            if ($route->hasDefault($routeParam)) {
+                $config['optional'] = true;
+            }
+
+            $configs[$routeParam] = $config;
+        }
+
+        return $configs;
     }
 }

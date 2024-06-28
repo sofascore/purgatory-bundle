@@ -89,14 +89,12 @@ final class CreatedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
                 [
@@ -175,9 +173,9 @@ final class CreatedEntityRouteProviderTest extends TestCase
                                     'values' => [DummyStringEnum::class],
                                 ],
                             ],
+                            'optional' => true,
                         ],
                     ],
-                    'if' => null,
                 ],
             ],
         ], false);

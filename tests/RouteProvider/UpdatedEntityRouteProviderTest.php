@@ -33,15 +33,11 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
-                    'if' => null,
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'routeParams' => [],
-                    'if' => null,
                 ],
                 [
                     'routeName' => 'baz_route',
@@ -55,7 +51,6 @@ final class UpdatedEntityRouteProviderTest extends TestCase
                             'values' => ['baz'],
                         ],
                     ],
-                    'if' => null,
                 ],
             ],
         ], false);
@@ -87,14 +82,12 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
                 [
@@ -139,7 +132,6 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'routeParams' => [],
                     'if' => 'obj.test == true',
                 ],
             ],
@@ -171,9 +163,9 @@ final class UpdatedEntityRouteProviderTest extends TestCase
                                     'values' => [DummyStringEnum::class],
                                 ],
                             ],
+                            'optional' => true,
                         ],
                     ],
-                    'if' => null,
                 ],
             ],
         ], false);

@@ -112,10 +112,24 @@ final class ConfigurationLoaderTest extends TestCase
                 new PurgeSubscription(
                     class: 'Bar',
                     property: null,
-                    routeParams: ['param' => new PropertyValues('value')],
+                    routeParams: [
+                        'param' => new PropertyValues('value'),
+                    ],
                     routeName: 'app_route_baz',
                     route: new Route('/bar'),
                     actions: null,
+                    if: null,
+                ),
+                new PurgeSubscription(
+                    class: 'Bar',
+                    property: null,
+                    routeParams: [
+                        'param1' => new PropertyValues('value1'),
+                        'param2' => new PropertyValues('value2'),
+                    ],
+                    routeName: 'app_route_baz_2',
+                    route: new Route('/bar/{param1}/{param2}', defaults: ['param2' => null]),
+                    actions: [Action::Update],
                     if: null,
                 ),
             ],
@@ -144,6 +158,21 @@ final class ConfigurationLoaderTest extends TestCase
                                 'values' => ['value'],
                             ],
                         ],
+                    ],
+                    [
+                        'routeName' => 'app_route_baz_2',
+                        'routeParams' => [
+                            'param1' => [
+                                'type' => PropertyValues::class,
+                                'values' => ['value1'],
+                            ],
+                            'param2' => [
+                                'type' => PropertyValues::class,
+                                'values' => ['value2'],
+                                'optional' => true,
+                            ],
+                        ],
+                        'actions' => [Action::Update],
                     ],
                 ],
             ],

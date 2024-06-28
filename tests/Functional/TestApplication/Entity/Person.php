@@ -6,7 +6,9 @@ namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 
 #[ORM\Entity]
 class Person
@@ -25,8 +27,8 @@ class Person
     #[ORM\Column]
     public string $gender;
 
-    #[ORM\Column(nullable: true)]
-    public ?int $numberOfPets = null;
+    #[ORM\Column(type: Types::STRING, nullable: true, enumType: Country::class)]
+    public ?Country $country = null;
 
     #[ORM\OneToMany(
         targetEntity: Animal::class,
@@ -48,5 +50,10 @@ class Person
         return $this->pets->map(
             static fn (Animal $animal): int => $animal->id,
         )->toArray();
+    }
+
+    public function getAlpha2(): ?string
+    {
+        return $this->country?->value;
     }
 }

@@ -13,7 +13,6 @@ use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
-use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
@@ -99,9 +98,6 @@ class AnimalController
         routeParams: [
             'id' => 'pets[*].id',
         ],
-        if: new Expression('obj.numberOfPets > 0'),
-        // TODO remove this 'if' when https://github.com/sofascore/purgatory-2/pull/50 is merged
-        // other tests shouldn't fail then
     )]
     public function petOwnerDetails(Animal $animal): void
     {
@@ -113,9 +109,6 @@ class AnimalController
         routeParams: [
             'id' => 'petsIds',
         ],
-        if: new Expression('obj.numberOfPets > 0'),
-        // TODO remove this 'if' when https://github.com/sofascore/purgatory-2/pull/50 is merged
-        // other tests shouldn't fail then
     )]
     public function petOwnerDetailsAlternative(Animal $animal): void
     {

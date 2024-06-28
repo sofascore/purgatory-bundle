@@ -154,7 +154,6 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => ['pets[*].id'],
                     ],
                 ],
-                'if' => 'obj.numberOfPets > 0',
             ],
         ];
 
@@ -169,7 +168,6 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => ['petsIds'],
                     ],
                 ],
-                'if' => 'obj.numberOfPets > 0',
             ],
         ];
 
@@ -303,6 +301,31 @@ final class ConfigurationTest extends AbstractKernelTestCase
                                 'values' => ['ar'],
                             ],
                         ],
+                    ],
+                ],
+            ],
+        ];
+
+        /* @see PersonController::personListForCountryAction */
+        yield [
+            'entity' => Person::class,
+            'properties' => ['country'],
+            'subscription' => [
+                'routeName' => 'person_list_for_country',
+                'routeParams' => [
+                    'country' => [
+                        'type' => CompoundValues::class,
+                        'values' => [
+                            [
+                                'type' => PropertyValues::class,
+                                'values' => ['alpha2'],
+                            ],
+                            [
+                                'type' => RawValues::class,
+                                'values' => [null],
+                            ],
+                        ],
+                        'optional' => true,
                     ],
                 ],
             ],
