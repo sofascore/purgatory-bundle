@@ -21,8 +21,8 @@ final class TestKernel extends Kernel
         private readonly string $varDir,
         private readonly string $testCase,
         string $config,
-        $environment,
-        $debug,
+        string $environment,
+        bool $debug,
     ) {
         if (!is_dir($this->getProjectDir())) {
             throw new \InvalidArgumentException(sprintf('The test case "%s" does not exist.', $testCase));
