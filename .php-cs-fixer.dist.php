@@ -18,6 +18,7 @@ return (new PhpCsFixer\Config())
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'array_indentation' => true,
+        'attribute_empty_parentheses' => true,
         'compact_nullable_type_declaration' => true,
         'declare_strict_types' => true,
         'heredoc_to_nowdoc' => true,
