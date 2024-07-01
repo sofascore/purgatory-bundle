@@ -11,7 +11,6 @@ use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
@@ -20,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 #[Route('/person')]
 #[AnnotationRoute('/person')]
-class PersonController extends AbstractController
+class PersonController
 {
     #[Route('/{id}', 'person_details')]
     #[AnnotationRoute('/{id}', name: 'person_details')]
