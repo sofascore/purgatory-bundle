@@ -150,4 +150,13 @@ class AnimalController
     public function petOwnerDetailsAlternative(Animal $animal): void
     {
     }
+
+    #[Route('/good-boy-ranking', 'good_boy_ranking')]
+    #[AnnotationRoute('/good-boy-ranking', name: 'good_boy_ranking')]
+    #[PurgeOn(Animal::class,
+        target: new ForProperties(['isGoodBoy']),
+    )]
+    public function goodBoyRankingAction()
+    {
+    }
 }

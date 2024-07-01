@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
@@ -21,15 +22,17 @@ use Symfony\Component\Routing\Route;
 #[CoversClass(MethodResolver::class)]
 final class MethodResolverTest extends TestCase
 {
-    public function testResolveMethod(): void
+    #[TestWith(['foo', 1])]
+    #[TestWith(['getFoo', 0])]
+    public function testResolveMethod(string $target, int $invocationCount): void
     {
         $propertyReadInfoExtractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
-        $propertyReadInfoExtractor->expects(self::once())
+        $propertyReadInfoExtractor->expects(self::exactly($invocationCount))
             ->method('getReadInfo')
-            ->with(DummyEntity::class, 'fooMethod')
+            ->with(DummyEntity::class, 'foo')
             ->willReturn(new PropertyReadInfo(
                 PropertyReadInfo::TYPE_METHOD,
-                'fooMethod',
+                'getFoo',
                 PropertyReadInfo::VISIBILITY_PUBLIC,
                 false,
                 false,
@@ -53,13 +56,13 @@ final class MethodResolverTest extends TestCase
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
                     class: DummyEntity::class,
-                    target: new ForProperties(['fooMethod']),
+                    target: new ForProperties([$target]),
                 ),
                 reflectionMethod: $this->createMock(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
-            target: 'fooMethod',
+            target: $target,
         );
 
         /** @var PurgeSubscription[] $subscriptions */

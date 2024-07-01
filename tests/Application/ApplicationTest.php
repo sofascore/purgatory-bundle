@@ -501,6 +501,31 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged('/person/country');
     }
 
+    /**
+     * @see AnimalController::goodBoyRankingAction
+     */
+    public function testPurgeForMethodName(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->purger->reset();
+
+        $animal->measurements->height = 10;
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/animal/good-boy-ranking');
+    }
+
     private function assertUrlIsPurged(string $url): void
     {
         self::assertContains(

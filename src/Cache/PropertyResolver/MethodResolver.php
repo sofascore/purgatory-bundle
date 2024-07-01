@@ -36,21 +36,26 @@ final class MethodResolver implements SubscriptionResolverInterface
     ): \Generator {
         $purgeOn = $controllerMetadata->purgeOn;
 
-        $readInfo = $this->extractor
-            ->getReadInfo(
-                class: $purgeOn->class,
-                property: $target,
-            );
+        $method = $target;
+        if (!method_exists($purgeOn->class, $method)) {
+            $readInfo = $this->extractor
+                ->getReadInfo(
+                    class: $purgeOn->class,
+                    property: $target,
+                );
 
-        if (null === $readInfo) {
-            return false;
+            if (null === $readInfo) {
+                return false;
+            }
+
+            if (PropertyReadInfo::TYPE_METHOD !== $readInfo->getType()) {
+                return false;
+            }
+
+            $method = $readInfo->getName();
         }
 
-        if (PropertyReadInfo::TYPE_METHOD !== $readInfo->getType()) {
-            return false;
-        }
-
-        $reflection = new \ReflectionMethod($purgeOn->class, $readInfo->getName());
+        $reflection = new \ReflectionMethod($purgeOn->class, $method);
 
         if (!$reflectionAttribute = $reflection->getAttributes(TargetedProperties::class)) {
             return false;
