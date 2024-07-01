@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
 
-final class PropertyValues extends AbstractValues
+final class PropertyValues extends AbstractValues implements InverseValuesAwareInterface
 {
     /** @var list<string> */
     private readonly array $properties;
@@ -21,5 +21,15 @@ final class PropertyValues extends AbstractValues
     public function getValues(): array
     {
         return $this->properties;
+    }
+
+    public function buildInverseValuesFor(string $association): ValuesInterface
+    {
+        return new self(
+            ...array_map(
+                static fn (string $property): string => sprintf('%s.%s', $association, $property),
+                $this->properties,
+            ),
+        );
     }
 }

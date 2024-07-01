@@ -24,6 +24,7 @@ use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteParamValueResolver\DynamicValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
@@ -187,6 +188,13 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory.route_param_value_resolver.raw', RawValuesResolver::class)
             ->tag('purgatory.route_param_value_resolver')
+
+        ->set('sofascore.purgatory.route_parameter_resolver.dynamic', DynamicValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
+            ->args([
+                tagged_locator('purgatory.route_parameter_resolver_service', 'alias'),
+                service('sofascore.purgatory.property_accessor'),
+            ])
 
         ->set('sofascore.purgatory.property_accessor', PurgatoryPropertyAccessor::class)
             ->args([

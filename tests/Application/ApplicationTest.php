@@ -23,7 +23,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
     protected function setUp(): void
     {
-        self::initializeApplication(['test_case' => 'TestApplication']);
+        self::initializeApplication(['test_case' => 'TestApplication', 'config' => 'app_config.yaml']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
@@ -381,6 +381,53 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details-alt');
         $this->assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details-alt');
+    }
+
+    /**
+     * @see AnimalController::animalsForRatingAction
+     */
+    public function testDynamicValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->width = 1;
+        $animal->measurements->height = 2;
+        $animal->measurements->weight = 3;
+        $person->pets->add($animal);
+
+        $animal = new Animal();
+        $animal->name = 'Bongo';
+        $animal->owner = $person;
+        $animal->measurements->width = 12;
+        $animal->measurements->height = 5;
+        $animal->measurements->weight = 9;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/animal/for-rating/6');   // getRating
+        $this->assertUrlIsPurged('/animal/for-rating/26');   // getRating
+        $this->assertUrlIsPurged('/animal/for-rating/106'); // __invoke
+        $this->assertUrlIsPurged('/animal/for-rating/126'); // __invoke
+        $this->assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
+
+        $this->purger->reset();
+
+        $animal->name = 'Bob';
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/animal/for-rating/32');
+        $this->assertUrlIsNotPurged('/animal/for-rating/6');
+        $this->assertUrlIsNotPurged('/animal/for-rating/26');
+        $this->assertUrlIsNotPurged('/animal/for-rating/106');
+        $this->assertUrlIsNotPurged('/animal/for-rating/126');
     }
 
     /**

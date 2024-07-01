@@ -80,7 +80,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             $resolvedRouteParameters = [];
 
             foreach ($subscription['routeParams'] ?? [] as $param => $config) {
-                /** @var ValuesResolverInterface<mixed> $routeParamValueResolver */
+                /** @var ValuesResolverInterface<array<mixed>> $routeParamValueResolver */
                 $routeParamValueResolver = $this->routeParamValueResolverLocator->get($config['type']);
                 $resolvedRouteParameters[$param] = $routeParamValueResolver->resolve($config['values'], $entity);
 

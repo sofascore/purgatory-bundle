@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 
 /**
- * @implements ValuesResolverInterface<?scalar>
+ * @implements ValuesResolverInterface<non-empty-list<?scalar>>
  */
 final class RawValuesResolver implements ValuesResolverInterface
 {

@@ -9,7 +9,7 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 
 /**
- * @implements ValuesResolverInterface<array{type: class-string<ValuesInterface>, values: list<mixed>}>
+ * @implements ValuesResolverInterface<non-empty-list<array{type: class-string<ValuesInterface>, values: list<mixed>}>>
  */
 final class CompoundValuesResolver implements ValuesResolverInterface
 {
@@ -34,7 +34,7 @@ final class CompoundValuesResolver implements ValuesResolverInterface
         $resolvedRouteParameters = [];
 
         foreach ($unresolvedValues as $config) {
-            /** @var ValuesResolverInterface<mixed> $routeParamValueResolver */
+            /** @var ValuesResolverInterface<array<mixed>> $routeParamValueResolver */
             $routeParamValueResolver = $this->routeParamValueResolverLocator->get($config['type']);
             $resolvedRouteParameters = [...$resolvedRouteParameters, ...$routeParamValueResolver->resolve($config['values'], $entity)];
         }

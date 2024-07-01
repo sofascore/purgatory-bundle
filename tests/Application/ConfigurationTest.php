@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Application;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
@@ -138,6 +139,25 @@ final class ConfigurationTest extends AbstractKernelTestCase
                     'page' => [
                         'type' => RawValues::class,
                         'values' => [0, 1],
+                    ],
+                ],
+            ],
+        ];
+
+        /* @see AnimalController::animalsForRatingAction */
+        yield [
+            'entity' => Animal::class,
+            'subscription' => [
+                'routeName' => 'animals_with_rating',
+                'routeParams' => [
+                    'rating' => [
+                        'type' => CompoundValues::class,
+                        'values' => [
+                            [
+                                'type' => DynamicValues::class,
+                                'values' => ['purgatory.animal_rating', 'getOwnerRating', 'owner'],
+                            ],
+                        ],
                     ],
                 ],
             ],
@@ -299,6 +319,34 @@ final class ConfigurationTest extends AbstractKernelTestCase
                             [
                                 'type' => RawValues::class,
                                 'values' => ['ar'],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        /* @see AnimalController::animalsForRatingAction */
+        yield [
+            'entity' => Animal::class,
+            'properties' => ['measurements.height', 'measurements.width', 'measurements.weight'],
+            'subscription' => [
+                'routeName' => 'animals_with_rating',
+                'routeParams' => [
+                    'rating' => [
+                        'type' => CompoundValues::class,
+                        'values' => [
+                            [
+                                'type' => DynamicValues::class,
+                                'values' => ['purgatory.animal_rating', 'getRating', null],
+                            ],
+                            [
+                                'type' => DynamicValues::class,
+                                'values' => ['purgatory.animal_rating', null, null],
+                            ],
+                            [
+                                'type' => DynamicValues::class,
+                                'values' => ['purgatory.animal_rating', 'getOwnerRating', 'owner'],
                             ],
                         ],
                     ],

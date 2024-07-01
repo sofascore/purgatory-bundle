@@ -8,12 +8,12 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
- * @implements ValuesResolverInterface<string>
+ * @implements ValuesResolverInterface<non-empty-list<string>>
  */
 final class PropertyValuesResolver implements ValuesResolverInterface
 {
     public function __construct(
-        protected readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly PropertyAccessorInterface $propertyAccessor,
     ) {
     }
 

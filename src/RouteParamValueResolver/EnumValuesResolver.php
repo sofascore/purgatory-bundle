@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 
 /**
- * @implements ValuesResolverInterface<\BackedEnum>
+ * @implements ValuesResolverInterface<array{0: \BackedEnum}>
  */
 final class EnumValuesResolver implements ValuesResolverInterface
 {
@@ -26,7 +25,7 @@ final class EnumValuesResolver implements ValuesResolverInterface
     public function resolve(array $unresolvedValues, object $entity): array
     {
         /** @var class-string<\BackedEnum> $enumFqcn */
-        $enumFqcn = $unresolvedValues[0] ?? throw new InvalidArgumentException('The list must contain exactly one enum class.');
+        $enumFqcn = $unresolvedValues[0];
 
         return array_map(
             static fn (\BackedEnum $case): int|string => $case->value,

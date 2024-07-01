@@ -8,9 +8,12 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyIntEnum;
 
 #[CoversClass(CompoundValues::class)]
 final class CompoundValuesTest extends TestCase
@@ -45,5 +48,27 @@ final class CompoundValuesTest extends TestCase
                 ['type' => RawValues::class, 'values' => ['baz', 'qux']],
             ],
         ], $compoundValues->toArray());
+    }
+
+    public function testBuildInverseValuesFor(): void
+    {
+        $compoundValues = new CompoundValues(
+            new DynamicValues('alias'),
+            new DynamicValues('alias', arg: 'obj'),
+            new EnumValues(DummyIntEnum::class),
+            new PropertyValues('obj'),
+            new RawValues(1, null, 'str'),
+        );
+
+        self::assertEquals(
+            expected: new CompoundValues(
+                new DynamicValues('alias', arg: 'association'),
+                new DynamicValues('alias', arg: 'association.obj'),
+                new EnumValues(DummyIntEnum::class),
+                new PropertyValues('association.obj'),
+                new RawValues(1, null, 'str'),
+            ),
+            actual: $compoundValues->buildInverseValuesFor('association'),
+        );
     }
 }

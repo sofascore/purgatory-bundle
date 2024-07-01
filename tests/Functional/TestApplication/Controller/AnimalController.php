@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
@@ -89,6 +90,30 @@ class AnimalController
         ],
     )]
     public function petOfTheMonthAction(string $country)
+    {
+    }
+
+    #[Route('/for-rating/{rating}', 'animals_with_rating')]
+    #[AnnotationRoute('/for-rating/{rating}', name: 'animals_with_rating')]
+    #[PurgeOn(Animal::class,
+        target: ['measurements'],
+        routeParams: [
+            'rating' => new CompoundValues(
+                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getRating'),
+                new DynamicValues(alias: 'purgatory.animal_rating'),
+                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getOwnerRating', arg: 'owner'),
+            ),
+        ],
+    )]
+    #[PurgeOn(Person::class,
+        target: ['pets'],
+        routeParams: [
+            'rating' => new CompoundValues(
+                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getOwnerRating'),
+            ),
+        ],
+    )]
+    public function animalsForRatingAction(int $rating)
     {
     }
 

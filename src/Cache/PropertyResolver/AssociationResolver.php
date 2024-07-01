@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\InverseValuesAwareInterface;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
@@ -66,10 +66,10 @@ final class AssociationResolver implements SubscriptionResolverInterface
 
         $associationClass = $classMetadata->getAssociationTargetClass($target);
 
-        /** @var array<string, ValuesInterface> $transformedRouteParams */
-        $transformedRouteParams = [];
+        /** @var array<string, ValuesInterface> $inverseRouteParams */
+        $inverseRouteParams = [];
         foreach ($routeParams as $routeParam => $values) {
-            $transformedRouteParams[$routeParam] = $this->transformRouteParameterValueForAssociation($values, $associationTarget);
+            $inverseRouteParams[$routeParam] = $this->getInverseValuesFor($values, $associationTarget);
         }
 
         if (null !== $if = $controllerMetadata->purgeOn->if) {
@@ -80,7 +80,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         yield new PurgeSubscription(
             class: $associationClass,
             property: null,
-            routeParams: $transformedRouteParams,
+            routeParams: $inverseRouteParams,
             routeName: $controllerMetadata->routeName,
             route: $controllerMetadata->route,
             actions: $controllerMetadata->purgeOn->actions,
@@ -90,14 +90,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
         return true;
     }
 
-    private function transformRouteParameterValueForAssociation(ValuesInterface $values, string $associationTarget): ValuesInterface
+    private function getInverseValuesFor(ValuesInterface $values, string $associationTarget): ValuesInterface
     {
-        return $values instanceof PropertyValues
-            ? new PropertyValues(...array_map(
-                static fn (string $property): string => sprintf('%s.%s', $associationTarget, $property),
-                $values->getValues(),
-            ))
-            : $values;
+        return $values instanceof InverseValuesAwareInterface ? $values->buildInverseValuesFor($associationTarget) : $values;
     }
 
     private function createGetter(string $class, string $property): string

@@ -1,0 +1,7 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: true
+
+    Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\:
+        resource: '../'

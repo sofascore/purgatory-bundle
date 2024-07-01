@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 
 /**
- * @template T
+ * @template T of array
  */
 interface ValuesResolverInterface
 {
@@ -17,7 +17,7 @@ interface ValuesResolverInterface
     public static function for(): string;
 
     /**
-     * @param list<T> $unresolvedValues
+     * @param T $unresolvedValues
      *
      * @return list<?scalar>
      */
