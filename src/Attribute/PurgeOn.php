@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
+use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\Expression;
 
@@ -17,6 +18,7 @@ final class PurgeOn
     public readonly ?TargetInterface $target;
     /** @var ?non-empty-array<string, ValuesInterface> */
     public readonly ?array $routeParams;
+    public readonly ?Expression $if;
     /** @var ?non-empty-list<string> */
     public readonly ?array $route;
     /** @var ?non-empty-list<Action> */
@@ -33,12 +35,13 @@ final class PurgeOn
         public readonly string $class,
         string|array|TargetInterface|null $target = null,
         ?array $routeParams = null,
-        public readonly ?Expression $if = null,
+        string|Expression|null $if = null,
         string|array|null $route = null,
         Action|array|null $actions = null,
     ) {
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;
+        $this->if = \is_string($if) ? self::normalizeExpression($if) : $if;
         $this->route = \is_string($route) ? [$route] : $route;
         $this->actions = $actions instanceof Action ? [$actions] : $actions;
     }
@@ -67,5 +70,14 @@ final class PurgeOn
         return !$value instanceof ValuesInterface
             ? new PropertyValues(...(\is_array($value) ? $value : [$value]))
             : $value;
+    }
+
+    private static function normalizeExpression(string $if): Expression
+    {
+        if (!class_exists(Expression::class)) {
+            throw new LogicException('You cannot use the "if" attribute because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
+        }
+
+        return new Expression($if);
     }
 }

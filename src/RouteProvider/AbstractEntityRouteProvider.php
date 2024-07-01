@@ -146,6 +146,6 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     private function getExpressionLanguage(): ExpressionLanguage
     {
         return $this->expressionLanguage
-            ?? throw new LogicException('Unable to use expressions as the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
+            ?? throw new LogicException('You cannot use expressions because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
     }
 }
