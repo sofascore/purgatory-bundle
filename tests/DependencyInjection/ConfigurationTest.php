@@ -5,11 +5,16 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\DependencyInjection\Configuration;
+use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 #[CoversClass(Configuration::class)]
 final class ConfigurationTest extends TestCase
@@ -108,5 +113,69 @@ final class ConfigurationTest extends TestCase
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['preRemove']);
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postPersist']);
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postUpdate']);
+    }
+
+    #[DataProvider('provideXMLCases')]
+    public function testXMLConfiguration(string $file, array $expectedConfig): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension(new PurgatoryExtension());
+        $locator = new FileLocator(__DIR__.'/Fixtures/config');
+
+        $xmlFileLoader = new XmlFileLoader($container, $locator);
+        $xmlFileLoader->load($file);
+
+        $config = (new Processor())->processConfiguration(new Configuration(), $container->getExtensionConfig('sofascore_purgatory'));
+
+        self::assertSame($expectedConfig, $config);
+    }
+
+    public static function provideXMLCases(): iterable
+    {
+        yield 'all' => [
+            'all.xml',
+            [
+                'doctrine_middleware_priority' => 5,
+                'doctrine_event_listener_priorities' => [
+                    'preRemove' => 10,
+                    'postPersist' => 20,
+                    'postUpdate' => 30,
+                ],
+                'purger' => [
+                    'name' => 'symfony',
+                    'host' => 'localhost',
+                ],
+                'messenger' => [
+                    'transport' => 'async',
+                    'bus' => 'command_bus',
+                    'batch_size' => 100,
+                ],
+                'route_ignore_patterns' => [
+                    0 => '/^_profiler/',
+                    1 => '/^_wdt/',
+                ],
+            ],
+        ];
+        yield 'short listener' => [
+            'short_listener.xml',
+            [
+                'doctrine_event_listener_priorities' => [
+                    'preRemove' => 10,
+                    'postPersist' => 10,
+                    'postUpdate' => 10,
+                ],
+                'route_ignore_patterns' => [],
+                'doctrine_middleware_priority' => null,
+                'purger' => [
+                    'name' => null,
+                    'host' => null,
+                ],
+                'messenger' => [
+                    'transport' => null,
+                    'bus' => null,
+                    'batch_size' => null,
+                ],
+            ],
+        ];
     }
 }

@@ -18,6 +18,7 @@ final class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
+            ->fixXmlConfig('route_ignore_pattern')
             ->children()
                 ->arrayNode('route_ignore_patterns')
                     ->info('Route names that match the given regular expressions will be ignored.')

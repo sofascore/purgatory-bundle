@@ -130,6 +130,16 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         }
     }
 
+    public function getNamespace(): string
+    {
+        return 'http://sofascore.com/schema/dic/purgatory';
+    }
+
+    public function getXsdValidationBasePath(): string
+    {
+        return __DIR__.'/../../config/schema';
+    }
+
     public function getAlias(): string
     {
         return 'sofascore_purgatory';

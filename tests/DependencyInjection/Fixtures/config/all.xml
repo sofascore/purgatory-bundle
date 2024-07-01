@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:purgatory="http://sofascore.com/schema/dic/purgatory"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                               http://sofascore.com/schema/dic/purgatory https://sofascore.com/schema/dic/purgatory/purgatory.xsd">
+
+    <purgatory:config>
+
+        <purgatory:route-ignore-pattern>/^_profiler/</purgatory:route-ignore-pattern>
+        <purgatory:route-ignore-pattern>/^_wdt/</purgatory:route-ignore-pattern>
+
+        <purgatory:doctrine-middleware-priority>5</purgatory:doctrine-middleware-priority>
+
+        <purgatory:doctrine-event-listener-priorities preRemove="10" postPersist="20" postUpdate="30" />
+
+        <purgatory:purger name="symfony" host="localhost" />
+
+        <purgatory:messenger transport="async" bus="command_bus" batch-size="100" />
+
+    </purgatory:config>
+
+</container>

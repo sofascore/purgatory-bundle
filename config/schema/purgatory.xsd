@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+    xmlns="http://sofascore.com/schema/dic/purgatory"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://sofascore.com/schema/dic/purgatory"
+    elementFormDefault="qualified">
+
+    <xsd:complexType name="doctrine-event-listener-priorities">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:string">
+                <xsd:attribute name="preRemove" type="xsd:int" />
+                <xsd:attribute name="postPersist" type="xsd:int" />
+                <xsd:attribute name="postUpdate" type="xsd:int" />
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="purger">
+        <xsd:attribute name="name" type="xsd:string" />
+        <xsd:attribute name="host" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="messenger">
+        <xsd:attribute name="transport" type="xsd:string" />
+        <xsd:attribute name="bus" type="xsd:string" />
+        <xsd:attribute name="batch-size" type="xsd:int" />
+    </xsd:complexType>
+
+    <xsd:complexType name="config">
+        <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="route-ignore-pattern" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+            <xsd:element name="doctrine-middleware-priority" type="xsd:int" minOccurs="0" />
+            <xsd:element name="doctrine-event-listener-priorities" type="doctrine-event-listener-priorities" minOccurs="0" />
+            <xsd:element name="purger" type="purger" minOccurs="0" />
+            <xsd:element name="messenger" type="messenger" minOccurs="0" />
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:element name="config" type="config" />
+
+</xsd:schema>
