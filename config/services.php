@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
@@ -143,9 +142,6 @@ return static function (ContainerConfigurator $container) {
                 service('router'),
                 service('sofascore.purgatory.purger'),
             ])
-            ->tag('doctrine.event_listener', ['event' => DoctrineEvents::preRemove])
-            ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postPersist])
-            ->tag('doctrine.event_listener', ['event' => DoctrineEvents::postUpdate])
 
         ->set('sofascore.purgatory.purger.null', NullPurger::class)
             ->tag('purgatory.purger', ['alias' => 'null'])

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
+use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
@@ -75,6 +76,18 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                     ? ['priority' => $mergedConfig['doctrine_middleware_priority']]
                     : [],
             );
+
+        $listenerDefinition = $container->getDefinition('sofascore.purgatory.entity_change_listener');
+        /**
+         * @var DoctrineEvents::* $event
+         * @var ?int              $priority
+         */
+        foreach ($mergedConfig['doctrine_event_listener_priorities'] as $event => $priority) {
+            $listenerDefinition->addTag(
+                name: 'doctrine.event_listener',
+                attributes: ['event' => $event] + (null !== $priority ? ['priority' => $priority] : []),
+            );
+        }
 
         /** @var array{transport: ?string, bus: ?string, batch_size: ?positive-int} $messengerConfig */
         $messengerConfig = $mergedConfig['messenger'];

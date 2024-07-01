@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
+use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -27,6 +28,23 @@ final class Configuration implements ConfigurationInterface
                 ->integerNode('doctrine_middleware_priority')
                     ->info('Explicitly set the priority of Purgatory\'s Doctrine middleware.')
                     ->defaultNull()
+                ->end()
+                ->arrayNode('doctrine_event_listener_priorities')
+                    ->info('Explicitly set the priorities of Purgatory\'s Doctrine event listener.')
+                    ->beforeNormalization()
+                        ->ifTrue(static fn (mixed $priority): bool => \is_int($priority))
+                        ->then(static fn (int $priority): array => [
+                            DoctrineEvents::preRemove => $priority,
+                            DoctrineEvents::postPersist => $priority,
+                            DoctrineEvents::postUpdate => $priority,
+                        ])
+                    ->end()
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->integerNode(DoctrineEvents::preRemove)->defaultNull()->end()
+                        ->integerNode(DoctrineEvents::postPersist)->defaultNull()->end()
+                        ->integerNode(DoctrineEvents::postUpdate)->defaultNull()->end()
+                    ->end()
                 ->end()
                 ->arrayNode('purger')
                     ->addDefaultsIfNotSet()

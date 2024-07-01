@@ -21,6 +21,11 @@ final class ConfigurationTest extends TestCase
         self::assertSame([
             'route_ignore_patterns' => [],
             'doctrine_middleware_priority' => null,
+            'doctrine_event_listener_priorities' => [
+                'preRemove' => null,
+                'postPersist' => null,
+                'postUpdate' => null,
+            ],
             'purger' => [
                 'name' => null,
                 'host' => null,
@@ -90,5 +95,18 @@ final class ConfigurationTest extends TestCase
                 ],
             ],
         ]);
+    }
+
+    public function testDoctrineListenerPrioritiesConifgurationForSingleValue(): void
+    {
+        $configuration = (new Processor())->processConfiguration(new Configuration(), [
+            'sofascore_purgatory' => [
+                'doctrine_event_listener_priorities' => 100,
+            ],
+        ]);
+
+        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['preRemove']);
+        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postPersist']);
+        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postUpdate']);
     }
 }

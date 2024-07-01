@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
 
+use Doctrine\ORM\Events as DoctrineEvents;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
@@ -66,6 +67,48 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertCount(1, $ignoredPatterns);
         self::assertSame('/^_profiler/', $ignoredPatterns[0]);
+    }
+
+    #[TestWith([[], [[]]])]
+    #[TestWith([['doctrine_middleware_priority' => 10], [['priority' => 10]]])]
+    public function testDoctrineMiddlewareTagIsSet(array $middlewarePriority, array $expectedTag): void
+    {
+        $container = new ContainerBuilder();
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => $middlewarePriority,
+        ], $container);
+
+        $definition = $container->getDefinition('sofascore.purgatory.doctrine_middleware');
+
+        self::assertTrue($definition->hasTag('doctrine.middleware'));
+        self::assertSame($expectedTag, $definition->getTag('doctrine.middleware'));
+    }
+
+    #[TestWith([
+        [],
+        [['event' => DoctrineEvents::preRemove], ['event' => DoctrineEvents::postPersist], ['event' => DoctrineEvents::postUpdate]],
+    ])]
+    #[TestWith([
+        ['doctrine_event_listener_priorities' => [DoctrineEvents::preRemove => 10]],
+        [['event' => DoctrineEvents::preRemove, 'priority' => 10], ['event' => DoctrineEvents::postPersist], ['event' => DoctrineEvents::postUpdate]],
+    ])]
+    #[TestWith([
+        ['doctrine_event_listener_priorities' => [DoctrineEvents::postPersist => 10, DoctrineEvents::postUpdate => 20]],
+        [['event' => DoctrineEvents::postPersist, 'priority' => 10], ['event' => DoctrineEvents::postUpdate, 'priority' => 20], ['event' => DoctrineEvents::preRemove]],
+    ])]
+    public function testDoctrineEventListenerTagIsSet(array $middlewarePriority, array $expectedTag): void
+    {
+        $container = new ContainerBuilder();
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => $middlewarePriority,
+        ], $container);
+
+        $definition = $container->getDefinition('sofascore.purgatory.entity_change_listener');
+
+        self::assertTrue($definition->hasTag('doctrine.event_listener'));
+        self::assertSame($expectedTag, $definition->getTag('doctrine.event_listener'));
     }
 
     public function testSubscriptionResolverIsTagged(): void
