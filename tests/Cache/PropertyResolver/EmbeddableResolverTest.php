@@ -11,9 +11,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Symfony\Component\Routing\Route;
 

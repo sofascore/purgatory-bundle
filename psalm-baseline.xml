@@ -11,7 +11,7 @@
       <code><![CDATA[require $cache->getPath()]]></code>
     </UnresolvableInclude>
   </file>
-  <file src="src/Cache/Metadata/ControllerMetadataProvider.php">
+  <file src="src/Cache/ControllerMetadata/ControllerMetadataProvider.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$method]]></code>
     </PossiblyUndefinedArrayOffset>

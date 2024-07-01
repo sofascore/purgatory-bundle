@@ -6,8 +6,8 @@ namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 
 interface SubscriptionResolverInterface
 {

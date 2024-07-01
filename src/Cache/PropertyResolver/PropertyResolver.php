@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 
 /**
  * Handles fields and association properties.

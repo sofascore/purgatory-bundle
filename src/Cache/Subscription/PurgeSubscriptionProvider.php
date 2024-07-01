@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
+namespace Sofascore\PurgatoryBundle2\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;

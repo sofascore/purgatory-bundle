@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;

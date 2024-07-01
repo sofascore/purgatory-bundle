@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
+namespace Sofascore\PurgatoryBundle2\Cache\ControllerMetadata;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;

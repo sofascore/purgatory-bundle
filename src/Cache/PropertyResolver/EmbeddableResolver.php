@@ -8,8 +8,8 @@ use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 
 /**

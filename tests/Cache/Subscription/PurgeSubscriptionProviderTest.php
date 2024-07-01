@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\Metadata;
+namespace Sofascore\PurgatoryBundle2\Tests\Cache\Subscription;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -14,16 +14,16 @@ use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProviderInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscription;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\DummyTarget;
-use Sofascore\PurgatoryBundle2\Tests\Cache\Metadata\Fixtures\FooController;
+use Sofascore\PurgatoryBundle2\Tests\Cache\Subscription\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle2\Tests\Cache\Subscription\Fixtures\DummyTarget;
 use Symfony\Component\Routing\Route;
 
 #[CoversClass(PurgeSubscriptionProvider::class)]
@@ -65,7 +65,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 purgeOn: new PurgeOn(
                     class: 'FooEntity',
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'expectedSubscriptions' => [
                 new PurgeSubscription(
@@ -89,7 +89,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     class: 'FooEntity',
                     routeParams: ['bar' => 'baz'],
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'expectedSubscriptions' => [
                 new PurgeSubscription(
@@ -112,7 +112,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 purgeOn: new PurgeOn(
                     class: 'FooEntity',
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'expectedSubscriptions' => [
                 new PurgeSubscription(
@@ -194,7 +194,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     class: 'FooEntity',
                     target: new DummyTarget(),
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'targetResolverReturn' => ['foo', 'bar'],
             'expectedSubscriptions' => [
@@ -229,7 +229,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     target: new DummyTarget(),
                     routeParams: ['bar' => 'baz'],
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'targetResolverReturn' => ['bar', 'baz'],
             'expectedSubscriptions' => [
@@ -263,7 +263,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     class: 'FooEntity',
                     target: new DummyTarget(),
                 ),
-                reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
             'targetResolverReturn' => ['qux', 'corge'],
             'expectedSubscriptions' => [
@@ -301,7 +301,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                         class: 'FooEntity',
                         target: new ForProperties(['bar']),
                     ),
-                    reflectionMethod: new \ReflectionMethod(FooController::class, 'barAction'),
+                    reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
                 );
             });
 

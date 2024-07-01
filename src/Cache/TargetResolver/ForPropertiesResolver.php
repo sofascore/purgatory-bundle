@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 
 final class ForPropertiesResolver implements TargetResolverInterface

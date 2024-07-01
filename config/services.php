@@ -6,12 +6,12 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProvider;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle2\Command\DebugCommand;

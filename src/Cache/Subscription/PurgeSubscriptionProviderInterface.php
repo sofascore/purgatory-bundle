@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
+namespace Sofascore\PurgatoryBundle2\Cache\Subscription;
 
 interface PurgeSubscriptionProviderInterface
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 
 interface TargetResolverInterface
 {

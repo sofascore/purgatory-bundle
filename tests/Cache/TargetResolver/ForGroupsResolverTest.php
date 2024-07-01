@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
 use Symfony\Component\Routing\Route;

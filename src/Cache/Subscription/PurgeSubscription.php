@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Metadata;
+namespace Sofascore\PurgatoryBundle2\Cache\Subscription;
 
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;

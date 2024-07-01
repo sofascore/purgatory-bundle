@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\CompilerPass;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadataProvider;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

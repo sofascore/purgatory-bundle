@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\TargetedProperties;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;

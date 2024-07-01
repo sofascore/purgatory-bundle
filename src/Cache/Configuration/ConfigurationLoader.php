@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\Configuration;
 
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\Metadata\PurgeSubscriptionProviderInterface;
+use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProviderInterface;
 use Symfony\Component\Routing\Route;
 
 final class ConfigurationLoader implements ConfigurationLoaderInterface
