@@ -47,6 +47,18 @@ class AnimalController
     {
     }
 
+    #[Route('/{animal_id}/measurements-alt', 'animal_measurements_alt')]
+    #[AnnotationRoute('/{animal_id}/measurements-alt', name: 'animal_measurements_alt')]
+    #[PurgeOn(Animal::class,
+        target: new ForProperties(['goodBoy']),
+        routeParams: [
+            'animal_id' => 'id',
+        ],
+    )]
+    public function measurementsAltAction(Animal $animal)
+    {
+    }
+
     #[Route('/{id}/route1', 'animal_route_1')]
     #[AnnotationRoute('/{id}/route1', name: 'animal_route_1')]
     #[Route('/{id}/route2', 'animal_route_2')]

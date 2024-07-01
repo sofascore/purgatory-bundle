@@ -55,7 +55,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 37,
+            expectedNumberOfSubscriptions: 41,
         );
     }
 
@@ -80,7 +80,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
     #[TestWith([Person::class, 6])]
     #[TestWith([Animal::class, 4])]
-    #[TestWith([Animal::class.'::measurements.height', 7])]
+    #[TestWith([Animal::class.'::measurements.height', 8])]
     public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions): void
     {
         $this->command->execute([
@@ -106,7 +106,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 30,
+            expectedNumberOfSubscriptions: 34,
         );
     }
 
@@ -123,11 +123,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
         $display = $this->command->getDisplay();
 
         self::assertSame(
-            expected: 7,
+            expected: 8,
             actual: substr_count($display, 'Entity         Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal'),
         );
         self::assertSame(
-            expected: 7,
+            expected: 8,
             actual: substr_count($display, 'Property       measurements.height'),
         );
     }
@@ -145,11 +145,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
         $display = $this->command->getDisplay();
 
         self::assertSame(
-            expected: 30,
+            expected: 34,
             actual: substr_count($display, 'Entity         Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal'),
         );
         self::assertSame(
-            expected: 4,
+            expected: 5,
             actual: substr_count($display, 'Property       measurements '),
         );
         self::assertSame(
@@ -157,15 +157,15 @@ final class DebugCommandTest extends AbstractKernelTestCase
             actual: substr_count($display, 'Property       name'),
         );
         self::assertSame(
-            expected: 7,
+            expected: 8,
             actual: substr_count($display, 'Property       measurements.height'),
         );
         self::assertSame(
-            expected: 5,
+            expected: 6,
             actual: substr_count($display, 'Property       measurements.width'),
         );
         self::assertSame(
-            expected: 6,
+            expected: 7,
             actual: substr_count($display, 'Property       measurements.weight'),
         );
         self::assertSame(

@@ -112,6 +112,7 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::detailAction
      * @see AnimalController::measurementsAction
+     * @see AnimalController::measurementsAltAction
      */
     public function testPurgeAfterChangeInEmbeddable(): void
     {
@@ -130,6 +131,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $detailsUrl = '/animal/'.$animal->id;
         $measurementsUrl = '/animal/'.$animal->id.'/measurements';
+        $measurementsAltUrl = '/animal/'.$animal->id.'/measurements-alt';
 
         $this->purger->reset();
 
@@ -137,6 +139,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         $this->assertUrlIsPurged($measurementsUrl);
+        $this->assertUrlIsPurged($measurementsAltUrl);
         $this->assertUrlIsPurged($detailsUrl);
 
         $this->purger->reset();
@@ -146,6 +149,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged($detailsUrl);
         $this->assertUrlIsPurged($measurementsUrl);
+        $this->assertUrlIsPurged($measurementsAltUrl);
 
         $this->purger->reset();
 
@@ -154,6 +158,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged($detailsUrl);
         $this->assertUrlIsPurged($measurementsUrl);
+        $this->assertUrlIsPurged($measurementsAltUrl);
     }
 
     /**
