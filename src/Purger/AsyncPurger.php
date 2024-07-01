@@ -21,7 +21,7 @@ final class AsyncPurger implements PurgerInterface
     public function purge(iterable $urls): void
     {
         /** @var list<string> $urls */
-        $urls = \is_array($urls) ? $urls : iterator_to_array($urls);
+        $urls = \is_array($urls) ? $urls : iterator_to_array($urls, false);
 
         if (null !== $this->batchSize) {
             foreach (array_chunk($urls, $this->batchSize) as $batch) {
