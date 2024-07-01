@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Exception;
 
-final class InvalidPatternException extends \RuntimeException implements PurgatoryException
+final class InvalidPatternException extends RuntimeException
 {
     private const MESSAGE = 'Unable to perform a regular expression match on the pattern "%s" with the subject "%s".';
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Exception;
 
-final class EntityMetadataNotFoundException extends \RuntimeException implements PurgatoryException
+final class EntityMetadataNotFoundException extends RuntimeException
 {
     private const MESSAGE = 'Unable to retrieve metadata for entity "%s".';
 

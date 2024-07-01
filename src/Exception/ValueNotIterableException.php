@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Exception;
 
-final class ValueNotIterableException extends \RuntimeException implements PurgatoryException
+final class ValueNotIterableException extends RuntimeException
 {
     private const MESSAGE = 'Expected an iterable, "%s" given at property path "%s[*]".';
 

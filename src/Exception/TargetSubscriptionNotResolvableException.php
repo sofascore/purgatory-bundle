@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Exception;
 
-final class TargetSubscriptionNotResolvableException extends \RuntimeException implements PurgatoryException
+final class TargetSubscriptionNotResolvableException extends RuntimeException
 {
     private const MESSAGE = 'Unable to resolve subscription for target "%s::%s" and route "%s".';
 
