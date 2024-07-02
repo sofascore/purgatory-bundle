@@ -6,8 +6,10 @@ namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
@@ -17,21 +19,24 @@ use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Symfony\Component\Routing\Route;
 
+/**
+ * @final
+ */
 #[CoversClass(EmbeddableResolver::class)]
-final class EmbeddableResolverTest extends TestCase
+#[RequiresMethod(EmbeddedClassMapping::class, '__construct')]
+class EmbeddableResolverDoctrine3Test extends TestCase
 {
     public function testResolveEmbeddable(): void
     {
         $classMetadata = $this->createMock(ClassMetadata::class);
-        // TODO split this into test for doctrine2 and doctrine3
         $classMetadata->expects(self::once())
             ->method('getName')
             ->willReturn('ParentClass');
-        $classMetadata->embeddedClasses = [
+        $classMetadata->embeddedClasses = $this->provideEmbeddedClasses([
             'foo' => [
                 'class' => 'BarEntity',
             ],
-        ];
+        ]);
 
         $embeddableClassMetadata = $this->createMock(ClassMetadata::class);
         $embeddableClassMetadata->method('getFieldNames')
@@ -86,11 +91,11 @@ final class EmbeddableResolverTest extends TestCase
         $classMetadata->expects(self::once())
             ->method('getName')
             ->willReturn('ParentClass');
-        $classMetadata->embeddedClasses = [
+        $classMetadata->embeddedClasses = $this->provideEmbeddedClasses([
             'foo' => [
                 'class' => 'BarEntity',
             ],
-        ];
+        ]);
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
         $managerRegistry->expects(self::once())
@@ -117,5 +122,14 @@ final class EmbeddableResolverTest extends TestCase
             routeParams: [],
             target: 'foo',
         )];
+    }
+
+    protected function provideEmbeddedClasses(array $embeddedClasses): array
+    {
+        foreach ($embeddedClasses as $field => $embeddedClass) {
+            $embeddedClasses[$field] = new EmbeddedClassMapping($embeddedClass['class']);
+        }
+
+        return $embeddedClasses;
     }
 }
