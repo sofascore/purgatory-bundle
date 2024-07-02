@@ -11,8 +11,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Symfony\Component\Routing\Route;
@@ -51,7 +51,7 @@ final class EmbeddableResolverTest extends TestCase
         $resolver = new EmbeddableResolver($managerRegistry);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
@@ -104,7 +104,7 @@ final class EmbeddableResolverTest extends TestCase
         $this->expectExceptionMessage('Unable to retrieve metadata for entity "BarEntity".');
 
         [...$resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(

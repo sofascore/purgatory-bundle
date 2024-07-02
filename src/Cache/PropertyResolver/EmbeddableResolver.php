@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 
@@ -26,7 +26,7 @@ final class EmbeddableResolver implements SubscriptionResolverInterface
      * {@inheritDoc}
      */
     public function resolveSubscription(
-        ControllerMetadata $controllerMetadata,
+        RouteMetadata $routeMetadata,
         ClassMetadata $classMetadata,
         array $routeParams,
         string $target,
@@ -48,13 +48,13 @@ final class EmbeddableResolver implements SubscriptionResolverInterface
 
         foreach ($embeddableMetadata->getFieldNames() as $field) {
             yield new PurgeSubscription(
-                class: $controllerMetadata->purgeOn->class,
+                class: $routeMetadata->purgeOn->class,
                 property: $target.'.'.$field,
                 routeParams: $routeParams,
-                routeName: $controllerMetadata->routeName,
-                route: $controllerMetadata->route,
-                actions: $controllerMetadata->purgeOn->actions,
-                if: $controllerMetadata->purgeOn->if,
+                routeName: $routeMetadata->routeName,
+                route: $routeMetadata->route,
+                actions: $routeMetadata->purgeOn->actions,
+                if: $routeMetadata->purgeOn->if,
             );
         }
 

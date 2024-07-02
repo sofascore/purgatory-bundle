@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 
 interface TargetResolverInterface
 {
@@ -17,5 +17,5 @@ interface TargetResolverInterface
     /**
      * @return list<string>
      */
-    public function resolve(TargetInterface $target, ControllerMetadata $controllerMetadata): array;
+    public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array;
 }

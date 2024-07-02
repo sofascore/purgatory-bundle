@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\ControllerMetadata;
+namespace Sofascore\PurgatoryBundle2\Cache\RouteMetadata;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal Used during cache warmup
  */
-final class ControllerMetadataProvider implements ControllerMetadataProviderInterface
+final class RouteMetadataProvider implements RouteMetadataProviderInterface
 {
     /**
      * @param array<string, class-string> $classMap
@@ -52,7 +52,7 @@ final class ControllerMetadataProvider implements ControllerMetadataProviderInte
                     $purgeOn = $attribute->newInstance();
 
                     if (null === $purgeOn->route || \in_array($routeName, $purgeOn->route, true)) {
-                        yield new ControllerMetadata(
+                        yield new RouteMetadata(
                             routeName: $routeName,
                             route: $route,
                             purgeOn: $purgeOn,

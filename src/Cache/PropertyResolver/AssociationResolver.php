@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\InverseValuesAwareInterface;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -28,7 +28,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
      * {@inheritDoc}
      */
     public function resolveSubscription(
-        ControllerMetadata $controllerMetadata,
+        RouteMetadata $routeMetadata,
         ClassMetadata $classMetadata,
         array $routeParams,
         string $target,
@@ -72,7 +72,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             $inverseRouteParams[$routeParam] = $this->getInverseValuesFor($values, $associationTarget);
         }
 
-        if (null !== $if = $controllerMetadata->purgeOn->if) {
+        if (null !== $if = $routeMetadata->purgeOn->if) {
             $expression = (string) $if;
             $if = new Expression(str_replace('obj', 'obj.'.$this->createGetter($associationClass, $associationTarget), $expression));
         }
@@ -81,9 +81,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
             class: $associationClass,
             property: null,
             routeParams: $inverseRouteParams,
-            routeName: $controllerMetadata->routeName,
-            route: $controllerMetadata->route,
-            actions: $controllerMetadata->purgeOn->actions,
+            routeName: $routeMetadata->routeName,
+            route: $routeMetadata->route,
+            actions: $routeMetadata->purgeOn->actions,
             if: $if,
         );
 

@@ -14,9 +14,9 @@ use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
@@ -29,13 +29,13 @@ use Symfony\Component\Routing\Route;
 #[CoversClass(PurgeSubscriptionProvider::class)]
 final class PurgeSubscriptionProviderTest extends TestCase
 {
-    #[DataProvider('provideControllerMetadataWithoutTarget')]
-    public function testWithoutTarget(ControllerMetadata $controllerMetadata, array $expectedSubscriptions): void
+    #[DataProvider('provideRouteMetadataWithoutTarget')]
+    public function testWithoutTarget(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
     {
-        $controllerMetadataProvider = $this->createMock(ControllerMetadataProviderInterface::class);
-        $controllerMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($controllerMetadata) {
-                yield $controllerMetadata;
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($routeMetadata) {
+                yield $routeMetadata;
             });
 
         $targetResolverLocator = $this->createMock(ContainerInterface::class);
@@ -43,7 +43,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
-            controllerMetadataProvider: $controllerMetadataProvider,
+            routeMetadataProvider: $routeMetadataProvider,
             managerRegistry: $this->createMock(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
         );
@@ -55,11 +55,11 @@ final class PurgeSubscriptionProviderTest extends TestCase
         self::assertEquals($expectedSubscriptions, $propertySubscriptions);
     }
 
-    public static function provideControllerMetadataWithoutTarget(): iterable
+    public static function provideRouteMetadataWithoutTarget(): iterable
     {
         $route = new Route('/foo');
         yield 'PurgeOn for route without params' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -82,7 +82,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $route = new Route('/foo/{bar}');
         yield 'PurgeOn for route with params' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -106,7 +106,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $route = new Route('/foo/{bar}/{baz}');
         yield 'PurgeOn with automatic route params resolving' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -128,8 +128,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
-    #[DataProvider('provideControllerMetadataWithTarget')]
-    public function testWithTarget(ControllerMetadata $controllerMetadata, array $targetResolverReturn, array $expectedSubscriptions): void
+    #[DataProvider('provideRouteMetadataWithTarget')]
+    public function testWithTarget(RouteMetadata $routeMetadata, array $targetResolverReturn, array $expectedSubscriptions): void
     {
         $subscriptionResolver = $this->createMock(SubscriptionResolverInterface::class);
         $subscriptionResolver->method('resolveSubscription')
@@ -141,10 +141,10 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 return true;
             });
 
-        $controllerMetadataProvider = $this->createMock(ControllerMetadataProviderInterface::class);
-        $controllerMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($controllerMetadata) {
-                yield $controllerMetadata;
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($routeMetadata) {
+                yield $routeMetadata;
             });
 
         $classMetadata = $this->createMock(ClassMetadata::class);
@@ -161,7 +161,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $dummyTargetResolver = $this->createMock(TargetResolverInterface::class);
         $dummyTargetResolver->method('resolve')
-            ->with($controllerMetadata->purgeOn->target, $controllerMetadata)
+            ->with($routeMetadata->purgeOn->target, $routeMetadata)
             ->willReturn($targetResolverReturn);
 
         $targetResolverLocator = $this->createMock(ContainerInterface::class);
@@ -171,7 +171,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [$subscriptionResolver],
-            controllerMetadataProvider: $controllerMetadataProvider,
+            routeMetadataProvider: $routeMetadataProvider,
             managerRegistry: $managerRegistry,
             targetResolverLocator: $targetResolverLocator,
         );
@@ -183,11 +183,11 @@ final class PurgeSubscriptionProviderTest extends TestCase
         self::assertEquals($expectedSubscriptions, $propertySubscriptions);
     }
 
-    public static function provideControllerMetadataWithTarget(): iterable
+    public static function provideRouteMetadataWithTarget(): iterable
     {
         $route = new Route('/foo');
         yield 'PurgeOn for route without params' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -221,7 +221,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $route = new Route('/foo/{bar}');
         yield 'PurgeOn for route with params' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -256,7 +256,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $route = new Route('/foo/{bar}/{baz}');
         yield 'PurgeOn with automatic route params resolving' => [
-            'controllerMetadata' => new ControllerMetadata(
+            'routeMetadata' => new RouteMetadata(
                 routeName: 'foo',
                 route: $route,
                 purgeOn: new PurgeOn(
@@ -291,10 +291,10 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
     public function testExceptionIsThrownWhenEntityMetadataIsNotFound(): void
     {
-        $controllerMetadataProvider = $this->createMock(ControllerMetadataProviderInterface::class);
-        $controllerMetadataProvider->method('provide')
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () {
-                yield new ControllerMetadata(
+                yield new RouteMetadata(
                     routeName: 'foo',
                     route: new Route('/foo'),
                     purgeOn: new PurgeOn(
@@ -311,7 +311,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
-            controllerMetadataProvider: $controllerMetadataProvider,
+            routeMetadataProvider: $routeMetadataProvider,
             managerRegistry: $managerRegistry,
             targetResolverLocator: $this->createMock(ContainerInterface::class),
         );

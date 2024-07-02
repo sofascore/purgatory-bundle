@@ -66,7 +66,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         $container->setParameter('.sofascore.purgatory2.purger.name', $purgerConfig['name']);
         $container->setParameter('.sofascore.purgatory2.purger.host', $purgerConfig['host']);
 
-        $container->getDefinition('sofascore.purgatory2.controller_metadata_provider')
+        $container->getDefinition('sofascore.purgatory2.route_metadata_provider')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
 
         $container->getDefinition('sofascore.purgatory2.doctrine_middleware')

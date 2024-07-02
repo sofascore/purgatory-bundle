@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
 use Symfony\Component\Routing\Route;
 
@@ -19,7 +19,7 @@ final class ForPropertiesResolverTest extends TestCase
     {
         $resolver = new ForPropertiesResolver();
 
-        $controllerMetadata = new ControllerMetadata(
+        $routeMetadata = new RouteMetadata(
             routeName: 'route_foo',
             route: new Route('/foo'),
             purgeOn: new PurgeOn(
@@ -29,7 +29,7 @@ final class ForPropertiesResolverTest extends TestCase
             reflectionMethod: $this->createMock(\ReflectionMethod::class),
         );
 
-        $resolved = $resolver->resolve($target, $controllerMetadata);
+        $resolved = $resolver->resolve($target, $routeMetadata);
 
         self::assertSame(['property1', 'property2'], $resolved);
     }

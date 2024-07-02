@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 
 interface SubscriptionResolverInterface
@@ -18,7 +18,7 @@ interface SubscriptionResolverInterface
      * @return \Generator<mixed, PurgeSubscription, mixed, bool>
      */
     public function resolveSubscription(
-        ControllerMetadata $controllerMetadata,
+        RouteMetadata $routeMetadata,
         ClassMetadata $classMetadata,
         array $routeParams,
         string $target,

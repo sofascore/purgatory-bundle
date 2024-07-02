@@ -10,9 +10,9 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver\Fixtures\DummyEntity;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
@@ -51,7 +51,7 @@ final class MethodResolverTest extends TestCase
             });
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
@@ -102,7 +102,7 @@ final class MethodResolverTest extends TestCase
         $classMetadata = $this->createMock(ClassMetadata::class);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(

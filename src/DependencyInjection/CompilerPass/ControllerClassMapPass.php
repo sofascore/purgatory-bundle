@@ -21,7 +21,7 @@ final class ControllerClassMapPass implements CompilerPassInterface
         }
 
         if ($classMap) {
-            $container->getDefinition('sofascore.purgatory2.controller_metadata_provider')
+            $container->getDefinition('sofascore.purgatory2.route_metadata_provider')
                 ->replaceArgument(1, $classMap);
         }
     }

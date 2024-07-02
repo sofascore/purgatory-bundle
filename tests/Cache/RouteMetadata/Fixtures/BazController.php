@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\ControllerMetadata\Fixtures;
+namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 

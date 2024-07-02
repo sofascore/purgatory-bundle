@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
@@ -34,7 +34,7 @@ final class ForGroupsResolver implements TargetResolverInterface
     /**
      * {@inheritDoc}
      */
-    public function resolve(TargetInterface $target, ControllerMetadata $controllerMetadata): array
+    public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
         if (!$target instanceof ForGroups) {
             throw new InvalidArgumentException(sprintf('Target must be an instance of "%s".', ForGroups::class));
@@ -42,12 +42,12 @@ final class ForGroupsResolver implements TargetResolverInterface
 
         /** @var list<string>|null $resolvedProperties */
         $resolvedProperties = $this->propertyListExtractor->getProperties(
-            $controllerMetadata->purgeOn->class,
+            $routeMetadata->purgeOn->class,
             ['serializer_groups' => $target->groups],
         );
 
         if (null === $resolvedProperties) {
-            throw new RuntimeException(sprintf('Could not resolve properties for groups "%s" in class "%s".', implode('", "', $target->groups), $controllerMetadata->purgeOn->class));
+            throw new RuntimeException(sprintf('Could not resolve properties for groups "%s" in class "%s".', implode('", "', $target->groups), $routeMetadata->purgeOn->class));
         }
 
         return $resolvedProperties;

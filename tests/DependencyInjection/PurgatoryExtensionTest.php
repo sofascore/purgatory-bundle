@@ -63,7 +63,7 @@ final class PurgatoryExtensionTest extends TestCase
             ],
         ], $container);
 
-        $ignoredPatterns = $container->getDefinition('sofascore.purgatory2.controller_metadata_provider')->getArgument(2);
+        $ignoredPatterns = $container->getDefinition('sofascore.purgatory2.route_metadata_provider')->getArgument(2);
 
         self::assertCount(1, $ignoredPatterns);
         self::assertSame('/^_profiler/', $ignoredPatterns[0]);

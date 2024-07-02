@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\TargetedProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
@@ -29,12 +29,12 @@ final class MethodResolver implements SubscriptionResolverInterface
      * {@inheritDoc}
      */
     public function resolveSubscription(
-        ControllerMetadata $controllerMetadata,
+        RouteMetadata $routeMetadata,
         ClassMetadata $classMetadata,
         array $routeParams,
         string $target,
     ): \Generator {
-        $purgeOn = $controllerMetadata->purgeOn;
+        $purgeOn = $routeMetadata->purgeOn;
 
         $method = $target;
         if (!method_exists($purgeOn->class, $method)) {
@@ -68,7 +68,7 @@ final class MethodResolver implements SubscriptionResolverInterface
             $targetResolved = false;
 
             foreach ($this->subscriptionResolvers as $resolver) {
-                yield from $subscriptions = $resolver->resolveSubscription($controllerMetadata, $classMetadata, $routeParams, $targetProperty);
+                yield from $subscriptions = $resolver->resolveSubscription($routeMetadata, $classMetadata, $routeParams, $targetProperty);
 
                 if (true === $subscriptions->getReturn()) {
                     $targetResolved = true;
@@ -76,7 +76,7 @@ final class MethodResolver implements SubscriptionResolverInterface
             }
 
             if (!$targetResolved) {
-                throw new TargetSubscriptionNotResolvableException($controllerMetadata->routeName, $purgeOn->class, $targetProperty);
+                throw new TargetSubscriptionNotResolvableException($routeMetadata->routeName, $purgeOn->class, $targetProperty);
             }
         }
 

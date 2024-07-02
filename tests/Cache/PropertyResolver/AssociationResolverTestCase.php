@@ -11,8 +11,8 @@ use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
@@ -70,7 +70,7 @@ abstract class AssociationResolverTestCase extends TestCase
             ->willReturn('BarEntity');
 
         $purgeSubscription = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo/{param1}/{param2}'),
                 purgeOn: new PurgeOn(
@@ -117,7 +117,7 @@ abstract class AssociationResolverTestCase extends TestCase
             ->willReturn(false);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
@@ -156,7 +156,7 @@ abstract class AssociationResolverTestCase extends TestCase
             ->willReturn($this->createAssociationMapping($associationMapping));
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(

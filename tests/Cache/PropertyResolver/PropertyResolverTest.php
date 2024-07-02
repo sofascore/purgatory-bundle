@@ -9,8 +9,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
 use Symfony\Component\Routing\Route;
 
@@ -27,7 +27,7 @@ final class PropertyResolverTest extends TestCase
             ->willReturn(true);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
@@ -63,7 +63,7 @@ final class PropertyResolverTest extends TestCase
             ->willReturn(false);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(
@@ -103,7 +103,7 @@ final class PropertyResolverTest extends TestCase
             ->willReturn(false);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
-            controllerMetadata: new ControllerMetadata(
+            routeMetadata: new RouteMetadata(
                 routeName: 'route_foo',
                 route: new Route('/foo'),
                 purgeOn: new PurgeOn(

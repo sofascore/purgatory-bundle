@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\ControllerMetadata;
+namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProvider;
-use Sofascore\PurgatoryBundle2\Tests\Cache\ControllerMetadata\Fixtures\BarController;
-use Sofascore\PurgatoryBundle2\Tests\Cache\ControllerMetadata\Fixtures\BazController;
-use Sofascore\PurgatoryBundle2\Tests\Cache\ControllerMetadata\Fixtures\FooController;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProvider;
+use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BarController;
+use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BazController;
+use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
-#[CoversClass(ControllerMetadataProvider::class)]
-final class ControllerMetadataProviderTest extends TestCase
+#[CoversClass(RouteMetadataProvider::class)]
+final class RouteMetadataProviderTest extends TestCase
 {
-    public function testControllerMetadata(): void
+    public function testRouteMetadata(): void
     {
         $collection = new RouteCollection();
 
@@ -42,7 +42,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,
@@ -51,10 +51,10 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: [],
         );
 
-        /** @var ControllerMetadata[] $metadata */
+        /** @var RouteMetadata[] $metadata */
         $metadata = [...$provider->provide()];
 
-        self::assertContainsOnlyInstancesOf(ControllerMetadata::class, $metadata);
+        self::assertContainsOnlyInstancesOf(RouteMetadata::class, $metadata);
         self::assertCount(3, $metadata);
 
         self::assertSame('foo_bar', $metadata[0]->routeName);
@@ -77,7 +77,7 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('bazAction', $metadata[2]->reflectionMethod->name);
     }
 
-    public function testControllerMetadataWitExplicitRoute(): void
+    public function testRouteMetadataWitExplicitRoute(): void
     {
         $collection = new RouteCollection();
 
@@ -129,7 +129,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [
                 BarController::class => BarController::class,
@@ -138,10 +138,10 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: [],
         );
 
-        /** @var ControllerMetadata[] $metadata */
+        /** @var RouteMetadata[] $metadata */
         $metadata = [...$provider->provide()];
 
-        self::assertContainsOnlyInstancesOf(ControllerMetadata::class, $metadata);
+        self::assertContainsOnlyInstancesOf(RouteMetadata::class, $metadata);
         self::assertCount(3, $metadata);
 
         self::assertSame('foo_bar1', $metadata[0]->routeName);
@@ -164,7 +164,7 @@ final class ControllerMetadataProviderTest extends TestCase
         self::assertSame('bazAction', $metadata[2]->reflectionMethod->name);
     }
 
-    public function testControllerMetadataOnClass(): void
+    public function testRouteMetadataOnClass(): void
     {
         $collection = new RouteCollection();
 
@@ -188,7 +188,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [
                 BazController::class => BazController::class,
@@ -196,10 +196,10 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: [],
         );
 
-        /** @var ControllerMetadata[] $metadata */
+        /** @var RouteMetadata[] $metadata */
         $metadata = [...$provider->provide()];
 
-        self::assertContainsOnlyInstancesOf(ControllerMetadata::class, $metadata);
+        self::assertContainsOnlyInstancesOf(RouteMetadata::class, $metadata);
         self::assertCount(3, $metadata);
 
         self::assertSame('foo', $metadata[0]->routeName);
@@ -241,7 +241,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [],
             routeIgnorePatterns: [],
@@ -274,7 +274,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,
@@ -283,7 +283,7 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: ['/^foo_/'],
         );
 
-        /** @var ControllerMetadata[] $metadata */
+        /** @var RouteMetadata[] $metadata */
         $metadata = [...$provider->provide()];
 
         self::assertCount(0, $metadata);
@@ -303,7 +303,7 @@ final class ControllerMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new ControllerMetadataProvider(
+        $provider = new RouteMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,
@@ -312,7 +312,7 @@ final class ControllerMetadataProviderTest extends TestCase
             routeIgnorePatterns: [],
         );
 
-        /** @var ControllerMetadata[] $metadata */
+        /** @var RouteMetadata[] $metadata */
         $metadata = [...$provider->provide()];
 
         self::assertCount(0, $metadata);

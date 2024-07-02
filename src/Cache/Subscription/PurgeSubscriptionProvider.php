@@ -8,8 +8,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
@@ -24,7 +24,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
      */
     public function __construct(
         private readonly iterable $subscriptionResolvers,
-        private readonly ControllerMetadataProviderInterface $controllerMetadataProvider,
+        private readonly RouteMetadataProviderInterface $routeMetadataProvider,
         private readonly ManagerRegistry $managerRegistry,
         private readonly ContainerInterface $targetResolverLocator,
     ) {
@@ -35,13 +35,13 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
      */
     public function provide(): iterable
     {
-        foreach ($this->controllerMetadataProvider->provide() as $controllerMetadata) {
-            $purgeOn = $controllerMetadata->purgeOn;
+        foreach ($this->routeMetadataProvider->provide() as $routeMetadata) {
+            $purgeOn = $routeMetadata->purgeOn;
 
             // if route parameters are not specified, they are same as path variables
             if (null === $purgeOn->routeParams) {
                 /** @var list<string> $pathVariables */
-                $pathVariables = $controllerMetadata->route->compile()->getPathVariables();
+                $pathVariables = $routeMetadata->route->compile()->getPathVariables();
 
                 /** @var array<string, ValuesInterface> $routeParams */
                 $routeParams = [];
@@ -58,8 +58,8 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                     class: $purgeOn->class,
                     property: null,
                     routeParams: $routeParams,
-                    routeName: $controllerMetadata->routeName,
-                    route: $controllerMetadata->route,
+                    routeName: $routeMetadata->routeName,
+                    route: $routeMetadata->route,
                     actions: $purgeOn->actions,
                     if: $purgeOn->if,
                 );
@@ -76,11 +76,11 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             /** @var TargetResolverInterface $targetResolver */
             $targetResolver = $this->targetResolverLocator->get($purgeOn->target::class);
 
-            foreach ($targetResolver->resolve($purgeOn->target, $controllerMetadata) as $property) {
+            foreach ($targetResolver->resolve($purgeOn->target, $routeMetadata) as $property) {
                 $targetResolved = false;
 
                 foreach ($this->subscriptionResolvers as $resolver) {
-                    yield from $subscriptions = $resolver->resolveSubscription($controllerMetadata, $entityMetadata, $routeParams, $property);
+                    yield from $subscriptions = $resolver->resolveSubscription($routeMetadata, $entityMetadata, $routeParams, $property);
 
                     if (true === $subscriptions->getReturn()) {
                         $targetResolved = true;
@@ -88,7 +88,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 }
 
                 if (!$targetResolved) {
-                    throw new TargetSubscriptionNotResolvableException($controllerMetadata->routeName, $class, $property);
+                    throw new TargetSubscriptionNotResolvableException($routeMetadata->routeName, $class, $property);
                 }
             }
         }

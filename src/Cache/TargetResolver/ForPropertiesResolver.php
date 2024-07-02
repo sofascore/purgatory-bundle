@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
 
 use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadata;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 
 final class ForPropertiesResolver implements TargetResolverInterface
@@ -22,7 +22,7 @@ final class ForPropertiesResolver implements TargetResolverInterface
     /**
      * {@inheritDoc}
      */
-    public function resolve(TargetInterface $target, ControllerMetadata $controllerMetadata): array
+    public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
         if (!$target instanceof ForProperties) {
             throw new InvalidArgumentException(sprintf('Target must be an instance of "%s".', ForProperties::class));

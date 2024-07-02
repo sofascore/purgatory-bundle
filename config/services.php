@@ -6,11 +6,11 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Sofascore\PurgatoryBundle2\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoader;
-use Sofascore\PurgatoryBundle2\Cache\ControllerMetadata\ControllerMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
@@ -40,7 +40,7 @@ return static function (ContainerConfigurator $container) {
         ->defaults()
             ->private()
 
-        ->set('sofascore.purgatory2.controller_metadata_provider', ControllerMetadataProvider::class)
+        ->set('sofascore.purgatory2.route_metadata_provider', RouteMetadataProvider::class)
             ->args([
                 service('router'),
                 [],
@@ -59,7 +59,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory2.purge_subscription_provider', PurgeSubscriptionProvider::class)
             ->args([
                 tagged_iterator('purgatory2.subscription_resolver'),
-                service('sofascore.purgatory2.controller_metadata_provider'),
+                service('sofascore.purgatory2.route_metadata_provider'),
                 service('doctrine'),
                 tagged_locator('purgatory2.target_resolver', defaultIndexMethod: 'for'),
             ])
