@@ -8,7 +8,7 @@ use Sofascore\PurgatoryBundle2\Attribute\AsPurgatoryResolver;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 
-#[AsPurgatoryResolver('purgatory.animal_rating')]
+#[AsPurgatoryResolver('purgatory2.animal_rating')]
 class AnimalRatingCalculator
 {
     public function __invoke(Animal $animal): int

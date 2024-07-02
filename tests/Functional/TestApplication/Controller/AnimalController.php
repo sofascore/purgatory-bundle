@@ -111,9 +111,9 @@ class AnimalController
         target: ['measurements'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getRating'),
-                new DynamicValues(alias: 'purgatory.animal_rating'),
-                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getOwnerRating', arg: 'owner'),
+                new DynamicValues(alias: 'purgatory2.animal_rating', method: 'getRating'),
+                new DynamicValues(alias: 'purgatory2.animal_rating'),
+                new DynamicValues(alias: 'purgatory2.animal_rating', method: 'getOwnerRating', arg: 'owner'),
             ),
         ],
     )]
@@ -121,7 +121,7 @@ class AnimalController
         target: ['pets'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating', method: 'getOwnerRating'),
+                new DynamicValues(alias: 'purgatory2.animal_rating', method: 'getOwnerRating'),
             ),
         ],
     )]

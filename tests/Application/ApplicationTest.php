@@ -26,7 +26,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'TestApplication', 'config' => 'app_config.yaml']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
+        $this->purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
 
         self::assertSame([], $this->purger->getPurgedUrls());
     }

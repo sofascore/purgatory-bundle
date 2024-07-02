@@ -25,11 +25,11 @@ final class ControllerClassMapPassTest extends TestCase
         $container = new ContainerBuilder();
 
         $container->register(id: $id, class: $class)->addTag(
-            name: 'purgatory.purge_on',
+            name: 'purgatory2.purge_on',
             attributes: $hasAttribute ? ['class' => $class] : [],
         );
 
-        $definition = $container->register('sofascore.purgatory.controller_metadata_provider', ControllerMetadataProvider::class)
+        $definition = $container->register('sofascore.purgatory2.controller_metadata_provider', ControllerMetadataProvider::class)
             ->setArguments([
                 $this->createMock(RouterInterface::class),
                 [],

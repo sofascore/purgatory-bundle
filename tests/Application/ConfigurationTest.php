@@ -28,7 +28,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
     {
         self::initializeApplication(['test_case' => 'TestApplication']);
 
-        self::$configuration = self::getContainer()->get('sofascore.purgatory.configuration_loader')->load();
+        self::$configuration = self::getContainer()->get('sofascore.purgatory2.configuration_loader')->load();
     }
 
     public static function tearDownAfterClass(): void
@@ -155,7 +155,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory.animal_rating', 'getOwnerRating', 'owner'],
+                                'values' => ['purgatory2.animal_rating', 'getOwnerRating', 'owner'],
                             ],
                         ],
                     ],
@@ -338,15 +338,15 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory.animal_rating', 'getRating', null],
+                                'values' => ['purgatory2.animal_rating', 'getRating', null],
                             ],
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory.animal_rating', null, null],
+                                'values' => ['purgatory2.animal_rating', null, null],
                             ],
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory.animal_rating', 'getOwnerRating', 'owner'],
+                                'values' => ['purgatory2.animal_rating', 'getOwnerRating', 'owner'],
                             ],
                         ],
                     ],

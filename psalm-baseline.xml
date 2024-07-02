@@ -49,7 +49,7 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[static function (ChildDefinition $definition, PurgeOn $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory.purge_on',
+                    name: 'purgatory2.purge_on',
                     attributes: [
                         'class' => $reflection instanceof \ReflectionMethod ? $reflection->class : $reflection->name,
                     ],

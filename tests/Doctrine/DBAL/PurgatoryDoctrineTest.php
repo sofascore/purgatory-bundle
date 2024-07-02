@@ -28,8 +28,8 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'EntityChangeListener']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
-        $this->entityChangeListener = self::getContainer()->get('sofascore.purgatory.entity_change_listener');
+        $this->purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
+        $this->entityChangeListener = self::getContainer()->get('sofascore.purgatory2.entity_change_listener');
     }
 
     protected function tearDown(): void

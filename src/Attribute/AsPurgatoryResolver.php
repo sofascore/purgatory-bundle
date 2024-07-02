@@ -12,7 +12,7 @@ final class AsPurgatoryResolver extends AutoconfigureTag
     public function __construct(string $alias)
     {
         parent::__construct(
-            name: 'purgatory.route_parameter_resolver_service',
+            name: 'purgatory2.route_parameter_resolver_service',
             attributes: ['alias' => $alias],
         );
     }

@@ -40,60 +40,60 @@ return static function (ContainerConfigurator $container) {
         ->defaults()
             ->private()
 
-        ->set('sofascore.purgatory.controller_metadata_provider', ControllerMetadataProvider::class)
+        ->set('sofascore.purgatory2.controller_metadata_provider', ControllerMetadataProvider::class)
             ->args([
                 service('router'),
                 [],
                 [],
             ])
 
-        ->set('sofascore.purgatory.target_resolver.for_properties', ForPropertiesResolver::class)
-            ->tag('purgatory.target_resolver')
+        ->set('sofascore.purgatory2.target_resolver.for_properties', ForPropertiesResolver::class)
+            ->tag('purgatory2.target_resolver')
 
-        ->set('sofascore.purgatory.target_resolver.for_groups', ForGroupsResolver::class)
-            ->tag('purgatory.target_resolver')
+        ->set('sofascore.purgatory2.target_resolver.for_groups', ForGroupsResolver::class)
+            ->tag('purgatory2.target_resolver')
             ->args([
                 service('property_info.serializer_extractor'),
             ])
 
-        ->set('sofascore.purgatory.purge_subscription_provider', PurgeSubscriptionProvider::class)
+        ->set('sofascore.purgatory2.purge_subscription_provider', PurgeSubscriptionProvider::class)
             ->args([
-                tagged_iterator('purgatory.subscription_resolver'),
-                service('sofascore.purgatory.controller_metadata_provider'),
+                tagged_iterator('purgatory2.subscription_resolver'),
+                service('sofascore.purgatory2.controller_metadata_provider'),
                 service('doctrine'),
-                tagged_locator('purgatory.target_resolver', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory2.target_resolver', defaultIndexMethod: 'for'),
             ])
 
-        ->set('sofascore.purgatory.subscription_resolver.property', PropertyResolver::class)
-            ->tag('purgatory.subscription_resolver')
+        ->set('sofascore.purgatory2.subscription_resolver.property', PropertyResolver::class)
+            ->tag('purgatory2.subscription_resolver')
 
-        ->set('sofascore.purgatory.subscription_resolver.method', MethodResolver::class)
-            ->tag('purgatory.subscription_resolver')
+        ->set('sofascore.purgatory2.subscription_resolver.method', MethodResolver::class)
+            ->tag('purgatory2.subscription_resolver')
             ->args([
-                tagged_iterator('purgatory.subscription_resolver'),
+                tagged_iterator('purgatory2.subscription_resolver'),
                 service('property_info.reflection_extractor'),
             ])
 
-        ->set('sofascore.purgatory.subscription_resolver.association', AssociationResolver::class)
-            ->tag('purgatory.subscription_resolver')
+        ->set('sofascore.purgatory2.subscription_resolver.association', AssociationResolver::class)
+            ->tag('purgatory2.subscription_resolver')
             ->args([
                 service('property_info.reflection_extractor'),
             ])
 
-        ->set('sofascore.purgatory.subscription_resolver.embeddable', EmbeddableResolver::class)
-            ->tag('purgatory.subscription_resolver')
+        ->set('sofascore.purgatory2.subscription_resolver.embeddable', EmbeddableResolver::class)
+            ->tag('purgatory2.subscription_resolver')
             ->args([
                 service('doctrine'),
             ])
 
-        ->set('sofascore.purgatory.configuration_loader', ConfigurationLoader::class)
+        ->set('sofascore.purgatory2.configuration_loader', ConfigurationLoader::class)
             ->args([
-                service('sofascore.purgatory.purge_subscription_provider'),
+                service('sofascore.purgatory2.purge_subscription_provider'),
             ])
 
-        ->set('sofascore.purgatory.cached_configuration_loader', CachedConfigurationLoader::class)
+        ->set('sofascore.purgatory2.cached_configuration_loader', CachedConfigurationLoader::class)
             ->tag('kernel.cache_warmer')
-            ->decorate('sofascore.purgatory.configuration_loader')
+            ->decorate('sofascore.purgatory2.configuration_loader')
             ->args([
                 service('.inner'),
                 service('router'),
@@ -101,109 +101,109 @@ return static function (ContainerConfigurator $container) {
                 '%kernel.debug%',
             ])
 
-        ->set('sofascore.purgatory.doctrine_middleware', Middleware::class)
+        ->set('sofascore.purgatory2.doctrine_middleware', Middleware::class)
             ->args([
-                service('sofascore.purgatory.entity_change_listener'),
+                service('sofascore.purgatory2.entity_change_listener'),
             ])
 
-        ->set('sofascore.purgatory.cache.expression_language')
+        ->set('sofascore.purgatory2.cache.expression_language')
             ->parent('cache.system')
             ->private()
             ->tag('cache.pool')
 
-        ->set('sofascore.purgatory.expression_language', ExpressionLanguage::class)
+        ->set('sofascore.purgatory2.expression_language', ExpressionLanguage::class)
             ->args([
-                service('sofascore.purgatory.cache.expression_language')->nullOnInvalid(),
+                service('sofascore.purgatory2.cache.expression_language')->nullOnInvalid(),
             ])
 
-        ->set('sofascore.purgatory.route_provider.abstract', AbstractEntityRouteProvider::class)
+        ->set('sofascore.purgatory2.route_provider.abstract', AbstractEntityRouteProvider::class)
             ->abstract()
             ->args([
-                service('sofascore.purgatory.configuration_loader'),
-                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
-                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+                service('sofascore.purgatory2.configuration_loader'),
+                service('sofascore.purgatory2.expression_language')->nullOnInvalid(),
+                tagged_locator('purgatory2.route_param_value_resolver', defaultIndexMethod: 'for'),
             ])
 
-        ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
-            ->parent('sofascore.purgatory.route_provider.abstract')
-            ->tag('purgatory.route_provider')
+        ->set('sofascore.purgatory2.route_provider.created_entity', CreatedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory2.route_provider.abstract')
+            ->tag('purgatory2.route_provider')
 
-        ->set('sofascore.purgatory.route_provider.removed_entity', RemovedEntityRouteProvider::class)
-            ->parent('sofascore.purgatory.route_provider.abstract')
-            ->tag('purgatory.route_provider')
+        ->set('sofascore.purgatory2.route_provider.removed_entity', RemovedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory2.route_provider.abstract')
+            ->tag('purgatory2.route_provider')
             ->arg(3, service('doctrine'))
 
-        ->set('sofascore.purgatory.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
-            ->parent('sofascore.purgatory.route_provider.abstract')
-            ->tag('purgatory.route_provider')
+        ->set('sofascore.purgatory2.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
+            ->parent('sofascore.purgatory2.route_provider.abstract')
+            ->tag('purgatory2.route_provider')
 
-        ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
+        ->set('sofascore.purgatory2.entity_change_listener', EntityChangeListener::class)
             ->args([
-                tagged_iterator('purgatory.route_provider'),
+                tagged_iterator('purgatory2.route_provider'),
                 service('router'),
-                service('sofascore.purgatory.purger'),
+                service('sofascore.purgatory2.purger'),
             ])
 
-        ->set('sofascore.purgatory.purger.null', NullPurger::class)
-            ->tag('purgatory.purger', ['alias' => 'null'])
+        ->set('sofascore.purgatory2.purger.null', NullPurger::class)
+            ->tag('purgatory2.purger', ['alias' => 'null'])
 
-        ->alias('sofascore.purgatory.purger', 'sofascore.purgatory.purger.null')
-        ->alias(PurgerInterface::class, 'sofascore.purgatory.purger')
+        ->alias('sofascore.purgatory2.purger', 'sofascore.purgatory2.purger.null')
+        ->alias(PurgerInterface::class, 'sofascore.purgatory2.purger')
 
-        ->set('sofascore.purgatory.purger.in_memory', InMemoryPurger::class)
-            ->tag('purgatory.purger', ['alias' => 'in-memory'])
+        ->set('sofascore.purgatory2.purger.in_memory', InMemoryPurger::class)
+            ->tag('purgatory2.purger', ['alias' => 'in-memory'])
 
-        ->set('sofascore.purgatory.purger.symfony', SymfonyPurger::class)
-            ->tag('purgatory.purger', ['alias' => 'symfony'])
+        ->set('sofascore.purgatory2.purger.symfony', SymfonyPurger::class)
+            ->tag('purgatory2.purger', ['alias' => 'symfony'])
             ->args([
                 service('http_cache.store'),
-                '%.sofascore.purgatory.purger.host%',
+                '%.sofascore.purgatory2.purger.host%',
             ])
 
-        ->set('sofascore.purgatory.purger.async', AsyncPurger::class)
-            ->decorate('sofascore.purgatory.purger', 'sofascore.purgatory.purger.sync')
+        ->set('sofascore.purgatory2.purger.async', AsyncPurger::class)
+            ->decorate('sofascore.purgatory2.purger', 'sofascore.purgatory2.purger.sync')
             ->args([
                 service('messenger.default_bus'),
             ])
 
-        ->set('sofascore.purgatory.purge_message_handler', PurgeMessageHandler::class)
+        ->set('sofascore.purgatory2.purge_message_handler', PurgeMessageHandler::class)
             ->args([
-                service('sofascore.purgatory.purger.sync'),
+                service('sofascore.purgatory2.purger.sync'),
             ])
 
-        ->set('sofascore.purgatory.route_param_value_resolver.compound', CompoundValuesResolver::class)
-            ->tag('purgatory.route_param_value_resolver')
+        ->set('sofascore.purgatory2.route_param_value_resolver.compound', CompoundValuesResolver::class)
+            ->tag('purgatory2.route_param_value_resolver')
             ->args([
-                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory2.route_param_value_resolver', defaultIndexMethod: 'for'),
             ])
 
-        ->set('sofascore.purgatory.route_param_value_resolver.enum', EnumValuesResolver::class)
-            ->tag('purgatory.route_param_value_resolver')
+        ->set('sofascore.purgatory2.route_param_value_resolver.enum', EnumValuesResolver::class)
+            ->tag('purgatory2.route_param_value_resolver')
 
-        ->set('sofascore.purgatory.route_param_value_resolver.property', PropertyValuesResolver::class)
-            ->tag('purgatory.route_param_value_resolver')
+        ->set('sofascore.purgatory2.route_param_value_resolver.property', PropertyValuesResolver::class)
+            ->tag('purgatory2.route_param_value_resolver')
             ->args([
-                service('sofascore.purgatory.property_accessor'),
+                service('sofascore.purgatory2.property_accessor'),
             ])
 
-        ->set('sofascore.purgatory.route_param_value_resolver.raw', RawValuesResolver::class)
-            ->tag('purgatory.route_param_value_resolver')
+        ->set('sofascore.purgatory2.route_param_value_resolver.raw', RawValuesResolver::class)
+            ->tag('purgatory2.route_param_value_resolver')
 
-        ->set('sofascore.purgatory.route_parameter_resolver.dynamic', DynamicValuesResolver::class)
-            ->tag('purgatory.route_param_value_resolver')
+        ->set('sofascore.purgatory2.route_parameter_resolver.dynamic', DynamicValuesResolver::class)
+            ->tag('purgatory2.route_param_value_resolver')
             ->args([
-                tagged_locator('purgatory.route_parameter_resolver_service', 'alias'),
-                service('sofascore.purgatory.property_accessor'),
+                tagged_locator('purgatory2.route_parameter_resolver_service', 'alias'),
+                service('sofascore.purgatory2.property_accessor'),
             ])
 
-        ->set('sofascore.purgatory.property_accessor', PurgatoryPropertyAccessor::class)
+        ->set('sofascore.purgatory2.property_accessor', PurgatoryPropertyAccessor::class)
             ->args([
                 service('property_accessor'),
             ])
 
-        ->set('sofascore.purgatory.command.purge_on_debug', DebugCommand::class)
+        ->set('sofascore.purgatory2.command.purge_on_debug', DebugCommand::class)
             ->args([
-                service('sofascore.purgatory.configuration_loader'),
+                service('sofascore.purgatory2.configuration_loader'),
                 service('doctrine'),
             ])
             ->tag('console.command')

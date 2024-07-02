@@ -22,7 +22,7 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         $em = self::getContainer()->get('doctrine.orm.entity_manager');
 
         /** @var InMemoryPurger $purger */
-        $purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
+        $purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
 
         $test = new Dummy($name = 'name_'.time());
 

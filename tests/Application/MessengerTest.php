@@ -31,7 +31,7 @@ final class MessengerTest extends AbstractKernelTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
         /** @var InMemoryPurger $purger */
-        $purger = self::getContainer()->get('sofascore.purgatory.purger.in_memory');
+        $purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
         /** @var InMemoryTransport $transport */
         $transport = $this->getContainer()->get('messenger.transport.async');
         /** @var MessageBusInterface $messageBus */

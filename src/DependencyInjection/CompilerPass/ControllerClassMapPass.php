@@ -16,12 +16,12 @@ final class ControllerClassMapPass implements CompilerPassInterface
         /**
          * @var list<array{class?: class-string}> $tags
          */
-        foreach ($container->findTaggedServiceIds('purgatory.purge_on', true) as $id => $tags) {
+        foreach ($container->findTaggedServiceIds('purgatory2.purge_on', true) as $id => $tags) {
             $classMap[$id] = $tags[0]['class'] ?? $container->getDefinition($id)->getClass();
         }
 
         if ($classMap) {
-            $container->getDefinition('sofascore.purgatory.controller_metadata_provider')
+            $container->getDefinition('sofascore.purgatory2.controller_metadata_provider')
                 ->replaceArgument(1, $classMap);
         }
     }

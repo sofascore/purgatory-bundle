@@ -40,16 +40,16 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
-        self::assertTrue($container->getDefinition(DummyController::class)->hasTag('purgatory.purge_on'));
+        self::assertTrue($container->getDefinition(DummyController::class)->hasTag('purgatory2.purge_on'));
         self::assertSame(
             [['class' => DummyController::class]],
-            $container->getDefinition(DummyController::class)->getTag('purgatory.purge_on'),
+            $container->getDefinition(DummyController::class)->getTag('purgatory2.purge_on'),
         );
 
-        self::assertTrue($container->getDefinition(DummyControllerWithPurgeOn::class)->hasTag('purgatory.purge_on'));
+        self::assertTrue($container->getDefinition(DummyControllerWithPurgeOn::class)->hasTag('purgatory2.purge_on'));
         self::assertSame(
             [['class' => DummyControllerWithPurgeOn::class]],
-            $container->getDefinition(DummyControllerWithPurgeOn::class)->getTag('purgatory.purge_on'),
+            $container->getDefinition(DummyControllerWithPurgeOn::class)->getTag('purgatory2.purge_on'),
         );
     }
 
@@ -63,7 +63,7 @@ final class PurgatoryExtensionTest extends TestCase
             ],
         ], $container);
 
-        $ignoredPatterns = $container->getDefinition('sofascore.purgatory.controller_metadata_provider')->getArgument(2);
+        $ignoredPatterns = $container->getDefinition('sofascore.purgatory2.controller_metadata_provider')->getArgument(2);
 
         self::assertCount(1, $ignoredPatterns);
         self::assertSame('/^_profiler/', $ignoredPatterns[0]);
@@ -79,7 +79,7 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => $middlewarePriority,
         ], $container);
 
-        $definition = $container->getDefinition('sofascore.purgatory.doctrine_middleware');
+        $definition = $container->getDefinition('sofascore.purgatory2.doctrine_middleware');
 
         self::assertTrue($definition->hasTag('doctrine.middleware'));
         self::assertSame($expectedTag, $definition->getTag('doctrine.middleware'));
@@ -105,7 +105,7 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => $middlewarePriority,
         ], $container);
 
-        $definition = $container->getDefinition('sofascore.purgatory.entity_change_listener');
+        $definition = $container->getDefinition('sofascore.purgatory2.entity_change_listener');
 
         self::assertTrue($definition->hasTag('doctrine.event_listener'));
         self::assertSame($expectedTag, $definition->getTag('doctrine.event_listener'));
@@ -124,7 +124,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
-        self::assertTrue($container->getDefinition(DummySubscriptionResolver::class)->hasTag('purgatory.subscription_resolver'));
+        self::assertTrue($container->getDefinition(DummySubscriptionResolver::class)->hasTag('purgatory2.subscription_resolver'));
     }
 
     public function testTargetResolverIsTagged(): void
@@ -140,7 +140,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
-        self::assertTrue($container->getDefinition(DummyTargetResolver::class)->hasTag('purgatory.target_resolver'));
+        self::assertTrue($container->getDefinition(DummyTargetResolver::class)->hasTag('purgatory2.target_resolver'));
     }
 
     public function testRouteProviderIsTagged(): void
@@ -156,7 +156,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
-        self::assertTrue($container->getDefinition(DummyRouteProvider::class)->hasTag('purgatory.route_provider'));
+        self::assertTrue($container->getDefinition(DummyRouteProvider::class)->hasTag('purgatory2.route_provider'));
     }
 
     public function testRouteParamValuesResolverIsTagged(): void
@@ -172,7 +172,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         $container->compile();
 
-        self::assertTrue($container->getDefinition(DummyValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
+        self::assertTrue($container->getDefinition(DummyValuesResolver::class)->hasTag('purgatory2.route_param_value_resolver'));
     }
 
     public function testPurgerConfig(): void
@@ -189,11 +189,11 @@ final class PurgatoryExtensionTest extends TestCase
             ],
         ], $container);
 
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.name'));
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.host'));
+        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.name'));
+        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.host'));
 
-        self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory.purger.name'));
-        self::assertSame('localhost:80', $container->getParameter('.sofascore.purgatory.purger.host'));
+        self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory2.purger.name'));
+        self::assertSame('localhost:80', $container->getParameter('.sofascore.purgatory2.purger.host'));
     }
 
     public function testDefaultPurgerIsSetToNullPurger(): void
@@ -210,11 +210,11 @@ final class PurgatoryExtensionTest extends TestCase
             ],
         ], $container);
 
-        self::assertTrue($container->hasAlias('sofascore.purgatory.purger'));
-        self::assertSame('sofascore.purgatory.purger.null', (string) $container->getAlias('sofascore.purgatory.purger'));
+        self::assertTrue($container->hasAlias('sofascore.purgatory2.purger'));
+        self::assertSame('sofascore.purgatory2.purger.null', (string) $container->getAlias('sofascore.purgatory2.purger'));
 
         self::assertTrue($container->hasAlias(PurgerInterface::class));
-        self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
+        self::assertSame('sofascore.purgatory2.purger', (string) $container->getAlias(PurgerInterface::class));
     }
 
     public function testMessengerWhenTransportIsNotSet(): void
@@ -228,8 +228,8 @@ final class PurgatoryExtensionTest extends TestCase
 
         $extension->load([], $container);
 
-        self::assertFalse($container->hasDefinition('sofascore.purgatory.purger.async'));
-        self::assertFalse($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.async'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.purge_message_handler'));
     }
 
     #[TestWith([[], [new Reference('messenger.default_bus')], []])]
@@ -261,13 +261,13 @@ final class PurgatoryExtensionTest extends TestCase
 
         $extension->load($container->getExtensionConfig('sofascore_purgatory'), $container);
 
-        self::assertTrue($container->hasDefinition('sofascore.purgatory.purger.async'));
-        self::assertTrue($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+        self::assertTrue($container->hasDefinition('sofascore.purgatory2.purger.async'));
+        self::assertTrue($container->hasDefinition('sofascore.purgatory2.purge_message_handler'));
 
-        $definition = $container->getDefinition('sofascore.purgatory.purger.async');
+        $definition = $container->getDefinition('sofascore.purgatory2.purger.async');
         self::assertEquals($expectedArguments, $definition->getArguments());
 
-        $definition = $container->getDefinition('sofascore.purgatory.purge_message_handler');
+        $definition = $container->getDefinition('sofascore.purgatory2.purge_message_handler');
         self::assertTrue($definition->hasTag('messenger.message_handler'));
         self::assertSame([$expectedTagAttributes], $definition->getTag('messenger.message_handler'));
     }
