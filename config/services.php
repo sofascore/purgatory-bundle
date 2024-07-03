@@ -66,6 +66,9 @@ return static function (ContainerConfigurator $container) {
 
         ->set('sofascore.purgatory2.subscription_resolver.property', PropertyResolver::class)
             ->tag('purgatory2.subscription_resolver')
+            ->args([
+                service('doctrine'),
+            ])
 
         ->set('sofascore.purgatory2.subscription_resolver.method', MethodResolver::class)
             ->tag('purgatory2.subscription_resolver')

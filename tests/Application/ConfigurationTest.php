@@ -14,8 +14,10 @@ use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\Competition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 
@@ -374,6 +376,30 @@ final class ConfigurationTest extends AbstractKernelTestCase
                             ],
                         ],
                         'optional' => true,
+                    ],
+                ],
+            ],
+        ];
+
+        /* @see CompetitionController::orderedCompetitionsAction */
+        yield [
+            'entity' => Competition::class,
+            'properties' => ['numberOfPets'],
+            'subscription' => [
+                'routeName' => 'competitions_ordered_by_number_of_pets',
+            ],
+        ];
+
+        /* @see CompetitionController::competitionsByWinnerAction */
+        yield [
+            'entity' => Competition::class,
+            'properties' => ['winner'],
+            'subscription' => [
+                'routeName' => 'competitions_by_winner',
+                'routeParams' => [
+                    'winner_id' => [
+                        'type' => PropertyValues::class,
+                        'values' => ['winner.id'],
                     ],
                 ],
             ],

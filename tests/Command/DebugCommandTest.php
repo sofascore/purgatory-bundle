@@ -55,7 +55,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 45,
+            expectedNumberOfSubscriptions: 47,
         );
     }
 

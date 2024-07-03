@@ -9,8 +9,11 @@ use PHPUnit\Framework\Attributes\CoversNothing;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\AnimalCompetition;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\HumanCompetition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
@@ -524,6 +527,48 @@ final class ApplicationTest extends AbstractKernelTestCase
         $animal->measurements->height = 10;
         $this->entityManager->flush();
         $this->assertUrlIsPurged('/animal/good-boy-ranking');
+    }
+
+    /**
+     * @see CompetitionController::orderedCompetitionsAction
+     */
+    public function testPurgeForTargetInSubClass(): void
+    {
+        $competition = new AnimalCompetition();
+        $competition->startDate = new \DateTimeImmutable();
+
+        $this->entityManager->persist($competition);
+        $this->entityManager->flush();
+
+        $this->purger->reset();
+        $competition->numberOfPets = 5;
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/competition/ordered-by-number-of-pets');
+    }
+
+    /**
+     * @see CompetitionController::competitionsByWinnerAction
+     */
+    public function testPurgeForAssociationTargetInSubClass(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->purger->reset();
+
+        $competition = new HumanCompetition();
+        $competition->startDate = new \DateTimeImmutable();
+        $competition->winner = $person;
+
+        $this->entityManager->persist($competition);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/competition/by-winner/'.$person->id);
     }
 
     private function assertUrlIsPurged(string $url): void

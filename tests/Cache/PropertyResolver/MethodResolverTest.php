@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -39,7 +40,7 @@ final class MethodResolverTest extends TestCase
             ));
 
         $resolver = new MethodResolver(
-            [new PropertyResolver()],
+            [new PropertyResolver($this->createMock(ManagerRegistry::class))],
             $propertyReadInfoExtractor,
         );
 
