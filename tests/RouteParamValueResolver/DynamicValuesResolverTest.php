@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\DynamicValuesResolver;
+use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\DummyServiceOne;
 use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\DummyServiceTwo;
 use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\Foo;
@@ -28,7 +29,7 @@ final class DynamicValuesResolverTest extends TestCase
                     'service_two' => static fn () => new DummyServiceTwo(),
                 ],
             ),
-            propertyAccessor: PropertyAccess::createPropertyAccessor(),
+            propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
         );
     }
 
