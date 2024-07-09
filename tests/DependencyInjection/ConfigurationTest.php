@@ -24,6 +24,7 @@ final class ConfigurationTest extends TestCase
         $config = (new Processor())->processConfiguration(new Configuration(), ['sofascore_purgatory' => []]);
 
         self::assertSame([
+            'mapping_paths' => [],
             'route_ignore_patterns' => [],
             'doctrine_middleware_priority' => null,
             'doctrine_event_listener_priorities' => [
@@ -120,7 +121,7 @@ final class ConfigurationTest extends TestCase
     {
         $container = new ContainerBuilder();
         $container->registerExtension(new PurgatoryExtension());
-        $locator = new FileLocator(__DIR__.'/Fixtures/config');
+        $locator = new FileLocator(__DIR__.'/Fixtures/xml');
 
         $xmlFileLoader = new XmlFileLoader($container, $locator);
         $xmlFileLoader->load($file);
@@ -150,6 +151,10 @@ final class ConfigurationTest extends TestCase
                     'bus' => 'command_bus',
                     'batch_size' => 100,
                 ],
+                'mapping_paths' => [
+                    '%kernel.project_dir%/one.yaml',
+                    '%kernel.project_dir%/two.yaml',
+                ],
                 'route_ignore_patterns' => [
                     0 => '/^_profiler/',
                     1 => '/^_wdt/',
@@ -164,6 +169,7 @@ final class ConfigurationTest extends TestCase
                     'postPersist' => 10,
                     'postUpdate' => 10,
                 ],
+                'mapping_paths' => [],
                 'route_ignore_patterns' => [],
                 'doctrine_middleware_priority' => null,
                 'purger' => [

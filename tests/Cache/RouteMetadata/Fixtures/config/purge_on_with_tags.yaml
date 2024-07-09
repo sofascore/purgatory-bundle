@@ -1,0 +1,10 @@
+foo_bar:
+    class: Foo
+    target: !for_groups [ group1, group2 ]
+    route_params:
+        param1: !property [ bar, baz ]
+        param2: !raw [ 1, 2 ]
+        param3: !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
+        param4: !compound
+            - !raw 0
+            - !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum

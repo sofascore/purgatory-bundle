@@ -10,7 +10,8 @@ use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProvider;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\AttributeMetadataProvider;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\YamlMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\ForPropertiesResolver;
@@ -40,10 +41,18 @@ return static function (ContainerConfigurator $container) {
         ->defaults()
             ->private()
 
-        ->set('sofascore.purgatory2.route_metadata_provider', RouteMetadataProvider::class)
+        ->set('sofascore.purgatory2.route_metadata_provider.attribute', AttributeMetadataProvider::class)
+            ->tag('purgatory2.route_metadata_provider')
             ->args([
                 service('router'),
                 [],
+                [],
+            ])
+
+        ->set('sofascore.purgatory2.route_metadata_provider.yaml', YamlMetadataProvider::class)
+            ->tag('purgatory2.route_metadata_provider')
+            ->args([
+                service('router'),
                 [],
             ])
 
@@ -59,7 +68,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory2.purge_subscription_provider', PurgeSubscriptionProvider::class)
             ->args([
                 tagged_iterator('purgatory2.subscription_resolver'),
-                service('sofascore.purgatory2.route_metadata_provider'),
+                tagged_iterator('purgatory2.route_metadata_provider'),
                 service('doctrine'),
                 tagged_locator('purgatory2.target_resolver', defaultIndexMethod: 'for'),
             ])

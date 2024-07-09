@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\CompilerPass;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProvider;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\AttributeMetadataProvider;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,7 +29,7 @@ final class ControllerClassMapPassTest extends TestCase
             attributes: $hasAttribute ? ['class' => $class] : [],
         );
 
-        $definition = $container->register('sofascore.purgatory2.route_metadata_provider', RouteMetadataProvider::class)
+        $definition = $container->register('sofascore.purgatory2.route_metadata_provider.attribute', AttributeMetadataProvider::class)
             ->setArguments([
                 $this->createMock(RouterInterface::class),
                 [],

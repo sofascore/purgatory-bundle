@@ -7,6 +7,9 @@
 
     <purgatory:config>
 
+        <purgatory:mapping-path>%kernel.project_dir%/one.yaml</purgatory:mapping-path>
+        <purgatory:mapping-path>%kernel.project_dir%/two.yaml</purgatory:mapping-path>
+
         <purgatory:route-ignore-pattern>/^_profiler/</purgatory:route-ignore-pattern>
         <purgatory:route-ignore-pattern>/^_wdt/</purgatory:route-ignore-pattern>
 

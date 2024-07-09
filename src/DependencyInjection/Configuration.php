@@ -18,8 +18,14 @@ final class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
+            ->fixXmlConfig('mapping_path')
             ->fixXmlConfig('route_ignore_pattern')
             ->children()
+                ->arrayNode('mapping_paths')
+                    ->info('List of files or directories where Purgatory will look for additional purge definitions.')
+                    ->scalarPrototype()->end()
+                    ->defaultValue([])
+                ->end()
                 ->arrayNode('route_ignore_patterns')
                     ->info('Route names that match the given regular expressions will be ignored.')
                     ->example(['/^_profiler/', '/^_wdt/'])

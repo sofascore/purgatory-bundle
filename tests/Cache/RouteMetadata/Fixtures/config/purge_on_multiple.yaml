@@ -1,0 +1,11 @@
+foo_bar:
+    -   class: Foo
+        target: [ bar, baz ]
+        route_params:
+            param1: !raw [ 1, 2 ]
+            param2: !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
+        actions: [ create, update ]
+    -   class: Qux
+        target: corge
+        if: 'obj.isActive() === true'
+        actions: delete

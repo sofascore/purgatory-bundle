@@ -28,6 +28,7 @@
 
     <xsd:complexType name="config">
         <xsd:choice maxOccurs="unbounded">
+            <xsd:element name="mapping-path" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="route-ignore-pattern" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="doctrine-middleware-priority" type="xsd:int" minOccurs="0" />
             <xsd:element name="doctrine-event-listener-priorities" type="doctrine-event-listener-priorities" minOccurs="0" />

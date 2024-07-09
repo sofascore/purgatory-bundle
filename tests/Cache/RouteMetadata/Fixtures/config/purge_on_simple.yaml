@@ -1,0 +1,11 @@
+foo_bar:
+    class: Foo
+
+foo_baz:
+    class: Bar
+    target: bar
+    route_params:
+        param1: bar
+        param2: [ bar, baz ]
+    if: 'obj.isActive() === true'
+    actions: create

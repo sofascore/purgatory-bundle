@@ -11,11 +11,6 @@
       <code><![CDATA[require $cache->getPath()]]></code>
     </UnresolvableInclude>
   </file>
-  <file src="src/Cache/RouteMetadata/RouteMetadataProvider.php">
-    <PossiblyUndefinedArrayOffset>
-      <code><![CDATA[$method]]></code>
-    </PossiblyUndefinedArrayOffset>
-  </file>
   <file src="src/Cache/PropertyResolver/AssociationResolver.php">
     <InternalClass>
       <code><![CDATA[PropertyReadInfo::TYPE_METHOD]]></code>
@@ -35,6 +30,24 @@
       <code><![CDATA[getName]]></code>
       <code><![CDATA[getType]]></code>
     </InternalMethod>
+  </file>
+  <file src="src/Cache/RouteMetadata/AttributeMetadataProvider.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$method]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
+  <file src="src/Cache/RouteMetadata/YamlMetadataProvider.php">
+    <ArgumentTypeCoercion>
+      <code><![CDATA[$this->buildRouteParam(...)]]></code>
+      <code><![CDATA[(array) $value]]></code>
+    </ArgumentTypeCoercion>
+    <InvalidArgument>
+      <code><![CDATA[$value]]></code>
+    </InvalidArgument>
+    <PossiblyInvalidArgument>
+      <code><![CDATA[$value]]></code>
+      <code><![CDATA[(array) $value]]></code>
+    </PossiblyInvalidArgument>
   </file>
   <file src="src/Command/DebugCommand.php">
     <InvalidArgument>

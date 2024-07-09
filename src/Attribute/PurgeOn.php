@@ -29,7 +29,7 @@ final class PurgeOn
      * @param string|non-empty-list<string>|TargetInterface|null                      $target
      * @param ?non-empty-array<string, string|non-empty-list<string>|ValuesInterface> $routeParams
      * @param string|non-empty-list<string>|null                                      $route
-     * @param Action|non-empty-list<Action>|null                                      $actions
+     * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      */
     public function __construct(
         public readonly string $class,
@@ -37,13 +37,13 @@ final class PurgeOn
         ?array $routeParams = null,
         string|Expression|null $if = null,
         string|array|null $route = null,
-        Action|array|null $actions = null,
+        string|array|Action|null $actions = null,
     ) {
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;
         $this->if = \is_string($if) ? self::normalizeExpression($if) : $if;
         $this->route = \is_string($route) ? [$route] : $route;
-        $this->actions = $actions instanceof Action ? [$actions] : $actions;
+        $this->actions = null !== $actions ? self::normalizeActions($actions) : null;
     }
 
     /**
@@ -79,5 +79,24 @@ final class PurgeOn
         }
 
         return new Expression($if);
+    }
+
+    /**
+     * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action $actions
+     *
+     * @return non-empty-list<Action>
+     */
+    private static function normalizeActions(string|array|Action $actions): array
+    {
+        if (!\is_array($actions)) {
+            $actions = [$actions];
+        }
+
+        $normalized = [];
+        foreach ($actions as $action) {
+            $normalized[] = $action instanceof Action ? $action : Action::from($action);
+        }
+
+        return $normalized;
     }
 }

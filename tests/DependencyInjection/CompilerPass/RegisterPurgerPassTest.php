@@ -20,6 +20,7 @@ final class RegisterPurgerPassTest extends TestCase
     protected function setUp(): void
     {
         $this->container = new ContainerBuilder();
+        $this->container->setParameter('kernel.project_dir', __DIR__);
         $this->container->register('http_cache.store', Store::class);
 
         (new PurgatoryExtension())->load([], $this->container);

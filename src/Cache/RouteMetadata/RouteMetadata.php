@@ -13,7 +13,7 @@ final class RouteMetadata
         public readonly string $routeName,
         public readonly Route $route,
         public readonly PurgeOn $purgeOn,
-        public readonly \ReflectionMethod $reflectionMethod,
+        public readonly ?\ReflectionMethod $reflectionMethod,
     ) {
     }
 }

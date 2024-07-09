@@ -6,8 +6,8 @@ namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\AttributeMetadataProvider;
 use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProvider;
 use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BarController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BazController;
 use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\FooController;
@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 
-#[CoversClass(RouteMetadataProvider::class)]
-final class RouteMetadataProviderTest extends TestCase
+#[CoversClass(AttributeMetadataProvider::class)]
+final class AttributeMetadataProviderTest extends TestCase
 {
     public function testRouteMetadata(): void
     {
@@ -42,7 +42,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,
@@ -129,7 +129,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [
                 BarController::class => BarController::class,
@@ -188,7 +188,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [
                 BazController::class => BazController::class,
@@ -241,7 +241,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [],
             routeIgnorePatterns: [],
@@ -274,7 +274,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,
@@ -303,7 +303,7 @@ final class RouteMetadataProviderTest extends TestCase
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
-        $provider = new RouteMetadataProvider(
+        $provider = new AttributeMetadataProvider(
             router: $router,
             classMap: [
                 FooController::class => FooController::class,

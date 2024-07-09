@@ -20,11 +20,12 @@ use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableExceptio
 final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterface
 {
     /**
-     * @param iterable<SubscriptionResolverInterface> $subscriptionResolvers
+     * @param iterable<SubscriptionResolverInterface>  $subscriptionResolvers
+     * @param iterable<RouteMetadataProviderInterface> $routeMetadataProviders
      */
     public function __construct(
         private readonly iterable $subscriptionResolvers,
-        private readonly RouteMetadataProviderInterface $routeMetadataProvider,
+        private readonly iterable $routeMetadataProviders,
         private readonly ManagerRegistry $managerRegistry,
         private readonly ContainerInterface $targetResolverLocator,
     ) {
@@ -35,7 +36,17 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
      */
     public function provide(): iterable
     {
-        foreach ($this->routeMetadataProvider->provide() as $routeMetadata) {
+        foreach ($this->routeMetadataProviders as $routeMetadataProvider) {
+            yield from $this->provideFromMetadata($routeMetadataProvider);
+        }
+    }
+
+    /**
+     * @return iterable<PurgeSubscription>
+     */
+    private function provideFromMetadata(RouteMetadataProviderInterface $routeMetadataProvider): iterable
+    {
+        foreach ($routeMetadataProvider->provide() as $routeMetadata) {
             $purgeOn = $routeMetadata->purgeOn;
 
             // if route parameters are not specified, they are same as path variables

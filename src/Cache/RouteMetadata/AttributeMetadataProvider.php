@@ -11,7 +11,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * @internal Used during cache warmup
  */
-final class RouteMetadataProvider implements RouteMetadataProviderInterface
+final class AttributeMetadataProvider implements RouteMetadataProviderInterface
 {
     /**
      * @param array<string, class-string> $classMap

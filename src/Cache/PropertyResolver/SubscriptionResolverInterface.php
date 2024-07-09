@@ -15,7 +15,7 @@ interface SubscriptionResolverInterface
      * @param array<string, ValuesInterface> $routeParams
      * @param ClassMetadata<object>          $classMetadata
      *
-     * @return \Generator<mixed, PurgeSubscription, mixed, bool>
+     * @return \Generator<int, PurgeSubscription, mixed, bool>
      */
     public function resolveSubscription(
         RouteMetadata $routeMetadata,

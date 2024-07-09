@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
@@ -18,6 +19,7 @@ use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummySubscript
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyTargetResolver;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyValuesResolver;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
+use Symfony\Component\Config\Resource\ResourceInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
@@ -28,6 +30,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testControllerWithPurgeOnIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyController::class)
@@ -55,9 +58,74 @@ final class PurgatoryExtensionTest extends TestCase
         );
     }
 
+    #[TestWith([[], ['config/purgatory/one.yaml', 'config/purgatory/two.yml'], __DIR__.'/Fixtures/app/config/purgatory'])]
+    #[TestWith([
+        [__DIR__.'/Fixtures/app/config/three.yaml'],
+        ['config/purgatory/one.yaml', 'config/purgatory/two.yml', 'config/three.yaml'],
+        __DIR__.'/Fixtures/app/config/three.yaml',
+    ])]
+    #[TestWith([
+        [__DIR__.'/Fixtures/app/config/additional'],
+        ['config/purgatory/one.yaml', 'config/purgatory/two.yml', 'config/additional/five.yaml', 'config/additional/four.yml'],
+        __DIR__.'/Fixtures/app/config/additional',
+    ])]
+    public function testMappingPathsAreSet(array $mappingPaths, array $expectedFiles, string $expectedResource): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => [
+                'mapping_paths' => $mappingPaths,
+            ],
+        ], $container);
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory2.route_metadata_provider.yaml'));
+        self::assertSame(
+            array_map(static fn (string $file): string => __DIR__.'/Fixtures/app/'.$file, $expectedFiles),
+            $container->getDefinition('sofascore.purgatory2.route_metadata_provider.yaml')->getArgument(1),
+        );
+
+        self::assertContains($expectedResource, array_map(
+            static fn (ResourceInterface $resource): string => method_exists($resource, 'getResource') ? $resource->getResource() : (string) $resource,
+            $container->getResources(),
+        ));
+    }
+
+    public function testYamlMetadataProviderIsRemovedWhenThereAreNoFiles(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.route_metadata_provider.yaml'));
+    }
+
+    public function testExceptionIsThrownOnInvalidMappingPath(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Could not open file or directory "foobarbaz.yaml".');
+
+        $extension->load([
+            'sofascore_purgatory' => [
+                'mapping_paths' => ['foobarbaz.yaml'],
+            ],
+        ], $container);
+    }
+
     public function testRouteIgnorePatternsIsSet(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
         $extension = new PurgatoryExtension();
         $extension->load([
             'sofascore_purgatory' => [
@@ -65,7 +133,7 @@ final class PurgatoryExtensionTest extends TestCase
             ],
         ], $container);
 
-        $ignoredPatterns = $container->getDefinition('sofascore.purgatory2.route_metadata_provider')->getArgument(2);
+        $ignoredPatterns = $container->getDefinition('sofascore.purgatory2.route_metadata_provider.attribute')->getArgument(2);
 
         self::assertCount(1, $ignoredPatterns);
         self::assertSame('/^_profiler/', $ignoredPatterns[0]);
@@ -76,6 +144,8 @@ final class PurgatoryExtensionTest extends TestCase
     public function testDoctrineMiddlewareTagIsSet(array $middlewarePriority, array $expectedTag): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
         $extension = new PurgatoryExtension();
         $extension->load([
             'sofascore_purgatory' => $middlewarePriority,
@@ -102,6 +172,8 @@ final class PurgatoryExtensionTest extends TestCase
     public function testDoctrineEventListenerTagIsSet(array $middlewarePriority, array $expectedTag): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
         $extension = new PurgatoryExtension();
         $extension->load([
             'sofascore_purgatory' => $middlewarePriority,
@@ -116,6 +188,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testSubscriptionResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummySubscriptionResolver::class)
@@ -132,6 +205,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testTargetResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyTargetResolver::class)
@@ -148,6 +222,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testRouteProviderIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyRouteProvider::class)
@@ -164,6 +239,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testRouteParamValuesResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyValuesResolver::class)
@@ -180,6 +256,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testPurgerConfig(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
 
         $extension = new PurgatoryExtension();
         $extension->load([
@@ -201,6 +278,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testDefaultPurgerIsSetToNullPurger(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
 
         $extension = new PurgatoryExtension();
         $extension->load([
@@ -222,6 +300,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testMessengerWhenTransportIsNotSet(): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $extension->prepend($container);
@@ -240,6 +319,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testMessengerWhenTransportIsSet(array $extraConfig, array $expectedArguments, array $expectedTagAttributes): void
     {
         $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->loadFromExtension($extension->getAlias(), [

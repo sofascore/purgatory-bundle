@@ -27,12 +27,15 @@ final class PurgeOnTest extends TestCase
         ['prop' => 'foo', 'prop2' => new RawValues('foo', 'bar')],
         ['prop' => new PropertyValues('foo'), 'prop2' => new RawValues('foo', 'bar')],
     ])]
-    #[TestWith(['route', 'foo', ['foo']])]
-    #[TestWith(['actions', Action::Create, [Action::Create]])]
-    #[TestWith(['actions', null, null])]
     #[TestWith(['if', 'obj.isActive() === true', new Expression('obj.isActive() === true')])]
     #[TestWith(['if', new Expression('obj.isActive() === true'), new Expression('obj.isActive() === true')])]
     #[TestWith(['if', null, null])]
+    #[TestWith(['route', 'foo', ['foo']])]
+    #[TestWith(['actions', Action::Create, [Action::Create]])]
+    #[TestWith(['actions', [Action::Create], [Action::Create]])]
+    #[TestWith(['actions', 'create', [Action::Create]])]
+    #[TestWith(['actions', ['create', 'update'], [Action::Create, Action::Update]])]
+    #[TestWith(['actions', null, null])]
     public function testValueNormalization(string $property, mixed $value, mixed $expectedValue): void
     {
         $purgeOn = new PurgeOn(

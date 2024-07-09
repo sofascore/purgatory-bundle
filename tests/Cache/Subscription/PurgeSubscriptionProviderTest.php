@@ -43,7 +43,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
-            routeMetadataProvider: $routeMetadataProvider,
+            routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $this->createMock(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
         );
@@ -171,7 +171,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [$subscriptionResolver],
-            routeMetadataProvider: $routeMetadataProvider,
+            routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $managerRegistry,
             targetResolverLocator: $targetResolverLocator,
         );
@@ -311,7 +311,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
-            routeMetadataProvider: $routeMetadataProvider,
+            routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $managerRegistry,
             targetResolverLocator: $this->createMock(ContainerInterface::class),
         );
