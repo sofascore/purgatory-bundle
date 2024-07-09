@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
 use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ChildDefinition;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
@@ -20,7 +21,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 
-final class PurgatoryExtension extends ConfigurableExtension implements PrependExtensionInterface
+final class PurgatoryExtension extends ConfigurableExtension implements PrependExtensionInterface, CompilerPassInterface
 {
     public function prepend(ContainerBuilder $container): void
     {
@@ -122,9 +123,6 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         $container->registerForAutoconfiguration(ValuesResolverInterface::class)
             ->addTag('purgatory2.route_param_value_resolver');
 
-        if (!$container->hasDefinition('cache.system')) {
-            $container->removeDefinition('sofascore.purgatory2.cache.expression_language');
-        }
         if (!class_exists(ExpressionLanguage::class)) {
             $container->removeDefinition('sofascore.purgatory2.expression_language');
         }
@@ -143,5 +141,12 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
     public function getAlias(): string
     {
         return 'sofascore_purgatory';
+    }
+
+    public function process(ContainerBuilder $container): void
+    {
+        if (!$container->hasDefinition('cache.system')) {
+            $container->removeDefinition('sofascore.purgatory2.cache.expression_language');
+        }
     }
 }

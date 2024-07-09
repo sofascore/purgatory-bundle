@@ -17,7 +17,9 @@ use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyRouteProv
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummySubscriptionResolver;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyTargetResolver;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyValuesResolver;
+use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Reference;
 
 #[CoversClass(PurgatoryExtension::class)]
@@ -26,9 +28,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testControllerWithPurgeOnIsTagged(): void
     {
         $container = new ContainerBuilder();
-
-        $extension = new PurgatoryExtension();
-        $extension->load([], $container);
+        $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyController::class)
             ->setAutoconfigured(true)
@@ -37,6 +37,8 @@ final class PurgatoryExtensionTest extends TestCase
         $container->register(DummyControllerWithPurgeOn::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
 
         $container->compile();
 
@@ -114,13 +116,13 @@ final class PurgatoryExtensionTest extends TestCase
     public function testSubscriptionResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummySubscriptionResolver::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
 
-        $extension = new PurgatoryExtension();
-        $extension->load([], $container);
+        $container->loadFromExtension($extension->getAlias(), []);
 
         $container->compile();
 
@@ -130,13 +132,13 @@ final class PurgatoryExtensionTest extends TestCase
     public function testTargetResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyTargetResolver::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
 
-        $extension = new PurgatoryExtension();
-        $extension->load([], $container);
+        $container->loadFromExtension($extension->getAlias(), []);
 
         $container->compile();
 
@@ -146,13 +148,13 @@ final class PurgatoryExtensionTest extends TestCase
     public function testRouteProviderIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyRouteProvider::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
 
-        $extension = new PurgatoryExtension();
-        $extension->load([], $container);
+        $container->loadFromExtension($extension->getAlias(), []);
 
         $container->compile();
 
@@ -162,13 +164,13 @@ final class PurgatoryExtensionTest extends TestCase
     public function testRouteParamValuesResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
+        $container->registerExtension($extension = new PurgatoryExtension());
 
         $container->register(DummyValuesResolver::class)
             ->setAutoconfigured(true)
             ->setPublic(true);
 
-        $extension = new PurgatoryExtension();
-        $extension->load([], $container);
+        $container->loadFromExtension($extension->getAlias(), []);
 
         $container->compile();
 
@@ -240,7 +242,7 @@ final class PurgatoryExtensionTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension($extension = new PurgatoryExtension());
 
-        $container->loadFromExtension('sofascore_purgatory', [
+        $container->loadFromExtension($extension->getAlias(), [
             'messenger' => [
                 'transport' => 'foo',
                 ...$extraConfig,
@@ -270,5 +272,31 @@ final class PurgatoryExtensionTest extends TestCase
         $definition = $container->getDefinition('sofascore.purgatory2.purge_message_handler');
         self::assertTrue($definition->hasTag('messenger.message_handler'));
         self::assertSame([$expectedTagAttributes], $definition->getTag('messenger.message_handler'));
+    }
+
+    /**
+     * @param list<ExtensionInterface> $extensions
+     */
+    #[TestWith([[new PurgatoryExtension()], false])]
+    #[TestWith([[new FrameworkExtension(), new PurgatoryExtension()], true])]
+    #[TestWith([[new PurgatoryExtension(), new FrameworkExtension()], true])]
+    public function testExpressionLanguageCacheIsRemovedWhenExpected(array $extensions, bool $hasCache): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->setParameter('kernel.debug', true);
+        $container->setParameter('kernel.build_dir', __DIR__);
+        $container->setParameter('kernel.container_class', 'App');
+
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+
+        foreach ($extensions as $extension) {
+            $container->registerExtension($extension);
+            $container->loadFromExtension($extension->getAlias(), []);
+        }
+
+        $container->compile();
+
+        self::assertSame($hasCache, $container->hasDefinition('sofascore.purgatory2.cache.expression_language'));
     }
 }
