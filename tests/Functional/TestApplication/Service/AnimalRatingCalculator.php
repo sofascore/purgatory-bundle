@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Service;
 
-use Sofascore\PurgatoryBundle2\Attribute\AsPurgatoryResolver;
+use Sofascore\PurgatoryBundle2\Attribute\AsPurgatoryParamResolver;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 
-#[AsPurgatoryResolver('purgatory2.animal_rating')]
+#[AsPurgatoryParamResolver('purgatory2.animal_rating')]
 class AnimalRatingCalculator
 {
     public function __invoke(Animal $animal): int

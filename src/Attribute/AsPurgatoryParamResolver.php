@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Attribute;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[\Attribute(\Attribute::TARGET_CLASS)]
-final class AsPurgatoryResolver extends AutoconfigureTag
+final class AsPurgatoryParamResolver extends AutoconfigureTag
 {
     public function __construct(string $alias)
     {

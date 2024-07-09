@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
 final class DynamicValues extends AbstractValues implements InverseValuesAwareInterface
 {
     /**
-     * @param string $alias Alias defined in {@see AsPurgatoryResolver} attribute
+     * @param string $alias Alias defined in {@see AsPurgatoryParamResolver} attribute
      */
     public function __construct(
         private readonly string $alias,
