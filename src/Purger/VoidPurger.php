@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Purger;
 
-final class NullPurger implements PurgerInterface
+final class VoidPurger implements PurgerInterface
 {
     /**
      * {@inheritDoc}

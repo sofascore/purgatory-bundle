@@ -41,22 +41,22 @@ final class RegisterPurgerPassTest extends TestCase
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory2.purger.symfony'));
     }
 
-    public function testDefaultPurgerIsSetToNullPurgerIfHttpCacheStoreDoesNotExistAndHostParamDoes(): void
+    public function testDefaultPurgerIsSetToVoidPurgerIfHttpCacheStoreDoesNotExistAndHostParamDoes(): void
     {
         $this->container->setParameter('.sofascore.purgatory2.purger.host', 'localhost');
         $this->container->removeDefinition('http_cache.store');
 
         (new RegisterPurgerPass())->process($this->container);
 
-        self::assertSame('sofascore.purgatory2.purger.null', (string) $this->container->getAlias('sofascore.purgatory2.purger'));
+        self::assertSame('sofascore.purgatory2.purger.void', (string) $this->container->getAlias('sofascore.purgatory2.purger'));
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.purger.symfony'));
     }
 
-    public function testDefaultPurgerIsSetToNullPurgerIfHttpCacheStoreExistsAndHostParamDoesNot(): void
+    public function testDefaultPurgerIsSetToVoidPurgerIfHttpCacheStoreExistsAndHostParamDoesNot(): void
     {
         (new RegisterPurgerPass())->process($this->container);
 
-        self::assertSame('sofascore.purgatory2.purger.null', (string) $this->container->getAlias('sofascore.purgatory2.purger'));
+        self::assertSame('sofascore.purgatory2.purger.void', (string) $this->container->getAlias('sofascore.purgatory2.purger'));
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.purger.symfony'));
     }
 

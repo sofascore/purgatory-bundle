@@ -21,9 +21,9 @@ use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessageHandler;
-use Sofascore\PurgatoryBundle2\Purger\NullPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle2\Purger\VoidPurger;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\DynamicValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
@@ -156,10 +156,10 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory2.purger'),
             ])
 
-        ->set('sofascore.purgatory2.purger.null', NullPurger::class)
-            ->tag('purgatory2.purger', ['alias' => 'null'])
+        ->set('sofascore.purgatory2.purger.void', VoidPurger::class)
+            ->tag('purgatory2.purger', ['alias' => 'void'])
 
-        ->alias('sofascore.purgatory2.purger', 'sofascore.purgatory2.purger.null')
+        ->alias('sofascore.purgatory2.purger', 'sofascore.purgatory2.purger.void')
         ->alias(PurgerInterface::class, 'sofascore.purgatory2.purger')
 
         ->set('sofascore.purgatory2.purger.in_memory', InMemoryPurger::class)

@@ -275,7 +275,7 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertSame('localhost:80', $container->getParameter('.sofascore.purgatory2.purger.host'));
     }
 
-    public function testDefaultPurgerIsSetToNullPurger(): void
+    public function testDefaultPurgerIsSetToVoidPurger(): void
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', __DIR__);
@@ -291,7 +291,7 @@ final class PurgatoryExtensionTest extends TestCase
         ], $container);
 
         self::assertTrue($container->hasAlias('sofascore.purgatory2.purger'));
-        self::assertSame('sofascore.purgatory2.purger.null', (string) $container->getAlias('sofascore.purgatory2.purger'));
+        self::assertSame('sofascore.purgatory2.purger.void', (string) $container->getAlias('sofascore.purgatory2.purger'));
 
         self::assertTrue($container->hasAlias(PurgerInterface::class));
         self::assertSame('sofascore.purgatory2.purger', (string) $container->getAlias(PurgerInterface::class));
