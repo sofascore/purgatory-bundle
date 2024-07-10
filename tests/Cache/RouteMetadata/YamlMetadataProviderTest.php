@@ -16,6 +16,7 @@ use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\YamlMetadataProvider;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
+use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -184,6 +185,25 @@ final class YamlMetadataProviderTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(sprintf('The file "%s" does not contain valid YAML: ', $file));
+
+        iterator_to_array($provider->provide());
+    }
+
+    public function testExceptionIsThrownIfParsedYamlIsNotAnArray(): void
+    {
+        $router = $this->createMock(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn(new RouteCollection());
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                $file = __DIR__.'/Fixtures/config/purge_on_not_array.yaml',
+            ],
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(sprintf('Expected the parsed YAML of file "%s" to be an array, got "string".', $file));
 
         iterator_to_array($provider->provide());
     }

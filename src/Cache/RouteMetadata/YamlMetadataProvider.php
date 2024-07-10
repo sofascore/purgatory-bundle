@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
+use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -51,10 +52,14 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
 
         foreach ($this->files as $file) {
             try {
-                /** @var array<string, array<string, mixed>|list<array<string, mixed>>> $configuration */
+                /** @var array<string, array<string, mixed>|list<array<string, mixed>>>|scalar|null $configuration */
                 $configuration = $this->yamlParser->parseFile($file, Yaml::PARSE_CONSTANT | Yaml::PARSE_CUSTOM_TAGS);
             } catch (ParseException $e) {
                 throw new InvalidArgumentException(sprintf('The file "%s" does not contain valid YAML: ', $file).$e->getMessage(), previous: $e);
+            }
+
+            if (!\is_array($configuration)) {
+                throw new RuntimeException(sprintf('Expected the parsed YAML of file "%s" to be an array, got "%s".', $file, get_debug_type($configuration)));
             }
 
             yield from $this->provideFromFile($configuration, $routeCollection);
