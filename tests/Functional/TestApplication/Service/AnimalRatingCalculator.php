@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Service;
 
-use Sofascore\PurgatoryBundle2\Attribute\AsPurgatoryParamResolver;
+use Sofascore\PurgatoryBundle2\Attribute\AsRouteParamService;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 
-#[AsPurgatoryParamResolver('purgatory2.animal_rating')]
+#[AsRouteParamService('purgatory2.animal_rating1')]
 class AnimalRatingCalculator
 {
     public function __invoke(Animal $animal): int
@@ -16,11 +16,13 @@ class AnimalRatingCalculator
         return $this->getRating($animal) + 100;
     }
 
+    #[AsRouteParamService('purgatory2.animal_rating2')]
     public function getRating(Animal $animal): int
     {
         return ($animal->measurements->height ?? 0) + ($animal->measurements->weight ?? 0) + ($animal->measurements->width ?? 0);
     }
 
+    #[AsRouteParamService('purgatory2.animal_rating3')]
     public function getOwnerRating(Person $owner): int
     {
         return array_reduce(

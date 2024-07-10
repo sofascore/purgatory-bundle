@@ -60,6 +60,18 @@
   </file>
   <file src="src/DependencyInjection/PurgatoryExtension.php">
     <ArgumentTypeCoercion>
+      <code><![CDATA[static function (ChildDefinition $definition, AsRouteParamService $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
+                $definition->addTag(
+                    name: 'purgatory2.route_parameter_service',
+                    attributes: [
+                        'alias' => $attribute->alias,
+                        'method' => $reflection instanceof \ReflectionMethod
+                            ? $reflection->name
+                            : ($reflection->hasMethod('__invoke') ? '__invoke'
+                                : throw new RuntimeException(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', $reflection->name))),
+                    ],
+                );
+            }]]></code>
       <code><![CDATA[static function (ChildDefinition $definition, PurgeOn $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
                     name: 'purgatory2.purge_on',

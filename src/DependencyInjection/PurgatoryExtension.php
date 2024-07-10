@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
 use Doctrine\ORM\Events as DoctrineEvents;
+use Sofascore\PurgatoryBundle2\Attribute\AsRouteParamService;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
@@ -62,6 +63,22 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                     name: 'purgatory2.purge_on',
                     attributes: [
                         'class' => $reflection instanceof \ReflectionMethod ? $reflection->class : $reflection->name,
+                    ],
+                );
+            },
+        );
+
+        $container->registerAttributeForAutoconfiguration(
+            AsRouteParamService::class,
+            static function (ChildDefinition $definition, AsRouteParamService $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
+                $definition->addTag(
+                    name: 'purgatory2.route_parameter_service',
+                    attributes: [
+                        'alias' => $attribute->alias,
+                        'method' => $reflection instanceof \ReflectionMethod
+                            ? $reflection->name
+                            : ($reflection->hasMethod('__invoke') ? '__invoke'
+                                : throw new RuntimeException(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', $reflection->name))),
                     ],
                 );
             },

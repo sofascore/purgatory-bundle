@@ -204,7 +204,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory2.route_parameter_resolver.dynamic', DynamicValuesResolver::class)
             ->tag('purgatory2.route_param_value_resolver')
             ->args([
-                tagged_locator('purgatory2.route_parameter_resolver_service', 'alias'),
+                abstract_arg('Route param service locator'),
                 service('sofascore.purgatory2.property_accessor'),
             ])
 

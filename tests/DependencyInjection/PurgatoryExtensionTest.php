@@ -14,6 +14,8 @@ use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyControllerWithPurgeOn;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyInvalidRouteParamService;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyRouteParamService;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyRouteProvider;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummySubscriptionResolver;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyTargetResolver;
@@ -56,6 +58,45 @@ final class PurgatoryExtensionTest extends TestCase
             [['class' => DummyControllerWithPurgeOn::class]],
             $container->getDefinition(DummyControllerWithPurgeOn::class)->getTag('purgatory2.purge_on'),
         );
+    }
+
+    public function testServiceWithAsRouteParamServiceIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->register(DummyRouteParamService::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(DummyRouteParamService::class)->hasTag('purgatory2.route_parameter_service'));
+        self::assertSame(
+            [['alias' => 'alias_class', 'method' => '__invoke'], ['alias' => 'alias_foo', 'method' => 'foo']],
+            $container->getDefinition(DummyRouteParamService::class)->getTag('purgatory2.route_parameter_service'),
+        );
+    }
+
+    public function testExceptionIsThrownWhenRouteParamServiceMethodDoesNotExist(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->register(DummyInvalidRouteParamService::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', DummyInvalidRouteParamService::class));
+
+        $container->compile();
     }
 
     #[TestWith([[], ['config/purgatory/one.yaml', 'config/purgatory/two.yml'], __DIR__.'/Fixtures/app/config/purgatory'])]

@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2;
 
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterPurgerPass;
+use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterRouteParamServicesPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
@@ -17,6 +18,7 @@ final class Purgatory2Bundle extends Bundle
     {
         $container->addCompilerPass(new ControllerClassMapPass());
         $container->addCompilerPass(new RegisterPurgerPass());
+        $container->addCompilerPass(new RegisterRouteParamServicesPass());
     }
 
     public function getPath(): string

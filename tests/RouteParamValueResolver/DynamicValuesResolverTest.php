@@ -23,10 +23,11 @@ final class DynamicValuesResolverTest extends TestCase
     protected function setUp(): void
     {
         $this->resolver = new DynamicValuesResolver(
-            paramResolverServiceLocator: new ServiceLocator(
+            routeParamServiceLocator: new ServiceLocator(
                 factories: [
-                    'service_one' => static fn () => new DummyServiceOne(),
-                    'service_two' => static fn () => new DummyServiceTwo(),
+                    'service_one' => static fn () => (new DummyServiceOne())->__invoke(...),
+                    'service_two' => static fn () => (new DummyServiceTwo())->getValueToPurge(...),
+                    'service_three' => static fn () => (new DummyServiceTwo())->getArrayValueToPurge(...),
                 ],
             ),
             propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
@@ -42,7 +43,6 @@ final class DynamicValuesResolverTest extends TestCase
     #[DataProvider('valuesProvider')]
     public function testResolve(
         string $id,
-        ?string $method,
         ?string $path,
         object $entity,
         array $expectedResult,
@@ -50,7 +50,7 @@ final class DynamicValuesResolverTest extends TestCase
         self::assertSame(
             expected: $expectedResult,
             actual: $this->resolver->resolve(
-                unresolvedValues: [$id, $method, $path],
+                unresolvedValues: [$id, $path],
                 entity: $entity,
             ),
         );
@@ -63,7 +63,6 @@ final class DynamicValuesResolverTest extends TestCase
 
         yield 'invokable service' => [
             'id' => 'service_one',
-            'method' => null,
             'path' => null,
             'entity' => $foo,
             'expectedResult' => [1005],
@@ -72,7 +71,6 @@ final class DynamicValuesResolverTest extends TestCase
         $foo = clone $foo;
         yield 'service with method' => [
             'id' => 'service_two',
-            'method' => 'getValueToPurge',
             'path' => null,
             'entity' => $foo,
             'expectedResult' => [105],
@@ -85,7 +83,6 @@ final class DynamicValuesResolverTest extends TestCase
 
         yield 'with path to arg' => [
             'id' => 'service_two',
-            'method' => 'getValueToPurge',
             'path' => 'child',
             'entity' => $foo,
             'expectedResult' => [112],
@@ -93,8 +90,7 @@ final class DynamicValuesResolverTest extends TestCase
 
         $foo = clone $foo;
         yield 'with array unpacking' => [
-            'id' => 'service_two',
-            'method' => 'getArrayValueToPurge',
+            'id' => 'service_three',
             'path' => null,
             'entity' => $foo,
             'expectedResult' => [5, 1, 2, 3],

@@ -157,7 +157,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory2.animal_rating', 'getOwnerRating', 'owner'],
+                                'values' => ['purgatory2.animal_rating3', 'owner'],
                             ],
                         ],
                     ],
@@ -340,15 +340,15 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory2.animal_rating', 'getRating', null],
+                                'values' => ['purgatory2.animal_rating2', null],
                             ],
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory2.animal_rating', null, null],
+                                'values' => ['purgatory2.animal_rating1', null],
                             ],
                             [
                                 'type' => DynamicValues::class,
-                                'values' => ['purgatory2.animal_rating', 'getOwnerRating', 'owner'],
+                                'values' => ['purgatory2.animal_rating3', 'owner'],
                             ],
                         ],
                     ],
