@@ -14,6 +14,8 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
  * @internal
+ *
+ * @implements RouteProviderInterface<object>
  */
 abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 {

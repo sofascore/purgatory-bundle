@@ -20,7 +20,7 @@ final class EntityChangeListener
     private array $queuedUrls = [];
 
     /**
-     * @param iterable<RouteProviderInterface> $routeProviders
+     * @param iterable<RouteProviderInterface<object>> $routeProviders
      */
     public function __construct(
         private readonly iterable $routeProviders,
