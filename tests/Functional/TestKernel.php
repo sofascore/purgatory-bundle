@@ -87,9 +87,10 @@ final class TestKernel extends Kernel
             }
 
             if (is_dir($dir = $this->getProjectDir().'/Entity')) {
+                $container->setParameter('database_url', 'sqlite:///:memory:');
                 $container->loadFromExtension('doctrine', [
                     'dbal' => [
-                        'url' => 'sqlite:///:memory:',
+                        'url' => '%env(string:default:database_url:DATABASE_URL)%',
                     ],
                     'orm' => [
                         'mappings' => [

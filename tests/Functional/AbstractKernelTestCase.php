@@ -30,7 +30,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
             static::bootKernel($options);
         }
 
-        self::runCommand(self::$kernel, 'doctrine:schema:drop');
+        self::runCommand(self::$kernel, 'doctrine:schema:drop', ['--force' => true]);
         self::runCommand(self::$kernel, 'doctrine:schema:create');
     }
 
@@ -61,13 +61,13 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return sys_get_temp_dir().'/Purgatory_'.substr(strrchr(static::class, '\\'), 1);
     }
 
-    private static function runCommand(KernelInterface $kernel, string $command): void
+    private static function runCommand(KernelInterface $kernel, string $command, array $parameters = []): void
     {
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
         $exitCode = $application->run(
-            new ArrayInput(['command' => $command]),
+            new ArrayInput(['command' => $command, ...$parameters]),
             $output = new BufferedOutput(),
         );
 
