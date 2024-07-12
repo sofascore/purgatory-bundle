@@ -5,10 +5,6 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
                                http://sofascore.com/schema/dic/purgatory https://sofascore.com/schema/dic/purgatory/purgatory.xsd">
 
-    <purgatory:config>
-
-        <purgatory:doctrine-event-listener-priorities>10</purgatory:doctrine-event-listener-priorities>
-
-    </purgatory:config>
+    <purgatory:config doctrine-event-listener-priorities="10" />
 
 </container>

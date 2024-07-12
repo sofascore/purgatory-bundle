@@ -6,13 +6,9 @@
     elementFormDefault="qualified">
 
     <xsd:complexType name="doctrine-event-listener-priorities">
-        <xsd:simpleContent>
-            <xsd:extension base="xsd:string">
-                <xsd:attribute name="preRemove" type="xsd:int" />
-                <xsd:attribute name="postPersist" type="xsd:int" />
-                <xsd:attribute name="postUpdate" type="xsd:int" />
-            </xsd:extension>
-        </xsd:simpleContent>
+        <xsd:attribute name="preRemove" type="xsd:int" />
+        <xsd:attribute name="postPersist" type="xsd:int" />
+        <xsd:attribute name="postUpdate" type="xsd:int" />
     </xsd:complexType>
 
     <xsd:complexType name="purger">
@@ -35,6 +31,7 @@
             <xsd:element name="purger" type="purger" minOccurs="0" />
             <xsd:element name="messenger" type="messenger" minOccurs="0" />
         </xsd:choice>
+        <xsd:attribute name="doctrine-event-listener-priorities" type="xsd:int" />
     </xsd:complexType>
 
     <xsd:element name="config" type="config" />
