@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\DependencyInjection;
 
 use Doctrine\ORM\Events as DoctrineEvents;
+use Sofascore\PurgatoryBundle2\Attribute\AsExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle2\Attribute\AsRouteParamService;
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
@@ -80,6 +81,22 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                             ? $reflection->name
                             : ($reflection->hasMethod('__invoke') ? '__invoke'
                                 : throw new RuntimeException(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', $reflection->name))),
+                    ],
+                );
+            },
+        );
+
+        $container->registerAttributeForAutoconfiguration(
+            AsExpressionLanguageFunction::class,
+            static function (ChildDefinition $definition, AsExpressionLanguageFunction $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
+                $definition->addTag(
+                    name: 'purgatory2.expression_language_function',
+                    attributes: [
+                        'function' => $attribute->functionName,
+                        'method' => $reflection instanceof \ReflectionMethod
+                            ? $reflection->name
+                            : ($reflection->hasMethod('__invoke') ? '__invoke'
+                                : throw new RuntimeException(sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', $reflection->name))),
                     ],
                 );
             },

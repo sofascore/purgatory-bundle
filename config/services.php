@@ -31,6 +31,7 @@ use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\CreatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle2\RouteProvider\ExpressionLanguage\ExpressionLanguageProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle2\RouteProvider\RemovedEntityRouteProvider;
 use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
@@ -122,6 +123,12 @@ return static function (ContainerConfigurator $container) {
             ->parent('cache.system')
             ->private()
             ->tag('cache.pool')
+
+        ->set('sofascore.purgatory2.expression_language_provider', ExpressionLanguageProvider::class)
+            ->tag('purgatory2.expression_language_provider')
+            ->args([
+                abstract_arg('Expression lang function locator'),
+            ])
 
         ->set('sofascore.purgatory2.expression_language', ExpressionLanguage::class)
             ->args([

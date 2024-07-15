@@ -84,6 +84,29 @@ final class ApplicationTest extends AbstractKernelTestCase
     }
 
     /**
+     * @see PersonController::personListCustomElfAction
+     */
+    public function testConditionalPurgeWithCustomFunction(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'John';
+        $person->gender = 'male';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/person/list/custom-elf');
+
+        $this->purger->reset();
+        $person->lastName = 'Doe';
+
+        $this->entityManager->flush();
+
+        $this->assertUrlIsNotPurged('/person/list/custom-elf');
+    }
+
+    /**
      * @see PersonController::petsAction
      * @see PersonController::petsActionAlternative
      *

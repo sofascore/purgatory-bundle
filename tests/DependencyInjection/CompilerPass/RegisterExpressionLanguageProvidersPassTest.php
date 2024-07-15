@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterRouteParamServicesPass;
+use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterExpressionLanguageProvidersPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
@@ -16,8 +16,8 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\HttpKernel\Kernel;
 
-#[CoversClass(RegisterRouteParamServicesPass::class)]
-final class RegisterRouteParamServicesPassTest extends TestCase
+#[CoversClass(RegisterExpressionLanguageProvidersPass::class)]
+final class RegisterExpressionLanguageProvidersPassTest extends TestCase
 {
     private ContainerBuilder $container;
 
@@ -37,25 +37,28 @@ final class RegisterRouteParamServicesPassTest extends TestCase
     {
         $this->container->register(id: 'foo', class: \stdClass::class)
             ->addTag(
-                name: 'purgatory2.route_parameter_service',
-                attributes: ['alias' => 'one', 'method' => '__invoke'],
+                name: 'purgatory2.expression_language_function',
+                attributes: ['function' => 'one', 'method' => '__invoke'],
             )
             ->addTag(
-                name: 'purgatory2.route_parameter_service',
-                attributes: ['alias' => 'two', 'method' => 'someMethod'],
+                name: 'purgatory2.expression_language_function',
+                attributes: ['function' => 'two', 'method' => 'someMethod'],
             );
         $this->container->register(id: 'bar', class: \stdClass::class)
             ->addTag(
-                name: 'purgatory2.route_parameter_service',
-                attributes: ['alias' => 'three', 'method' => 'anotherMethod'],
+                name: 'purgatory2.expression_language_function',
+                attributes: ['function' => 'three', 'method' => 'anotherMethod'],
             );
 
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $this->container->register(id: 'other_provider', class: \stdClass::class)
+            ->addTag('purgatory2.expression_language_provider');
+
+        $compilerPass = new RegisterExpressionLanguageProvidersPass();
         $compilerPass->process($this->container);
 
-        self::assertTrue($this->container->hasDefinition('sofascore.purgatory2.route_parameter_resolver.dynamic'));
-        $definition = $this->container->getDefinition('sofascore.purgatory2.route_parameter_resolver.dynamic');
-        self::assertCount(2, $arguments = $definition->getArguments());
+        self::assertTrue($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
+        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language_provider');
+        self::assertCount(1, $arguments = $definition->getArguments());
 
         $definition = $this->container->getDefinition((string) $arguments[0]);
         self::assertSame(ServiceLocator::class, $definition->getClass());
@@ -94,31 +97,51 @@ final class RegisterRouteParamServicesPassTest extends TestCase
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
+
+        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language');
+        self::assertCount(2, $arguments = $definition->getArguments());
+        self::assertEquals([
+            new Reference('sofascore.purgatory2.expression_language_provider'),
+            new Reference('other_provider'),
+        ], $arguments[1]);
     }
 
-    public function testDynamicResolverIsRemovedWhenThereAreNoServices(): void
+    public function testExpressionLangProviderIsRemovedWhenThereIsNoExpressionLangService(): void
     {
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $this->container->removeDefinition('sofascore.purgatory2.expression_language');
+
+        $compilerPass = new RegisterExpressionLanguageProvidersPass();
         $compilerPass->process($this->container);
 
-        self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.route_parameter_resolver.dynamic'));
+        self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
     }
 
-    public function testExceptionIsThrownWhenSameAliasIsUsedMultipleTimes(): void
+    public function testExpressionLangProviderIsRemovedWhenThereAreNoFunctions(): void
+    {
+        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass->process($this->container);
+
+        self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
+
+        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language');
+        self::assertCount(1, $definition->getArguments());
+    }
+
+    public function testExceptionIsThrownWhenSameFunctionNameIsUsedMultipleTimes(): void
     {
         $this->container->register(id: 'foo', class: \stdClass::class)->addTag(
-            name: 'purgatory2.route_parameter_service',
-            attributes: ['alias' => 'one', 'method' => '__invoke'],
+            name: 'purgatory2.expression_language_function',
+            attributes: ['function' => 'one', 'method' => '__invoke'],
         );
         $this->container->register(id: 'bar', class: \stdClass::class)->addTag(
-            name: 'purgatory2.route_parameter_service',
-            attributes: ['alias' => 'one', 'method' => '__invoke'],
+            name: 'purgatory2.expression_language_function',
+            attributes: ['function' => 'one', 'method' => '__invoke'],
         );
 
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $compilerPass = new RegisterExpressionLanguageProvidersPass();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('The alias "one" is already used by "foo::__invoke".');
+        $this->expectExceptionMessage('The function name "one" is already used by "foo::__invoke".');
 
         $compilerPass->process($this->container);
     }

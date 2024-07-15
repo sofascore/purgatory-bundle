@@ -63,7 +63,17 @@ parameters:
 		-
 			message: "#^Comparison operation \"\\<\\=\" between 7 and 5 is always false\\.$#"
 			count: 1
+			path: src/DependencyInjection/CompilerPass/RegisterExpressionLanguageProvidersPass.php
+
+		-
+			message: "#^Comparison operation \"\\<\\=\" between 7 and 5 is always false\\.$#"
+			count: 1
 			path: src/DependencyInjection/CompilerPass/RegisterRouteParamServicesPass.php
+
+		-
+			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsExpressionLanguageFunction, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsExpressionLanguageFunction, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
+			count: 1
+			path: src/DependencyInjection/PurgatoryExtension.php
 
 		-
 			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsRouteParamService, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsRouteParamService, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"

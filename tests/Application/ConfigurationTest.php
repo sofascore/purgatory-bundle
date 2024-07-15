@@ -100,6 +100,15 @@ final class ConfigurationTest extends AbstractKernelTestCase
             ],
         ];
 
+        /* @see PersonController::personListCustomElfAction */
+        yield [
+            'entity' => Person::class,
+            'subscription' => [
+                'routeName' => 'person_list_custom_elf',
+                'if' => 'custom_elf(obj)',
+            ],
+        ];
+
         /* @see PersonController::petsAction */
         yield [
             'entity' => Animal::class,

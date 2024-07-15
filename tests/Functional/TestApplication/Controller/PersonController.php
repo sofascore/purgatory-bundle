@@ -37,6 +37,15 @@ class PersonController
     {
     }
 
+    #[Route('/list/custom-elf', 'person_list_custom_elf')]
+    #[AnnotationRoute('/list/custom-elf', name: 'person_list_custom_elf')]
+    #[PurgeOn(Person::class,
+        if: new Expression('custom_elf(obj)'),
+    )]
+    public function personListCustomElfAction()
+    {
+    }
+
     #[Route('/{person}/pets', 'pets_list')]
     #[AnnotationRoute('/{person}/pets', name: 'pets_list')]
     #[PurgeOn(Person::class,

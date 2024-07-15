@@ -14,6 +14,8 @@ use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyControllerWithPurgeOn;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyExpressionLanguageFunction;
+use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyInvalidExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyInvalidRouteParamService;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyRouteParamService;
 use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyRouteProvider;
@@ -95,6 +97,45 @@ final class PurgatoryExtensionTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', DummyInvalidRouteParamService::class));
+
+        $container->compile();
+    }
+
+    public function testServiceWithAsExpressionLanguageFunctionIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->register(DummyExpressionLanguageFunction::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(DummyExpressionLanguageFunction::class)->hasTag('purgatory2.expression_language_function'));
+        self::assertSame(
+            [['function' => 'function_class', 'method' => '__invoke'], ['function' => 'function_foo', 'method' => 'foo']],
+            $container->getDefinition(DummyExpressionLanguageFunction::class)->getTag('purgatory2.expression_language_function'),
+        );
+    }
+
+    public function testExceptionIsThrownWhenExpressionLanguageFunctionMethodDoesNotExist(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->register(DummyInvalidExpressionLanguageFunction::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', DummyInvalidExpressionLanguageFunction::class));
 
         $container->compile();
     }

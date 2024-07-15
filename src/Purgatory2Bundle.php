@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2;
 
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
+use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterExpressionLanguageProvidersPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterPurgerPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterRouteParamServicesPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
@@ -17,6 +18,7 @@ final class Purgatory2Bundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new ControllerClassMapPass());
+        $container->addCompilerPass(new RegisterExpressionLanguageProvidersPass());
         $container->addCompilerPass(new RegisterPurgerPass());
         $container->addCompilerPass(new RegisterRouteParamServicesPass());
     }

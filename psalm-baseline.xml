@@ -60,6 +60,18 @@
   </file>
   <file src="src/DependencyInjection/PurgatoryExtension.php">
     <ArgumentTypeCoercion>
+      <code><![CDATA[static function (ChildDefinition $definition, AsExpressionLanguageFunction $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
+                $definition->addTag(
+                    name: 'purgatory2.expression_language_function',
+                    attributes: [
+                        'function' => $attribute->functionName,
+                        'method' => $reflection instanceof \ReflectionMethod
+                            ? $reflection->name
+                            : ($reflection->hasMethod('__invoke') ? '__invoke'
+                                : throw new RuntimeException(sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', $reflection->name))),
+                    ],
+                );
+            }]]></code>
       <code><![CDATA[static function (ChildDefinition $definition, AsRouteParamService $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
                     name: 'purgatory2.route_parameter_service',

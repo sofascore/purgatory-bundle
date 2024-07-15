@@ -55,7 +55,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 47,
+            expectedNumberOfSubscriptions: 48,
         );
     }
 
@@ -78,7 +78,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
-    #[TestWith([Person::class, 6])]
+    #[TestWith([Person::class, 7])]
     #[TestWith([Animal::class, 4])]
     #[TestWith([Animal::class.'::measurements.height', 9])]
     public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions): void
