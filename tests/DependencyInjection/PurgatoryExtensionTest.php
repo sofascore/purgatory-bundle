@@ -350,6 +350,9 @@ final class PurgatoryExtensionTest extends TestCase
 
         $extension->load([], $container);
 
+        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.async_transport'));
+        self::assertNull($container->getParameter('.sofascore.purgatory2.purger.async_transport'));
+
         self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.async'));
         self::assertFalse($container->hasDefinition('sofascore.purgatory2.purge_message_handler'));
     }
@@ -383,6 +386,9 @@ final class PurgatoryExtensionTest extends TestCase
         ], $container->getExtensionConfig('framework'));
 
         $extension->load($container->getExtensionConfig('sofascore_purgatory'), $container);
+
+        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.async_transport'));
+        self::assertSame('foo', $container->getParameter('.sofascore.purgatory2.purger.async_transport'));
 
         self::assertTrue($container->hasDefinition('sofascore.purgatory2.purger.async'));
         self::assertTrue($container->hasDefinition('sofascore.purgatory2.purge_message_handler'));

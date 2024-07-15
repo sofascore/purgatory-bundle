@@ -55,6 +55,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
     {
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));
         $loader->load('services.php');
+        $loader->load('services_debug.php');
 
         $container->registerAttributeForAutoconfiguration(
             PurgeOn::class,
@@ -128,6 +129,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         /** @var array{transport: ?string, bus: ?string, batch_size: ?positive-int} $messengerConfig */
         $messengerConfig = $mergedConfig['messenger'];
         if (null !== $messengerConfig['transport']) {
+            $container->setParameter('.sofascore.purgatory2.purger.async_transport', $messengerConfig['transport']);
             if (null !== $messengerConfig['bus']) {
                 $container->getDefinition('sofascore.purgatory2.purger.async')
                     ->replaceArgument(0, new Reference($messengerConfig['bus']));
@@ -142,6 +144,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                     attributes: null !== $messengerConfig['bus'] ? ['bus' => $messengerConfig['bus']] : [],
                 );
         } else {
+            $container->setParameter('.sofascore.purgatory2.purger.async_transport', null);
             $container->removeDefinition('sofascore.purgatory2.purger.async');
             $container->removeDefinition('sofascore.purgatory2.purge_message_handler');
         }
@@ -213,6 +216,12 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
     {
         if (!$container->hasDefinition('cache.system')) {
             $container->removeDefinition('sofascore.purgatory2.cache.expression_language');
+        }
+
+        if (!$container->hasDefinition('profiler') || !$container->hasDefinition('twig')) {
+            $container->removeDefinition('sofascore.purgatory2.data_collector');
+            $container->removeDefinition('sofascore.purgatory2.purger.traceable');
+            $container->removeDefinition('sofascore.purgatory2.purger.sync.traceable');
         }
     }
 }
