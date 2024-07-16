@@ -154,7 +154,7 @@ final class ConfigurationLoaderTest extends TestCase
                         'routeName' => 'app_route_baz',
                         'routeParams' => [
                             'param' => [
-                                'type' => PropertyValues::class,
+                                'type' => PropertyValues::type(),
                                 'values' => ['value'],
                             ],
                         ],
@@ -163,11 +163,11 @@ final class ConfigurationLoaderTest extends TestCase
                         'routeName' => 'app_route_baz_2',
                         'routeParams' => [
                             'param1' => [
-                                'type' => PropertyValues::class,
+                                'type' => PropertyValues::type(),
                                 'values' => ['value1'],
                             ],
                             'param2' => [
-                                'type' => PropertyValues::class,
+                                'type' => PropertyValues::type(),
                                 'values' => ['value2'],
                                 'optional' => true,
                             ],
@@ -200,22 +200,22 @@ final class ConfigurationLoaderTest extends TestCase
                         'routeName' => 'app_route_foo',
                         'routeParams' => [
                             'foo' => [
-                                'type' => RawValues::class,
+                                'type' => RawValues::type(),
                                 'values' => ['foo', 1],
                             ],
                             'bar' => [
-                                'type' => EnumValues::class,
+                                'type' => EnumValues::type(),
                                 'values' => [DummyStringEnum::class],
                             ],
                             'baz' => [
-                                'type' => CompoundValues::class,
+                                'type' => CompoundValues::type(),
                                 'values' => [
                                     [
-                                        'type' => RawValues::class,
+                                        'type' => RawValues::type(),
                                         'values' => ['foo', 1],
                                     ],
                                     [
-                                        'type' => EnumValues::class,
+                                        'type' => EnumValues::type(),
                                         'values' => [DummyStringEnum::class],
                                     ],
                                 ],

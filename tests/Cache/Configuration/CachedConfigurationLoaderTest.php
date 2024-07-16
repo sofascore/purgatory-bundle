@@ -26,7 +26,7 @@ final class CachedConfigurationLoaderTest extends TestCase
     protected function setUp(): void
     {
         $this->tempDir = sys_get_temp_dir().'/purgatory_test';
-        $this->filepath = $this->tempDir.'/sofascore/purgatory/subscriptions.php';
+        $this->filepath = $this->tempDir.'/purgatory/subscriptions.php';
     }
 
     protected function tearDown(): void

@@ -26,7 +26,7 @@ final class DynamicValuesResolver implements ValuesResolverInterface
      */
     public static function for(): string
     {
-        return DynamicValues::class;
+        return DynamicValues::type();
     }
 
     /**

@@ -22,7 +22,7 @@ final class PropertyValuesResolver implements ValuesResolverInterface
      */
     public static function for(): string
     {
-        return PropertyValues::class;
+        return PropertyValues::type();
     }
 
     /**

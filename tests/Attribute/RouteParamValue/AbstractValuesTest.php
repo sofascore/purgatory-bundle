@@ -18,10 +18,15 @@ final class AbstractValuesTest extends TestCase
             {
                 return ['foo', 'bar', 'baz'];
             }
+
+            public static function type(): string
+            {
+                return 'foo-type';
+            }
         };
 
         self::assertSame([
-            'type' => $values::class,
+            'type' => 'foo-type',
             'values' => ['foo', 'bar', 'baz'],
         ], $values->toArray());
     }

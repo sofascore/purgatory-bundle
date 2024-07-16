@@ -16,7 +16,7 @@ final class EnumValuesResolver implements ValuesResolverInterface
      */
     public static function for(): string
     {
-        return EnumValues::class;
+        return EnumValues::type();
     }
 
     /**

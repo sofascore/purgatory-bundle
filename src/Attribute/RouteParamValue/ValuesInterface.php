@@ -12,7 +12,9 @@ interface ValuesInterface
     public function getValues(): array;
 
     /**
-     * @return array{type: class-string<static>, values: list<mixed>}
+     * @return array{type: string, values: list<mixed>}
      */
     public function toArray(): array;
+
+    public static function type(): string;
 }

@@ -12,7 +12,7 @@ abstract class AbstractValues implements ValuesInterface
     public function toArray(): array
     {
         return [
-            'type' => static::class,
+            'type' => static::type(),
             'values' => $this->getValues(),
         ];
     }

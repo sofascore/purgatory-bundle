@@ -20,7 +20,7 @@
       array (
         'bar' => 
         array (
-          'type' => 'Sofascore\\PurgatoryBundle2\\Attribute\\RouteParamValue\\PropertyValues',
+          'type' => 'property',
           'values' => 
           array (
             0 => 'bar.id',

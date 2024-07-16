@@ -30,4 +30,9 @@ final class DynamicValues extends AbstractValues implements InverseValuesAwareIn
             arg: null !== $this->arg ? sprintf('%s.%s', $association, $this->arg) : $association,
         );
     }
+
+    public static function type(): string
+    {
+        return 'dynamic';
+    }
 }

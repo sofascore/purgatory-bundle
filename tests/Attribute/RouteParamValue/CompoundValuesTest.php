@@ -42,10 +42,10 @@ final class CompoundValuesTest extends TestCase
         $compoundValues = new CompoundValues(['foo', 'bar'], new RawValues('baz', 'qux'));
 
         self::assertSame([
-            'type' => CompoundValues::class,
+            'type' => CompoundValues::type(),
             'values' => [
-                ['type' => PropertyValues::class, 'values' => ['foo', 'bar']],
-                ['type' => RawValues::class, 'values' => ['baz', 'qux']],
+                ['type' => PropertyValues::type(), 'values' => ['foo', 'bar']],
+                ['type' => RawValues::type(), 'values' => ['baz', 'qux']],
             ],
         ], $compoundValues->toArray());
     }

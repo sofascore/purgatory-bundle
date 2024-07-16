@@ -48,7 +48,7 @@ final class CompoundValues extends AbstractValues implements InverseValuesAwareI
     public function toArray(): array
     {
         return [
-            'type' => self::class,
+            'type' => self::type(),
             'values' => array_map(
                 static fn (ValuesInterface $values): array => $values->toArray(),
                 $this->values,
@@ -66,5 +66,10 @@ final class CompoundValues extends AbstractValues implements InverseValuesAwareI
                 $this->values,
             ),
         );
+    }
+
+    public static function type(): string
+    {
+        return 'compound';
     }
 }

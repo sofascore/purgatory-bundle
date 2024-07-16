@@ -16,7 +16,7 @@ final class RawValuesResolver implements ValuesResolverInterface
      */
     public static function for(): string
     {
-        return RawValues::class;
+        return RawValues::type();
     }
 
     /**

@@ -22,4 +22,9 @@ final class RawValues extends AbstractValues
     {
         return $this->values;
     }
+
+    public static function type(): string
+    {
+        return 'raw';
+    }
 }

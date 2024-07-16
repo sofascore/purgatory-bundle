@@ -32,4 +32,9 @@ final class PropertyValues extends AbstractValues implements InverseValuesAwareI
             ),
         );
     }
+
+    public static function type(): string
+    {
+        return 'property';
+    }
 }

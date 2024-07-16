@@ -28,7 +28,7 @@ final class CachedConfigurationLoader implements ConfigurationLoaderInterface, C
         }
 
         $cache = new ConfigCache(
-            file: $this->buildDir.'/sofascore/purgatory/subscriptions.php',
+            file: $this->buildDir.'/purgatory/subscriptions.php',
             debug: $this->debug,
         );
 

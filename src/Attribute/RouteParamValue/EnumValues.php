@@ -26,4 +26,9 @@ final class EnumValues extends AbstractValues
     {
         return [$this->enum];
     }
+
+    public static function type(): string
+    {
+        return 'enum';
+    }
 }

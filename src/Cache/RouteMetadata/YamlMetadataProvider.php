@@ -176,10 +176,10 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
         $value = $routeParam->getValue();
 
         return match ($routeParam->getTag()) {
-            'compound' => new CompoundValues(...array_map($this->buildRouteParam(...), $value)),
-            'enum' => new EnumValues($value),
-            'property' => new PropertyValues(...((array) $value)),
-            'raw' => new RawValues(...((array) $value)),
+            CompoundValues::type() => new CompoundValues(...array_map($this->buildRouteParam(...), $value)),
+            EnumValues::type() => new EnumValues($value),
+            PropertyValues::type() => new PropertyValues(...((array) $value)),
+            RawValues::type() => new RawValues(...((array) $value)),
         };
     }
 }

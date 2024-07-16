@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\RouteProvider;
 
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Exception\LogicException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
@@ -29,7 +28,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     /**
      * @var array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
@@ -69,7 +68,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     /**
      * @param list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>                                        $subscriptions
@@ -148,7 +147,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     /**
      * @return ?list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>

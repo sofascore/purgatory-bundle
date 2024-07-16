@@ -46,11 +46,11 @@ final class RemovedEntityRouteProviderTest extends TestCase
                     'routeName' => 'baz_route',
                     'routeParams' => [
                         'param1' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['foo', 'bar'],
                         ],
                         'param2' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['baz'],
                         ],
                     ],
@@ -59,11 +59,11 @@ final class RemovedEntityRouteProviderTest extends TestCase
                     'routeName' => 'qux_route',
                     'routeParams' => [
                         'param1' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['foo', 'bar'],
                         ],
                         'param2' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['qux'],
                             'optional' => true,
                         ],
@@ -107,11 +107,11 @@ final class RemovedEntityRouteProviderTest extends TestCase
                     'routeName' => 'baz_route',
                     'routeParams' => [
                         'param1' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['foo', 'bar'],
                         ],
                         'param2' => [
-                            'type' => PropertyValues::class,
+                            'type' => PropertyValues::type(),
                             'values' => ['baz'],
                         ],
                     ],
@@ -159,14 +159,14 @@ final class RemovedEntityRouteProviderTest extends TestCase
                     'routeName' => 'foo_route',
                     'routeParams' => [
                         'foo' => [
-                            'type' => CompoundValues::class,
+                            'type' => CompoundValues::type(),
                             'values' => [
                                 [
-                                    'type' => RawValues::class,
+                                    'type' => RawValues::type(),
                                     'values' => ['foo', 1, null],
                                 ],
                                 [
-                                    'type' => EnumValues::class,
+                                    'type' => EnumValues::type(),
                                     'values' => [DummyStringEnum::class],
                                 ],
                             ],
@@ -240,16 +240,16 @@ final class RemovedEntityRouteProviderTest extends TestCase
         }
 
         $routeParamValueResolvers = [
-            PropertyValues::class => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
-            EnumValues::class => static fn () => new EnumValuesResolver(),
-            RawValues::class => static fn () => new RawValuesResolver(),
+            PropertyValues::type() => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
+            EnumValues::type() => static fn () => new EnumValuesResolver(),
+            RawValues::type() => static fn () => new RawValuesResolver(),
         ];
 
         return new RemovedEntityRouteProvider(
             $configurationLoader,
             $expressionLanguage,
             new ServiceLocator($routeParamValueResolvers + [
-                CompoundValues::class => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
+                CompoundValues::type() => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
             ]),
             $managerRegistry,
         );

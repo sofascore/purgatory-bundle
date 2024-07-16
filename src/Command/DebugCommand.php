@@ -7,7 +7,6 @@ namespace Sofascore\PurgatoryBundle2\Command;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -28,7 +27,7 @@ final class DebugCommand extends Command
     /**
      * @var ?array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
@@ -228,7 +227,7 @@ EOF
      *
      * @return array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
@@ -251,7 +250,7 @@ EOF
     /**
      * @return array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
@@ -272,7 +271,7 @@ EOF
     /**
      * @param array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>> $subscriptions
@@ -301,7 +300,7 @@ EOF
     }
 
     /**
-     * @param array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}> $routeParams
+     * @param array<string, array{type: string, values: list<mixed>, optional?: true}> $routeParams
      */
     private function formatRouteParams(array $routeParams): string
     {
@@ -318,9 +317,9 @@ EOF
      */
     private function formatRouteParamValue(string $type, array $values): string
     {
-        if (CompoundValues::class === $type) {
+        if (CompoundValues::type() === $type) {
             $newValues = [];
-            /** @var array{type: class-string<ValuesInterface>, values: list<mixed>} $value */
+            /** @var array{type: string, values: list<mixed>} $value */
             foreach ($values as $value) {
                 $newValues[] = $this->formatRouteParamValue($value['type'], $value['values']);
             }
@@ -329,13 +328,7 @@ EOF
             $values = array_map(static fn (mixed $val): string => json_encode($val, flags: \JSON_THROW_ON_ERROR), $values);
         }
 
-        $typeClass = strrchr($type, '\\');
-
-        return sprintf(
-            '%s(%s)',
-            substr(false !== $typeClass ? $typeClass : $type, 1, str_ends_with($type, 'Values') ? -6 : 0),
-            implode(', ', $values),
-        );
+        return sprintf('%s(%s)', ucfirst($type), implode(', ', $values));
     }
 
     /**
@@ -352,7 +345,7 @@ EOF
     /**
      * @return array<class-string|non-falsy-string, list<array{
      *     routeName: string,
-     *     routeParams?: array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>,
+     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
      * }>>

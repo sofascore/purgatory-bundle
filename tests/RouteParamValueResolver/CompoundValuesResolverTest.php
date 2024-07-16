@@ -20,13 +20,13 @@ final class CompoundValuesResolverTest extends TestCase
     public function testResolve(): void
     {
         $resolver = new CompoundValuesResolver(new ServiceLocator([
-            EnumValues::class => static fn () => new EnumValuesResolver(),
-            RawValues::class => static fn () => new RawValuesResolver(),
+            EnumValues::type() => static fn () => new EnumValuesResolver(),
+            RawValues::type() => static fn () => new RawValuesResolver(),
         ]));
 
         self::assertSame(['foo', 'bar', 1, 2, 3], $resolver->resolve([
-            ['type' => RawValues::class, 'values' => ['foo', 'bar']],
-            ['type' => EnumValues::class, 'values' => [DummyIntEnum::class]],
+            ['type' => RawValues::type(), 'values' => ['foo', 'bar']],
+            ['type' => EnumValues::type(), 'values' => [DummyIntEnum::class]],
         ], new \stdClass()));
     }
 }

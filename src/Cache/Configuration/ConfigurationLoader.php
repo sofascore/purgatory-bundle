@@ -54,7 +54,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
     /**
      * @param array<string, ValuesInterface> $routeParams
      *
-     * @return array<string, array{type: class-string<ValuesInterface>, values: list<mixed>, optional?: true}>
+     * @return array<string, array{type: string, values: list<mixed>, optional?: true}>
      */
     private function getRouteParamConfigs(Route $route, array $routeParams): array
     {

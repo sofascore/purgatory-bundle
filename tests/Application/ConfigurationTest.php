@@ -84,7 +84,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'person_details',
                 'routeParams' => [
                     'id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['id'],
                     ],
                 ],
@@ -116,7 +116,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pets_list',
                 'routeParams' => [
                     'person' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['owner.id'],
                     ],
                 ],
@@ -130,7 +130,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pets_list_alt',
                 'routeParams' => [
                     'person' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['owner.id'],
                     ],
                 ],
@@ -144,11 +144,11 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pets_paginated',
                 'routeParams' => [
                     'person' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['owner.id'],
                     ],
                     'page' => [
-                        'type' => RawValues::class,
+                        'type' => RawValues::type(),
                         'values' => [0, 1],
                     ],
                 ],
@@ -162,10 +162,10 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animals_with_rating',
                 'routeParams' => [
                     'rating' => [
-                        'type' => CompoundValues::class,
+                        'type' => CompoundValues::type(),
                         'values' => [
                             [
-                                'type' => DynamicValues::class,
+                                'type' => DynamicValues::type(),
                                 'values' => ['purgatory2.animal_rating3', 'owner'],
                             ],
                         ],
@@ -181,7 +181,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pet_owner_details',
                 'routeParams' => [
                     'id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['pets[*].id'],
                     ],
                 ],
@@ -195,7 +195,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pet_owner_details_alternative',
                 'routeParams' => [
                     'id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['petsIds'],
                     ],
                 ],
@@ -231,7 +231,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pets_names',
                 'routeParams' => [
                     'person' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['owner.id'],
                     ],
                 ],
@@ -246,7 +246,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animal_details',
                 'routeParams' => [
                     'animal_id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['id'],
                     ],
                 ],
@@ -261,7 +261,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animal_measurements',
                 'routeParams' => [
                     'animal_id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['id'],
                     ],
                 ],
@@ -276,7 +276,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animal_route_1',
                 'routeParams' => [
                     'id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['id'],
                     ],
                 ],
@@ -291,7 +291,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animal_route_2',
                 'routeParams' => [
                     'id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['id'],
                     ],
                 ],
@@ -306,7 +306,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pet_of_the_day',
                 'routeParams' => [
                     'country' => [
-                        'type' => EnumValues::class,
+                        'type' => EnumValues::type(),
                         'values' => [Country::class],
                     ],
                 ],
@@ -321,14 +321,14 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'pet_of_the_month',
                 'routeParams' => [
                     'country' => [
-                        'type' => CompoundValues::class,
+                        'type' => CompoundValues::type(),
                         'values' => [
                             [
-                                'type' => EnumValues::class,
+                                'type' => EnumValues::type(),
                                 'values' => [Country::class],
                             ],
                             [
-                                'type' => RawValues::class,
+                                'type' => RawValues::type(),
                                 'values' => ['ar'],
                             ],
                         ],
@@ -345,18 +345,18 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'animals_with_rating',
                 'routeParams' => [
                     'rating' => [
-                        'type' => CompoundValues::class,
+                        'type' => CompoundValues::type(),
                         'values' => [
                             [
-                                'type' => DynamicValues::class,
+                                'type' => DynamicValues::type(),
                                 'values' => ['purgatory2.animal_rating2', null],
                             ],
                             [
-                                'type' => DynamicValues::class,
+                                'type' => DynamicValues::type(),
                                 'values' => ['purgatory2.animal_rating1', null],
                             ],
                             [
-                                'type' => DynamicValues::class,
+                                'type' => DynamicValues::type(),
                                 'values' => ['purgatory2.animal_rating3', 'owner'],
                             ],
                         ],
@@ -373,14 +373,14 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'person_list_for_country',
                 'routeParams' => [
                     'country' => [
-                        'type' => CompoundValues::class,
+                        'type' => CompoundValues::type(),
                         'values' => [
                             [
-                                'type' => PropertyValues::class,
+                                'type' => PropertyValues::type(),
                                 'values' => ['alpha2'],
                             ],
                             [
-                                'type' => RawValues::class,
+                                'type' => RawValues::type(),
                                 'values' => [null],
                             ],
                         ],
@@ -407,7 +407,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeName' => 'competitions_by_winner',
                 'routeParams' => [
                     'winner_id' => [
-                        'type' => PropertyValues::class,
+                        'type' => PropertyValues::type(),
                         'values' => ['winner.id'],
                     ],
                 ],
