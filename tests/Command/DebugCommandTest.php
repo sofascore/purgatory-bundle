@@ -9,8 +9,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Sofascore\PurgatoryBundle2\Command\DebugCommand;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Author;
+use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Post;
+use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Enum\LanguageCodes;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -26,7 +27,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         $this->colSize = getenv('COLUMNS');
         putenv('COLUMNS=300');
 
-        self::initializeApplication(['test_case' => 'TestApplication']);
+        self::initializeApplication(['test_case' => 'DebugCommand']);
 
         $this->command = new CommandTester(
             command: (new Application(self::$kernel))->find('purgatory:debug'),
@@ -55,33 +56,81 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 48,
+            expectedNumberOfSubscriptions: 10,
+        );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 4,
+            entityClass: Post::class,
+        );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 5,
+            entityClass: Author::class,
+        );
+
+        $display = $this->command->getDisplay();
+
+        self::assertSubstringCount(
+            expectedCount: 3,
+            needle: 'author_id: Property("id")',
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 2,
+            needle: 'post_id: Property("posts[*].id")',
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 2,
+            needle: 'tag_id: Property("posts[*].tags[*].id")',
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 3,
+            needle: sprintf('lang: Compound(Enum(%s), Raw("XK"))', json_encode(ltrim(LanguageCodes::class, '\\'))),
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 3,
+            needle: 'page: Dynamic("purgatory2.get_page", null)',
+            haystack: $display,
         );
     }
 
     public function testOptionRoute(): void
     {
         $this->command->execute([
-            '--route' => 'animal_route_1',
+            '--route' => 'post_show',
         ]);
 
         $this->command->assertCommandIsSuccessful();
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 2,
+            expectedNumberOfSubscriptions: 3,
         );
-
-        self::assertSame(
-            expected: 2,
-            actual: substr_count($this->command->getDisplay(), 'Route Name     animal_route_1'),
+        self::assertNumberOfDisplayedRoutes(
+            command: $this->command,
+            expectedNumberOfRoutes: 3,
+            route: 'post_show',
+        );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 1,
+            entityClass: Post::class,
+        );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 2,
+            entityClass: Author::class,
         );
     }
 
-    #[TestWith([Person::class, 7])]
-    #[TestWith([Animal::class, 4])]
-    #[TestWith([Animal::class.'::measurements.height', 9])]
-    public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions): void
+    #[TestWith([Post::class, 1, Post::class, 'ANY'])]
+    #[TestWith([Author::class, 1, Author::class, 'ANY'])]
+    #[TestWith([Author::class.'::firstName', 2, Author::class, 'firstName'])]
+    public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions, string $entity, string $property): void
     {
         $this->command->execute([
             '--subscription' => $subscriptionOption,
@@ -93,12 +142,22 @@ final class DebugCommandTest extends AbstractKernelTestCase
             command: $this->command,
             expectedNumberOfSubscriptions: $numberOfSubscriptions,
         );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: $numberOfSubscriptions,
+            entityClass: $entity,
+        );
+        self::assertNumberOfDisplayedProperties(
+            command: $this->command,
+            expectedNumberOfProperties: $numberOfSubscriptions,
+            property: $property,
+        );
     }
 
     public function testOptionSubscriptionWithProperties(): void
     {
         $this->command->execute([
-            '--subscription' => Animal::class,
+            '--subscription' => Author::class,
             '--with-properties' => true,
         ]);
 
@@ -106,71 +165,66 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 38,
+            expectedNumberOfSubscriptions: 5,
+        );
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 5,
+            entityClass: Author::class,
         );
     }
 
     public function testInteractiveMode(): void
     {
         $this->command->setInputs([
-            0, // Animal
-            2, // measurements.height
+            0, // Author
+            4, // lastName
         ]);
         $this->command->execute([]);
 
         $this->command->assertCommandIsSuccessful();
 
-        $display = $this->command->getDisplay();
-
-        self::assertSame(
-            expected: 9,
-            actual: substr_count($display, 'Entity         Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal'),
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 2,
+            entityClass: Author::class,
         );
-        self::assertSame(
-            expected: 9,
-            actual: substr_count($display, 'Property       measurements.height'),
+        self::assertNumberOfDisplayedProperties(
+            command: $this->command,
+            expectedNumberOfProperties: 2,
+            property: 'lastName',
         );
     }
 
     public function testInteractiveModeWithAllProperties(): void
     {
         $this->command->setInputs([
-            0, // Animal
+            0, // Author
             0, // *
         ]);
         $this->command->execute([]);
 
         $this->command->assertCommandIsSuccessful();
 
-        $display = $this->command->getDisplay();
-
-        self::assertSame(
-            expected: 38,
-            actual: substr_count($display, 'Entity         Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal'),
+        self::assertNumberOfDisplayedEntities(
+            command: $this->command,
+            expectedNumberOfEntities: 5,
+            entityClass: Author::class,
         );
-        self::assertSame(
-            expected: 6,
-            actual: substr_count($display, 'Property       measurements '),
+        self::assertNumberOfDisplayedProperties(
+            command: $this->command,
+            expectedNumberOfProperties: 1,
+            property: 'ANY',
         );
-        self::assertSame(
-            expected: 4,
-            actual: substr_count($display, 'Property       name'),
+        self::assertNumberOfDisplayedProperties(
+            command: $this->command,
+            expectedNumberOfProperties: 2,
+            property: 'firstName',
         );
-        self::assertSame(
-            expected: 9,
-            actual: substr_count($display, 'Property       measurements.height'),
-        );
-        self::assertSame(
-            expected: 7,
-            actual: substr_count($display, 'Property       measurements.width'),
-        );
-        self::assertSame(
-            expected: 8,
-            actual: substr_count($display, 'Property       measurements.weight'),
-        );
-        self::assertSame(
-            expected: 4,
-            actual: substr_count($display, 'Property       ANY'),
+        self::assertNumberOfDisplayedProperties(
+            command: $this->command,
+            expectedNumberOfProperties: 2,
+            property: 'lastName',
         );
     }
 
@@ -187,10 +241,10 @@ final class DebugCommandTest extends AbstractKernelTestCase
     {
         yield 'option --with-properties with explicit property' => [
             'input' => [
-                '--subscription' => Animal::class.'::measurements.height',
+                '--subscription' => Author::class.'::firstName',
                 '--with-properties' => true,
             ],
-            'expectedMessage' => 'The "--with-properties" option requires an entity FQCN without the property path (::measurements.height).',
+            'expectedMessage' => 'The "--with-properties" option requires an entity FQCN without the property path (::firstName).',
         ];
 
         yield 'nonexistent subscription' => [
@@ -219,10 +273,63 @@ final class DebugCommandTest extends AbstractKernelTestCase
         CommandTester $command,
         int $expectedNumberOfSubscriptions,
     ): void {
-        self::assertSame(
-            expected: $expectedNumberOfSubscriptions,
-            actual: substr_count($command->getDisplay(), 'Option         Value'),
+        self::assertSubstringCount(
+            expectedCount: $expectedNumberOfSubscriptions,
+            needle: 'Option         Value',
+            haystack: $command->getDisplay(),
             message: sprintf('Failed asserting that %d subscriptions were displayed.', $expectedNumberOfSubscriptions),
+        );
+    }
+
+    private static function assertNumberOfDisplayedRoutes(
+        CommandTester $command,
+        int $expectedNumberOfRoutes,
+        string $route,
+    ): void {
+        self::assertSubstringCount(
+            expectedCount: $expectedNumberOfRoutes,
+            needle: sprintf('Route Name     %s', $route),
+            haystack: $command->getDisplay(),
+            message: sprintf('Failed asserting that %d routes with the name "%s" were displayed.', $expectedNumberOfRoutes, $route),
+        );
+    }
+
+    private static function assertNumberOfDisplayedEntities(
+        CommandTester $command,
+        int $expectedNumberOfEntities,
+        string $entityClass,
+    ): void {
+        self::assertSubstringCount(
+            expectedCount: $expectedNumberOfEntities,
+            needle: sprintf('Entity         %s', ltrim($entityClass, '\\')),
+            haystack: $command->getDisplay(),
+            message: sprintf('Failed asserting that %d entities of class "%s" were displayed.', $expectedNumberOfEntities, $entityClass),
+        );
+    }
+
+    private static function assertNumberOfDisplayedProperties(
+        CommandTester $command,
+        int $expectedNumberOfProperties,
+        string $property,
+    ): void {
+        self::assertSubstringCount(
+            expectedCount: $expectedNumberOfProperties,
+            needle: sprintf('Property       %s', $property),
+            haystack: $command->getDisplay(),
+            message: sprintf('Failed asserting that %d properties with the name "%s" were displayed.', $expectedNumberOfProperties, $property),
+        );
+    }
+
+    private static function assertSubstringCount(
+        int $expectedCount,
+        string $needle,
+        string $haystack,
+        string $message = '',
+    ): void {
+        self::assertSame(
+            expected: $expectedCount,
+            actual: substr_count($haystack, $needle),
+            message: $message,
         );
     }
 }

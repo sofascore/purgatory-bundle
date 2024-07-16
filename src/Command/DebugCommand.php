@@ -78,6 +78,10 @@ To display purge subscriptions for a specific entity property, add "<info>::</in
 
   <info>php %command.full_name% --subscription 'App\Entity\Product::name'</info>
 
+To display purge subscriptions for a specific route, use the <info>--route</info> option:
+
+  <info>php %command.full_name% --route my_route_name</info>
+
 To display all configured purge subscriptions, use the <info>--all</info> option:
 
   <info>php %command.full_name% --all</info>
