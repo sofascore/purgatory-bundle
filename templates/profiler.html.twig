@@ -67,7 +67,7 @@
                 {% for key, purge in collector.purges %}
                     <tr>
                         <th scope="row">{{ key + 1 }}</th>
-                        <td>{{ purge.urls|join('<br>')|raw }}</td>
+                        <td>{{ purge.urls|join('\n')|nl2br }}</td>
                         <td>{{ '%.2f'|format(purge.time * 1000) }} <span class="unit">ms</span></td>
                     </tr>
                 {% endfor %}
