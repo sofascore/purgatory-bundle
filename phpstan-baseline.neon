@@ -1,8 +1,8 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Match expression does not handle remaining value\\: string$#"
-			count: 2
+			message: "#^Parameter \\#1 \\$alias of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\DynamicValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-

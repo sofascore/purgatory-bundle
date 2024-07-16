@@ -40,6 +40,8 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[$this->buildRouteParam(...)]]></code>
       <code><![CDATA[(array) $value]]></code>
+      <code><![CDATA[(array) $value]]></code>
+      <code><![CDATA[(array) $value]]></code>
     </ArgumentTypeCoercion>
     <InvalidArgument>
       <code><![CDATA[$value]]></code>

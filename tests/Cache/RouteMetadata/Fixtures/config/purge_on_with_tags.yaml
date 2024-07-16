@@ -8,3 +8,5 @@ foo_bar:
         param4: !compound
             - !raw 0
             - !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
+        param5: !dynamic foo
+        param6: !dynamic [ foo, bar ]

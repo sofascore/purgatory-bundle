@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle2\Cache\RouteMetadata;
 
 use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
@@ -16,6 +17,7 @@ use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle2\Exception\UnknownYamlTagException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -155,9 +157,10 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
         /** @var string|non-empty-list<string> $value */
         $value = $target->getValue();
 
-        return match ($target->getTag()) {
+        return match ($tag = $target->getTag()) {
             'for_groups' => new ForGroups($value),
             'for_properties' => new ForProperties($value),
+            default => throw new UnknownYamlTagException($tag, ['for_groups', 'for_properties']),
         };
     }
 
@@ -175,11 +178,19 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
         /** @var scalar|non-empty-list<scalar>|non-empty-list<TaggedValue> $value */
         $value = $routeParam->getValue();
 
-        return match ($routeParam->getTag()) {
+        return match ($tag = $routeParam->getTag()) {
             CompoundValues::type() => new CompoundValues(...array_map($this->buildRouteParam(...), $value)),
+            DynamicValues::type() => new DynamicValues(...((array) $value)),
             EnumValues::type() => new EnumValues($value),
             PropertyValues::type() => new PropertyValues(...((array) $value)),
             RawValues::type() => new RawValues(...((array) $value)),
+            default => throw new UnknownYamlTagException($tag, [
+                CompoundValues::type(),
+                DynamicValues::type(),
+                EnumValues::type(),
+                PropertyValues::type(),
+                RawValues::type(),
+            ]),
         };
     }
 }

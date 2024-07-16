@@ -1,0 +1,4 @@
+foo_bar:
+    class: Foo
+    route_params:
+        param: !unknown foo

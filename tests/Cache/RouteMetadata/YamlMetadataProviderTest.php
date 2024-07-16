@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
@@ -17,6 +19,7 @@ use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\YamlMetadataProvider;
 use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle2\Exception\RouteNotFoundException;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle2\Exception\UnknownYamlTagException;
 use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
@@ -115,6 +118,8 @@ final class YamlMetadataProviderTest extends TestCase
                 new RawValues(0),
                 new EnumValues(DummyEnum::class),
             ),
+            'param5' => new DynamicValues('foo'),
+            'param6' => new DynamicValues('foo', 'bar'),
         ], $metadata[0]->purgeOn->routeParams);
         self::assertNull($metadata[0]->purgeOn->if);
         self::assertNull($metadata[0]->purgeOn->actions);
@@ -245,6 +250,30 @@ final class YamlMetadataProviderTest extends TestCase
 
         $this->expectException(RouteNotFoundException::class);
         $this->expectExceptionMessage('The route "foo_bar" does not exist.');
+
+        iterator_to_array($provider->provide());
+    }
+
+    #[TestWith(['purge_on_with_unknown_target_tag.yaml',  'Unknown YAML tag "for_unknown" provided, known tags are "for_groups", "for_properties".'])]
+    #[TestWith(['purge_on_with_unknown_route_param_tag.yaml',  'Unknown YAML tag "unknown" provided, known tags are "compound", "dynamic", "enum", "property", "raw".'])]
+    public function testExceptionIsThrownForUnknownTags(string $file, string $message): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = $this->createMock(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/'.$file,
+            ],
+        );
+
+        $this->expectException(UnknownYamlTagException::class);
+        $this->expectExceptionMessage($message);
 
         iterator_to_array($provider->provide());
     }
