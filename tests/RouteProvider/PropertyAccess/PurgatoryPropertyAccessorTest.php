@@ -43,7 +43,7 @@ final class PurgatoryPropertyAccessorTest extends TestCase
 
     public static function traversableProvider(): iterable
     {
-        yield 'nested entities of depth 1' => [
+        yield 'collection of nested entities from depth 1' => [
             'object' => new Foo(
                 id: 100,
                 children: new ArrayCollection([
@@ -56,7 +56,20 @@ final class PurgatoryPropertyAccessorTest extends TestCase
             'expectedResult' => [1, 2, 3],
         ];
 
-        yield 'nested entities of depth 2' => [
+        yield 'array of nested entities from depth 1' => [
+            'object' => new Foo(
+                id: 100,
+                children: new ArrayCollection([
+                    new Foo(id: 1, children: new ArrayCollection([])),
+                    new Foo(id: 2, children: new ArrayCollection([])),
+                    new Foo(id: 3, children: new ArrayCollection([])),
+                ]),
+            ),
+            'propertyPath' => 'childrenArray[*].id',
+            'expectedResult' => [1, 2, 3],
+        ];
+
+        yield 'collection of nested entities from depth 2' => [
             'object' => new Foo(
                 id: 100,
                 children: new ArrayCollection([
@@ -83,6 +96,36 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 ]),
             ),
             'propertyPath' => 'children[*].children[*].id',
+            'expectedResult' => [1000, 1001, 1002, 1003, 1004, 1005],
+        ];
+
+        yield 'array of nested entities from depth 2' => [
+            'object' => new Foo(
+                id: 100,
+                children: new ArrayCollection([
+                    new Foo(
+                        id: 1,
+                        children: new ArrayCollection([
+                            new Foo(id: 1000, children: new ArrayCollection([])),
+                            new Foo(id: 1001, children: new ArrayCollection([])),
+                            new Foo(id: 1002, children: new ArrayCollection([])),
+                        ]),
+                    ),
+                    new Foo(
+                        id: 2,
+                        children: new ArrayCollection([]),
+                    ),
+                    new Foo(
+                        id: 1,
+                        children: new ArrayCollection([
+                            new Foo(id: 1003, children: new ArrayCollection([])),
+                            new Foo(id: 1004, children: new ArrayCollection([])),
+                            new Foo(id: 1005, children: new ArrayCollection([])),
+                        ]),
+                    ),
+                ]),
+            ),
+            'propertyPath' => 'children[*].childrenArray[*].id',
             'expectedResult' => [1000, 1001, 1002, 1003, 1004, 1005],
         ];
     }

@@ -13,4 +13,9 @@ class Foo
         public readonly Collection $children,
     ) {
     }
+
+    public function childrenArray(): array
+    {
+        return $this->children->toArray();
+    }
 }
