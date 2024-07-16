@@ -10,11 +10,13 @@ namespace Sofascore\PurgatoryBundle2\Attribute;
 #[\Attribute(\Attribute::TARGET_METHOD)]
 final class TargetedProperties
 {
-    /**
-     * @param non-empty-list<string> $target
-     */
+    /** @var non-empty-list<string> */
+    public readonly array $target;
+
     public function __construct(
-        public readonly array $target,
+        string $target,
+        string ...$targets,
     ) {
+        $this->target = [$target, ...array_values($targets)];
     }
 }

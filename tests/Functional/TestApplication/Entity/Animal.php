@@ -39,7 +39,7 @@ class Animal
 
     #[Groups('common')]
     #[AnnotationGroups('common')]
-    #[TargetedProperties(['measurements'])]
+    #[TargetedProperties('measurements')]
     public function isGoodBoy(): bool
     {
         return ($this->measurements->height ?? 0) + ($this->measurements->weight ?? 0) > 100;

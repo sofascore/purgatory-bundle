@@ -8,7 +8,7 @@ use Sofascore\PurgatoryBundle2\Attribute\TargetedProperties;
 
 class DummyEntity
 {
-    #[TargetedProperties(['bar', 'baz'])]
+    #[TargetedProperties('bar', 'baz')]
     public function getFoo()
     {
     }
