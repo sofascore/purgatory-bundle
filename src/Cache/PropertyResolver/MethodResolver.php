@@ -64,7 +64,7 @@ final class MethodResolver implements SubscriptionResolverInterface
         /** @var TargetedProperties $targetedProperties */
         $targetedProperties = $reflectionAttribute[0]->newInstance();
 
-        foreach ($targetedProperties->target as $targetProperty) {
+        foreach ($targetedProperties->properties as $targetProperty) {
             $targetResolved = false;
 
             foreach ($this->subscriptionResolvers as $resolver) {

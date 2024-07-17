@@ -11,12 +11,12 @@ namespace Sofascore\PurgatoryBundle2\Attribute;
 final class TargetedProperties
 {
     /** @var non-empty-list<string> */
-    public readonly array $target;
+    public readonly array $properties;
 
     public function __construct(
-        string $target,
-        string ...$targets,
+        string $property,
+        string ...$properties,
     ) {
-        $this->target = [$target, ...array_values($targets)];
+        $this->properties = [$property, ...array_values($properties)];
     }
 }
