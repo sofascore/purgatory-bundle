@@ -17,9 +17,11 @@ use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\Anima
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\Competition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversNothing]
 final class ConfigurationTest extends AbstractKernelTestCase
@@ -117,7 +119,9 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeParams' => [
                     'person' => [
                         'type' => PropertyValues::type(),
-                        'values' => ['owner.id'],
+                        'values' => [
+                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
+                        ],
                     ],
                 ],
             ],
@@ -217,6 +221,22 @@ final class ConfigurationTest extends AbstractKernelTestCase
             'subscription' => [
                 'routeName' => 'all_ids',
                 'actions' => [Action::Create, Action::Delete],
+            ],
+        ];
+
+        /* @see PersonController::personCarsList */
+        yield [
+            'entity' => Car::class,
+            'subscription' => [
+                'routeName' => 'person_cars_list',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::type(),
+                        'values' => [
+                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
+                        ],
+                    ],
+                ],
             ],
         ];
     }

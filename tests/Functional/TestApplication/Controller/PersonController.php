@@ -118,4 +118,11 @@ class PersonController
     public function personListForCountryAction(?Country $country = null)
     {
     }
+
+    #[Route('/{id}/cars', 'person_cars_list')]
+    #[AnnotationRoute('/{id}/cars', name: 'person_cars_list')]
+    #[PurgeOn(Person::class, target: 'cars')]
+    public function personCarsList(Person $person)
+    {
+    }
 }

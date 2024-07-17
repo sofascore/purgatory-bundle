@@ -37,9 +37,17 @@ class Person
     )]
     public Collection $pets;
 
+    #[ORM\OneToMany(
+        targetEntity: Car::class,
+        mappedBy: 'owner',
+        cascade: ['PERSIST'],
+    )]
+    public Collection $cars;
+
     public function __construct()
     {
         $this->pets = new ArrayCollection();
+        $this->cars = new ArrayCollection();
     }
 
     /**

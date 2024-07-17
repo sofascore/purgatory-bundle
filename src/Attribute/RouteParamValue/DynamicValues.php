@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
 
+use Symfony\Component\HttpKernel\Kernel;
+
 final class DynamicValues extends AbstractValues implements InverseValuesAwareInterface
 {
     /**
@@ -27,7 +29,7 @@ final class DynamicValues extends AbstractValues implements InverseValuesAwareIn
     {
         return new self(
             alias: $this->alias,
-            arg: null !== $this->arg ? sprintf('%s.%s', $association, $this->arg) : $association,
+            arg: null !== $this->arg ? sprintf('%s%s.%s', $association, Kernel::MAJOR_VERSION > 5 ? '?' : '', $this->arg) : $association,
         );
     }
 

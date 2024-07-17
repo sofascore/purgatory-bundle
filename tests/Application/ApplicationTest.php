@@ -6,17 +6,20 @@ namespace Sofascore\PurgatoryBundle2\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversNothing;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\AnimalCompetition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\HumanCompetition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Symfony\Component\PropertyAccess\PropertyPath;
 
 #[CoversNothing]
 final class ApplicationTest extends AbstractKernelTestCase
@@ -592,6 +595,32 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         $this->assertUrlIsPurged('/competition/by-winner/'.$person->id);
+    }
+
+    /**
+     * @see PersonController::personCarsList
+     */
+    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
+    public function testNullableInverseRouteParams(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $car = new Car();
+        $car->name = 'Vroom';
+        $car->owner = null;
+
+        $this->entityManager->persist($person);
+        $this->entityManager->persist($car);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsNotPurged('/person/'.$person->id.'/cars');
+
+        $car->owner = $person;
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/person/'.$person->id.'/cars');
     }
 
     private function assertUrlIsPurged(string $url): void

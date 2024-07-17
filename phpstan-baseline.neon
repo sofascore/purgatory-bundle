@@ -1,6 +1,26 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Comparison operation \"\\>\" between 7 and 5 is always true\\.$#"
+			count: 1
+			path: src/Attribute/RouteParamValue/DynamicValues.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/Attribute/RouteParamValue/DynamicValues.php
+
+		-
+			message: "#^Comparison operation \"\\>\" between 7 and 5 is always true\\.$#"
+			count: 1
+			path: src/Attribute/RouteParamValue/PropertyValues.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: src/Attribute/RouteParamValue/PropertyValues.php
+
+		-
 			message: "#^Parameter \\#1 \\$alias of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\DynamicValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
