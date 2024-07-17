@@ -56,7 +56,10 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
     {
         $loader = new PhpFileLoader($container, new FileLocator(\dirname(__DIR__, 2).'/config'));
         $loader->load('services.php');
-        $loader->load('services_debug.php');
+
+        if ($mergedConfig['profiler_integration']) {
+            $loader->load('services_debug.php');
+        }
 
         $container->registerAttributeForAutoconfiguration(
             PurgeOn::class,

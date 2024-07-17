@@ -467,4 +467,51 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertSame($hasCache, $container->hasDefinition('sofascore.purgatory2.cache.expression_language'));
     }
+
+    #[TestWith([['profiler_integration' => true], true, true, false])]
+    #[TestWith([['profiler_integration' => true, 'messenger' => 'async'], true, true, true])]
+    #[TestWith([['profiler_integration' => false], false, false, false])]
+    public function testProfilerIntegration(
+        array $config,
+        bool $hasDataCollector,
+        bool $hasTraceablePurger,
+        bool $hasTraceableSyncPurger,
+    ): void {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+
+        $container->register('profiler', \stdClass::class);
+        $container->register('twig', \stdClass::class);
+
+        $container->loadFromExtension($extension->getAlias(), $config);
+
+        $container->compile();
+
+        self::assertSame($hasDataCollector, $container->hasDefinition('sofascore.purgatory2.data_collector'));
+        self::assertSame($hasTraceablePurger, $container->hasDefinition('sofascore.purgatory2.purger.traceable'));
+        self::assertSame($hasTraceableSyncPurger, $container->hasDefinition('sofascore.purgatory2.purger.sync.traceable'));
+    }
+
+    #[TestWith([['profiler_integration' => true]])]
+    #[TestWith([['profiler_integration' => true, 'messenger' => 'async']])]
+    #[TestWith([['profiler_integration' => false]])]
+    public function testProfilerIntegrationWithoutProfiler(array $config): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+
+        $container->loadFromExtension($extension->getAlias(), $config);
+
+        $container->compile();
+
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.data_collector'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.traceable'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.sync.traceable'));
+    }
 }

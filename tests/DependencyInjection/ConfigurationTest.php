@@ -41,6 +41,7 @@ final class ConfigurationTest extends TestCase
                 'bus' => null,
                 'batch_size' => null,
             ],
+            'profiler_integration' => true,
         ], $config);
     }
 
@@ -136,6 +137,7 @@ final class ConfigurationTest extends TestCase
         yield 'all' => [
             'all.xml',
             [
+                'profiler_integration' => false,
                 'doctrine_middleware_priority' => 5,
                 'doctrine_event_listener_priorities' => [
                     'preRemove' => 10,
@@ -181,6 +183,7 @@ final class ConfigurationTest extends TestCase
                     'bus' => null,
                     'batch_size' => null,
                 ],
+                'profiler_integration' => true,
             ],
         ];
     }

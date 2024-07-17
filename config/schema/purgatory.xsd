@@ -32,6 +32,7 @@
             <xsd:element name="messenger" type="messenger" minOccurs="0" />
         </xsd:choice>
         <xsd:attribute name="doctrine-event-listener-priorities" type="xsd:int" />
+        <xsd:attribute name="profiler-integration" type="xsd:boolean" />
     </xsd:complexType>
 
     <xsd:element name="config" type="config" />

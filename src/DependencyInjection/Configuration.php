@@ -114,6 +114,10 @@ final class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
+                ->booleanNode('profiler_integration')
+                    ->info('Enables the data collector and profiler panel if the profiler is enabled.')
+                    ->defaultTrue()
+                ->end()
             ->end()
         ;
 
