@@ -8,6 +8,9 @@ use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Middleware as MiddlewareInterface;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 
+/**
+ * @internal
+ */
 final class Middleware implements MiddlewareInterface
 {
     public function __construct(

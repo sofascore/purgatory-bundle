@@ -6,6 +6,9 @@ namespace Sofascore\PurgatoryBundle2\Purger\Messenger;
 
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 
+/**
+ * @internal
+ */
 final class PurgeMessageHandler
 {
     public function __construct(

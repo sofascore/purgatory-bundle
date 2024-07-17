@@ -9,6 +9,9 @@ use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 
+/**
+ * @internal
+ */
 final class PurgatoryDriver extends AbstractDriverMiddleware
 {
     public function __construct(

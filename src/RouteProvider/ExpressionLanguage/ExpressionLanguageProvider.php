@@ -8,6 +8,9 @@ use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Contracts\Service\ServiceProviderInterface;
 
+/**
+ * @internal
+ */
 final class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface
 {
     /**

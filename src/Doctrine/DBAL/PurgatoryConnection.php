@@ -11,6 +11,9 @@ use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
 
 if (method_exists(Connection::class, 'getEventManager')) {
     // DBAL < 4
+    /**
+     * @internal
+     */
     final class PurgatoryConnection extends AbstractConnectionMiddleware
     {
         public function __construct(
@@ -40,6 +43,9 @@ if (method_exists(Connection::class, 'getEventManager')) {
     }
 } else {
     // DBAL >= 4
+    /**
+     * @internal
+     */
     final class PurgatoryConnection extends AbstractConnectionMiddleware
     {
         public function __construct(
