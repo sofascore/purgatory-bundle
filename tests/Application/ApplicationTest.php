@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\Tests\Application;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\RequiresMethod;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
@@ -24,25 +24,22 @@ use Symfony\Component\PropertyAccess\PropertyPath;
 #[CoversNothing]
 final class ApplicationTest extends AbstractKernelTestCase
 {
+    use InteractsWithPurgatory;
+
     private EntityManagerInterface $entityManager;
-    private InMemoryPurger $purger;
 
     protected function setUp(): void
     {
         self::initializeApplication(['test_case' => 'TestApplication', 'config' => 'app_config.yaml']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
 
-        self::assertSame([], $this->purger->getPurgedUrls());
+        self::assertSame([], $this->getPurger()->getPurgedUrls());
     }
 
     protected function tearDown(): void
     {
-        unset(
-            $this->entityManager,
-            $this->purger,
-        );
+        unset($this->entityManager);
 
         parent::tearDown();
     }
@@ -78,7 +75,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged('/person/list/men');
 
-        $this->purger->reset();
+        $this->clearPurger();
         $person->gender = 'female';
 
         $this->entityManager->flush();
@@ -101,7 +98,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged('/person/list/custom-elf');
 
-        $this->purger->reset();
+        $this->clearPurger();
         $person->lastName = 'Doe';
 
         $this->entityManager->flush();
@@ -125,7 +122,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $pet1 = new Animal();
         $pet1->name = 'Floki';
@@ -162,7 +159,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $measurementsUrl = '/animal/'.$animal->id.'/measurements';
         $measurementsAltUrl = '/animal/'.$animal->id.'/measurements-alt';
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $animal->measurements->weight = 100;
         $this->entityManager->flush();
@@ -171,7 +168,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged($measurementsAltUrl);
         $this->assertUrlIsPurged($detailsUrl);
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $animal->measurements->height = 100;
         $this->entityManager->flush();
@@ -180,7 +177,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged($measurementsUrl);
         $this->assertUrlIsPurged($measurementsAltUrl);
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $animal->measurements = new Measurements();
         $this->entityManager->flush();
@@ -214,14 +211,14 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet1->name = 'Floki';
 
         $this->entityManager->flush();
 
         $this->assertUrlIsPurged('/person/'.$person->id.'/pets/names');
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet2->name = 'Floki';
 
         $this->entityManager->flush();
@@ -250,7 +247,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $route1 = '/animal/'.$pet->id.'/route1';
         $route2 = '/animal/'.$pet->id.'/route2';
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet->measurements->height = 100;
 
         $this->entityManager->flush();
@@ -258,7 +255,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged($route1);
         $this->assertUrlIsPurged($route2);
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet->measurements->weight = 100;
 
         $this->entityManager->flush();
@@ -266,7 +263,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged($route1);
         $this->assertUrlIsNotPurged($route2);
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet->measurements->width = 100;
 
         $this->entityManager->flush();
@@ -316,7 +313,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet->measurements->height = 100;
         $this->entityManager->flush();
 
@@ -344,7 +341,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $pet->measurements->height = 100;
         $this->entityManager->flush();
 
@@ -378,7 +375,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $person->gender = 'female';
         $this->entityManager->flush();
 
@@ -409,7 +406,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $person->gender = 'female';
         $this->entityManager->flush();
 
@@ -452,7 +449,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged('/animal/for-rating/126'); // __invoke
         $this->assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $animal->name = 'Bob';
         $this->entityManager->flush();
@@ -501,7 +498,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
         $this->assertUrlIsPurged('/person/all-ids');
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $person->gender = 'female';
         $this->entityManager->flush();
@@ -548,7 +545,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $animal->measurements->height = 10;
         $this->entityManager->flush();
@@ -566,7 +563,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($competition);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
         $competition->numberOfPets = 5;
         $this->entityManager->flush();
 
@@ -585,7 +582,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->purger->reset();
+        $this->clearPurger();
 
         $competition = new HumanCompetition();
         $competition->startDate = new \DateTimeImmutable();
@@ -621,23 +618,5 @@ final class ApplicationTest extends AbstractKernelTestCase
         $car->owner = $person;
         $this->entityManager->flush();
         $this->assertUrlIsPurged('/person/'.$person->id.'/cars');
-    }
-
-    private function assertUrlIsPurged(string $url): void
-    {
-        self::assertContains(
-            needle: $url,
-            haystack: $this->purger->getPurgedUrls(),
-            message: sprintf('Failed asserting that the URL "%s" has been purged.', $url),
-        );
-    }
-
-    private function assertUrlIsNotPurged(string $url): void
-    {
-        self::assertNotContains(
-            needle: $url,
-            haystack: $this->purger->getPurgedUrls(),
-            message: sprintf('Failed asserting that the URL "%s" has not been purged.', $url),
-        );
     }
 }
