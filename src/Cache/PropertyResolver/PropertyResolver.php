@@ -16,6 +16,11 @@ use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
  */
 final class PropertyResolver implements SubscriptionResolverInterface
 {
+    /**
+     * @var array<class-string, list<ClassMetadata<object>>>
+     */
+    private array $mappedSuperclassChildren = [];
+
     public function __construct(
         private readonly ManagerRegistry $managerRegistry,
     ) {
@@ -61,18 +66,12 @@ final class PropertyResolver implements SubscriptionResolverInterface
         }
 
         if ($classMetadata instanceof ORMClassMetadata) {
-            foreach ($classMetadata->subClasses as $subClass) {
-                if (null === $subClassMetadata = $this->managerRegistry->getManagerForClass($subClass)?->getClassMetadata($subClass)) {
-                    throw new EntityMetadataNotFoundException($subClass);
-                }
+            if ($this->isValidSubClassTarget($target, $classMetadata)) {
+                return true;
+            }
 
-                if ($subClassMetadata->hasField($target)) {
-                    return true;
-                }
-
-                if ($this->isValidAssociationTarget($target, $subClassMetadata)) {
-                    return true;
-                }
+            if ($this->isValidMappedSuperclassTarget($target, $classMetadata)) {
+                return true;
             }
         }
 
@@ -87,5 +86,67 @@ final class PropertyResolver implements SubscriptionResolverInterface
         return $classMetadata->hasAssociation($target)
             && $classMetadata->isSingleValuedAssociation($target)
             && !$classMetadata->isAssociationInverseSide($target);
+    }
+
+    /**
+     * @param ORMClassMetadata<object> $classMetadata
+     */
+    private function isValidSubClassTarget(string $target, ORMClassMetadata $classMetadata): bool
+    {
+        foreach ($classMetadata->subClasses as $subClass) {
+            if (null === $subClassMetadata = $this->managerRegistry->getManagerForClass($subClass)?->getClassMetadata($subClass)) {
+                throw new EntityMetadataNotFoundException($subClass);
+            }
+
+            if ($this->isValidTarget($target, $subClassMetadata)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param ORMClassMetadata<object> $classMetadata
+     */
+    private function isValidMappedSuperclassTarget(string $target, ORMClassMetadata $classMetadata): bool
+    {
+        if (!$classMetadata->isMappedSuperclass) {
+            return false;
+        }
+
+        foreach ($this->getChildrenMetadata($classMetadata->getName()) as $metadata) {
+            if ($this->isValidTarget($target, $metadata)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param class-string $parentClass
+     *
+     * @return list<ClassMetadata<object>>
+     */
+    private function getChildrenMetadata(string $parentClass): array
+    {
+        if (isset($this->mappedSuperclassChildren[$parentClass])) {
+            return $this->mappedSuperclassChildren[$parentClass];
+        }
+
+        $this->mappedSuperclassChildren[$parentClass] = [];
+
+        foreach ($this->managerRegistry->getManagers() as $manager) {
+            foreach ($manager->getMetadataFactory()->getAllMetadata() as $metadata) {
+                if (!is_subclass_of($metadata->getName(), $parentClass)) {
+                    continue;
+                }
+
+                $this->mappedSuperclassChildren[$parentClass][] = $metadata;
+            }
+        }
+
+        return $this->mappedSuperclassChildren[$parentClass];
     }
 }

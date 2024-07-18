@@ -16,10 +16,12 @@ use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\Competition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Vehicle;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\HttpKernel\Kernel;
 
@@ -429,6 +431,21 @@ final class ConfigurationTest extends AbstractKernelTestCase
                     'winner_id' => [
                         'type' => PropertyValues::type(),
                         'values' => ['winner.id'],
+                    ],
+                ],
+            ],
+        ];
+
+        /* @see VehicleController::numberOfEnginesAction */
+        yield [
+            'entity' => Vehicle::class,
+            'properties' => ['numberOfEngines'],
+            'subscription' => [
+                'routeName' => 'number_of_engines',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::type(),
+                        'values' => ['id'],
                     ],
                 ],
             ],

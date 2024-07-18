@@ -12,12 +12,15 @@ use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\AnimalCompetition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\HumanCompetition;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Plane;
+use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
@@ -618,5 +621,42 @@ final class ApplicationTest extends AbstractKernelTestCase
         $car->owner = $person;
         $this->entityManager->flush();
         $this->assertUrlIsPurged('/person/'.$person->id.'/cars');
+    }
+
+    /**
+     * @see VehicleController::numberOfEnginesAction
+     */
+    public function testMappedSuperclassTarget(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $car = new Car();
+        $car->name = 'Vroom';
+        $car->owner = $person;
+        $this->entityManager->persist($person);
+        $this->entityManager->persist($car);
+        $this->entityManager->flush();
+        $this->assertUrlIsNotPurged('/vehicle/'.$car->id.'/number-of-engines');
+
+        $this->clearPurger();
+
+        $plane = new Plane();
+        $plane->name = 'Weeee';
+        $plane->numberOfEngines = 6;
+        $this->entityManager->persist($plane);
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/vehicle/'.$plane->id.'/number-of-engines');
+
+        $this->clearPurger();
+
+        $ship = new Ship();
+        $ship->name = 'Woosh';
+        $ship->numberOfEngines = 4;
+        $this->entityManager->persist($ship);
+        $this->entityManager->flush();
+        $this->assertUrlIsPurged('/vehicle/'.$ship->id.'/number-of-engines');
     }
 }
