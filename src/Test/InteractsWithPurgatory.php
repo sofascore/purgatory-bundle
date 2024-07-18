@@ -22,7 +22,7 @@ trait InteractsWithPurgatory
     final protected function _cleanUp(): void
     {
         $this->purger?->reset();
-        unset($this->purger);
+        $this->purger = null;
     }
 
     final protected function assertUrlIsPurged(string $url): void
