@@ -8,6 +8,8 @@ use Doctrine\ORM\Events as DoctrineEvents;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\DataCollector\PurgatoryDataCollector;
+use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterPurgerPass;
 use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
@@ -513,5 +515,25 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertFalse($container->hasDefinition('sofascore.purgatory2.data_collector'));
         self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.traceable'));
         self::assertFalse($container->hasDefinition('sofascore.purgatory2.purger.sync.traceable'));
+    }
+
+    public function testDataCollectorServiceCanBeInstantiatedWhenPurgerNameIsNull(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+        $container->addCompilerPass(new RegisterPurgerPass());
+
+        $container->register('profiler', \stdClass::class);
+        $container->register('twig', \stdClass::class);
+
+        $container->setAlias('sofascore.purgatory2.data_collector.public', 'sofascore.purgatory2.data_collector')
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $container->compile();
+
+        self::assertInstanceOf(PurgatoryDataCollector::class, $container->get('sofascore.purgatory2.data_collector.public'));
     }
 }

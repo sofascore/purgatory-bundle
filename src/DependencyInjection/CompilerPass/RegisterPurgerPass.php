@@ -24,6 +24,9 @@ final class RegisterPurgerPass implements CompilerPassInterface
             $this->setPurger($container, $purgerAlias);
         } elseif ($symfonyPurgerIsAvailable) {
             $container->setAlias('sofascore.purgatory2.purger', 'sofascore.purgatory2.purger.symfony');
+            $container->setParameter('.sofascore.purgatory2.purger.name', 'symfony');
+        } else {
+            $container->setParameter('.sofascore.purgatory2.purger.name', 'void');
         }
 
         if (!$symfonyPurgerIsAvailable) {
