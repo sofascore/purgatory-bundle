@@ -5,22 +5,39 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Tests\Test;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\VoidPurger;
 use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[CoversClass(InteractsWithPurgatory::class)]
 final class InteractsWithPurgatoryTest extends TestCase
 {
-    public function testTrait(): void
+    #[DataProvider('provideTraitTestCases')]
+    public function testTrait(string $idInMemory, string $idAsync): void
     {
-        $test = new class('name') extends KernelTestCase {
+        $container = new Container();
+        $container->set($idInMemory, new InMemoryPurger());
+        $container->set($idAsync, new AsyncPurger($this->createMock(MessageBusInterface::class)));
+
+        $test = new class($container) extends KernelTestCase {
             use InteractsWithPurgatory {
                 _cleanUp as public;
+            }
+
+            private static Container $myContainer;
+
+            public function __construct(Container $container)
+            {
+                self::$myContainer = $container;
+
+                parent::__construct('name');
             }
 
             public function testUrlIsPurged(): void
@@ -34,10 +51,7 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             protected static function getContainer(): Container
             {
-                $container = new Container();
-                $container->set(PurgerInterface::class, new InMemoryPurger());
-
-                return $container;
+                return self::$myContainer;
             }
         };
 
@@ -46,6 +60,12 @@ final class InteractsWithPurgatoryTest extends TestCase
 
         $test->testUrlIsPurged();
         $test->_cleanUp();
+    }
+
+    public static function provideTraitTestCases(): iterable
+    {
+        yield 'sync' => [PurgerInterface::class, 'sofascore.purgatory2.purger.async'];
+        yield 'async' => ['sofascore.purgatory2.purger.sync', PurgerInterface::class];
     }
 
     public function testExceptionIsThrownWhenClassIsNotKernelTestCase(): void

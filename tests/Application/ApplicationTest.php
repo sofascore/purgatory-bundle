@@ -37,7 +37,7 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
 
-        self::assertSame([], $this->getPurger()->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
     }
 
     protected function tearDown(): void

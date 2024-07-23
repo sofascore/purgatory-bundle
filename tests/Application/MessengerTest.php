@@ -7,8 +7,8 @@ namespace Sofascore\PurgatoryBundle2\Tests\Application;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\TestWith;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -19,6 +19,8 @@ use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 #[CoversNothing]
 final class MessengerTest extends AbstractKernelTestCase
 {
+    use InteractsWithPurgatory;
+
     /**
      * @see PersonController::detailsAction
      */
@@ -30,14 +32,12 @@ final class MessengerTest extends AbstractKernelTestCase
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        /** @var InMemoryPurger $purger */
-        $purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
         /** @var InMemoryTransport $transport */
         $transport = $this->getContainer()->get('messenger.transport.async');
         /** @var MessageBusInterface $messageBus */
         $messageBus = $this->getContainer()->get($busId);
 
-        self::assertSame([], $purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
         self::assertCount(0, $transport->getSent());
 
         $person = new Person();
@@ -48,7 +48,7 @@ final class MessengerTest extends AbstractKernelTestCase
         $entityManager->persist($person);
         $entityManager->flush();
 
-        self::assertSame([], $purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
         self::assertCount(1, $sent = $transport->getSent());
         self::assertSame($busId, $sent[0]->last(BusNameStamp::class)->getBusName());
 
@@ -59,7 +59,7 @@ final class MessengerTest extends AbstractKernelTestCase
 
         $messageBus->dispatch($sent[0]->with(new ReceivedStamp('async')));
 
-        self::assertUrlIsPurged('/person/'.$person->id, $purger->getPurgedUrls());
+        $this->assertUrlIsPurged('/person/'.$person->id);
     }
 
     private static function assertUrlIsQueued(string $url, array $urls): void
@@ -68,15 +68,6 @@ final class MessengerTest extends AbstractKernelTestCase
             needle: $url,
             haystack: $urls,
             message: sprintf('Failed asserting that the URL "%s" has been queued.', $url),
-        );
-    }
-
-    private static function assertUrlIsPurged(string $url, array $urls): void
-    {
-        self::assertContains(
-            needle: $url,
-            haystack: $urls,
-            message: sprintf('Failed asserting that the URL "%s" has been purged.', $url),
         );
     }
 }

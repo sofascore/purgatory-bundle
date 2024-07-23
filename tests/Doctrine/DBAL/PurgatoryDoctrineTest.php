@@ -10,7 +10,7 @@ use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle2\Doctrine\DBAL\PurgatoryConnection;
 use Sofascore\PurgatoryBundle2\Doctrine\DBAL\PurgatoryDriver;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
 
@@ -19,8 +19,9 @@ use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dumm
 #[CoversClass(PurgatoryDriver::class)]
 final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 {
+    use InteractsWithPurgatory;
+
     private EntityManagerInterface $entityManager;
-    private InMemoryPurger $purger;
     private EntityChangeListener $entityChangeListener;
 
     protected function setUp(): void
@@ -28,7 +29,6 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'EntityChangeListener']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->purger = self::getContainer()->get('sofascore.purgatory2.purger.in_memory');
         $this->entityChangeListener = self::getContainer()->get('sofascore.purgatory2.entity_change_listener');
     }
 
@@ -36,7 +36,6 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
     {
         unset(
             $this->entityManager,
-            $this->purger,
             $this->entityChangeListener,
         );
         parent::tearDown();
@@ -48,7 +47,7 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->wrapInTransaction(
             function () use ($name) {
-                self::assertSame([], $this->purger->getPurgedUrls());
+                $this->assertNoUrlsWerePurged();
 
                 $test = new Dummy($name);
 
@@ -56,18 +55,18 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
                 $this->entityManager->flush();
 
                 self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-                self::assertSame([], $this->purger->getPurgedUrls());
+                $this->assertNoUrlsWerePurged();
 
                 $this->entityManager->remove($test);
                 $this->entityManager->flush();
 
                 self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-                self::assertSame([], $this->purger->getPurgedUrls());
+                $this->assertNoUrlsWerePurged();
             },
         );
 
         self::assertSame([], $this->getQueuedUrls());
-        self::assertSame(['/'.$name], $this->purger->getPurgedUrls());
+        $this->assertUrlIsPurged('/'.$name);
     }
 
     public function testUrlsArePurgedAfterExplicitTransactionCommit(): void
@@ -76,7 +75,7 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->getConnection()->beginTransaction();
 
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $test = new Dummy($name);
 
@@ -84,18 +83,18 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
         self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $this->entityManager->getConnection()->commit();
 
         self::assertSame([], $this->getQueuedUrls());
-        self::assertSame(['/'.$name], $this->purger->getPurgedUrls());
+        $this->assertUrlIsPurged('/'.$name);
     }
 
     public function testRollbackTransaction(): void
@@ -104,7 +103,7 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->getConnection()->beginTransaction();
 
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $test = new Dummy($name);
 
@@ -112,18 +111,18 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
         self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
 
         $this->entityManager->getConnection()->rollBack();
 
         self::assertSame([], $this->getQueuedUrls());
-        self::assertSame([], $this->purger->getPurgedUrls());
+        $this->assertNoUrlsWerePurged();
     }
 
     /**

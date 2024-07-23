@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Test;
 
 use PHPUnit\Framework\Attributes\After;
+use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -43,6 +44,14 @@ trait InteractsWithPurgatory
         );
     }
 
+    final protected function assertNoUrlsWerePurged(): void
+    {
+        self::assertEmpty(
+            actual: $this->getPurger()->getPurgedUrls(),
+            message: 'Failed asserting that no URLs were purged.',
+        );
+    }
+
     final protected function getPurger(): InMemoryPurger
     {
         if (null !== $this->purger) {
@@ -54,6 +63,10 @@ trait InteractsWithPurgatory
         }
 
         $purger = self::getContainer()->get(PurgerInterface::class);
+
+        if ($purger instanceof AsyncPurger) {
+            $purger = self::getContainer()->get('sofascore.purgatory2.purger.sync');
+        }
 
         if (!$purger instanceof InMemoryPurger) {
             throw new \LogicException(sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', __TRAIT__));
