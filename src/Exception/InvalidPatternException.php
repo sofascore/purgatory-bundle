@@ -13,7 +13,7 @@ final class InvalidPatternException extends RuntimeException
         public readonly string $subject,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $pattern, $subject),
+            message: \sprintf(self::MESSAGE, $pattern, $subject),
         );
     }
 }

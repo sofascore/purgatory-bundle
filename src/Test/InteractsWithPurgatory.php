@@ -31,7 +31,7 @@ trait InteractsWithPurgatory
         self::assertContains(
             needle: $url,
             haystack: $this->_getPurgedUrls($url),
-            message: sprintf('Failed asserting that the URL "%s" was purged.', $url),
+            message: \sprintf('Failed asserting that the URL "%s" was purged.', $url),
         );
     }
 
@@ -40,7 +40,7 @@ trait InteractsWithPurgatory
         self::assertNotContains(
             needle: $url,
             haystack: $this->_getPurgedUrls($url),
-            message: sprintf('Failed asserting that the URL "%s" was not purged.', $url),
+            message: \sprintf('Failed asserting that the URL "%s" was not purged.', $url),
         );
     }
 
@@ -59,7 +59,7 @@ trait InteractsWithPurgatory
         }
 
         if (!$this instanceof KernelTestCase) {
-            throw new \LogicException(sprintf('The "%s" trait can only be used with "%s".', __TRAIT__, KernelTestCase::class));
+            throw new \LogicException(\sprintf('The "%s" trait can only be used with "%s".', __TRAIT__, KernelTestCase::class));
         }
 
         $purger = self::getContainer()->get(PurgerInterface::class);
@@ -69,7 +69,7 @@ trait InteractsWithPurgatory
         }
 
         if (!$purger instanceof InMemoryPurger) {
-            throw new \LogicException(sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', __TRAIT__));
+            throw new \LogicException(\sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', __TRAIT__));
         }
 
         return $this->purger = $purger;

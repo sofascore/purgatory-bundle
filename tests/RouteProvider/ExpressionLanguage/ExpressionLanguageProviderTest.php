@@ -40,8 +40,8 @@ final class ExpressionLanguageProviderTest extends TestCase
         self::assertSame(42, $expressionLanguage->evaluate('bar(6, 7)'));
 
         self::assertSame('($functionsProvider->get(\'foo\'))(6, 7)', $code = $expressionLanguage->compile('foo(6, 7)'));
-        self::assertSame(13, eval(sprintf('return %s;', $code)));
+        self::assertSame(13, eval(\sprintf('return %s;', $code)));
         self::assertSame('($functionsProvider->get(\'bar\'))(6, 7)', $code = $expressionLanguage->compile('bar(6, 7)'));
-        self::assertSame(42, eval(sprintf('return %s;', $code)));
+        self::assertSame(42, eval(\sprintf('return %s;', $code)));
     }
 }

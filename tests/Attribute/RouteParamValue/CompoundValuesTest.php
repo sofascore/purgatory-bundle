@@ -33,7 +33,7 @@ final class CompoundValuesTest extends TestCase
     public function testExceptionIsThrownOnSelf(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('An argument cannot be an instance of "%s".', CompoundValues::class));
+        $this->expectExceptionMessage(\sprintf('An argument cannot be an instance of "%s".', CompoundValues::class));
 
         new CompoundValues(new CompoundValues('foo'));
     }

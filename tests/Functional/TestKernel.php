@@ -25,11 +25,11 @@ final class TestKernel extends Kernel
         bool $debug,
     ) {
         if (!is_dir($this->getProjectDir())) {
-            throw new \InvalidArgumentException(sprintf('The test case "%s" does not exist.', $testCase));
+            throw new \InvalidArgumentException(\sprintf('The test case "%s" does not exist.', $testCase));
         }
 
         if ('' !== $config && !is_file($config = $this->getProjectDir().'/config/'.$config)) {
-            throw new \InvalidArgumentException(sprintf('The config "%s" does not exist.', $config));
+            throw new \InvalidArgumentException(\sprintf('The config "%s" does not exist.', $config));
         }
 
         $this->config = $config;

@@ -189,7 +189,7 @@ final class YamlMetadataProviderTest extends TestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('The file "%s" does not contain valid YAML: ', $file));
+        $this->expectExceptionMessage(\sprintf('The file "%s" does not contain valid YAML: ', $file));
 
         iterator_to_array($provider->provide());
     }
@@ -208,7 +208,7 @@ final class YamlMetadataProviderTest extends TestCase
         );
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage(sprintf('Expected the parsed YAML of file "%s" to be an array, got "string".', $file));
+        $this->expectExceptionMessage(\sprintf('Expected the parsed YAML of file "%s" to be an array, got "string".', $file));
 
         iterator_to_array($provider->provide());
     }

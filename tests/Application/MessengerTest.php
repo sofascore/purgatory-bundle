@@ -67,7 +67,7 @@ final class MessengerTest extends AbstractKernelTestCase
         self::assertContains(
             needle: $url,
             haystack: $urls,
-            message: sprintf('Failed asserting that the URL "%s" has been queued.', $url),
+            message: \sprintf('Failed asserting that the URL "%s" has been queued.', $url),
         );
     }
 }

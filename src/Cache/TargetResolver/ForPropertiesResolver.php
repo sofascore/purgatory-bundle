@@ -25,7 +25,7 @@ final class ForPropertiesResolver implements TargetResolverInterface
     public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
         if (!$target instanceof ForProperties) {
-            throw new InvalidArgumentException(sprintf('Target must be an instance of "%s".', ForProperties::class));
+            throw new InvalidArgumentException(\sprintf('Target must be an instance of "%s".', ForProperties::class));
         }
 
         return $target->properties;

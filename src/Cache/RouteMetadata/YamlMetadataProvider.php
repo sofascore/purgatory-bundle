@@ -57,11 +57,11 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
                 /** @var array<string, array<string, mixed>|list<array<string, mixed>>>|scalar|null $configuration */
                 $configuration = $this->yamlParser->parseFile($file, Yaml::PARSE_CONSTANT | Yaml::PARSE_CUSTOM_TAGS);
             } catch (ParseException $e) {
-                throw new InvalidArgumentException(sprintf('The file "%s" does not contain valid YAML: ', $file).$e->getMessage(), previous: $e);
+                throw new InvalidArgumentException(\sprintf('The file "%s" does not contain valid YAML: ', $file).$e->getMessage(), previous: $e);
             }
 
             if (!\is_array($configuration)) {
-                throw new RuntimeException(sprintf('Expected the parsed YAML of file "%s" to be an array, got "%s".', $file, get_debug_type($configuration)));
+                throw new RuntimeException(\sprintf('Expected the parsed YAML of file "%s" to be an array, got "%s".', $file, get_debug_type($configuration)));
             }
 
             yield from $this->provideFromFile($configuration, $routeCollection);
@@ -114,7 +114,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
     private function validate(array $purgeOn, string $routeName): void
     {
         if ($invalidKeys = array_diff(array_keys($purgeOn), self::ALLOWED_KEYS)) {
-            throw new InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Route "%s" contains unsupported keys "%s", supported ones are "%s".',
                 $routeName,
                 implode('", "', $invalidKeys),

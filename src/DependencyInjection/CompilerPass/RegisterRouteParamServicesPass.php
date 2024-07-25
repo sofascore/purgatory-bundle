@@ -24,7 +24,7 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
                 ['alias' => $alias, 'method' => $method] = $attribute;
 
                 if (isset($usedAliases[$alias])) {
-                    throw new RuntimeException(sprintf('The alias "%s" is already used by "%s".', $alias, $usedAliases[$alias]));
+                    throw new RuntimeException(\sprintf('The alias "%s" is already used by "%s".', $alias, $usedAliases[$alias]));
                 }
 
                 $routeParamServiceRefs[$alias] = (new Definition(\Closure::class, [[new Reference($id), $method]]))
@@ -35,7 +35,7 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
                     $routeParamServiceRefs[$alias] = new Reference($factoryId);
                 }
 
-                $usedAliases[$alias] = sprintf('%s::%s', $id, $method);
+                $usedAliases[$alias] = \sprintf('%s::%s', $id, $method);
             }
         }
 

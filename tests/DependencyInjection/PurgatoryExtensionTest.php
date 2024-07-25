@@ -98,7 +98,7 @@ final class PurgatoryExtensionTest extends TestCase
         $container->loadFromExtension($extension->getAlias(), []);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', DummyInvalidRouteParamService::class));
+        $this->expectExceptionMessage(\sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', DummyInvalidRouteParamService::class));
 
         $container->compile();
     }
@@ -137,7 +137,7 @@ final class PurgatoryExtensionTest extends TestCase
         $container->loadFromExtension($extension->getAlias(), []);
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage(sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', DummyInvalidExpressionLanguageFunction::class));
+        $this->expectExceptionMessage(\sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', DummyInvalidExpressionLanguageFunction::class));
 
         $container->compile();
     }

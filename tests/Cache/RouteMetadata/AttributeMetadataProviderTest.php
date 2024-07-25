@@ -25,7 +25,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $fooBarRoute = new Route(
             path: '/foo/bar',
             defaults: [
-                '_controller' => sprintf('%s::%s', FooController::class, 'barAction'),
+                '_controller' => \sprintf('%s::%s', FooController::class, 'barAction'),
             ],
         );
         $fooBazRoute = new Route(
@@ -84,19 +84,19 @@ final class AttributeMetadataProviderTest extends TestCase
         $fooBarRoute1 = new Route(
             path: '/foo/bar1',
             defaults: [
-                '_controller' => sprintf('%s::%s', BarController::class, 'fooAction'),
+                '_controller' => \sprintf('%s::%s', BarController::class, 'fooAction'),
             ],
         );
         $fooBarRoute2 = new Route(
             path: '/foo/bar2',
             defaults: [
-                '_controller' => sprintf('%s::%s', BarController::class, 'fooAction'),
+                '_controller' => \sprintf('%s::%s', BarController::class, 'fooAction'),
             ],
         );
         $fooBarRoute3 = new Route(
             path: '/foo/bar3',
             defaults: [
-                '_controller' => sprintf('%s::%s', BarController::class, 'fooAction'),
+                '_controller' => \sprintf('%s::%s', BarController::class, 'fooAction'),
             ],
         );
         $fooBazRoute1 = new Route(
@@ -177,7 +177,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $fooBarRoute = new Route(
             path: '/foo/bar',
             defaults: [
-                '_controller' => sprintf('%s::%s', BazController::class, 'barAction'),
+                '_controller' => \sprintf('%s::%s', BazController::class, 'barAction'),
             ],
         );
 
@@ -257,7 +257,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $fooBarRoute = new Route(
             path: '/foo/bar',
             defaults: [
-                '_controller' => sprintf('%s::%s', FooController::class, 'barAction'),
+                '_controller' => \sprintf('%s::%s', FooController::class, 'barAction'),
             ],
         );
         $fooBazRoute = new Route(

@@ -14,7 +14,7 @@ final class TargetSubscriptionNotResolvableException extends RuntimeException
         public readonly string $target,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $className, $target, $routeName),
+            message: \sprintf(self::MESSAGE, $className, $target, $routeName),
         );
     }
 }

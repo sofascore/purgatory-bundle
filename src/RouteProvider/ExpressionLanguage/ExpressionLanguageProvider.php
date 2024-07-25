@@ -28,7 +28,7 @@ final class ExpressionLanguageProvider implements ExpressionFunctionProviderInte
         foreach ($this->functionsProvider->getProvidedServices() as $function => $type) {
             $functions[] = new ExpressionFunction(
                 $function,
-                static fn (string ...$args): string => sprintf('($functionsProvider->get(%s))(%s)', var_export($function, true), implode(', ', $args)),
+                static fn (string ...$args): string => \sprintf('($functionsProvider->get(%s))(%s)', var_export($function, true), implode(', ', $args)),
                 fn (array $values, mixed ...$args): mixed => $this->functionsProvider->get($function)(...$args),
             );
         }

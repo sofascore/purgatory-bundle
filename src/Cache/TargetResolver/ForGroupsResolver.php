@@ -37,7 +37,7 @@ final class ForGroupsResolver implements TargetResolverInterface
     public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
         if (!$target instanceof ForGroups) {
-            throw new InvalidArgumentException(sprintf('Target must be an instance of "%s".', ForGroups::class));
+            throw new InvalidArgumentException(\sprintf('Target must be an instance of "%s".', ForGroups::class));
         }
 
         /** @var list<string>|null $resolvedProperties */
@@ -47,7 +47,7 @@ final class ForGroupsResolver implements TargetResolverInterface
         );
 
         if (null === $resolvedProperties) {
-            throw new RuntimeException(sprintf('Could not resolve properties for groups "%s" in class "%s".', implode('", "', $target->groups), $routeMetadata->purgeOn->class));
+            throw new RuntimeException(\sprintf('Could not resolve properties for groups "%s" in class "%s".', implode('", "', $target->groups), $routeMetadata->purgeOn->class));
         }
 
         return $resolvedProperties;

@@ -13,7 +13,7 @@ final class PropertyNotAccessibleException extends RuntimeException
         public readonly string $property,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $class, $property),
+            message: \sprintf(self::MESSAGE, $class, $property),
         );
     }
 }

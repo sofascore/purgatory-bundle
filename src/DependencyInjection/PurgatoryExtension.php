@@ -83,7 +83,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                         'method' => $reflection instanceof \ReflectionMethod
                             ? $reflection->name
                             : ($reflection->hasMethod('__invoke') ? '__invoke'
-                                : throw new RuntimeException(sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', $reflection->name))),
+                                : throw new RuntimeException(\sprintf('Invalid route parameter service, the method "%s::__invoke()" does not exist.', $reflection->name))),
                     ],
                 );
             },
@@ -99,7 +99,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                         'method' => $reflection instanceof \ReflectionMethod
                             ? $reflection->name
                             : ($reflection->hasMethod('__invoke') ? '__invoke'
-                                : throw new RuntimeException(sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', $reflection->name))),
+                                : throw new RuntimeException(\sprintf('Invalid expression language function, the method "%s::__invoke()" does not exist.', $reflection->name))),
                     ],
                 );
             },
@@ -211,7 +211,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             } elseif ($container->fileExists($path)) {
                 yield $path;
             } else {
-                throw new RuntimeException(sprintf('Could not open file or directory "%s".', $path));
+                throw new RuntimeException(\sprintf('Could not open file or directory "%s".', $path));
             }
         }
     }

@@ -61,7 +61,7 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                     ->children()
                         ->scalarNode('name')
-                            ->info(sprintf('A service that implements the "%s" interface', PurgerInterface::class))
+                            ->info(\sprintf('A service that implements the "%s" interface', PurgerInterface::class))
                             ->example('symfony')
                             ->defaultNull()
                         ->end()

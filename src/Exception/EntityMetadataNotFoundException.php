@@ -12,7 +12,7 @@ final class EntityMetadataNotFoundException extends RuntimeException
         public readonly string $class,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $class),
+            message: \sprintf(self::MESSAGE, $class),
         );
     }
 }

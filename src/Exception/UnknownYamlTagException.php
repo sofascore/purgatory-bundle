@@ -16,7 +16,7 @@ final class UnknownYamlTagException extends RuntimeException
         public readonly array $knownTags = [],
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $tag, implode('", "', $knownTags)),
+            message: \sprintf(self::MESSAGE, $tag, implode('", "', $knownTags)),
         );
     }
 }

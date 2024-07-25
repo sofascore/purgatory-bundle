@@ -72,7 +72,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         );
 
         if (0 !== $exitCode) {
-            throw new \RuntimeException(sprintf('An error occurred while running the "%s" command: %s', $command, $output->fetch()));
+            throw new \RuntimeException(\sprintf('An error occurred while running the "%s" command: %s', $command, $output->fetch()));
         }
     }
 }

@@ -30,7 +30,7 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
                 ['function' => $function, 'method' => $method] = $attribute;
 
                 if (isset($usedFunctionNames[$function])) {
-                    throw new RuntimeException(sprintf('The function name "%s" is already used by "%s".', $function, $usedFunctionNames[$function]));
+                    throw new RuntimeException(\sprintf('The function name "%s" is already used by "%s".', $function, $usedFunctionNames[$function]));
                 }
 
                 $functionReferences[$function] = (new Definition(\Closure::class, [[new Reference($id), $method]]))
@@ -41,7 +41,7 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
                     $functionReferences[$function] = new Reference($factoryId);
                 }
 
-                $usedFunctionNames[$function] = sprintf('%s::%s', $id, $method);
+                $usedFunctionNames[$function] = \sprintf('%s::%s', $id, $method);
             }
         }
 

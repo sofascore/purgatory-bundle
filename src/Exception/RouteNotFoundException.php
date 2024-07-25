@@ -12,7 +12,7 @@ final class RouteNotFoundException extends RuntimeException
         public readonly string $routeName,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, $routeName),
+            message: \sprintf(self::MESSAGE, $routeName),
         );
     }
 }

@@ -48,7 +48,7 @@ final class RegisterPurgerPass implements CompilerPassInterface
         }
 
         if (!$container->has($purgerAlias)) {
-            throw new RuntimeException(sprintf('The configured purger service "%s" does not exist.', $purgerAlias));
+            throw new RuntimeException(\sprintf('The configured purger service "%s" does not exist.', $purgerAlias));
         }
 
         $container->setAlias('sofascore.purgatory2.purger', $purgerAlias);

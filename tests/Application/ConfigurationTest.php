@@ -69,13 +69,13 @@ final class ConfigurationTest extends AbstractKernelTestCase
         self::assertArrayHasKey(
             key: $key,
             array: self::$configuration,
-            message: sprintf('Failed asserting that the configuration contains a subscription for "%s".', $key),
+            message: \sprintf('Failed asserting that the configuration contains a subscription for "%s".', $key),
         );
 
         self::assertContains(
             needle: $subscription,
             haystack: self::$configuration[$key],
-            message: sprintf('Failed asserting that the configuration contains the subscription "%s" for the key "%s".', json_encode($subscription), $key),
+            message: \sprintf('Failed asserting that the configuration contains the subscription "%s" for the key "%s".', json_encode($subscription), $key),
         );
     }
 

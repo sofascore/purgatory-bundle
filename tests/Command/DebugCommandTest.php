@@ -88,7 +88,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
         self::assertSubstringCount(
             expectedCount: 3,
-            needle: sprintf('lang: Compound(Enum(%s), Raw("XK"))', json_encode(ltrim(LanguageCodes::class, '\\'))),
+            needle: \sprintf('lang: Compound(Enum(%s), Raw("XK"))', json_encode(ltrim(LanguageCodes::class, '\\'))),
             haystack: $display,
         );
         self::assertSubstringCount(
@@ -277,7 +277,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
             expectedCount: $expectedNumberOfSubscriptions,
             needle: 'Option         Value',
             haystack: $command->getDisplay(),
-            message: sprintf('Failed asserting that %d subscriptions were displayed.', $expectedNumberOfSubscriptions),
+            message: \sprintf('Failed asserting that %d subscriptions were displayed.', $expectedNumberOfSubscriptions),
         );
     }
 
@@ -288,9 +288,9 @@ final class DebugCommandTest extends AbstractKernelTestCase
     ): void {
         self::assertSubstringCount(
             expectedCount: $expectedNumberOfRoutes,
-            needle: sprintf('Route Name     %s', $route),
+            needle: \sprintf('Route Name     %s', $route),
             haystack: $command->getDisplay(),
-            message: sprintf('Failed asserting that %d routes with the name "%s" were displayed.', $expectedNumberOfRoutes, $route),
+            message: \sprintf('Failed asserting that %d routes with the name "%s" were displayed.', $expectedNumberOfRoutes, $route),
         );
     }
 
@@ -301,9 +301,9 @@ final class DebugCommandTest extends AbstractKernelTestCase
     ): void {
         self::assertSubstringCount(
             expectedCount: $expectedNumberOfEntities,
-            needle: sprintf('Entity         %s', ltrim($entityClass, '\\')),
+            needle: \sprintf('Entity         %s', ltrim($entityClass, '\\')),
             haystack: $command->getDisplay(),
-            message: sprintf('Failed asserting that %d entities of class "%s" were displayed.', $expectedNumberOfEntities, $entityClass),
+            message: \sprintf('Failed asserting that %d entities of class "%s" were displayed.', $expectedNumberOfEntities, $entityClass),
         );
     }
 
@@ -314,9 +314,9 @@ final class DebugCommandTest extends AbstractKernelTestCase
     ): void {
         self::assertSubstringCount(
             expectedCount: $expectedNumberOfProperties,
-            needle: sprintf('Property       %s', $property),
+            needle: \sprintf('Property       %s', $property),
             haystack: $command->getDisplay(),
-            message: sprintf('Failed asserting that %d properties with the name "%s" were displayed.', $expectedNumberOfProperties, $property),
+            message: \sprintf('Failed asserting that %d properties with the name "%s" were displayed.', $expectedNumberOfProperties, $property),
         );
     }
 

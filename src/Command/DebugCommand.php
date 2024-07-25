@@ -121,13 +121,13 @@ EOF
             $withProperties = $input->getOption('with-properties');
 
             if ($withProperties && false !== $propertyPath = strstr($subscription, '::')) {
-                $io->error(sprintf('The "--with-properties" option requires an entity FQCN without the property path (%s).', $propertyPath));
+                $io->error(\sprintf('The "--with-properties" option requires an entity FQCN without the property path (%s).', $propertyPath));
 
                 return self::FAILURE;
             }
 
             if ([] === $filteredSubscriptions = $this->findSubscriptions($subscription, $withProperties)) {
-                $io->warning(sprintf('No purge subscriptions found matching "%s".', $subscription));
+                $io->warning(\sprintf('No purge subscriptions found matching "%s".', $subscription));
 
                 return self::FAILURE;
             }
@@ -142,7 +142,7 @@ EOF
 
         if (null !== $routeName) {
             if ([] === $filteredSubscriptions = $this->findSubscriptionsForRoute($routeName)) {
-                $io->warning(sprintf('No purge subscriptions found for route "%s".', $routeName));
+                $io->warning(\sprintf('No purge subscriptions found for route "%s".', $routeName));
 
                 return self::FAILURE;
             }
@@ -165,7 +165,7 @@ EOF
             );
 
             if ([] === $entities) {
-                $io->warning(sprintf('No purge subscriptions found matching "%s".', $target));
+                $io->warning(\sprintf('No purge subscriptions found matching "%s".', $target));
 
                 return self::FAILURE;
             }
@@ -187,7 +187,7 @@ EOF
         $metadata = $this->managerRegistry->getManagerForClass($entity)?->getClassMetadata($entity);
 
         if (null === $metadata) {
-            $io->error(sprintf('Could not retrieve metadata for the entity "%s".', $entity));
+            $io->error(\sprintf('Could not retrieve metadata for the entity "%s".', $entity));
 
             return self::FAILURE;
         }
@@ -206,17 +206,17 @@ EOF
         );
 
         if ([] === $filteredSubscriptions) {
-            $io->warning(sprintf('No purge subscriptions found matching "%s".', $entity.'::'.$field));
+            $io->warning(\sprintf('No purge subscriptions found matching "%s".', $entity.'::'.$field));
 
             return self::FAILURE;
         }
 
         $this->display($io, $filteredSubscriptions);
 
-        $io->info(sprintf(
+        $io->info(\sprintf(
             'You can rerun the command with the selected options using:%sphp bin/console purgatory:debug --subscription %s',
             \PHP_EOL,
-            $withProperties ? sprintf("'%s' --with-properties", $entity) : sprintf("'%s::%s'", $entity, $field),
+            $withProperties ? \sprintf("'%s' --with-properties", $entity) : \sprintf("'%s::%s'", $entity, $field),
         ));
 
         return self::SUCCESS;
@@ -306,7 +306,7 @@ EOF
     {
         $values = [];
         foreach ($routeParams as $param => $value) {
-            $values[] = sprintf('%s: %s', $param, $this->formatRouteParamValue($value['type'], $value['values']));
+            $values[] = \sprintf('%s: %s', $param, $this->formatRouteParamValue($value['type'], $value['values']));
         }
 
         return implode(\PHP_EOL, $values);
@@ -328,7 +328,7 @@ EOF
             $values = array_map(static fn (mixed $val): string => json_encode($val, flags: \JSON_THROW_ON_ERROR), $values);
         }
 
-        return sprintf('%s(%s)', ucfirst($type), implode(', ', $values));
+        return \sprintf('%s(%s)', ucfirst($type), implode(', ', $values));
     }
 
     /**

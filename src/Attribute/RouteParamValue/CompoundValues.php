@@ -25,7 +25,7 @@ final class CompoundValues extends AbstractValues implements InverseValuesAwareI
 
         foreach ($values as $value) {
             if ($value instanceof self) {
-                throw new InvalidArgumentException(sprintf('An argument cannot be an instance of "%s".', self::class));
+                throw new InvalidArgumentException(\sprintf('An argument cannot be an instance of "%s".', self::class));
             }
 
             $normalized[] = PurgeOn::normalizeValue($value);

@@ -86,7 +86,7 @@ final class InteractsWithPurgatoryTest extends TestCase
         };
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(sprintf('The "%s" trait can only be used with "%s".', InteractsWithPurgatory::class, KernelTestCase::class));
+        $this->expectExceptionMessage(\sprintf('The "%s" trait can only be used with "%s".', InteractsWithPurgatory::class, KernelTestCase::class));
 
         $test->testUrlIsPurged();
     }
@@ -111,7 +111,7 @@ final class InteractsWithPurgatoryTest extends TestCase
         };
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage(sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', InteractsWithPurgatory::class));
+        $this->expectExceptionMessage(\sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', InteractsWithPurgatory::class));
 
         $test->testUrlIsPurged();
     }

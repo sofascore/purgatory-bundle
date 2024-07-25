@@ -13,7 +13,7 @@ final class ValueNotIterableException extends RuntimeException
         string $propertyPath,
     ) {
         parent::__construct(
-            message: sprintf(self::MESSAGE, get_debug_type($value), $propertyPath),
+            message: \sprintf(self::MESSAGE, get_debug_type($value), $propertyPath),
         );
     }
 }
