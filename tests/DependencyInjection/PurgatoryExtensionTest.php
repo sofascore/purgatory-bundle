@@ -142,6 +142,68 @@ final class PurgatoryExtensionTest extends TestCase
         $container->compile();
     }
 
+    public function testPurgerConfig(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'purgatory' => [
+                'purger' => [
+                    'name' => 'foo_purger',
+                    'hosts' => ['http://localhost:80'],
+                ],
+            ],
+        ], $container);
+
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.name'));
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.hosts'));
+
+        self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory.purger.name'));
+        self::assertSame(['http://localhost:80'], $container->getParameter('.sofascore.purgatory.purger.hosts'));
+    }
+
+    public function testDefaultPurgerIsSetToVoidPurger(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'purgatory' => [
+                'purger' => [
+                    'name' => 'foo_purger',
+                    'hosts' => ['http://localhost:80'],
+                ],
+            ],
+        ], $container);
+
+        self::assertTrue($container->hasAlias('sofascore.purgatory.purger'));
+        self::assertSame('sofascore.purgatory.purger.void', (string) $container->getAlias('sofascore.purgatory.purger'));
+
+        self::assertTrue($container->hasAlias(PurgerInterface::class));
+        self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
+    }
+
+    #[TestWith([[], 'http_client'])]
+    #[TestWith([['http_client' => 'foo.client'], 'foo.client'])]
+    public function testCorrectHttpClientIsSet(array $config, string $expectedHttpClient): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'purgatory' => [
+                'purger' => $config,
+            ],
+        ], $container);
+
+        self::assertTrue($container->has('sofascore.purgatory.purger.varnish'));
+        self::assertSame($expectedHttpClient, (string) $container->getDefinition('sofascore.purgatory.purger.varnish')->getArgument(0));
+    }
+
     #[TestWith([[], ['config/purgatory/one.yaml', 'config/purgatory/two.yml'], __DIR__.'/Fixtures/app/config/purgatory'])]
     #[TestWith([
         [__DIR__.'/Fixtures/app/config/three.yaml'],
@@ -321,6 +383,69 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertSame($expectedTag, $definition->getTag('doctrine.event_listener'));
     }
 
+    public function testMessengerWhenTransportIsNotSet(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $extension->prepend($container);
+
+        self::assertSame([], $container->getExtensionConfig('framework'));
+
+        $extension->load([], $container);
+
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.async_transport'));
+        self::assertNull($container->getParameter('.sofascore.purgatory.purger.async_transport'));
+
+        self::assertFalse($container->hasDefinition('sofascore.purgatory.purger.async'));
+        self::assertFalse($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+    }
+
+    #[TestWith([[], [new Reference('messenger.default_bus')], []])]
+    #[TestWith([['bus' => 'foo.bar'], [new Reference('foo.bar')], ['bus' => 'foo.bar']])]
+    #[TestWith([['batch_size' => 3], [new Reference('messenger.default_bus'), 3], []])]
+    public function testMessengerWhenTransportIsSet(array $extraConfig, array $expectedArguments, array $expectedTagAttributes): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->loadFromExtension($extension->getAlias(), [
+            'messenger' => [
+                'transport' => 'foo',
+                ...$extraConfig,
+            ],
+        ]);
+
+        $extension->prepend($container);
+
+        self::assertSame([
+            [
+                'messenger' => [
+                    'routing' => [
+                        PurgeMessage::class => 'foo',
+                    ],
+                ],
+            ],
+        ], $container->getExtensionConfig('framework'));
+
+        $extension->load($container->getExtensionConfig('purgatory'), $container);
+
+        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.async_transport'));
+        self::assertSame('foo', $container->getParameter('.sofascore.purgatory.purger.async_transport'));
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.purger.async'));
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
+
+        $definition = $container->getDefinition('sofascore.purgatory.purger.async');
+        self::assertEquals($expectedArguments, $definition->getArguments());
+
+        $definition = $container->getDefinition('sofascore.purgatory.purge_message_handler');
+        self::assertTrue($definition->hasTag('messenger.message_handler'));
+        self::assertSame([$expectedTagAttributes], $definition->getTag('messenger.message_handler'));
+    }
+
     public function testSubscriptionResolverIsTagged(): void
     {
         $container = new ContainerBuilder();
@@ -387,131 +512,6 @@ final class PurgatoryExtensionTest extends TestCase
         $container->compile();
 
         self::assertTrue($container->getDefinition(DummyValuesResolver::class)->hasTag('purgatory.route_param_value_resolver'));
-    }
-
-    public function testPurgerConfig(): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', __DIR__);
-
-        $extension = new PurgatoryExtension();
-        $extension->load([
-            'purgatory' => [
-                'purger' => [
-                    'name' => 'foo_purger',
-                    'hosts' => ['http://localhost:80'],
-                ],
-            ],
-        ], $container);
-
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.name'));
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.hosts'));
-
-        self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory.purger.name'));
-        self::assertSame(['http://localhost:80'], $container->getParameter('.sofascore.purgatory.purger.hosts'));
-    }
-
-    public function testDefaultPurgerIsSetToVoidPurger(): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', __DIR__);
-
-        $extension = new PurgatoryExtension();
-        $extension->load([
-            'purgatory' => [
-                'purger' => [
-                    'name' => 'foo_purger',
-                    'hosts' => ['http://localhost:80'],
-                ],
-            ],
-        ], $container);
-
-        self::assertTrue($container->hasAlias('sofascore.purgatory.purger'));
-        self::assertSame('sofascore.purgatory.purger.void', (string) $container->getAlias('sofascore.purgatory.purger'));
-
-        self::assertTrue($container->hasAlias(PurgerInterface::class));
-        self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
-    }
-
-    #[TestWith([[], 'http_client'])]
-    #[TestWith([['http_client' => 'foo.client'], 'foo.client'])]
-    public function testCorrectHttpClientIsSet(array $config, string $expectedHttpClient): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', __DIR__);
-
-        $extension = new PurgatoryExtension();
-        $extension->load([
-            'purgatory' => [
-                'purger' => $config,
-            ],
-        ], $container);
-
-        self::assertTrue($container->has('sofascore.purgatory.purger.varnish'));
-        self::assertSame($expectedHttpClient, (string) $container->getDefinition('sofascore.purgatory.purger.varnish')->getArgument(0));
-    }
-
-    public function testMessengerWhenTransportIsNotSet(): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', __DIR__);
-        $container->registerExtension($extension = new PurgatoryExtension());
-
-        $extension->prepend($container);
-
-        self::assertSame([], $container->getExtensionConfig('framework'));
-
-        $extension->load([], $container);
-
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.async_transport'));
-        self::assertNull($container->getParameter('.sofascore.purgatory.purger.async_transport'));
-
-        self::assertFalse($container->hasDefinition('sofascore.purgatory.purger.async'));
-        self::assertFalse($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
-    }
-
-    #[TestWith([[], [new Reference('messenger.default_bus')], []])]
-    #[TestWith([['bus' => 'foo.bar'], [new Reference('foo.bar')], ['bus' => 'foo.bar']])]
-    #[TestWith([['batch_size' => 3], [new Reference('messenger.default_bus'), 3], []])]
-    public function testMessengerWhenTransportIsSet(array $extraConfig, array $expectedArguments, array $expectedTagAttributes): void
-    {
-        $container = new ContainerBuilder();
-        $container->setParameter('kernel.project_dir', __DIR__);
-        $container->registerExtension($extension = new PurgatoryExtension());
-
-        $container->loadFromExtension($extension->getAlias(), [
-            'messenger' => [
-                'transport' => 'foo',
-                ...$extraConfig,
-            ],
-        ]);
-
-        $extension->prepend($container);
-
-        self::assertSame([
-            [
-                'messenger' => [
-                    'routing' => [
-                        PurgeMessage::class => 'foo',
-                    ],
-                ],
-            ],
-        ], $container->getExtensionConfig('framework'));
-
-        $extension->load($container->getExtensionConfig('purgatory'), $container);
-
-        self::assertTrue($container->hasParameter('.sofascore.purgatory.purger.async_transport'));
-        self::assertSame('foo', $container->getParameter('.sofascore.purgatory.purger.async_transport'));
-
-        self::assertTrue($container->hasDefinition('sofascore.purgatory.purger.async'));
-        self::assertTrue($container->hasDefinition('sofascore.purgatory.purge_message_handler'));
-
-        $definition = $container->getDefinition('sofascore.purgatory.purger.async');
-        self::assertEquals($expectedArguments, $definition->getArguments());
-
-        $definition = $container->getDefinition('sofascore.purgatory.purge_message_handler');
-        self::assertTrue($definition->hasTag('messenger.message_handler'));
-        self::assertSame([$expectedTagAttributes], $definition->getTag('messenger.message_handler'));
     }
 
     /**
