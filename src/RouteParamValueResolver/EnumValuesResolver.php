@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
 use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
 
 /**
- * @implements ValuesResolverInterface<array{0: \BackedEnum}>
+ * @implements ValuesResolverInterface<array{0: class-string<\BackedEnum>}>
  */
 final class EnumValuesResolver implements ValuesResolverInterface
 {
@@ -24,12 +24,9 @@ final class EnumValuesResolver implements ValuesResolverInterface
      */
     public function resolve(array $unresolvedValues, object $entity): array
     {
-        /** @var class-string<\BackedEnum> $enumFqcn */
-        $enumFqcn = $unresolvedValues[0];
-
         return array_map(
             static fn (\BackedEnum $case): int|string => $case->value,
-            $enumFqcn::cases(),
+            $unresolvedValues[0]::cases(),
         );
     }
 }
