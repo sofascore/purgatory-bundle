@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle2\Tests\Functional;
 
+use Composer\InstalledVersions;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Contracts\HttpClient\Test\TestHttpServer;
 
 abstract class AbstractKernelTestCase extends KernelTestCase
 {
+    private ?int $serverPort = null;
+
     public static function tearDownAfterClass(): void
     {
         $fileSystem = new Filesystem();
@@ -22,6 +26,16 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         }
 
         $fileSystem->remove($dir);
+    }
+
+    protected function tearDown(): void
+    {
+        if (null !== $this->serverPort) {
+            TestHttpServer::stop($this->serverPort);
+            $this->serverPort = null;
+        }
+
+        parent::tearDown();
     }
 
     protected static function initializeApplication(array $options = []): void
@@ -39,7 +53,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return TestKernel::class;
     }
 
-    protected static function createKernel(array $options = []): KernelInterface
+    public static function createKernel(array $options = []): KernelInterface
     {
         $class = self::getKernelClass();
 
@@ -74,5 +88,23 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         if (0 !== $exitCode) {
             throw new \RuntimeException(\sprintf('An error occurred while running the "%s" command: %s', $command, $output->fetch()));
         }
+    }
+
+    protected function startServer(int $port, array $kernelOptions = []): void
+    {
+        $installedVersion = InstalledVersions::getVersion('symfony/http-client-contracts');
+        if (version_compare($installedVersion, '3.4.2', '<')) {
+            self::markTestSkipped(\sprintf('The "%s" class does not allow setting a custom working directory.', TestHttpServer::class));
+        }
+
+        $this->serverPort = $port;
+
+        $_SERVER['TEST_CLASS'] = static::class;
+        putenv('TEST_CLASS='.static::class);
+
+        $_SERVER['TEST_KERNEL_OPTIONS'] = json_encode($kernelOptions);
+        putenv('TEST_KERNEL_OPTIONS='.$_SERVER['TEST_KERNEL_OPTIONS']);
+
+        TestHttpServer::start($port, \dirname(__DIR__).'/Functional/public');
     }
 }

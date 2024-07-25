@@ -17,7 +17,10 @@
 
         <purgatory:doctrine-event-listener-priorities preRemove="10" postPersist="20" postUpdate="30" />
 
-        <purgatory:purger name="symfony" />
+        <purgatory:purger name="varnish" http_client="foo.client">
+            <purgatory:host>http://foo.bar</purgatory:host>
+            <purgatory:host>http://baz.qux</purgatory:host>
+        </purgatory:purger>
 
         <purgatory:messenger transport="async" bus="command_bus" batch-size="100" />
 

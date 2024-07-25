@@ -1,0 +1,11 @@
+framework:
+    http_cache: true
+
+services:
+    Sofascore\PurgatoryBundle2\Tests\Functional\VarnishPurger\TestHttpCache:
+        decorates: http_cache
+        arguments:
+            - '@kernel'
+            - '@http_cache.store'
+            - '@?esi'
+            - { trace_level: 'short' }

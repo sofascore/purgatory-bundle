@@ -23,6 +23,7 @@ use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessageHandler;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle2\Purger\VarnishPurger;
 use Sofascore\PurgatoryBundle2\Purger\VoidPurger;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle2\RouteParamValueResolver\DynamicValuesResolver;
@@ -176,6 +177,13 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory2.purger', ['alias' => 'symfony'])
             ->args([
                 service('http_cache.store'),
+            ])
+
+        ->set('sofascore.purgatory2.purger.varnish', VarnishPurger::class)
+            ->tag('purgatory2.purger', ['alias' => 'varnish'])
+            ->args([
+                service('http_client'),
+                param('.sofascore.purgatory2.purger.hosts'),
             ])
 
         ->set('sofascore.purgatory2.purger.async', AsyncPurger::class)

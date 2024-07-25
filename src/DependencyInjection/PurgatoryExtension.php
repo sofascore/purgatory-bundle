@@ -25,6 +25,7 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpKernel\DependencyInjection\ConfigurableExtension;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
@@ -105,9 +106,15 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             },
         );
 
-        /** @var array{name: ?string} $purgerConfig */
+        /** @var array{name: ?string, hosts: list<string>, http_client: ?string} $purgerConfig */
         $purgerConfig = $mergedConfig['purger'];
         $container->setParameter('.sofascore.purgatory2.purger.name', $purgerConfig['name']);
+        $container->setParameter('.sofascore.purgatory2.purger.hosts', $purgerConfig['hosts']);
+
+        if (null !== $purgerConfig['http_client']) {
+            $container->getDefinition('sofascore.purgatory2.purger.varnish')
+                ->replaceArgument(0, new Reference($purgerConfig['http_client']));
+        }
 
         /** @var list<string> $mappingPaths */
         $mappingPaths = $mergedConfig['mapping_paths'];
@@ -179,6 +186,10 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
 
         $container->registerForAutoconfiguration(ValuesResolverInterface::class)
             ->addTag('purgatory2.route_param_value_resolver');
+
+        if (!class_exists(HttpClient::class)) {
+            $container->removeDefinition('sofascore.purgatory2.purger.varnish');
+        }
 
         if (!class_exists(ExpressionLanguage::class)) {
             $container->removeDefinition('sofascore.purgatory2.expression_language');

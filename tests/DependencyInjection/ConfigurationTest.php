@@ -34,6 +34,8 @@ final class ConfigurationTest extends TestCase
             ],
             'purger' => [
                 'name' => null,
+                'hosts' => [],
+                'http_client' => null,
             ],
             'messenger' => [
                 'transport' => null,
@@ -42,6 +44,25 @@ final class ConfigurationTest extends TestCase
             ],
             'profiler_integration' => true,
         ], $config);
+    }
+
+    public function testPurgerHostsValidation(): void
+    {
+        $config = (new Processor())->processConfiguration(new Configuration(), [
+            'sofascore_purgatory' => [
+                'purger' => [
+                    'hosts' => [
+                        'http://foo.bar',
+                        'https://baz-qux/',
+                    ],
+                ],
+            ],
+        ]);
+
+        self::assertSame([
+            'http://foo.bar',
+            'https://baz-qux',
+        ], $config['purger']['hosts']);
     }
 
     public function testMessengerBusWithoutTransportValidation(): void
@@ -130,7 +151,12 @@ final class ConfigurationTest extends TestCase
                     'postUpdate' => 30,
                 ],
                 'purger' => [
-                    'name' => 'symfony',
+                    'name' => 'varnish',
+                    'http_client' => 'foo.client',
+                    'hosts' => [
+                        'http://foo.bar',
+                        'http://baz.qux',
+                    ],
                 ],
                 'messenger' => [
                     'transport' => 'async',
@@ -160,6 +186,8 @@ final class ConfigurationTest extends TestCase
                 'doctrine_middleware_priority' => null,
                 'purger' => [
                     'name' => null,
+                    'hosts' => [],
+                    'http_client' => null,
                 ],
                 'messenger' => [
                     'transport' => null,

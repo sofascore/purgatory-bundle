@@ -347,13 +347,16 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => [
                 'purger' => [
                     'name' => 'foo_purger',
+                    'hosts' => ['http://localhost:80'],
                 ],
             ],
         ], $container);
 
         self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.name'));
+        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.hosts'));
 
         self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory2.purger.name'));
+        self::assertSame(['http://localhost:80'], $container->getParameter('.sofascore.purgatory2.purger.hosts'));
     }
 
     public function testDefaultPurgerIsSetToVoidPurger(): void
@@ -366,6 +369,7 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => [
                 'purger' => [
                     'name' => 'foo_purger',
+                    'hosts' => ['http://localhost:80'],
                 ],
             ],
         ], $container);
@@ -375,6 +379,24 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertTrue($container->hasAlias(PurgerInterface::class));
         self::assertSame('sofascore.purgatory2.purger', (string) $container->getAlias(PurgerInterface::class));
+    }
+
+    #[TestWith([[], 'http_client'])]
+    #[TestWith([['http_client' => 'foo.client'], 'foo.client'])]
+    public function testCorrectHttpClientIsSet(array $config, string $expectedHttpClient): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => [
+                'purger' => $config,
+            ],
+        ], $container);
+
+        self::assertTrue($container->has('sofascore.purgatory2.purger.varnish'));
+        self::assertSame($expectedHttpClient, (string) $container->getDefinition('sofascore.purgatory2.purger.varnish')->getArgument(0));
     }
 
     public function testMessengerWhenTransportIsNotSet(): void

@@ -8,6 +8,7 @@ use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class Configuration implements ConfigurationInterface
@@ -54,16 +55,33 @@ final class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('purger')
+                    ->fixXmlConfig('host')
                     ->addDefaultsIfNotSet()
                     ->beforeNormalization()
                         ->ifString()
                         ->then(static fn (string $purger): array => ['name' => $purger])
                     ->end()
+                    ->validate()
+                        ->ifTrue(static fn (array $purger): bool => 'varnish' === $purger['name'] && !class_exists(HttpClient::class))
+                        ->thenInvalid('The Varnish purger requires Symfony\'s HTTP client component to be installed. Try running "composer require symfony/http-client".')
+                    ->end()
                     ->children()
                         ->scalarNode('name')
-                            ->info(\sprintf('A service that implements the "%s" interface', PurgerInterface::class))
+                            ->info(\sprintf('The ID of a service that implements the "%s" interface', PurgerInterface::class))
                             ->example('symfony')
                             ->defaultNull()
+                        ->end()
+                        ->arrayNode('hosts')
+                            ->info('The hosts from which URLs should be purged')
+                            ->scalarPrototype()
+                                ->validate()->always(static fn (string $host): string => rtrim($host, '/'))->end()
+                            ->end()
+                            ->defaultValue([])
+                        ->end()
+                        ->scalarNode('http_client')
+                            ->info('The service ID of the HTTP client to use, must be an instance of Symfony\'s HTTP client')
+                            ->defaultNull()
+                            ->cannotBeEmpty()
                         ->end()
                     ->end()
                 ->end()
