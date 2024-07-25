@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess;
+namespace Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess;
 
-use Sofascore\PurgatoryBundle2\Exception\ValueNotIterableException;
+use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;

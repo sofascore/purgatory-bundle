@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\VarnishPurger\Controller;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\VarnishPurger\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;

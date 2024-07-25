@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Listener;
+namespace Sofascore\PurgatoryBundle\Tests\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
-use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
+use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity\Dummy;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[CoversClass(EntityChangeListener::class)]

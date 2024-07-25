@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 
 /**
  * @implements ValuesResolverInterface<non-empty-list<array{type: string, values: list<mixed>}>>

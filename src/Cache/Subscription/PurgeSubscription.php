@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Subscription;
+namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
 

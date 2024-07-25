@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Listener;
+namespace Sofascore\PurgatoryBundle\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -10,9 +10,9 @@ use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
-use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener

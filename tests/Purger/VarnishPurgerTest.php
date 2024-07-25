@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
-use Sofascore\PurgatoryBundle2\Exception\PurgeRequestFailedException;
-use Sofascore\PurgatoryBundle2\Purger\VarnishPurger;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Exception\PurgeRequestFailedException;
+use Sofascore\PurgatoryBundle\Purger\VarnishPurger;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\MockHttpClient;

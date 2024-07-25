@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Attribute\Target;
+namespace Sofascore\PurgatoryBundle\Attribute\Target;
 
 final class ForProperties implements TargetInterface
 {

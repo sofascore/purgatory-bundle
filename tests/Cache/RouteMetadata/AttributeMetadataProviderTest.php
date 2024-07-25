@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\AttributeMetadataProvider;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BarController;
-use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\BazController;
-use Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\FooController;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\BarController;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\BazController;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\FooController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use Sofascore\PurgatoryBundle2\Purger\SymfonyPurger;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
 use Symfony\Component\HttpKernel\HttpCache\StoreInterface;
@@ -35,7 +35,7 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
         self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
         self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
 
-        self::getContainer()->get('sofascore.purgatory2.purger.symfony')->purge(['http://localhost/']);
+        self::getContainer()->get('sofascore.purgatory.purger.symfony')->purge(['http://localhost/']);
 
         self::assertSame('2', $kernel->handle(Request::create('http://localhost/'))->getContent());
     }

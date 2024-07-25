@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\Competition;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition\Competition;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;

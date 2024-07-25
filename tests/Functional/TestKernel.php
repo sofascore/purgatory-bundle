@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional;
+namespace Sofascore\PurgatoryBundle\Tests\Functional;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
-use Sofascore\PurgatoryBundle2\Purgatory2Bundle;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -61,7 +61,7 @@ final class TestKernel extends Kernel
     {
         yield new FrameworkBundle();
         yield new DoctrineBundle();
-        yield new Purgatory2Bundle();
+        yield new PurgatoryBundle();
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader): void
@@ -72,7 +72,7 @@ final class TestKernel extends Kernel
                 $phpLoader = $loader->getResolver()->resolve(__FILE__, 'php');
                 $phpLoader->registerClasses(
                     (new Definition())->setAutowired(true)->setAutoconfigured(true),
-                    'Sofascore\PurgatoryBundle2\Tests\Functional\\'.$this->testCase.'\Controller\\',
+                    'Sofascore\PurgatoryBundle\Tests\Functional\\'.$this->testCase.'\Controller\\',
                     $dir,
                 );
 
@@ -101,7 +101,7 @@ final class TestKernel extends Kernel
                                 'type' => 'attribute',
                                 'is_bundle' => false,
                                 'dir' => $dir,
-                                'prefix' => 'Sofascore\PurgatoryBundle2\Tests\Functional\\'.$this->testCase.'\Entity',
+                                'prefix' => 'Sofascore\PurgatoryBundle\Tests\Functional\\'.$this->testCase.'\Entity',
                                 'alias' => 'App',
                             ],
                         ],
@@ -109,7 +109,7 @@ final class TestKernel extends Kernel
                 ]);
             }
 
-            $container->loadFromExtension('sofascore_purgatory', [
+            $container->loadFromExtension('purgatory', [
                 'purger' => 'in-memory',
             ]);
         });

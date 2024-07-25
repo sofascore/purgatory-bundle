@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
 
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -19,7 +19,7 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
         $routeParamServiceRefs = [];
         $usedAliases = [];
         /** @var list<array{alias: string, method: string}> $attributes */
-        foreach ($container->findTaggedServiceIds('purgatory2.route_parameter_service', true) as $id => $attributes) {
+        foreach ($container->findTaggedServiceIds('purgatory.route_parameter_service', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
                 ['alias' => $alias, 'method' => $method] = $attribute;
 
@@ -40,10 +40,10 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
         }
 
         if ($routeParamServiceRefs) {
-            $container->getDefinition('sofascore.purgatory2.route_parameter_resolver.dynamic')
+            $container->getDefinition('sofascore.purgatory.route_parameter_resolver.dynamic')
                 ->replaceArgument(0, ServiceLocatorTagPass::register($container, $routeParamServiceRefs));
         } else {
-            $container->removeDefinition('sofascore.purgatory2.route_parameter_resolver.dynamic');
+            $container->removeDefinition('sofascore.purgatory.route_parameter_resolver.dynamic');
         }
     }
 }

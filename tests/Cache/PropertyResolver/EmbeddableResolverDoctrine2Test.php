@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresMethod;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\EmbeddableResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\EmbeddableResolver;
 
 #[CoversClass(EmbeddableResolver::class)]
 #[RequiresMethod(ClassMetadataInfo::class, '__construct')]

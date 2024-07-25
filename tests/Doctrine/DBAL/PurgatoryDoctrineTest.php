@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Doctrine\DBAL;
+namespace Sofascore\PurgatoryBundle\Tests\Doctrine\DBAL;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Sofascore\PurgatoryBundle2\Doctrine\DBAL\Middleware;
-use Sofascore\PurgatoryBundle2\Doctrine\DBAL\PurgatoryConnection;
-use Sofascore\PurgatoryBundle2\Doctrine\DBAL\PurgatoryDriver;
-use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
-use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
+use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
+use Sofascore\PurgatoryBundle\Doctrine\DBAL\PurgatoryConnection;
+use Sofascore\PurgatoryBundle\Doctrine\DBAL\PurgatoryDriver;
+use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity\Dummy;
 
 #[CoversClass(Middleware::class)]
 #[CoversClass(PurgatoryConnection::class)]
@@ -29,7 +29,7 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'EntityChangeListener']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-        $this->entityChangeListener = self::getContainer()->get('sofascore.purgatory2.entity_change_listener');
+        $this->entityChangeListener = self::getContainer()->get('sofascore.purgatory.entity_change_listener');
     }
 
     protected function tearDown(): void

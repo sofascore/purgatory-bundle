@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\AttributeMetadataProvider;
-use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\ControllerClassMapPass;
-use Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\ControllerClassMapPass;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -25,11 +25,11 @@ final class ControllerClassMapPassTest extends TestCase
         $container = new ContainerBuilder();
 
         $container->register(id: $id, class: $class)->addTag(
-            name: 'purgatory2.purge_on',
+            name: 'purgatory.purge_on',
             attributes: $hasAttribute ? ['class' => $class] : [],
         );
 
-        $definition = $container->register('sofascore.purgatory2.route_metadata_provider.attribute', AttributeMetadataProvider::class)
+        $definition = $container->register('sofascore.purgatory.route_metadata_provider.attribute', AttributeMetadataProvider::class)
             ->setArguments([
                 $this->createMock(RouterInterface::class),
                 [],

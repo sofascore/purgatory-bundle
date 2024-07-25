@@ -15,12 +15,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Sofascore\\PurgatoryBundle2\\": "src/"
+            "Sofascore\\PurgatoryBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Sofascore\\PurgatoryBundle2\\Tests\\": "tests/"
+            "Sofascore\\PurgatoryBundle\\Tests\\": "tests/"
         }
     },
     "require": {

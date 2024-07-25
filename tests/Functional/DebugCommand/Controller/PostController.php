@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Controller;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Controller;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Author;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Post;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Tag;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Enum\LanguageCodes;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Post;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Tag;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum\LanguageCodes;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
@@ -50,7 +50,7 @@ class PostController
                 new EnumValues(LanguageCodes::class),
                 new RawValues('XK'), // Kosovo
             ),
-            'page' => new DynamicValues('purgatory2.get_page'),
+            'page' => new DynamicValues('purgatory.get_page'),
         ],
     )]
     public function list()

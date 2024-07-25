@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
 /**
  * @template T of array

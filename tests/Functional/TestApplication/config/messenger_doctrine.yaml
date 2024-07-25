@@ -6,6 +6,6 @@ framework:
         transports:
             async: 'doctrine://default'
 
-sofascore_purgatory:
+purgatory:
     messenger: async
     doctrine_middleware: false

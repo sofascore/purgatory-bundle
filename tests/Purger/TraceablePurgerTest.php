@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\DataCollector\PurgatoryDataCollector;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
-use Sofascore\PurgatoryBundle2\Purger\TraceablePurger;
+use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\TraceablePurger;
 
 #[CoversClass(PurgatoryDataCollector::class)]
 #[CoversClass(TraceablePurger::class)]

@@ -2,27 +2,27 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Application;
+namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\VehicleController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\Competition;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Vehicle;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Car;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition\Competition;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Vehicle;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversNothing]
@@ -34,7 +34,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
     {
         self::initializeApplication(['test_case' => 'TestApplication']);
 
-        self::$configuration = self::getContainer()->get('sofascore.purgatory2.configuration_loader')->load();
+        self::$configuration = self::getContainer()->get('sofascore.purgatory.configuration_loader')->load();
     }
 
     public static function tearDownAfterClass(): void
@@ -172,7 +172,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::type(),
-                                'values' => ['purgatory2.animal_rating3', 'owner'],
+                                'values' => ['purgatory.animal_rating3', 'owner'],
                             ],
                         ],
                     ],
@@ -371,15 +371,15 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => [
                             [
                                 'type' => DynamicValues::type(),
-                                'values' => ['purgatory2.animal_rating2', null],
+                                'values' => ['purgatory.animal_rating2', null],
                             ],
                             [
                                 'type' => DynamicValues::type(),
-                                'values' => ['purgatory2.animal_rating1', null],
+                                'values' => ['purgatory.animal_rating1', null],
                             ],
                             [
                                 'type' => DynamicValues::type(),
-                                'values' => ['purgatory2.animal_rating3', 'owner'],
+                                'values' => ['purgatory.animal_rating3', 'owner'],
                             ],
                         ],
                     ],

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Cache\PropertyResolver;
 
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\EmbeddedClassMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
-use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 
 /**
  * Handles properties from embeddable objects.

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Subscription;
+namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProviderInterface;
-use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
-use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle2\Exception\TargetSubscriptionNotResolvableException;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
+use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
 
 /**
  * @internal Used during cache warmup

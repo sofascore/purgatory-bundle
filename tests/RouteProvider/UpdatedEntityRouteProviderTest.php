@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteProvider;
+namespace Sofascore\PurgatoryBundle\Tests\RouteProvider;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
-use Sofascore\PurgatoryBundle2\Exception\LogicException;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
-use Sofascore\PurgatoryBundle2\RouteProvider\UpdatedEntityRouteProvider;
-use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\RouteProvider\UpdatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;

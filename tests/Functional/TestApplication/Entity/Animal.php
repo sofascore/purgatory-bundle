@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Sofascore\PurgatoryBundle2\Attribute\TargetedProperties;
+use Sofascore\PurgatoryBundle\Attribute\TargetedProperties;
 use Symfony\Component\Serializer\Annotation\Groups as AnnotationGroups;
 use Symfony\Component\Serializer\Attribute\Groups;
 

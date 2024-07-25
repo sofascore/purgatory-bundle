@@ -3,5 +3,5 @@ services:
         autoconfigure: true
         autowire: true
 
-    Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\:
+    Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\:
         resource: '../'

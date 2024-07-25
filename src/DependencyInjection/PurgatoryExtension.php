@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Doctrine\ORM\Events as DoctrineEvents;
-use Sofascore\PurgatoryBundle2\Attribute\AsExpressionLanguageFunction;
-use Sofascore\PurgatoryBundle2\Attribute\AsRouteParamService;
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
-use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
-use Sofascore\PurgatoryBundle2\Exception\LogicException;
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
-use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
-use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
+use Sofascore\PurgatoryBundle\Attribute\AsExpressionLanguageFunction;
+use Sofascore\PurgatoryBundle\Attribute\AsRouteParamService;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\ChildDefinition;
@@ -66,7 +66,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             PurgeOn::class,
             static function (ChildDefinition $definition, PurgeOn $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.purge_on',
+                    name: 'purgatory.purge_on',
                     attributes: [
                         'class' => $reflection instanceof \ReflectionMethod ? $reflection->class : $reflection->name,
                     ],
@@ -78,7 +78,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             AsRouteParamService::class,
             static function (ChildDefinition $definition, AsRouteParamService $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.route_parameter_service',
+                    name: 'purgatory.route_parameter_service',
                     attributes: [
                         'alias' => $attribute->alias,
                         'method' => $reflection instanceof \ReflectionMethod
@@ -94,7 +94,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             AsExpressionLanguageFunction::class,
             static function (ChildDefinition $definition, AsExpressionLanguageFunction $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.expression_language_function',
+                    name: 'purgatory.expression_language_function',
                     attributes: [
                         'function' => $attribute->functionName,
                         'method' => $reflection instanceof \ReflectionMethod
@@ -108,11 +108,11 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
 
         /** @var array{name: ?string, hosts: list<string>, http_client: ?string} $purgerConfig */
         $purgerConfig = $mergedConfig['purger'];
-        $container->setParameter('.sofascore.purgatory2.purger.name', $purgerConfig['name']);
-        $container->setParameter('.sofascore.purgatory2.purger.hosts', $purgerConfig['hosts']);
+        $container->setParameter('.sofascore.purgatory.purger.name', $purgerConfig['name']);
+        $container->setParameter('.sofascore.purgatory.purger.hosts', $purgerConfig['hosts']);
 
         if (null !== $purgerConfig['http_client']) {
-            $container->getDefinition('sofascore.purgatory2.purger.varnish')
+            $container->getDefinition('sofascore.purgatory.purger.varnish')
                 ->replaceArgument(0, new Reference($purgerConfig['http_client']));
         }
 
@@ -123,13 +123,13 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
                 throw new LogicException('You cannot use YAML configuration because the Symfony Yaml component is not installed. Try running "composer require symfony/yaml".');
             }
 
-            $container->getDefinition('sofascore.purgatory2.route_metadata_provider.yaml')
+            $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')
                 ->replaceArgument(1, $files);
         } else {
-            $container->removeDefinition('sofascore.purgatory2.route_metadata_provider.yaml');
+            $container->removeDefinition('sofascore.purgatory.route_metadata_provider.yaml');
         }
 
-        $container->getDefinition('sofascore.purgatory2.route_metadata_provider.attribute')
+        $container->getDefinition('sofascore.purgatory.route_metadata_provider.attribute')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
 
         /** @var array<DoctrineEvents::*, ?int> $doctrineEventListenerPriorities */
@@ -138,7 +138,7 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         /** @var array{enabled: bool, priority: ?int} $doctrineMiddlewareConfig */
         $doctrineMiddlewareConfig = $mergedConfig['doctrine_middleware'];
         if ($doctrineMiddlewareConfig['enabled']) {
-            $container->getDefinition('sofascore.purgatory2.doctrine_middleware')
+            $container->getDefinition('sofascore.purgatory.doctrine_middleware')
                 ->addTag(
                     name: 'doctrine.middleware',
                     attributes: null !== $doctrineMiddlewareConfig['priority'] ? ['priority' => $doctrineMiddlewareConfig['priority']] : [],
@@ -146,10 +146,10 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
 
             unset($doctrineEventListenerPriorities[DoctrineEvents::postFlush]);
         } else {
-            $container->removeDefinition('sofascore.purgatory2.doctrine_middleware');
+            $container->removeDefinition('sofascore.purgatory.doctrine_middleware');
         }
 
-        $listenerDefinition = $container->getDefinition('sofascore.purgatory2.entity_change_listener');
+        $listenerDefinition = $container->getDefinition('sofascore.purgatory.entity_change_listener');
         foreach ($doctrineEventListenerPriorities as $event => $priority) {
             $listenerDefinition->addTag(
                 name: 'doctrine.event_listener',
@@ -160,44 +160,44 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         /** @var array{transport: ?string, bus: ?string, batch_size: ?positive-int} $messengerConfig */
         $messengerConfig = $mergedConfig['messenger'];
         if (null !== $messengerConfig['transport']) {
-            $container->setParameter('.sofascore.purgatory2.purger.async_transport', $messengerConfig['transport']);
+            $container->setParameter('.sofascore.purgatory.purger.async_transport', $messengerConfig['transport']);
             if (null !== $messengerConfig['bus']) {
-                $container->getDefinition('sofascore.purgatory2.purger.async')
+                $container->getDefinition('sofascore.purgatory.purger.async')
                     ->replaceArgument(0, new Reference($messengerConfig['bus']));
             }
             if (null !== $messengerConfig['batch_size']) {
-                $container->getDefinition('sofascore.purgatory2.purger.async')
+                $container->getDefinition('sofascore.purgatory.purger.async')
                     ->setArgument(1, $messengerConfig['batch_size']);
             }
-            $container->getDefinition('sofascore.purgatory2.purge_message_handler')
+            $container->getDefinition('sofascore.purgatory.purge_message_handler')
                 ->addTag(
                     name: 'messenger.message_handler',
                     attributes: null !== $messengerConfig['bus'] ? ['bus' => $messengerConfig['bus']] : [],
                 );
         } else {
-            $container->setParameter('.sofascore.purgatory2.purger.async_transport', null);
-            $container->removeDefinition('sofascore.purgatory2.purger.async');
-            $container->removeDefinition('sofascore.purgatory2.purge_message_handler');
+            $container->setParameter('.sofascore.purgatory.purger.async_transport', null);
+            $container->removeDefinition('sofascore.purgatory.purger.async');
+            $container->removeDefinition('sofascore.purgatory.purge_message_handler');
         }
 
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
-            ->addTag('purgatory2.subscription_resolver');
+            ->addTag('purgatory.subscription_resolver');
 
         $container->registerForAutoconfiguration(TargetResolverInterface::class)
-            ->addTag('purgatory2.target_resolver');
+            ->addTag('purgatory.target_resolver');
 
         $container->registerForAutoconfiguration(RouteProviderInterface::class)
-            ->addTag('purgatory2.route_provider');
+            ->addTag('purgatory.route_provider');
 
         $container->registerForAutoconfiguration(ValuesResolverInterface::class)
-            ->addTag('purgatory2.route_param_value_resolver');
+            ->addTag('purgatory.route_param_value_resolver');
 
         if (!class_exists(HttpClient::class)) {
-            $container->removeDefinition('sofascore.purgatory2.purger.varnish');
+            $container->removeDefinition('sofascore.purgatory.purger.varnish');
         }
 
         if (!class_exists(ExpressionLanguage::class)) {
-            $container->removeDefinition('sofascore.purgatory2.expression_language');
+            $container->removeDefinition('sofascore.purgatory.expression_language');
         }
     }
 
@@ -232,6 +232,19 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         }
     }
 
+    public function process(ContainerBuilder $container): void
+    {
+        if (!$container->hasDefinition('cache.system')) {
+            $container->removeDefinition('sofascore.purgatory.cache.expression_language');
+        }
+
+        if (!$container->hasDefinition('profiler') || !$container->hasDefinition('twig')) {
+            $container->removeDefinition('sofascore.purgatory.data_collector');
+            $container->removeDefinition('sofascore.purgatory.purger.traceable');
+            $container->removeDefinition('sofascore.purgatory.purger.sync.traceable');
+        }
+    }
+
     public function getNamespace(): string
     {
         return 'http://sofascore.com/schema/dic/purgatory';
@@ -240,23 +253,5 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
     public function getXsdValidationBasePath(): string
     {
         return __DIR__.'/../../config/schema';
-    }
-
-    public function getAlias(): string
-    {
-        return 'sofascore_purgatory';
-    }
-
-    public function process(ContainerBuilder $container): void
-    {
-        if (!$container->hasDefinition('cache.system')) {
-            $container->removeDefinition('sofascore.purgatory2.cache.expression_language');
-        }
-
-        if (!$container->hasDefinition('profiler') || !$container->hasDefinition('twig')) {
-            $container->removeDefinition('sofascore.purgatory2.data_collector');
-            $container->removeDefinition('sofascore.purgatory2.purger.traceable');
-            $container->removeDefinition('sofascore.purgatory2.purger.sync.traceable');
-        }
     }
 }

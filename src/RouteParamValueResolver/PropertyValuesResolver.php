@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**

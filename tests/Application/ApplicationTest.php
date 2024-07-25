@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Application;
+namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\RequiresMethod;
-use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\AnimalController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\CompetitionController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\PersonController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller\VehicleController;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Car;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\AnimalCompetition;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition\HumanCompetition;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Measurements;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Plane;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Ship;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Car;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition\AnimalCompetition;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition\HumanCompetition;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Measurements;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plane;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
 #[CoversNothing]

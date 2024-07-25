@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 
 #[ORM\Entity]
 class Person

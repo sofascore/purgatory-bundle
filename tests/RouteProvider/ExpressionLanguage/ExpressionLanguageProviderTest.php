@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteProvider\ExpressionLanguage;
+namespace Sofascore\PurgatoryBundle\Tests\RouteProvider\ExpressionLanguage;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\RouteProvider\ExpressionLanguage\ExpressionLanguageProvider;
+use Sofascore\PurgatoryBundle\RouteProvider\ExpressionLanguage\ExpressionLanguageProvider;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 

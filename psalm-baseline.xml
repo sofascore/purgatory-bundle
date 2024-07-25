@@ -64,7 +64,7 @@
     <ArgumentTypeCoercion>
       <code><![CDATA[static function (ChildDefinition $definition, AsExpressionLanguageFunction $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.expression_language_function',
+                    name: 'purgatory.expression_language_function',
                     attributes: [
                         'function' => $attribute->functionName,
                         'method' => $reflection instanceof \ReflectionMethod
@@ -76,7 +76,7 @@
             }]]></code>
       <code><![CDATA[static function (ChildDefinition $definition, AsRouteParamService $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.route_parameter_service',
+                    name: 'purgatory.route_parameter_service',
                     attributes: [
                         'alias' => $attribute->alias,
                         'method' => $reflection instanceof \ReflectionMethod
@@ -88,7 +88,7 @@
             }]]></code>
       <code><![CDATA[static function (ChildDefinition $definition, PurgeOn $attribute, \ReflectionClass|\ReflectionMethod $reflection): void {
                 $definition->addTag(
-                    name: 'purgatory2.purge_on',
+                    name: 'purgatory.purge_on',
                     attributes: [
                         'class' => $reflection instanceof \ReflectionMethod ? $reflection->class : $reflection->name,
                     ],

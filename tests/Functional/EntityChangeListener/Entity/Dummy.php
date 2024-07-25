@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 

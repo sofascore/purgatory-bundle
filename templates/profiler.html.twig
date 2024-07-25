@@ -3,7 +3,7 @@
 {% block toolbar %}
     {% if collector.totalUrls > 0 %}
         {% set icon %}
-            {{ source('@Purgatory2/purgatory.svg') }}
+            {{ source('@Purgatory/purgatory.svg') }}
             <span class="sf-toolbar-value">{{ collector.totalUrls }}</span>
             <span class="sf-toolbar-info-piece-additional-detail">
                 <span class="sf-toolbar-label">in</span>
@@ -19,7 +19,7 @@
 {% block menu %}
     <span class="label {{ collector.totalUrls == 0 ? 'disabled' }}">
         <span class="icon">
-            {{ source('@Purgatory2/purgatory.svg') }}
+            {{ source('@Purgatory/purgatory.svg') }}
         </span>
         <strong>Purgatory</strong>
     </span>

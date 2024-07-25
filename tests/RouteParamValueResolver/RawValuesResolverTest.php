@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
 
 #[CoversClass(RawValuesResolver::class)]
 final class RawValuesResolverTest extends TestCase

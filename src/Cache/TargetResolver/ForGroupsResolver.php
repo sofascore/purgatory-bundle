@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\TargetResolver;
+namespace Sofascore\PurgatoryBundle\Cache\TargetResolver;
 
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
-use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
-use Sofascore\PurgatoryBundle2\Exception\LogicException;
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
+use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 

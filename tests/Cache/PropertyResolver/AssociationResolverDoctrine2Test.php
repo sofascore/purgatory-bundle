@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresMethod;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 
 #[CoversClass(AssociationResolver::class)]
 #[RequiresMethod(ClassMetadataInfo::class, '__construct')]

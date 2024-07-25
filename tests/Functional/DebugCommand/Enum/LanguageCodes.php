@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Enum;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum;
 
 enum LanguageCodes: string
 {

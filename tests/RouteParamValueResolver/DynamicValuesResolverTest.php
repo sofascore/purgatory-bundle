@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\DynamicValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
-use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\DummyServiceOne;
-use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\DummyServiceTwo;
-use Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures\Foo;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\DynamicValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\DummyServiceOne;
+use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\DummyServiceTwo;
+use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\Foo;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 

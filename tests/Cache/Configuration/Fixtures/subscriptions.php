@@ -7,7 +7,7 @@
       'actions' => 
       array (
         0 => 
-        %SSofascore\PurgatoryBundle2\Listener\Enum\Action::Update,
+        %SSofascore\PurgatoryBundle\Listener\Enum\Action::Update,
       ),
     ),
   ),
@@ -30,7 +30,7 @@
       'actions' => 
       array (
         0 => 
-        %SSofascore\PurgatoryBundle2\Listener\Enum\Action::Create,
+        %SSofascore\PurgatoryBundle\Listener\Enum\Action::Create,
       ),
     ),
   ),

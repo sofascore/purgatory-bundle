@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Test;
+namespace Sofascore\PurgatoryBundle\Tests\Test;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
-use Sofascore\PurgatoryBundle2\Purger\VoidPurger;
-use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
+use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\VoidPurger;
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -70,8 +70,8 @@ final class InteractsWithPurgatoryTest extends TestCase
 
     public static function provideTraitTestCases(): iterable
     {
-        yield 'sync' => [PurgerInterface::class, 'sofascore.purgatory2.purger.async'];
-        yield 'async' => ['sofascore.purgatory2.purger.sync', PurgerInterface::class];
+        yield 'sync' => [PurgerInterface::class, 'sofascore.purgatory.purger.async'];
+        yield 'async' => ['sofascore.purgatory.purger.sync', PurgerInterface::class];
     }
 
     public function testExceptionIsThrownWhenClassIsNotKernelTestCase(): void

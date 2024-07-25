@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
+namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 
 final class CompoundValues extends AbstractValues implements InverseValuesAwareInterface
 {

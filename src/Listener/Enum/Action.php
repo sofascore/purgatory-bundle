@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Listener\Enum;
+namespace Sofascore\PurgatoryBundle\Listener\Enum;
 
 enum Action: string
 {

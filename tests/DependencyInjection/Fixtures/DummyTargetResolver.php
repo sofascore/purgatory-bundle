@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures;
 
-use Sofascore\PurgatoryBundle2\Attribute\Target\TargetInterface;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 
 final class DummyTargetResolver implements TargetResolverInterface
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Competition;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition;
 
 use Doctrine\ORM\Mapping as ORM;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 
 #[ORM\Entity]
 class HumanCompetition extends Competition

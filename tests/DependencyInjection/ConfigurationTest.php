@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\DependencyInjection\Configuration;
-use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\DependencyInjection\Configuration;
+use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -21,7 +21,7 @@ final class ConfigurationTest extends TestCase
 {
     public function testDefaultConfig(): void
     {
-        $config = (new Processor())->processConfiguration(new Configuration(), ['sofascore_purgatory' => []]);
+        $config = (new Processor())->processConfiguration(new Configuration(), ['purgatory' => []]);
 
         self::assertSame([
             'mapping_paths' => [],
@@ -53,7 +53,7 @@ final class ConfigurationTest extends TestCase
     public function testPurgerHostsValidation(): void
     {
         $config = (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
+            'purgatory' => [
                 'purger' => [
                     'hosts' => [
                         'http://foo.bar',
@@ -75,7 +75,7 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('Cannot set the messenger bus without defining the transport.');
 
         (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
+            'purgatory' => [
                 'messenger' => [
                     'bus' => 'some_id',
                 ],
@@ -89,7 +89,7 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('Cannot set the batch size without defining the transport.');
 
         (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
+            'purgatory' => [
                 'messenger' => [
                     'batch_size' => 1,
                 ],
@@ -105,7 +105,7 @@ final class ConfigurationTest extends TestCase
         $this->expectExceptionMessage('The batch size must be a number greater than 0.');
 
         (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
+            'purgatory' => [
                 'messenger' => [
                     'transport' => 'foo',
                     'batch_size' => $batchSize,
@@ -117,7 +117,7 @@ final class ConfigurationTest extends TestCase
     public function testDoctrineListenerPrioritiesConifgurationForSingleValue(): void
     {
         $configuration = (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
+            'purgatory' => [
                 'doctrine_event_listener_priorities' => 100,
             ],
         ]);
@@ -138,7 +138,7 @@ final class ConfigurationTest extends TestCase
         $xmlFileLoader = new XmlFileLoader($container, $locator);
         $xmlFileLoader->load($file);
 
-        $config = (new Processor())->processConfiguration(new Configuration(), $container->getExtensionConfig('sofascore_purgatory'));
+        $config = (new Processor())->processConfiguration(new Configuration(), $container->getExtensionConfig('purgatory'));
 
         self::assertSame($expectedConfig, $config);
     }

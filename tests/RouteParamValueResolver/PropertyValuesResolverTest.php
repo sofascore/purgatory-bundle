@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\PropertyValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(PropertyValuesResolver::class)]

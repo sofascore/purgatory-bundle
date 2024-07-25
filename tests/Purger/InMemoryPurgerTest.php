@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 
 #[CoversClass(InMemoryPurger::class)]
 final class InMemoryPurgerTest extends TestCase

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\RouteMetadata;
+namespace Sofascore\PurgatoryBundle\Cache\RouteMetadata;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Exception\InvalidPatternException;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Exception\InvalidPatternException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
 
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -16,8 +16,8 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
 {
     public function process(ContainerBuilder $container): void
     {
-        if (!$container->has('sofascore.purgatory2.expression_language')) {
-            $container->removeDefinition('sofascore.purgatory2.expression_language_provider');
+        if (!$container->has('sofascore.purgatory.expression_language')) {
+            $container->removeDefinition('sofascore.purgatory.expression_language_provider');
 
             return;
         }
@@ -25,7 +25,7 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
         $functionReferences = [];
         $usedFunctionNames = [];
         /** @var list<array{function: string, method: string}> $attributes */
-        foreach ($container->findTaggedServiceIds('purgatory2.expression_language_function', true) as $id => $attributes) {
+        foreach ($container->findTaggedServiceIds('purgatory.expression_language_function', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
                 ['function' => $function, 'method' => $method] = $attribute;
 
@@ -46,19 +46,19 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
         }
 
         if ($functionReferences) {
-            $container->getDefinition('sofascore.purgatory2.expression_language_provider')
+            $container->getDefinition('sofascore.purgatory.expression_language_provider')
                 ->replaceArgument(0, ServiceLocatorTagPass::register($container, $functionReferences));
         } else {
-            $container->removeDefinition('sofascore.purgatory2.expression_language_provider');
+            $container->removeDefinition('sofascore.purgatory.expression_language_provider');
         }
 
         $providerReferences = [];
-        foreach ($container->findTaggedServiceIds('purgatory2.expression_language_provider', true) as $id => $attributes) {
+        foreach ($container->findTaggedServiceIds('purgatory.expression_language_provider', true) as $id => $attributes) {
             $providerReferences[] = new Reference($id);
         }
 
         if ($providerReferences) {
-            $container->getDefinition('sofascore.purgatory2.expression_language')->setArgument(1, $providerReferences);
+            $container->getDefinition('sofascore.purgatory.expression_language')->setArgument(1, $providerReferences);
         }
     }
 }

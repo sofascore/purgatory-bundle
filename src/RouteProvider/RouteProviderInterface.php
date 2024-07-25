@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteProvider;
+namespace Sofascore\PurgatoryBundle\RouteProvider;
 
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 
 /**
  * @template T of object

@@ -21,27 +21,27 @@ parameters:
 			path: src/Attribute/RouteParamValue/PropertyValues.php
 
 		-
-			message: "#^Parameter \\#1 \\$alias of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\DynamicValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			message: "#^Parameter \\#1 \\$alias of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\DynamicValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\)\\: mixed\\)\\|null, Closure\\(non\\-empty\\-array\\<int, string\\>\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\)\\: \\(non\\-empty\\-array\\<int, string\\>\\|Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\ValuesInterface\\|string\\) given\\.$#"
+			message: "#^Parameter \\#1 \\$callback of function array_map expects \\(callable\\(bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\)\\: mixed\\)\\|null, Closure\\(non\\-empty\\-array\\<int, string\\>\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\)\\: \\(non\\-empty\\-array\\<int, string\\>\\|Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\ValuesInterface\\|string\\) given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\$enum of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\EnumValues constructor expects class\\-string\\<BackedEnum\\>, array\\<int, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\>\\|bool\\|float\\|int\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$enum of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\EnumValues constructor expects class\\-string\\<BackedEnum\\>, array\\<int, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue\\>\\|bool\\|float\\|int\\|string given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\.\\.\\.\\$properties of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\PropertyValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			message: "#^Parameter \\#1 \\.\\.\\.\\$properties of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\PropertyValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\.\\.\\.\\$values of class Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\RouteParamValue\\\\RawValues constructor expects bool\\|float\\|int\\|string\\|null, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			message: "#^Parameter \\#1 \\.\\.\\.\\$values of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\RawValues constructor expects bool\\|float\\|int\\|string\\|null, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
@@ -91,16 +91,16 @@ parameters:
 			path: src/DependencyInjection/CompilerPass/RegisterRouteParamServicesPass.php
 
 		-
-			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsExpressionLanguageFunction, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsExpressionLanguageFunction, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
+			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\AsExpressionLanguageFunction, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\AsExpressionLanguageFunction, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
 			count: 1
 			path: src/DependencyInjection/PurgatoryExtension.php
 
 		-
-			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsRouteParamService, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\AsRouteParamService, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
+			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\AsRouteParamService, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\AsRouteParamService, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
 			count: 1
 			path: src/DependencyInjection/PurgatoryExtension.php
 
 		-
-			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\PurgeOn, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle2\\\\Attribute\\\\PurgeOn, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
+			message: "#^Parameter \\#2 \\$configurator of method Symfony\\\\Component\\\\DependencyInjection\\\\ContainerBuilder\\:\\:registerAttributeForAutoconfiguration\\(\\) expects callable\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\PurgeOn, Reflector\\)\\: void, Closure\\(Symfony\\\\Component\\\\DependencyInjection\\\\ChildDefinition, Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\PurgeOn, ReflectionClass\\|ReflectionMethod\\)\\: void given\\.$#"
 			count: 1
 			path: src/DependencyInjection/PurgatoryExtension.php

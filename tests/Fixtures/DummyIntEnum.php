@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\Fixtures;
 
 enum DummyIntEnum: int
 {

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 

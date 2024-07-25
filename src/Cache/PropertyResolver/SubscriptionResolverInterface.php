@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Cache\PropertyResolver;
 
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\ValuesInterface;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 
 interface SubscriptionResolverInterface
 {

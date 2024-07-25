@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
-use Sofascore\PurgatoryBundle2\Exception\PurgeRequestFailedException;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Exception\PurgeRequestFailedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
-use Sofascore\PurgatoryBundle2\DataCollector\PurgatoryDataCollector;
+use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
 
 /**
  * @internal

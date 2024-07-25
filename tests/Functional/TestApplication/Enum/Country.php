@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum;
 
 enum Country: string
 {

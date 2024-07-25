@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteProvider\PropertyAccess;
+namespace Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Exception\ValueNotIterableException;
-use Sofascore\PurgatoryBundle2\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
-use Sofascore\PurgatoryBundle2\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
+use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(PurgatoryPropertyAccessor::class)]

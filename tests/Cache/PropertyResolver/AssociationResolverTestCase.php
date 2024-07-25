@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\AssociationResolver;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;

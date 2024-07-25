@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Doctrine\DBAL;
+namespace Sofascore\PurgatoryBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Middleware\AbstractConnectionMiddleware;
-use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 
 if (method_exists(Connection::class, 'getEventManager')) {
     // DBAL < 4

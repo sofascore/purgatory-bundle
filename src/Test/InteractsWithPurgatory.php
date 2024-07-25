@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Test;
+namespace Sofascore\PurgatoryBundle\Test;
 
 use PHPUnit\Framework\Attributes\After;
-use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
-use Sofascore\PurgatoryBundle2\Purger\InMemoryPurger;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
+use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 trait InteractsWithPurgatory
@@ -65,7 +65,7 @@ trait InteractsWithPurgatory
         $purger = self::getContainer()->get(PurgerInterface::class);
 
         if ($purger instanceof AsyncPurger) {
-            $purger = self::getContainer()->get('sofascore.purgatory2.purger.sync');
+            $purger = self::getContainer()->get('sofascore.purgatory.purger.sync');
         }
 
         if (!$purger instanceof InMemoryPurger) {

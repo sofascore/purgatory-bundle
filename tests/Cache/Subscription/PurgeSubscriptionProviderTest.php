@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\Subscription;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\Subscription;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -11,19 +11,19 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\SubscriptionResolverInterface;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadataProviderInterface;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscriptionProvider;
-use Sofascore\PurgatoryBundle2\Cache\TargetResolver\TargetResolverInterface;
-use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\Tests\Cache\Subscription\Fixtures\DummyController;
-use Sofascore\PurgatoryBundle2\Tests\Cache\Subscription\Fixtures\DummyTarget;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
+use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
+use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyTarget;
 use Symfony\Component\Routing\Route;
 
 #[CoversClass(PurgeSubscriptionProvider::class)]

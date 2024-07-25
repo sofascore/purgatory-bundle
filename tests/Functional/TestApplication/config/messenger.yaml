@@ -6,5 +6,5 @@ framework:
         transports:
             async: 'in-memory://'
 
-sofascore_purgatory:
+purgatory:
     messenger: async

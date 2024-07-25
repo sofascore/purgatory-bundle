@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional;
+namespace Sofascore\PurgatoryBundle\Tests\Functional;
 
 use Composer\InstalledVersions;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

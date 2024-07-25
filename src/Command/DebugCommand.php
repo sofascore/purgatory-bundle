@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Command;
+namespace Sofascore\PurgatoryBundle\Command;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

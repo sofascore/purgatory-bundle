@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Attribute\RouteParamValue;
+namespace Sofascore\PurgatoryBundle\Tests\Attribute\RouteParamValue;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\PropertyValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
-use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyIntEnum;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyIntEnum;
 use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversClass(CompoundValues::class)]

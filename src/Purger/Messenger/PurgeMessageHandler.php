@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Purger\Messenger;
+namespace Sofascore\PurgatoryBundle\Purger\Messenger;
 
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 
 /**
  * @internal

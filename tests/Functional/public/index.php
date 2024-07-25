@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 require dirname(__DIR__, 3).'/vendor/autoload.php';

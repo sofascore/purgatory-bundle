@@ -4,9 +4,9 @@ foo_bar:
     route_params:
         param1: !property [ bar, baz ]
         param2: !raw [ 1, 2 ]
-        param3: !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
+        param3: !enum Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
         param4: !compound
             - !raw 0
-            - !enum Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
+            - !enum Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
         param5: !dynamic foo
         param6: !dynamic [ foo, bar ]

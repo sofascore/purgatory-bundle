@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Exception;
+namespace Sofascore\PurgatoryBundle\Exception;
 
 interface PurgatoryException extends \Throwable
 {

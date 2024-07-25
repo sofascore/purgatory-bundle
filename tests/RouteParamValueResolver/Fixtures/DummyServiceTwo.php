@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures;
 
 class DummyServiceTwo
 {

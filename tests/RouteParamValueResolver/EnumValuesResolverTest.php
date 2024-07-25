@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
-use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyIntEnum;
-use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyStringEnum;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyIntEnum;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 
 #[CoversClass(EnumValuesResolver::class)]
 final class EnumValuesResolverTest extends TestCase

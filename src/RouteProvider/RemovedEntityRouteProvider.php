@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteProvider;
+namespace Sofascore\PurgatoryBundle\RouteProvider;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
-use Sofascore\PurgatoryBundle2\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider

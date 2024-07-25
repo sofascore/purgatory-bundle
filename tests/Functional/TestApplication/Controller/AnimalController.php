@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Controller;
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForGroups;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Animal;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Entity\Person;
-use Sofascore\PurgatoryBundle2\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
@@ -111,9 +111,9 @@ class AnimalController
         target: ['measurements'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory2.animal_rating2'),
-                new DynamicValues(alias: 'purgatory2.animal_rating1'),
-                new DynamicValues(alias: 'purgatory2.animal_rating3', arg: 'owner'),
+                new DynamicValues(alias: 'purgatory.animal_rating2'),
+                new DynamicValues(alias: 'purgatory.animal_rating1'),
+                new DynamicValues(alias: 'purgatory.animal_rating3', arg: 'owner'),
             ),
         ],
     )]
@@ -121,7 +121,7 @@ class AnimalController
         target: ['pets'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory2.animal_rating3'),
+                new DynamicValues(alias: 'purgatory.animal_rating3'),
             ),
         ],
     )]

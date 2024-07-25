@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Purger\Messenger;
+namespace Sofascore\PurgatoryBundle\Purger\Messenger;
 
 final class PurgeMessage
 {

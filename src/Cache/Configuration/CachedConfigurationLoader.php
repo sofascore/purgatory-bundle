@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\Configuration;
+namespace Sofascore\PurgatoryBundle\Cache\Configuration;
 
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;

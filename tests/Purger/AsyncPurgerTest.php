@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Purger;
+namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Purger\AsyncPurger;
-use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
+use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 

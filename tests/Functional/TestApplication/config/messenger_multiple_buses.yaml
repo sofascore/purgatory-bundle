@@ -10,7 +10,7 @@ framework:
             foo.bus.default: []
             bar.bus: []
 
-sofascore_purgatory:
+purgatory:
     messenger:
         transport: async
         bus: bar.bus

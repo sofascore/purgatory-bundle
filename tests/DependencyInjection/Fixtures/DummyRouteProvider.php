@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures;
 
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\RouteProvider\RouteProviderInterface;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
 
 final class DummyRouteProvider implements RouteProviderInterface
 {

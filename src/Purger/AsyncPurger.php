@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Purger;
+namespace Sofascore\PurgatoryBundle\Purger;
 
-use Sofascore\PurgatoryBundle2\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class AsyncPurger implements PurgerInterface

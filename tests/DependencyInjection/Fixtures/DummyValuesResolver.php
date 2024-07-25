@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures;
 
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 
 final class DummyValuesResolver implements ValuesResolverInterface
 {

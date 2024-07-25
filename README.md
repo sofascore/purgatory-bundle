@@ -23,7 +23,7 @@ TODO description
     composer require sofascore/purgatory-bundle
     ```
 
-1. Create the bundle configuration file under `config/packages/sofascore_purgatory.yaml`. Here is a reference
+1. Create the bundle configuration file under `config/packages/purgatory.yaml`. Here is a reference
    configuration file:
 
     ```yaml

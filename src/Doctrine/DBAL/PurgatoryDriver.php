@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Doctrine\DBAL;
+namespace Sofascore\PurgatoryBundle\Doctrine\DBAL;
 
 use Doctrine\DBAL\Driver;
 use Doctrine\DBAL\Driver\Connection as DriverConnection;
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
-use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 
 /**
  * @internal

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Cache\RouteMetadata;
+namespace Sofascore\PurgatoryBundle\Cache\RouteMetadata;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Symfony\Component\Routing\Route;
 
 final class RouteMetadata

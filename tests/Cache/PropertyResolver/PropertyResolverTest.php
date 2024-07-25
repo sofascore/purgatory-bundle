@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -10,13 +10,13 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
-use Sofascore\PurgatoryBundle2\Attribute\Target\ForProperties;
-use Sofascore\PurgatoryBundle2\Cache\PropertyResolver\PropertyResolver;
-use Sofascore\PurgatoryBundle2\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle2\Cache\Subscription\PurgeSubscription;
-use Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver\Fixtures\DummyChildEntity;
-use Sofascore\PurgatoryBundle2\Tests\Cache\PropertyResolver\Fixtures\DummyEntity;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\PropertyResolver;
+use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
+use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver\Fixtures\DummyChildEntity;
+use Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver\Fixtures\DummyEntity;
 use Symfony\Component\Routing\Route;
 
 #[CoversClass(PropertyResolver::class)]

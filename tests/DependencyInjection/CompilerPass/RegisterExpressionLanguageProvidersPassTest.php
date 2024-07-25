@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\DependencyInjection\CompilerPass\RegisterExpressionLanguageProvidersPass;
-use Sofascore\PurgatoryBundle2\DependencyInjection\PurgatoryExtension;
-use Sofascore\PurgatoryBundle2\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterExpressionLanguageProvidersPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -37,27 +37,27 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
     {
         $this->container->register(id: 'foo', class: \stdClass::class)
             ->addTag(
-                name: 'purgatory2.expression_language_function',
+                name: 'purgatory.expression_language_function',
                 attributes: ['function' => 'one', 'method' => '__invoke'],
             )
             ->addTag(
-                name: 'purgatory2.expression_language_function',
+                name: 'purgatory.expression_language_function',
                 attributes: ['function' => 'two', 'method' => 'someMethod'],
             );
         $this->container->register(id: 'bar', class: \stdClass::class)
             ->addTag(
-                name: 'purgatory2.expression_language_function',
+                name: 'purgatory.expression_language_function',
                 attributes: ['function' => 'three', 'method' => 'anotherMethod'],
             );
 
         $this->container->register(id: 'other_provider', class: \stdClass::class)
-            ->addTag('purgatory2.expression_language_provider');
+            ->addTag('purgatory.expression_language_provider');
 
         $compilerPass = new RegisterExpressionLanguageProvidersPass();
         $compilerPass->process($this->container);
 
-        self::assertTrue($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
-        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language_provider');
+        self::assertTrue($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
+        $definition = $this->container->getDefinition('sofascore.purgatory.expression_language_provider');
         self::assertCount(1, $arguments = $definition->getArguments());
 
         $definition = $this->container->getDefinition((string) $arguments[0]);
@@ -98,22 +98,22 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
-        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language');
+        $definition = $this->container->getDefinition('sofascore.purgatory.expression_language');
         self::assertCount(2, $arguments = $definition->getArguments());
         self::assertEquals([
-            new Reference('sofascore.purgatory2.expression_language_provider'),
+            new Reference('sofascore.purgatory.expression_language_provider'),
             new Reference('other_provider'),
         ], $arguments[1]);
     }
 
     public function testExpressionLangProviderIsRemovedWhenThereIsNoExpressionLangService(): void
     {
-        $this->container->removeDefinition('sofascore.purgatory2.expression_language');
+        $this->container->removeDefinition('sofascore.purgatory.expression_language');
 
         $compilerPass = new RegisterExpressionLanguageProvidersPass();
         $compilerPass->process($this->container);
 
-        self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
+        self::assertFalse($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
     }
 
     public function testExpressionLangProviderIsRemovedWhenThereAreNoFunctions(): void
@@ -121,20 +121,20 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         $compilerPass = new RegisterExpressionLanguageProvidersPass();
         $compilerPass->process($this->container);
 
-        self::assertFalse($this->container->hasDefinition('sofascore.purgatory2.expression_language_provider'));
+        self::assertFalse($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
 
-        $definition = $this->container->getDefinition('sofascore.purgatory2.expression_language');
+        $definition = $this->container->getDefinition('sofascore.purgatory.expression_language');
         self::assertCount(1, $definition->getArguments());
     }
 
     public function testExceptionIsThrownWhenSameFunctionNameIsUsedMultipleTimes(): void
     {
         $this->container->register(id: 'foo', class: \stdClass::class)->addTag(
-            name: 'purgatory2.expression_language_function',
+            name: 'purgatory.expression_language_function',
             attributes: ['function' => 'one', 'method' => '__invoke'],
         );
         $this->container->register(id: 'bar', class: \stdClass::class)->addTag(
-            name: 'purgatory2.expression_language_function',
+            name: 'purgatory.expression_language_function',
             attributes: ['function' => 'one', 'method' => '__invoke'],
         );
 

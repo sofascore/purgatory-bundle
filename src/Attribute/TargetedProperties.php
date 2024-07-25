@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Attribute;
+namespace Sofascore\PurgatoryBundle\Attribute;
 
 /**
  * Used on methods to define which properties the method is using.

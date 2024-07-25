@@ -1,5 +1,5 @@
 framework:
     http_cache: true
 
-sofascore_purgatory:
+purgatory:
     purger: symfony

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Doctrine\ORM\Events as DoctrineEvents;
-use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\HttpClient\HttpClient;
@@ -15,7 +15,7 @@ final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('sofascore_purgatory');
+        $treeBuilder = new TreeBuilder('purgatory');
         $rootNode = $treeBuilder->getRootNode();
 
         $rootNode

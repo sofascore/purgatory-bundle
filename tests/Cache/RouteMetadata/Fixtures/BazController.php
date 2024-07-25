@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Cache\RouteMetadata\Fixtures;
+namespace Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures;
 
-use Sofascore\PurgatoryBundle2\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 
 #[PurgeOn('foo')]
 class BazController

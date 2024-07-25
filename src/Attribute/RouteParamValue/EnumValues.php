@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
+namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
-use Sofascore\PurgatoryBundle2\Exception\InvalidArgumentException;
+use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 
 final class EnumValues extends AbstractValues
 {

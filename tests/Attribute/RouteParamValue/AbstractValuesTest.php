@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Attribute\RouteParamValue;
+namespace Sofascore\PurgatoryBundle\Tests\Attribute\RouteParamValue;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\AbstractValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\AbstractValues;
 
 #[CoversClass(AbstractValues::class)]
 final class AbstractValuesTest extends TestCase

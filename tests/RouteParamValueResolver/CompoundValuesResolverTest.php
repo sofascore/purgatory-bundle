@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\RouteParamValueResolver;
+namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\EnumValues;
-use Sofascore\PurgatoryBundle2\Attribute\RouteParamValue\RawValues;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\CompoundValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\EnumValuesResolver;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\RawValuesResolver;
-use Sofascore\PurgatoryBundle2\Tests\Fixtures\DummyIntEnum;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyIntEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
 #[CoversClass(CompoundValuesResolver::class)]

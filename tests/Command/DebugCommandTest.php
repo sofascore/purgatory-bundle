@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Tests\Command;
+namespace Sofascore\PurgatoryBundle\Tests\Command;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
-use Sofascore\PurgatoryBundle2\Command\DebugCommand;
-use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Author;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Entity\Post;
-use Sofascore\PurgatoryBundle2\Tests\Functional\DebugCommand\Enum\LanguageCodes;
+use Sofascore\PurgatoryBundle\Command\DebugCommand;
+use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Post;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum\LanguageCodes;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -93,7 +93,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
         self::assertSubstringCount(
             expectedCount: 3,
-            needle: 'page: Dynamic("purgatory2.get_page", null)',
+            needle: 'page: Dynamic("purgatory.get_page", null)',
             haystack: $display,
         );
     }

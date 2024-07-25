@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\RouteProvider;
+namespace Sofascore\PurgatoryBundle\RouteProvider;
 
 use Psr\Container\ContainerInterface;
-use Sofascore\PurgatoryBundle2\Cache\Configuration\ConfigurationLoaderInterface;
-use Sofascore\PurgatoryBundle2\Exception\LogicException;
-use Sofascore\PurgatoryBundle2\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle2\RouteParamValueResolver\ValuesResolverInterface;
+use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**

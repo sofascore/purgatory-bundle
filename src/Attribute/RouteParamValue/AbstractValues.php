@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle2\Attribute\RouteParamValue;
+namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
 abstract class AbstractValues implements ValuesInterface
 {
