@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle2\Listener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -44,10 +45,22 @@ final class EntityChangeListener
         $this->handleChanges($eventArgs, Action::Update);
     }
 
+    public function postFlush(PostFlushEventArgs $eventArgs): void
+    {
+        if (!$eventArgs->getObjectManager()->getConnection()->isTransactionActive()) {
+            $this->process();
+        }
+    }
+
     public function process(): void
     {
-        $this->purger->purge(array_keys($this->queuedUrls));
+        if (!$this->queuedUrls) {
+            return;
+        }
+
+        $urls = array_keys($this->queuedUrls);
         $this->reset();
+        $this->purger->purge($urls);
     }
 
     public function reset(): void

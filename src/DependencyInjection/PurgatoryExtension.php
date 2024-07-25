@@ -132,20 +132,25 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
         $container->getDefinition('sofascore.purgatory2.route_metadata_provider.attribute')
             ->setArgument(2, $mergedConfig['route_ignore_patterns']);
 
-        $container->getDefinition('sofascore.purgatory2.doctrine_middleware')
-            ->addTag(
-                name: 'doctrine.middleware',
-                attributes: null !== $mergedConfig['doctrine_middleware_priority']
-                    ? ['priority' => $mergedConfig['doctrine_middleware_priority']]
-                    : [],
-            );
+        /** @var array<DoctrineEvents::*, ?int> $doctrineEventListenerPriorities */
+        $doctrineEventListenerPriorities = $mergedConfig['doctrine_event_listener_priorities'];
+
+        /** @var array{enabled: bool, priority: ?int} $doctrineMiddlewareConfig */
+        $doctrineMiddlewareConfig = $mergedConfig['doctrine_middleware'];
+        if ($doctrineMiddlewareConfig['enabled']) {
+            $container->getDefinition('sofascore.purgatory2.doctrine_middleware')
+                ->addTag(
+                    name: 'doctrine.middleware',
+                    attributes: null !== $doctrineMiddlewareConfig['priority'] ? ['priority' => $doctrineMiddlewareConfig['priority']] : [],
+                );
+
+            unset($doctrineEventListenerPriorities[DoctrineEvents::postFlush]);
+        } else {
+            $container->removeDefinition('sofascore.purgatory2.doctrine_middleware');
+        }
 
         $listenerDefinition = $container->getDefinition('sofascore.purgatory2.entity_change_listener');
-        /**
-         * @var DoctrineEvents::* $event
-         * @var ?int              $priority
-         */
-        foreach ($mergedConfig['doctrine_event_listener_priorities'] as $event => $priority) {
+        foreach ($doctrineEventListenerPriorities as $event => $priority) {
             $listenerDefinition->addTag(
                 name: 'doctrine.event_listener',
                 attributes: ['event' => $event] + (null !== $priority ? ['priority' => $priority] : []),

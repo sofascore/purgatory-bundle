@@ -20,6 +20,10 @@ final class AsyncPurger implements PurgerInterface
 
     public function purge(iterable $urls): void
     {
+        if (!$urls) {
+            return;
+        }
+
         /** @var list<string> $urls */
         $urls = \is_array($urls) ? $urls : iterator_to_array($urls, false);
 

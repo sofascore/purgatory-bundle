@@ -26,11 +26,15 @@ final class ConfigurationTest extends TestCase
         self::assertSame([
             'mapping_paths' => [],
             'route_ignore_patterns' => [],
-            'doctrine_middleware_priority' => null,
+            'doctrine_middleware' => [
+                'enabled' => true,
+                'priority' => null,
+            ],
             'doctrine_event_listener_priorities' => [
                 'preRemove' => null,
                 'postPersist' => null,
                 'postUpdate' => null,
+                'postFlush' => null,
             ],
             'purger' => [
                 'name' => null,
@@ -121,6 +125,7 @@ final class ConfigurationTest extends TestCase
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['preRemove']);
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postPersist']);
         self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postUpdate']);
+        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postFlush']);
     }
 
     #[DataProvider('provideXMLCases')]
@@ -144,11 +149,15 @@ final class ConfigurationTest extends TestCase
             'all.xml',
             [
                 'profiler_integration' => false,
-                'doctrine_middleware_priority' => 5,
+                'doctrine_middleware' => [
+                    'priority' => 5,
+                    'enabled' => true,
+                ],
                 'doctrine_event_listener_priorities' => [
                     'preRemove' => 10,
                     'postPersist' => 20,
                     'postUpdate' => 30,
+                    'postFlush' => 40,
                 ],
                 'purger' => [
                     'name' => 'varnish',
@@ -174,16 +183,20 @@ final class ConfigurationTest extends TestCase
             ],
         ];
         yield 'short listener' => [
-            'short_listener.xml',
+            'short_options.xml',
             [
+                'doctrine_middleware' => [
+                    'enabled' => false,
+                    'priority' => null,
+                ],
                 'doctrine_event_listener_priorities' => [
                     'preRemove' => 10,
                     'postPersist' => 10,
                     'postUpdate' => 10,
+                    'postFlush' => 10,
                 ],
                 'mapping_paths' => [],
                 'route_ignore_patterns' => [],
-                'doctrine_middleware_priority' => null,
                 'purger' => [
                     'name' => null,
                     'hosts' => [],

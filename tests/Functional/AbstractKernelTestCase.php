@@ -75,7 +75,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return sys_get_temp_dir().'/Purgatory_'.substr(strrchr(static::class, '\\'), 1);
     }
 
-    private static function runCommand(KernelInterface $kernel, string $command, array $parameters = []): void
+    protected static function runCommand(KernelInterface $kernel, string $command, array $parameters = []): void
     {
         $application = new Application($kernel);
         $application->setAutoExit(false);

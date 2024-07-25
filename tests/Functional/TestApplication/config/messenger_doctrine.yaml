@@ -1,0 +1,11 @@
+imports:
+    - { resource: ./app_config.yaml }
+
+framework:
+    messenger:
+        transports:
+            async: 'doctrine://default'
+
+sofascore_purgatory:
+    messenger: async
+    doctrine_middleware: false

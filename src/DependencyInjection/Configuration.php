@@ -33,9 +33,14 @@ final class Configuration implements ConfigurationInterface
                     ->scalarPrototype()->end()
                     ->defaultValue([])
                 ->end()
-                ->integerNode('doctrine_middleware_priority')
-                    ->info('Explicitly set the priority of Purgatory\'s Doctrine middleware.')
-                    ->defaultNull()
+                ->arrayNode('doctrine_middleware')
+                    ->canBeDisabled()
+                    ->children()
+                        ->integerNode('priority')
+                            ->info('Explicitly set the priority of Purgatory\'s Doctrine middleware.')
+                            ->defaultNull()
+                        ->end()
+                    ->end()
                 ->end()
                 ->arrayNode('doctrine_event_listener_priorities')
                     ->info('Explicitly set the priorities of Purgatory\'s Doctrine event listener.')
@@ -45,6 +50,7 @@ final class Configuration implements ConfigurationInterface
                             DoctrineEvents::preRemove => $priority,
                             DoctrineEvents::postPersist => $priority,
                             DoctrineEvents::postUpdate => $priority,
+                            DoctrineEvents::postFlush => $priority,
                         ])
                     ->end()
                     ->addDefaultsIfNotSet()
@@ -52,6 +58,10 @@ final class Configuration implements ConfigurationInterface
                         ->integerNode(DoctrineEvents::preRemove)->defaultNull()->end()
                         ->integerNode(DoctrineEvents::postPersist)->defaultNull()->end()
                         ->integerNode(DoctrineEvents::postUpdate)->defaultNull()->end()
+                        ->integerNode(DoctrineEvents::postFlush)
+                            ->info('This event is not registered when the Doctrine middleware is enabled.')
+                            ->defaultNull()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('purger')

@@ -13,9 +13,9 @@
         <purgatory:route-ignore-pattern>/^_profiler/</purgatory:route-ignore-pattern>
         <purgatory:route-ignore-pattern>/^_wdt/</purgatory:route-ignore-pattern>
 
-        <purgatory:doctrine-middleware-priority>5</purgatory:doctrine-middleware-priority>
+        <purgatory:doctrine-middleware priority="5" />
 
-        <purgatory:doctrine-event-listener-priorities preRemove="10" postPersist="20" postUpdate="30" />
+        <purgatory:doctrine-event-listener-priorities preRemove="10" postPersist="20" postUpdate="30" postFlush="40" />
 
         <purgatory:purger name="varnish" http_client="foo.client">
             <purgatory:host>http://foo.bar</purgatory:host>

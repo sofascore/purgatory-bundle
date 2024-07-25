@@ -62,4 +62,13 @@ final class AsyncPurgerTest extends TestCase
             [['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz'], ['http://localhost/qux', 'http://localhost/corge']],
         ];
     }
+
+    public function testPurgeWithNoURLs(): void
+    {
+        $messageBus = $this->createMock(MessageBusInterface::class);
+        $messageBus->expects(self::never())->method('dispatch');
+
+        $asyncPurger = new AsyncPurger($messageBus);
+        $asyncPurger->purge([]);
+    }
 }

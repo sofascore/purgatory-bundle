@@ -12,5 +12,8 @@ final class PurgeMessage
     public function __construct(
         public readonly array $urls,
     ) {
+        if (!$this->urls) {
+            throw new \ValueError('The list must contain at least one URL.');
+        }
     }
 }

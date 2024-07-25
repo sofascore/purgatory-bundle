@@ -62,6 +62,33 @@ final class MessengerTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged('/person/'.$person->id);
     }
 
+    /**
+     * @see PersonController::detailsAction
+     */
+    public function testAsyncPurgingWithDoctrineTransport(): void
+    {
+        self::initializeApplication(['test_case' => 'TestApplication', 'config' => 'messenger_doctrine.yaml']);
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
+
+        $this->assertNoUrlsArePurged();
+
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $entityManager->persist($person);
+        $entityManager->flush();
+
+        $this->assertNoUrlsArePurged();
+
+        self::runCommand(self::$kernel, 'messenger:consume', ['async', '-l' => 1, '-t' => 5]);
+
+        $this->assertUrlIsPurged('/person/'.$person->id);
+    }
+
     private static function assertUrlIsQueued(string $url, array $urls): void
     {
         self::assertContains(

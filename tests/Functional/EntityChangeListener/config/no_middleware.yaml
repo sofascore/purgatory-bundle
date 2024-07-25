@@ -1,0 +1,2 @@
+sofascore_purgatory:
+    doctrine_middleware: false

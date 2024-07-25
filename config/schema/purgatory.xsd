@@ -5,10 +5,16 @@
     targetNamespace="http://sofascore.com/schema/dic/purgatory"
     elementFormDefault="qualified">
 
+    <xsd:complexType name="doctrine-middleware">
+        <xsd:attribute name="enabled" type="xsd:boolean" />
+        <xsd:attribute name="priority" type="xsd:int" />
+    </xsd:complexType>
+
     <xsd:complexType name="doctrine-event-listener-priorities">
         <xsd:attribute name="preRemove" type="xsd:int" />
         <xsd:attribute name="postPersist" type="xsd:int" />
         <xsd:attribute name="postUpdate" type="xsd:int" />
+        <xsd:attribute name="postFlush" type="xsd:int" />
     </xsd:complexType>
 
     <xsd:complexType name="purger">
@@ -29,11 +35,12 @@
         <xsd:choice maxOccurs="unbounded">
             <xsd:element name="mapping-path" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
             <xsd:element name="route-ignore-pattern" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
-            <xsd:element name="doctrine-middleware-priority" type="xsd:int" minOccurs="0" />
+            <xsd:element name="doctrine-middleware" type="doctrine-middleware" minOccurs="0" />
             <xsd:element name="doctrine-event-listener-priorities" type="doctrine-event-listener-priorities" minOccurs="0" />
             <xsd:element name="purger" type="purger" minOccurs="0" />
             <xsd:element name="messenger" type="messenger" minOccurs="0" />
         </xsd:choice>
+        <xsd:attribute name="doctrine-middleware" type="xsd:boolean" />
         <xsd:attribute name="doctrine-event-listener-priorities" type="xsd:int" />
         <xsd:attribute name="profiler-integration" type="xsd:boolean" />
     </xsd:complexType>

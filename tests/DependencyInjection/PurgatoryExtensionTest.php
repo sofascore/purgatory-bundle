@@ -224,7 +224,7 @@ final class PurgatoryExtensionTest extends TestCase
     }
 
     #[TestWith([[], [[]]])]
-    #[TestWith([['doctrine_middleware_priority' => 10], [['priority' => 10]]])]
+    #[TestWith([['doctrine_middleware' => ['priority' => 10]], [['priority' => 10]]])]
     public function testDoctrineMiddlewareTagIsSet(array $middlewarePriority, array $expectedTag): void
     {
         $container = new ContainerBuilder();
@@ -235,32 +235,84 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => $middlewarePriority,
         ], $container);
 
+        self::assertTrue($container->hasDefinition('sofascore.purgatory2.doctrine_middleware'));
+
         $definition = $container->getDefinition('sofascore.purgatory2.doctrine_middleware');
 
         self::assertTrue($definition->hasTag('doctrine.middleware'));
         self::assertSame($expectedTag, $definition->getTag('doctrine.middleware'));
     }
 
-    #[TestWith([
-        [],
-        [['event' => DoctrineEvents::preRemove], ['event' => DoctrineEvents::postPersist], ['event' => DoctrineEvents::postUpdate]],
-    ])]
-    #[TestWith([
-        ['doctrine_event_listener_priorities' => [DoctrineEvents::preRemove => 10]],
-        [['event' => DoctrineEvents::preRemove, 'priority' => 10], ['event' => DoctrineEvents::postPersist], ['event' => DoctrineEvents::postUpdate]],
-    ])]
-    #[TestWith([
-        ['doctrine_event_listener_priorities' => [DoctrineEvents::postPersist => 10, DoctrineEvents::postUpdate => 20]],
-        [['event' => DoctrineEvents::postPersist, 'priority' => 10], ['event' => DoctrineEvents::postUpdate, 'priority' => 20], ['event' => DoctrineEvents::preRemove]],
-    ])]
-    public function testDoctrineEventListenerTagIsSet(array $middlewarePriority, array $expectedTag): void
+    public function testDoctrineMiddlewareIsRemovedWhenDisabled(): void
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', __DIR__);
 
         $extension = new PurgatoryExtension();
         $extension->load([
-            'sofascore_purgatory' => $middlewarePriority,
+            'sofascore_purgatory' => ['doctrine_middleware' => false],
+        ], $container);
+
+        self::assertFalse($container->hasDefinition('sofascore.purgatory2.doctrine_middleware'));
+    }
+
+    #[TestWith([[
+        'doctrine_middleware' => true,
+    ], [
+        ['event' => DoctrineEvents::preRemove],
+        ['event' => DoctrineEvents::postPersist],
+        ['event' => DoctrineEvents::postUpdate],
+    ]])]
+    #[TestWith([[
+        'doctrine_middleware' => true,
+        'doctrine_event_listener_priorities' => [DoctrineEvents::preRemove => 10],
+    ], [
+        ['event' => DoctrineEvents::preRemove, 'priority' => 10],
+        ['event' => DoctrineEvents::postPersist],
+        ['event' => DoctrineEvents::postUpdate],
+    ]])]
+    #[TestWith([[
+        'doctrine_middleware' => true,
+        'doctrine_event_listener_priorities' => [DoctrineEvents::postPersist => 10, DoctrineEvents::postUpdate => 20],
+    ], [
+        ['event' => DoctrineEvents::postPersist, 'priority' => 10],
+        ['event' => DoctrineEvents::postUpdate, 'priority' => 20],
+        ['event' => DoctrineEvents::preRemove],
+    ]])]
+    #[TestWith([[
+        'doctrine_middleware' => false,
+    ], [
+        ['event' => DoctrineEvents::preRemove],
+        ['event' => DoctrineEvents::postPersist],
+        ['event' => DoctrineEvents::postUpdate],
+        ['event' => DoctrineEvents::postFlush],
+    ]])]
+    #[TestWith([[
+        'doctrine_middleware' => false,
+        'doctrine_event_listener_priorities' => [DoctrineEvents::preRemove => 10],
+    ], [
+        ['event' => DoctrineEvents::preRemove, 'priority' => 10],
+        ['event' => DoctrineEvents::postPersist],
+        ['event' => DoctrineEvents::postUpdate],
+        ['event' => DoctrineEvents::postFlush],
+    ]])]
+    #[TestWith([[
+        'doctrine_middleware' => false,
+        'doctrine_event_listener_priorities' => [DoctrineEvents::postPersist => 10, DoctrineEvents::postUpdate => 20],
+    ], [
+        ['event' => DoctrineEvents::postPersist, 'priority' => 10],
+        ['event' => DoctrineEvents::postUpdate, 'priority' => 20],
+        ['event' => DoctrineEvents::preRemove],
+        ['event' => DoctrineEvents::postFlush],
+    ]])]
+    public function testDoctrineEventListenerTagIsSet(array $config, array $expectedTag): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+
+        $extension = new PurgatoryExtension();
+        $extension->load([
+            'sofascore_purgatory' => $config,
         ], $container);
 
         $definition = $container->getDefinition('sofascore.purgatory2.entity_change_listener');

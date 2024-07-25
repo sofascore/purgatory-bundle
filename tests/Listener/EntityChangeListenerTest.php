@@ -7,9 +7,11 @@ namespace Sofascore\PurgatoryBundle2\Tests\Listener;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Sofascore\PurgatoryBundle2\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle2\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle2\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle2\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle2\Tests\Functional\EntityChangeListener\Entity\Dummy;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[CoversClass(EntityChangeListener::class)]
 final class EntityChangeListenerTest extends AbstractKernelTestCase
@@ -37,5 +39,39 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
 
         $this->assertUrlIsPurged('http://localhost/'.$name);
         $this->assertUrlIsPurged('http://example.test/foo');
+    }
+
+    public function testUrlsAreNotPurgedOnFlushWhenInTransaction(): void
+    {
+        self::initializeApplication(['test_case' => 'EntityChangeListener', 'config' => 'no_middleware.yaml']);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
+
+        $test = new Dummy($name = 'name_'.time());
+
+        $em->persist($test);
+
+        $em->wrapInTransaction(static function () use ($em) {
+            $em->flush();
+        });
+
+        $this->assertNoUrlsArePurged();
+
+        $em->flush();
+
+        $this->assertUrlIsPurged('http://localhost/'.$name);
+        $this->assertUrlIsPurged('http://example.test/foo');
+    }
+
+    public function testProcessWithNoURLs(): void
+    {
+        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $purger = $this->createMock(PurgerInterface::class);
+        $purger->expects(self::never())->method('purge');
+
+        $entityChangeListener = new EntityChangeListener([], $urlGenerator, $purger);
+
+        $entityChangeListener->process();
     }
 }
