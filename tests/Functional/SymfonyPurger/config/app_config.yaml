@@ -2,6 +2,4 @@ framework:
     http_cache: true
 
 sofascore_purgatory:
-    purger:
-        name: symfony
-        host: ''
+    purger: symfony

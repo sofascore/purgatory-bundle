@@ -34,7 +34,7 @@ final class AsyncPurgerTest extends TestCase
 
     public static function urlsProvider(): iterable
     {
-        $array = ['/foo', '/bar', '/baz', '/qux', '/corge'];
+        $array = ['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz', 'http://localhost/qux', 'http://localhost/corge'];
 
         yield 'array' => [
             null,
@@ -51,7 +51,7 @@ final class AsyncPurgerTest extends TestCase
         yield 'ArrayIterator' => [
             2,
             new \ArrayIterator($array),
-            [['/foo', '/bar'], ['/baz', '/qux'], ['/corge']],
+            [['http://localhost/foo', 'http://localhost/bar'], ['http://localhost/baz', 'http://localhost/qux'], ['http://localhost/corge']],
         ];
 
         yield 'Generator' => [
@@ -59,7 +59,7 @@ final class AsyncPurgerTest extends TestCase
             (static function () use ($array) {
                 yield from $array;
             })(),
-            [['/foo', '/bar', '/baz'], ['/qux', '/corge']],
+            [['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz'], ['http://localhost/qux', 'http://localhost/corge']],
         ];
     }
 }

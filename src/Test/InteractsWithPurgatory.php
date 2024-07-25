@@ -30,7 +30,7 @@ trait InteractsWithPurgatory
     {
         self::assertContains(
             needle: $url,
-            haystack: $this->getPurger()->getPurgedUrls(),
+            haystack: $this->_getPurgedUrls($url),
             message: sprintf('Failed asserting that the URL "%s" was purged.', $url),
         );
     }
@@ -39,12 +39,12 @@ trait InteractsWithPurgatory
     {
         self::assertNotContains(
             needle: $url,
-            haystack: $this->getPurger()->getPurgedUrls(),
+            haystack: $this->_getPurgedUrls($url),
             message: sprintf('Failed asserting that the URL "%s" was not purged.', $url),
         );
     }
 
-    final protected function assertNoUrlsWerePurged(): void
+    final protected function assertNoUrlsArePurged(): void
     {
         self::assertEmpty(
             actual: $this->getPurger()->getPurgedUrls(),
@@ -78,5 +78,20 @@ trait InteractsWithPurgatory
     final protected function clearPurger(): void
     {
         $this->getPurger()->reset();
+    }
+
+    private function _getPurgedUrls(string $url): array
+    {
+        $purgedUrls = $this->getPurger()->getPurgedUrls();
+
+        if (str_contains($url, '://')) {
+            return $purgedUrls;
+        }
+
+        return array_map(static function (string $url): string {
+            $parsedUrl = parse_url($url);
+
+            return ($parsedUrl['path'] ?? '/').(isset($parsedUrl['query']) ? '?'.$parsedUrl['query'] : '');
+        }, $purgedUrls);
     }
 }

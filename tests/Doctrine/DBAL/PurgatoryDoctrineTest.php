@@ -47,26 +47,27 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->wrapInTransaction(
             function () use ($name) {
-                $this->assertNoUrlsWerePurged();
+                $this->assertNoUrlsArePurged();
 
                 $test = new Dummy($name);
 
                 $this->entityManager->persist($test);
                 $this->entityManager->flush();
 
-                self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-                $this->assertNoUrlsWerePurged();
+                self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+                $this->assertNoUrlsArePurged();
 
                 $this->entityManager->remove($test);
                 $this->entityManager->flush();
 
-                self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-                $this->assertNoUrlsWerePurged();
+                self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+                $this->assertNoUrlsArePurged();
             },
         );
 
         self::assertSame([], $this->getQueuedUrls());
         $this->assertUrlIsPurged('/'.$name);
+        $this->assertUrlIsPurged('http://example.test/foo');
     }
 
     public function testUrlsArePurgedAfterExplicitTransactionCommit(): void
@@ -75,26 +76,27 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->getConnection()->beginTransaction();
 
-        $this->assertNoUrlsWerePurged();
+        $this->assertNoUrlsArePurged();
 
         $test = new Dummy($name);
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();
 
-        self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        $this->assertNoUrlsWerePurged();
+        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        $this->assertNoUrlsArePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
-        self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        $this->assertNoUrlsWerePurged();
+        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        $this->assertNoUrlsArePurged();
 
         $this->entityManager->getConnection()->commit();
 
         self::assertSame([], $this->getQueuedUrls());
         $this->assertUrlIsPurged('/'.$name);
+        $this->assertUrlIsPurged('http://example.test/foo');
     }
 
     public function testRollbackTransaction(): void
@@ -103,26 +105,26 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
 
         $this->entityManager->getConnection()->beginTransaction();
 
-        $this->assertNoUrlsWerePurged();
+        $this->assertNoUrlsArePurged();
 
         $test = new Dummy($name);
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();
 
-        self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        $this->assertNoUrlsWerePurged();
+        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        $this->assertNoUrlsArePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
-        self::assertSame(['/'.$name => true], $this->getQueuedUrls());
-        $this->assertNoUrlsWerePurged();
+        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        $this->assertNoUrlsArePurged();
 
         $this->entityManager->getConnection()->rollBack();
 
         self::assertSame([], $this->getQueuedUrls());
-        $this->assertNoUrlsWerePurged();
+        $this->assertNoUrlsArePurged();
     }
 
     /**

@@ -34,7 +34,6 @@ final class ConfigurationTest extends TestCase
             ],
             'purger' => [
                 'name' => null,
-                'host' => null,
             ],
             'messenger' => [
                 'transport' => null,
@@ -43,20 +42,6 @@ final class ConfigurationTest extends TestCase
             ],
             'profiler_integration' => true,
         ], $config);
-    }
-
-    public function testPurgerHostValidation(): void
-    {
-        $this->expectException(InvalidConfigurationException::class);
-        $this->expectExceptionMessage('A host must be provided when using the Symfony purger.');
-
-        (new Processor())->processConfiguration(new Configuration(), [
-            'sofascore_purgatory' => [
-                'purger' => [
-                    'name' => 'symfony',
-                ],
-            ],
-        ]);
     }
 
     public function testMessengerBusWithoutTransportValidation(): void
@@ -146,7 +131,6 @@ final class ConfigurationTest extends TestCase
                 ],
                 'purger' => [
                     'name' => 'symfony',
-                    'host' => 'localhost',
                 ],
                 'messenger' => [
                     'transport' => 'async',
@@ -176,7 +160,6 @@ final class ConfigurationTest extends TestCase
                 'doctrine_middleware_priority' => null,
                 'purger' => [
                     'name' => null,
-                    'host' => null,
                 ],
                 'messenger' => [
                     'transport' => null,

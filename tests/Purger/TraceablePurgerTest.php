@@ -16,15 +16,15 @@ final class TraceablePurgerTest extends TestCase
 {
     public function testPurge(): void
     {
-        $array = ['/foo', '/bar'];
+        $array = ['http://localhost/foo', 'http://localhost/bar'];
         $generator = (static function () {
-            yield '/baz';
-            yield '/qux';
+            yield 'http://localhost/baz';
+            yield 'http://localhost/qux';
         })();
 
         $expected = [
-            ['/foo', '/bar'],
-            ['/baz', '/qux'],
+            ['http://localhost/foo', 'http://localhost/bar'],
+            ['http://localhost/baz', 'http://localhost/qux'],
         ];
 
         $innerPurger = $this->createMock(PurgerInterface::class);
@@ -40,9 +40,9 @@ final class TraceablePurgerTest extends TestCase
 
         self::assertCount(2, $purges = $dataCollector->getPurges());
 
-        self::assertSame(['/foo', '/bar'], $purges[0]['urls']);
+        self::assertSame(['http://localhost/foo', 'http://localhost/bar'], $purges[0]['urls']);
         self::assertIsFloat($purges[0]['time']);
-        self::assertSame(['/baz', '/qux'], $purges[1]['urls']);
+        self::assertSame(['http://localhost/baz', 'http://localhost/qux'], $purges[1]['urls']);
         self::assertIsFloat($purges[1]['time']);
 
         self::assertSame(4, $dataCollector->getTotalUrls());

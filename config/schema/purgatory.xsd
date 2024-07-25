@@ -13,7 +13,6 @@
 
     <xsd:complexType name="purger">
         <xsd:attribute name="name" type="xsd:string" />
-        <xsd:attribute name="host" type="xsd:string" />
     </xsd:complexType>
 
     <xsd:complexType name="messenger">

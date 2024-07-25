@@ -42,11 +42,17 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             public function testUrlIsPurged(): void
             {
-                $this->getPurger()->purge(['/url']);
+                $this->getPurger()->purge(['http://localhost/url']);
+                $this->assertUrlIsPurged('http://localhost/url');
                 $this->assertUrlIsPurged('/url');
 
+                $this->assertUrlIsNotPurged('https://localhost/url');
+                $this->assertUrlIsNotPurged('http://example.test/url');
+                $this->assertUrlIsNotPurged('/url?foo=bar');
+                $this->assertUrlIsNotPurged('/foo');
+
                 $this->clearPurger();
-                $this->assertUrlIsNotPurged('/url');
+                $this->assertNoUrlsArePurged();
             }
 
             protected static function getContainer(): Container

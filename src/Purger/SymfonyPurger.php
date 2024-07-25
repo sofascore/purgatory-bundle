@@ -10,7 +10,6 @@ final class SymfonyPurger implements PurgerInterface
 {
     public function __construct(
         private readonly StoreInterface $store,
-        private readonly string $host,
     ) {
     }
 
@@ -20,7 +19,7 @@ final class SymfonyPurger implements PurgerInterface
     public function purge(iterable $urls): void
     {
         foreach ($urls as $url) {
-            $this->store->purge($this->host.$url);
+            $this->store->purge($url);
         }
     }
 }

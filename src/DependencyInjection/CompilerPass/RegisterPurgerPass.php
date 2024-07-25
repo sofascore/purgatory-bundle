@@ -18,7 +18,7 @@ final class RegisterPurgerPass implements CompilerPassInterface
         /** @var ?string $purgerAlias */
         $purgerAlias = $container->getParameter('.sofascore.purgatory2.purger.name');
 
-        $symfonyPurgerIsAvailable = $container->has('http_cache.store') && null !== $container->getParameter('.sofascore.purgatory2.purger.host');
+        $symfonyPurgerIsAvailable = $container->has('http_cache.store');
 
         if (null !== $purgerAlias) {
             $this->setPurger($container, $purgerAlias);

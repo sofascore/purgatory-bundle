@@ -37,7 +37,7 @@ final class MessengerTest extends AbstractKernelTestCase
         /** @var MessageBusInterface $messageBus */
         $messageBus = $this->getContainer()->get($busId);
 
-        $this->assertNoUrlsWerePurged();
+        $this->assertNoUrlsArePurged();
         self::assertCount(0, $transport->getSent());
 
         $person = new Person();
@@ -48,14 +48,14 @@ final class MessengerTest extends AbstractKernelTestCase
         $entityManager->persist($person);
         $entityManager->flush();
 
-        $this->assertNoUrlsWerePurged();
+        $this->assertNoUrlsArePurged();
         self::assertCount(1, $sent = $transport->getSent());
         self::assertSame($busId, $sent[0]->last(BusNameStamp::class)->getBusName());
 
         /** @var PurgeMessage $message */
         $message = $sent[0]->getMessage();
 
-        self::assertUrlIsQueued('/person/'.$person->id, $message->urls);
+        self::assertUrlIsQueued('http://localhost/person/'.$person->id, $message->urls);
 
         $messageBus->dispatch($sent[0]->with(new ReceivedStamp('async')));
 

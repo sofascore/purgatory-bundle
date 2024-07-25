@@ -105,10 +105,9 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             },
         );
 
-        /** @var array{name: ?string, host: ?string} $purgerConfig */
+        /** @var array{name: ?string} $purgerConfig */
         $purgerConfig = $mergedConfig['purger'];
         $container->setParameter('.sofascore.purgatory2.purger.name', $purgerConfig['name']);
-        $container->setParameter('.sofascore.purgatory2.purger.host', $purgerConfig['host']);
 
         /** @var list<string> $mappingPaths */
         $mappingPaths = $mergedConfig['mapping_paths'];

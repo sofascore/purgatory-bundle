@@ -28,12 +28,14 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         $em->persist($test);
         $em->flush();
 
-        $this->assertUrlIsPurged('/'.$name);
+        $this->assertUrlIsPurged('http://localhost/'.$name);
+        $this->assertUrlIsPurged('http://example.test/foo');
         $this->clearPurger();
 
         $em->remove($test);
         $em->flush();
 
-        $this->assertUrlIsPurged('/'.$name);
+        $this->assertUrlIsPurged('http://localhost/'.$name);
+        $this->assertUrlIsPurged('http://example.test/foo');
     }
 }

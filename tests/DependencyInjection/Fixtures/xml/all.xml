@@ -17,7 +17,7 @@
 
         <purgatory:doctrine-event-listener-priorities preRemove="10" postPersist="20" postUpdate="30" />
 
-        <purgatory:purger name="symfony" host="localhost" />
+        <purgatory:purger name="symfony" />
 
         <purgatory:messenger transport="async" bus="command_bus" batch-size="100" />
 

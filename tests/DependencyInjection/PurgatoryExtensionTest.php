@@ -347,16 +347,13 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => [
                 'purger' => [
                     'name' => 'foo_purger',
-                    'host' => 'localhost:80',
                 ],
             ],
         ], $container);
 
         self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.name'));
-        self::assertTrue($container->hasParameter('.sofascore.purgatory2.purger.host'));
 
         self::assertSame('foo_purger', $container->getParameter('.sofascore.purgatory2.purger.name'));
-        self::assertSame('localhost:80', $container->getParameter('.sofascore.purgatory2.purger.host'));
     }
 
     public function testDefaultPurgerIsSetToVoidPurger(): void
@@ -369,7 +366,6 @@ final class PurgatoryExtensionTest extends TestCase
             'sofascore_purgatory' => [
                 'purger' => [
                     'name' => 'foo_purger',
-                    'host' => 'localhost:80',
                 ],
             ],
         ], $container);

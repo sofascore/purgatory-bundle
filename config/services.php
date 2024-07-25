@@ -176,7 +176,6 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory2.purger', ['alias' => 'symfony'])
             ->args([
                 service('http_cache.store'),
-                '%.sofascore.purgatory2.purger.host%',
             ])
 
         ->set('sofascore.purgatory2.purger.async', AsyncPurger::class)

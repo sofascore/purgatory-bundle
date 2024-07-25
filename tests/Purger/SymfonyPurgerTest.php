@@ -19,10 +19,10 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
         $store = $this->createMock(StoreInterface::class);
         $store->expects(self::once())
             ->method('purge')
-            ->with('localhost:80/foo');
+            ->with('http://localhost:80/foo');
 
-        $purger = new SymfonyPurger($store, host: 'localhost:80');
-        $purger->purge(['/foo']);
+        $purger = new SymfonyPurger($store);
+        $purger->purge(['http://localhost:80/foo']);
     }
 
     public function testPurgeWithHttpCache(): void
@@ -32,11 +32,11 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
         /** @var HttpCache $kernel */
         $kernel = self::getContainer()->get('http_cache');
 
-        self::assertSame('1', $kernel->handle(Request::create('/'))->getContent());
-        self::assertSame('1', $kernel->handle(Request::create('/'))->getContent());
+        self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
+        self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
 
-        self::getContainer()->get('sofascore.purgatory2.purger.symfony')->purge(['/']);
+        self::getContainer()->get('sofascore.purgatory2.purger.symfony')->purge(['http://localhost/']);
 
-        self::assertSame('2', $kernel->handle(Request::create('/'))->getContent());
+        self::assertSame('2', $kernel->handle(Request::create('http://localhost/'))->getContent());
     }
 }
