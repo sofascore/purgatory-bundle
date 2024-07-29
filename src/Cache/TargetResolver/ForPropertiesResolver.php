@@ -7,8 +7,10 @@ namespace Sofascore\PurgatoryBundle\Cache\TargetResolver;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 
+/**
+ * @implements TargetResolverInterface<ForProperties>
+ */
 final class ForPropertiesResolver implements TargetResolverInterface
 {
     /**
@@ -24,10 +26,6 @@ final class ForPropertiesResolver implements TargetResolverInterface
      */
     public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
-        if (!$target instanceof ForProperties) {
-            throw new InvalidArgumentException(\sprintf('Target must be an instance of "%s".', ForProperties::class));
-        }
-
         return $target->properties;
     }
 }

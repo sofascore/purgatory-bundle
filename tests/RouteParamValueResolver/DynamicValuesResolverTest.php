@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\DynamicValuesResolver;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\DummyServiceOne;
@@ -95,5 +96,18 @@ final class DynamicValuesResolverTest extends TestCase
             'entity' => $foo,
             'expectedResult' => [5, 1, 2, 3],
         ];
+    }
+
+    public function testExceptionIsThrownWhenServiceIsNotFound(): void
+    {
+        $resolver = new DynamicValuesResolver(
+            routeParamServiceLocator: new ServiceLocator([]),
+            propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('A route parameter resolver service with the alias "foo" was not found.');
+
+        $resolver->resolve(['foo', null], new \stdClass());
     }
 }

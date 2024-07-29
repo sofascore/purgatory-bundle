@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
@@ -84,7 +85,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 throw new EntityMetadataNotFoundException($class);
             }
 
-            /** @var TargetResolverInterface $targetResolver */
+            /** @var TargetResolverInterface<TargetInterface> $targetResolver */
             $targetResolver = $this->targetResolverLocator->get($purgeOn->target::class);
 
             foreach ($targetResolver->resolve($purgeOn->target, $routeMetadata) as $property) {

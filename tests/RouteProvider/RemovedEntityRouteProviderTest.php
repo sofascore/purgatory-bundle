@@ -14,12 +14,14 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\RemovedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
@@ -27,6 +29,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
+#[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(RemovedEntityRouteProvider::class)]
 final class RemovedEntityRouteProviderTest extends TestCase
 {
@@ -133,6 +136,29 @@ final class RemovedEntityRouteProviderTest extends TestCase
         self::assertSame(['routeName' => 'bar_route', 'routeParams' => []], $routes[1]);
     }
 
+    public function testExceptionIsThrownWhenEntityMetadataIsNotFound(): void
+    {
+        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader->method('load')
+            ->willReturn([]);
+
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->method('getManagerForClass')
+            ->with(\stdClass::class)
+            ->willReturn(null);
+
+        $routeProvider = new RemovedEntityRouteProvider(
+            $configurationLoader,
+            null,
+            new ServiceLocator([]),
+            $managerRegistry,
+        );
+
+        $this->expectException(EntityMetadataNotFoundException::class);
+
+        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), []));
+    }
+
     public function testExceptionIsThrownWhenIfIsUsedWithoutExpressionLangInstalled(): void
     {
         $routeProvider = $this->createRouteProvider([
@@ -144,11 +170,10 @@ final class RemovedEntityRouteProviderTest extends TestCase
             ],
         ], false);
 
-        $entity = new \stdClass();
-
         $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('You cannot use expressions because the Symfony ExpressionLanguage component is not installed.');
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, $entity, []));
+        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), []));
     }
 
     public function testRouteParamsWithRawValuesAndEnumValues(): void

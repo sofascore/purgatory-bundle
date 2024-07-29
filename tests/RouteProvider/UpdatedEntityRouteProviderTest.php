@@ -17,6 +17,7 @@ use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\UpdatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
@@ -24,6 +25,7 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
+#[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(UpdatedEntityRouteProvider::class)]
 final class UpdatedEntityRouteProviderTest extends TestCase
 {

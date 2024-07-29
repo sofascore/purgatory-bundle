@@ -7,12 +7,14 @@ namespace Sofascore\PurgatoryBundle\Cache\TargetResolver;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
-use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\PropertyInfo\PropertyListExtractorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/**
+ * @implements TargetResolverInterface<ForGroups>
+ */
 final class ForGroupsResolver implements TargetResolverInterface
 {
     public function __construct(
@@ -36,10 +38,6 @@ final class ForGroupsResolver implements TargetResolverInterface
      */
     public function resolve(TargetInterface $target, RouteMetadata $routeMetadata): array
     {
-        if (!$target instanceof ForGroups) {
-            throw new InvalidArgumentException(\sprintf('Target must be an instance of "%s".', ForGroups::class));
-        }
-
         /** @var list<string>|null $resolvedProperties */
         $resolvedProperties = $this->propertyListExtractor->getProperties(
             $routeMetadata->purgeOn->class,
