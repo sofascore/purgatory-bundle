@@ -8,17 +8,18 @@ use Symfony\Component\HttpKernel\Kernel;
 
 final class PropertyValues extends AbstractValues implements InverseValuesAwareInterface
 {
-    /** @var list<string> */
+    /** @var non-empty-list<string> */
     private readonly array $properties;
 
     public function __construct(
+        string $property,
         string ...$properties,
     ) {
-        $this->properties = array_values($properties);
+        $this->properties = [$property, ...array_values($properties)];
     }
 
     /**
-     * @return list<string>
+     * @return non-empty-list<string>
      */
     public function getValues(): array
     {

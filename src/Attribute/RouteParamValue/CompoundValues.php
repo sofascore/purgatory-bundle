@@ -10,17 +10,21 @@ use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 final class CompoundValues extends AbstractValues implements InverseValuesAwareInterface
 {
     /**
-     * @var list<ValuesInterface>
+     * @var non-empty-list<ValuesInterface>
      */
     private readonly array $values;
 
     /**
+     * @param string|non-empty-list<string>|ValuesInterface $value
      * @param string|non-empty-list<string>|ValuesInterface ...$values
      */
     public function __construct(
+        string|array|ValuesInterface $value,
         string|array|ValuesInterface ...$values,
     ) {
-        /** @var list<ValuesInterface> $normalized */
+        $values = [$value, ...$values];
+
+        /** @var non-empty-list<ValuesInterface> $normalized */
         $normalized = [];
 
         foreach ($values as $value) {

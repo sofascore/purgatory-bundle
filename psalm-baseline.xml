@@ -42,12 +42,14 @@
       <code><![CDATA[(array) $value]]></code>
       <code><![CDATA[(array) $value]]></code>
       <code><![CDATA[(array) $value]]></code>
+      <code><![CDATA[(array) $value]]></code>
     </ArgumentTypeCoercion>
     <InvalidArgument>
       <code><![CDATA[$value]]></code>
     </InvalidArgument>
     <PossiblyInvalidArgument>
       <code><![CDATA[$value]]></code>
+      <code><![CDATA[(array) $value]]></code>
       <code><![CDATA[(array) $value]]></code>
     </PossiblyInvalidArgument>
   </file>

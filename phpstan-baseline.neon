@@ -36,12 +36,12 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\.\\.\\.\\$properties of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\PropertyValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			message: "#^Parameter \\#1 \\$property of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\PropertyValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: "#^Parameter \\#1 \\.\\.\\.\\$values of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\RawValues constructor expects bool\\|float\\|int\\|string\\|null, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
+			message: "#^Parameter \\#1 \\$value of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\RawValues constructor expects bool\\|float\\|int\\|string\\|null, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
