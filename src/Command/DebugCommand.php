@@ -65,35 +65,35 @@ final class DebugCommand extends Command
         $this->addOption('route', null, InputOption::VALUE_REQUIRED, 'Display subscriptions for specific route');
         $this->addOption('all', null, InputOption::VALUE_NONE, 'Display all subscriptions');
         $this->setHelp(<<<'EOF'
-To display purge subscriptions for a specific entity, use the <info>--subscription</info> option with its' FQCN:
+            To display purge subscriptions for a specific entity, use the <info>--subscription</info> option with its' FQCN:
 
-  <info>php %command.full_name% --subscription 'App\Entity\Product'</info>
+              <info>php %command.full_name% --subscription 'App\Entity\Product'</info>
 
-To display all property subscriptions for an entity, use the <info>--with-properties</info> option:
+            To display all property subscriptions for an entity, use the <info>--with-properties</info> option:
 
-  <info>php %command.full_name% --subscription 'App\Entity\Product' --with-properties</info>
+              <info>php %command.full_name% --subscription 'App\Entity\Product' --with-properties</info>
 
-To display purge subscriptions for a specific entity property, add "<info>::</info>" followed by the property name:
+            To display purge subscriptions for a specific entity property, add "<info>::</info>" followed by the property name:
 
-  <info>php %command.full_name% --subscription 'App\Entity\Product::name'</info>
+              <info>php %command.full_name% --subscription 'App\Entity\Product::name'</info>
 
-To display purge subscriptions for a specific route, use the <info>--route</info> option:
+            To display purge subscriptions for a specific route, use the <info>--route</info> option:
 
-  <info>php %command.full_name% --route my_route_name</info>
+              <info>php %command.full_name% --route my_route_name</info>
 
-To display all configured purge subscriptions, use the <info>--all</info> option:
+            To display all configured purge subscriptions, use the <info>--all</info> option:
 
-  <info>php %command.full_name% --all</info>
+              <info>php %command.full_name% --all</info>
 
-To enter interactive mode, run the command without arguments:
+            To enter interactive mode, run the command without arguments:
 
-  <info>php %command.full_name%</info>
+              <info>php %command.full_name%</info>
 
-To filter and display subscriptions by a keyword, pass the keyword as the first argument:
+            To filter and display subscriptions by a keyword, pass the keyword as the first argument:
 
-  <info>php %command.full_name% keyword</info>
+              <info>php %command.full_name% keyword</info>
 
-EOF
+            EOF
         );
     }
 
