@@ -329,7 +329,7 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::petOfTheMonthAction
      */
-    public function purgeCompoundValues(): void
+    public function testPurgeCompoundValues(): void
     {
         $person = new Person();
         $person->firstName = 'John';
