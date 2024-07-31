@@ -32,6 +32,8 @@ final class ConfigurationTest extends AbstractKernelTestCase
 
     public static function setUpBeforeClass(): void
     {
+        parent::setUpBeforeClass();
+
         self::initializeApplication(['test_case' => 'TestApplication']);
 
         self::$configuration = self::getContainer()->get('sofascore.purgatory.configuration_loader')->load();

@@ -17,7 +17,21 @@ abstract class AbstractKernelTestCase extends KernelTestCase
 {
     private ?int $serverPort = null;
 
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+
+        self::removeCache();
+    }
+
     public static function tearDownAfterClass(): void
+    {
+        self::removeCache();
+
+        parent::tearDownAfterClass();
+    }
+
+    private static function removeCache(): void
     {
         $fileSystem = new Filesystem();
 
