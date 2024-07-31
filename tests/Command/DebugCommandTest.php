@@ -125,6 +125,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
             expectedNumberOfEntities: 2,
             entityClass: Author::class,
         );
+        self::assertNumberOfDisplayedActions(
+            command: $this->command,
+            expectedNumberOfActions: 2,
+            actions: 'update, delete',
+        );
     }
 
     #[TestWith([Post::class, 1, Post::class, 'ANY'])]
@@ -317,6 +322,19 @@ final class DebugCommandTest extends AbstractKernelTestCase
             needle: \sprintf('Property       %s', $property),
             haystack: $command->getDisplay(),
             message: \sprintf('Failed asserting that %d properties with the name "%s" were displayed.', $expectedNumberOfProperties, $property),
+        );
+    }
+
+    private static function assertNumberOfDisplayedActions(
+        CommandTester $command,
+        int $expectedNumberOfActions,
+        string $actions,
+    ): void {
+        self::assertSubstringCount(
+            expectedCount: $expectedNumberOfActions,
+            needle: \sprintf('Actions        %s', $actions),
+            haystack: $command->getDisplay(),
+            message: \sprintf('Failed asserting that %d actions with the value "%s" were displayed.', $expectedNumberOfActions, $actions),
         );
     }
 

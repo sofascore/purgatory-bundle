@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Post;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Tag;
@@ -36,6 +37,7 @@ class PostController
         routeParams: [
             'post_id' => 'posts[*].id',
         ],
+        actions: [Action::Update, Action::Delete],
     )]
     public function show(Post $post)
     {

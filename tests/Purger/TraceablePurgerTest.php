@@ -49,5 +49,13 @@ final class TraceablePurgerTest extends TestCase
         self::assertSame($purges[0]['time'] + $purges[1]['time'], $dataCollector->getTotalTime());
         self::assertSame('symfony', $dataCollector->getPurgerName());
         self::assertSame('foo', $dataCollector->getAsyncTransport());
+
+        $dataCollector->reset();
+
+        self::assertSame([], $dataCollector->getPurges());
+        self::assertSame(0, $dataCollector->getTotalUrls());
+        self::assertSame(0.0, $dataCollector->getTotalTime());
+        self::assertSame('symfony', $dataCollector->getPurgerName());
+        self::assertSame('foo', $dataCollector->getAsyncTransport());
     }
 }
