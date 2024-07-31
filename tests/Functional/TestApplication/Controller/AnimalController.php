@@ -105,6 +105,18 @@ class AnimalController
     {
     }
 
+    #[Route('/tag/{tag}', 'animal_tag')]
+    #[AnnotationRoute('/tag/{tag}', name: 'animal_tag')]
+    #[PurgeOn(Animal::class,
+        target: 'tags',
+        routeParams: [
+            'tag' => 'tags',
+        ],
+    )]
+    public function tagAction(string $tag)
+    {
+    }
+
     #[Route('/for-rating/{rating}', 'animals_with_rating')]
     #[AnnotationRoute('/for-rating/{rating}', name: 'animals_with_rating')]
     #[PurgeOn(Animal::class,

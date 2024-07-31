@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\InheritanceType('SINGLE_TABLE')]
-#[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
+#[ORM\DiscriminatorColumn(name: 'type', type: Types::STRING)]
 #[ORM\DiscriminatorMap([
     'animal' => AnimalCompetition::class,
     'human' => HumanCompetition::class,

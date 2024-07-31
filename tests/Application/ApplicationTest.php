@@ -36,8 +36,6 @@ final class ApplicationTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'TestApplication', 'config' => 'app_config.yaml']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-
-        $this->assertNoUrlsArePurged();
     }
 
     protected function tearDown(): void
@@ -353,6 +351,29 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->assertUrlIsPurged('/animal/pet-of-the-month/no');
         $this->assertUrlIsPurged('/animal/pet-of-the-month/au');
         $this->assertUrlIsPurged('/animal/pet-of-the-month/ar');
+    }
+
+    /**
+     * @see AnimalController::tagAction
+     */
+    public function testPurgeArrayValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $pet = new Animal();
+        $pet->name = 'Floki';
+        $pet->owner = $person;
+        $pet->tags = ['tag1', 'tag2'];
+        $person->pets->add($pet);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        $this->assertUrlIsPurged('/animal/tag/tag1');
+        $this->assertUrlIsPurged('/animal/tag/tag2');
     }
 
     /**

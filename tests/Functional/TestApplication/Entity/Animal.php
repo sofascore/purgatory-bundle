@@ -32,6 +32,9 @@ class Animal
     #[ORM\JoinColumn(nullable: false)]
     public Person $owner;
 
+    #[ORM\Column(nullable: true)]
+    public ?array $tags = null;
+
     public function __construct()
     {
         $this->measurements = new Measurements();
