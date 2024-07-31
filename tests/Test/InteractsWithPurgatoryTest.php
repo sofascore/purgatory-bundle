@@ -51,6 +51,9 @@ final class InteractsWithPurgatoryTest extends TestCase
                 $this->assertUrlIsNotPurged('/url?foo=bar');
                 $this->assertUrlIsNotPurged('/foo');
 
+                self::assertSame(['http://localhost/url'], $this->getPurgedUrls(true));
+                self::assertSame(['/url'], $this->getPurgedUrls(false));
+
                 $this->clearPurger();
                 $this->assertNoUrlsArePurged();
             }

@@ -30,7 +30,7 @@ trait InteractsWithPurgatory
     {
         self::assertContains(
             needle: $url,
-            haystack: $this->_getPurgedUrls($url),
+            haystack: $this->getPurgedUrls(str_contains($url, '://')),
             message: \sprintf('Failed asserting that the URL "%s" was purged.', $url),
         );
     }
@@ -39,7 +39,7 @@ trait InteractsWithPurgatory
     {
         self::assertNotContains(
             needle: $url,
-            haystack: $this->_getPurgedUrls($url),
+            haystack: $this->getPurgedUrls(str_contains($url, '://')),
             message: \sprintf('Failed asserting that the URL "%s" was not purged.', $url),
         );
     }
@@ -80,11 +80,11 @@ trait InteractsWithPurgatory
         $this->getPurger()->reset();
     }
 
-    private function _getPurgedUrls(string $url): array
+    final protected function getPurgedUrls(bool $absoluteUrls): array
     {
         $purgedUrls = $this->getPurger()->getPurgedUrls();
 
-        if (str_contains($url, '://')) {
+        if ($absoluteUrls) {
             return $purgedUrls;
         }
 
