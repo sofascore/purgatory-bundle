@@ -8,7 +8,6 @@
          colors="true"
          failOnRisky="true"
          failOnWarning="true"
-         requireCoverageMetadata="true"
 >
     <testsuites>
         <testsuite name="default">

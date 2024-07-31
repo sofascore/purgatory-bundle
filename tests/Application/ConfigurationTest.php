@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
-use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
@@ -25,7 +24,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Vehicle;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\HttpKernel\Kernel;
 
-#[CoversNothing]
 final class ConfigurationTest extends AbstractKernelTestCase
 {
     private static ?array $configuration;

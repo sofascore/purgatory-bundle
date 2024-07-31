@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
@@ -24,7 +23,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
-#[CoversNothing]
 final class ApplicationTest extends AbstractKernelTestCase
 {
     use InteractsWithPurgatory;

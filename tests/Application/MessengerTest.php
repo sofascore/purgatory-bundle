@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
-use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessageHandler;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
@@ -17,8 +15,6 @@ use Symfony\Component\Messenger\Stamp\BusNameStamp;
 use Symfony\Component\Messenger\Stamp\ReceivedStamp;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 
-#[CoversClass(PurgeMessage::class)]
-#[CoversClass(PurgeMessageHandler::class)]
 final class MessengerTest extends AbstractKernelTestCase
 {
     use InteractsWithPurgatory;
