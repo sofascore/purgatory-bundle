@@ -12,7 +12,10 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 trait InteractsWithPurgatory
 {
-    private ?InMemoryPurger $purger = null;
+    /**
+     * @internal
+     */
+    private ?InMemoryPurger $_purger = null;
 
     /**
      * @internal
@@ -22,8 +25,8 @@ trait InteractsWithPurgatory
     #[After]
     final protected function _cleanUp(): void
     {
-        $this->purger?->reset();
-        $this->purger = null;
+        $this->_purger?->reset();
+        $this->_purger = null;
     }
 
     final protected function assertUrlIsPurged(string $url): void
@@ -54,8 +57,8 @@ trait InteractsWithPurgatory
 
     final protected function getPurger(): InMemoryPurger
     {
-        if (null !== $this->purger) {
-            return $this->purger;
+        if (null !== $this->_purger) {
+            return $this->_purger;
         }
 
         if (!$this instanceof KernelTestCase) {
@@ -72,7 +75,7 @@ trait InteractsWithPurgatory
             throw new \LogicException(\sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', __TRAIT__));
         }
 
-        return $this->purger = $purger;
+        return $this->_purger = $purger;
     }
 
     final protected function clearPurger(): void
