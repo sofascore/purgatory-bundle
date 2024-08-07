@@ -25,6 +25,7 @@ return (new PhpCsFixer\Config())
         'trailing_comma_in_multiline' => [
             'elements' => ['arguments', 'arrays', 'match', 'parameters'],
         ],
+        'whitespace_after_comma_in_array' => ['ensure_single_space' => true],
     ])
     ->setRiskyAllowed(true)
     ->setFinder($finder)

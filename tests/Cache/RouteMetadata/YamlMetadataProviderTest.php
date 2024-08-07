@@ -254,8 +254,8 @@ final class YamlMetadataProviderTest extends TestCase
         iterator_to_array($provider->provide());
     }
 
-    #[TestWith(['purge_on_with_unknown_target_tag.yaml',  'Unknown YAML tag "for_unknown" provided, known tags are "for_groups", "for_properties".'])]
-    #[TestWith(['purge_on_with_unknown_route_param_tag.yaml',  'Unknown YAML tag "unknown" provided, known tags are "compound", "dynamic", "enum", "property", "raw".'])]
+    #[TestWith(['purge_on_with_unknown_target_tag.yaml', 'Unknown YAML tag "for_unknown" provided, known tags are "for_groups", "for_properties".'])]
+    #[TestWith(['purge_on_with_unknown_route_param_tag.yaml', 'Unknown YAML tag "unknown" provided, known tags are "compound", "dynamic", "enum", "property", "raw".'])]
     public function testExceptionIsThrownForUnknownTags(string $file, string $message): void
     {
         $collection = new RouteCollection();
