@@ -13,7 +13,7 @@ final class AbstractValuesTest extends TestCase
 {
     public function testToArray(): void
     {
-        $values = new class() extends AbstractValues {
+        $values = new class extends AbstractValues {
             public function getValues(): array
             {
                 return ['foo', 'bar', 'baz'];

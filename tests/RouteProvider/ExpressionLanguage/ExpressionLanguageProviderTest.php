@@ -15,7 +15,7 @@ final class ExpressionLanguageProviderTest extends TestCase
 {
     public function testGetFunctions(): void
     {
-        $functions = new class() {
+        $functions = new class {
             public function __invoke(int $x, int $y): int
             {
                 return $x + $y;
