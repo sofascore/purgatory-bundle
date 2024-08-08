@@ -13,7 +13,6 @@ return (new PhpCsFixer\Config())
     ->setUsingCache(true)
     ->setRules([
         '@PHP81Migration' => true,
-        '@PSR12' => true,
         '@Symfony' => true,
         '@Symfony:risky' => true,
         'attribute_empty_parentheses' => true,
@@ -21,6 +20,7 @@ return (new PhpCsFixer\Config())
         'heredoc_to_nowdoc' => true,
         'no_superfluous_phpdoc_tags' => true,
         'php_unit_test_case_static_method_calls' => ['call_type' => 'self'],
+        'self_static_accessor' => true,
         'single_line_throw' => false,
         'trailing_comma_in_multiline' => [
             'elements' => ['arguments', 'arrays', 'match', 'parameters'],
