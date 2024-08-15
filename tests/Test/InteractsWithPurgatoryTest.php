@@ -27,9 +27,7 @@ final class InteractsWithPurgatoryTest extends TestCase
         $container->set($idAsync, new AsyncPurger($this->createMock(MessageBusInterface::class)));
 
         $test = new class($container) extends KernelTestCase {
-            use InteractsWithPurgatory {
-                _cleanUp as public;
-            }
+            use InteractsWithPurgatory;
 
             private static Container $myContainer;
 
@@ -65,10 +63,6 @@ final class InteractsWithPurgatoryTest extends TestCase
         };
 
         $test->testUrlIsPurged();
-        $test->_cleanUp();
-
-        $test->testUrlIsPurged();
-        $test->_cleanUp();
     }
 
     public static function provideTraitTestCases(): iterable

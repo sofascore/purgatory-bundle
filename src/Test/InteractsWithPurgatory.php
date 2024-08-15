@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Test;
 
-use PHPUnit\Framework\Attributes\After;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -12,23 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 trait InteractsWithPurgatory
 {
-    /**
-     * @internal
-     */
-    private ?InMemoryPurger $_purger = null;
-
-    /**
-     * @internal
-     *
-     * @after
-     */
-    #[After]
-    final protected function _cleanUp(): void
-    {
-        $this->_purger?->reset();
-        $this->_purger = null;
-    }
-
     final protected function assertUrlIsPurged(string $url): void
     {
         self::assertContains(
@@ -57,10 +39,6 @@ trait InteractsWithPurgatory
 
     final protected function getPurger(): InMemoryPurger
     {
-        if (null !== $this->_purger) {
-            return $this->_purger;
-        }
-
         if (!$this instanceof KernelTestCase) {
             throw new \LogicException(\sprintf('The "%s" trait can only be used with "%s".', __TRAIT__, KernelTestCase::class));
         }
@@ -75,7 +53,7 @@ trait InteractsWithPurgatory
             throw new \LogicException(\sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', __TRAIT__));
         }
 
-        return $this->_purger = $purger;
+        return $purger;
     }
 
     final protected function clearPurger(): void
