@@ -27,7 +27,7 @@ jobs:
                         symfony: '7.1'
         services:
             postgres:
-                image: postgres:latest
+                image: postgres:16
                 credentials: # TODO remove this when going public
                     username: ${{ secrets.DOCKERHUB_USER }}
                     password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -67,7 +67,7 @@ jobs:
 
             -   name: Run Tests
                 env:
-                    DATABASE_URL: 'postgresql://postgres:password@127.0.0.1:5432/purgatory'
+                    DATABASE_URL: 'postgresql://postgres:password@127.0.0.1:5432/purgatory?serverVersion=16'
                 run: vendor/bin/phpunit --log-junit=junit.xml --coverage-text --coverage-clover=coverage.xml
 
             -   name: Publish Test Report
