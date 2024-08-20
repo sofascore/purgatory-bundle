@@ -21,6 +21,11 @@ parameters:
 			path: src/Attribute/RouteParamValue/PropertyValues.php
 
 		-
+			message: "#^Method Sofascore\\\\PurgatoryBundle\\\\Cache\\\\Configuration\\\\Subscriptions\\:\\:getIterator\\(\\) should return Traversable\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: true\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>\\}\\> but returns ArrayIterator\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: bool\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>\\}\\>\\.$#"
+			count: 1
+			path: src/Cache/Configuration/Subscriptions.php
+
+		-
 			message: "#^Parameter \\#1 \\$alias of class Sofascore\\\\PurgatoryBundle\\\\Attribute\\\\RouteParamValue\\\\DynamicValues constructor expects string, bool\\|float\\|int\\|string\\|Symfony\\\\Component\\\\Yaml\\\\Tag\\\\TaggedValue given\\.$#"
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php

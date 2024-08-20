@@ -21,7 +21,7 @@ final class CachedConfigurationLoader implements ConfigurationLoaderInterface, C
     /**
      * {@inheritDoc}
      */
-    public function load(): array
+    public function load(): Configuration
     {
         if (null === $this->buildDir) {
             return $this->configurationLoader->load();
@@ -33,15 +33,15 @@ final class CachedConfigurationLoader implements ConfigurationLoaderInterface, C
         );
 
         if (!$cache->isFresh()) {
-            $subscriptions = $this->configurationLoader->load();
+            $configuration = $this->configurationLoader->load();
 
             $cache->write(
-                content: '<?php return '.var_export($subscriptions, true).';',
+                content: '<?php return '.var_export($configuration->toArray(), true).';',
                 metadata: $this->router->getRouteCollection()->getResources(),
             );
         }
 
-        return require $cache->getPath();
+        return new Configuration(require $cache->getPath());
     }
 
     public function warmUp(string $cacheDir, ?string $buildDir = null): array

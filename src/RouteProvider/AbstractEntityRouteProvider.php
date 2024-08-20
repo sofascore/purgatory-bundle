@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\RouteProvider;
 
 use Psr\Container\ContainerInterface;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Subscriptions;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
@@ -25,15 +27,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
      */
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
-    /**
-     * @var array<class-string|non-falsy-string, list<array{
-     *     routeName: string,
-     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
-     *     actions?: non-empty-list<Action>,
-     * }>>
-     */
-    private ?array $subscriptions = null;
+    private ?Configuration $configuration = null;
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
@@ -66,17 +60,11 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param list<array{
-     *     routeName: string,
-     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
-     *     actions?: non-empty-list<Action>,
-     * }>                                        $subscriptions
      * @param array<string, array{mixed, mixed}> $entityChangeSet
      *
-     * @return iterable<int, array{routeName: string, routeParams: array<string, ?scalar>}>
+     * @return iterable<int, PurgeRoute>
      */
-    private function processValidSubscriptions(array $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
+    private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
     {
         foreach ($subscriptions as $subscription) {
             if (isset($subscription['actions']) && !\in_array($action, $subscription['actions'], true)) {
@@ -108,10 +96,10 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             }
 
             foreach ($this->processRouteParamValues($routeParamValues, $routeParamConfigs, $entityChangeSet) as $routeParams) {
-                yield [
-                    'routeName' => $subscription['routeName'],
-                    'routeParams' => $routeParams,
-                ];
+                yield new PurgeRoute(
+                    name: $subscription['routeName'],
+                    params: $routeParams,
+                );
             }
         }
     }
@@ -159,18 +147,13 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @return ?list<array{
-     *     routeName: string,
-     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
-     *     actions?: non-empty-list<Action>,
-     * }>
+     * @param non-empty-string $key
      */
-    private function getSubscriptions(string $key): ?array
+    private function getSubscriptions(string $key): ?Subscriptions
     {
-        $this->subscriptions ??= $this->configurationLoader->load();
+        $this->configuration ??= $this->configurationLoader->load();
 
-        return $this->subscriptions[$key] ?? null;
+        return $this->configuration->has($key) ? $this->configuration->get($key) : null;
     }
 
     private function getExpressionLanguage(): ExpressionLanguage

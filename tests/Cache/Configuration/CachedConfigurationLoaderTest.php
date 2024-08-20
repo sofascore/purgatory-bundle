@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\CachedConfigurationLoader;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
@@ -73,7 +74,27 @@ final class CachedConfigurationLoaderTest extends TestCase
 
         self::assertFileDoesNotExist($this->filepath);
 
-        $cachedConfigurationLoader->load();
+        self::assertInstanceOf(Configuration::class, $configuration = $cachedConfigurationLoader->load());
+        self::assertSame([
+            'Foo' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'actions' => [Action::Update],
+                ],
+            ],
+            'Foo::bar' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'routeParams' => [
+                        'bar' => [
+                            'type' => 'property',
+                            'values' => ['bar.id'],
+                        ],
+                    ],
+                    'actions' => [Action::Create],
+                ],
+            ],
+        ], $configuration->toArray());
 
         self::assertFileMatchesFormatFile(
             formatFile: __DIR__.'/Fixtures/subscriptions.php',

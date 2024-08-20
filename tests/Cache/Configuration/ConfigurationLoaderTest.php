@@ -11,6 +11,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
@@ -31,7 +32,8 @@ final class ConfigurationLoaderTest extends TestCase
 
         $loader = new ConfigurationLoader($purgeSubscriptionProvider);
 
-        self::assertSame($expectedConfiguration, $loader->load());
+        self::assertInstanceOf(Configuration::class, $configuration = $loader->load());
+        self::assertSame($expectedConfiguration, $configuration->toArray());
     }
 
     public static function purgeSubscriptionProvider(): iterable

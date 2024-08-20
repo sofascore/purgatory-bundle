@@ -18,9 +18,9 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
     /**
      * {@inheritDoc}
      */
-    public function load(): array
+    public function load(): Configuration
     {
-        $purgatoryCache = [];
+        $configuration = [];
 
         foreach ($this->purgeSubscriptionProvider->provide() as $subscription) {
             $key = $subscription->class;
@@ -45,10 +45,10 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 $config['actions'] = $subscription->actions;
             }
 
-            $purgatoryCache[$key][] = $config;
+            $configuration[$key][] = $config;
         }
 
-        return $purgatoryCache;
+        return new Configuration($configuration);
     }
 
     /**

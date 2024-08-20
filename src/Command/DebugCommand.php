@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Command;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,15 +25,7 @@ use Symfony\Component\HttpKernel\Kernel;
 )]
 final class DebugCommand extends Command
 {
-    /**
-     * @var ?array<class-string|non-falsy-string, list<array{
-     *     routeName: string,
-     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
-     *     actions?: non-empty-list<Action>,
-     * }>>
-     */
-    private ?array $subscriptions = null;
+    private ?Configuration $configuration = null;
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
@@ -101,19 +94,19 @@ final class DebugCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!($subscriptions = $this->subscriptions())) {
+        if (!($configuration = $this->configuration())->count()) {
             $io->note('There are no registered purge subscriptions.');
 
             return self::SUCCESS;
         }
 
         if ($input->getOption('all')) {
-            $this->display($io, $subscriptions);
+            $this->display($io, $configuration->toArray());
 
             return self::SUCCESS;
         }
 
-        /** @var class-string|non-falsy-string|null $subscription */
+        /** @var non-empty-string|null $subscription */
         $subscription = $input->getOption('subscription');
 
         if (null !== $subscription) {
@@ -126,13 +119,13 @@ final class DebugCommand extends Command
                 return self::FAILURE;
             }
 
-            if ([] === $filteredSubscriptions = $this->findSubscriptions($subscription, $withProperties)) {
+            if ([] === $filteredConfiguration = $this->findSubscriptions($subscription, $withProperties)) {
                 $io->warning(\sprintf('No purge subscriptions found matching "%s".', $subscription));
 
                 return self::FAILURE;
             }
 
-            $this->display($io, $filteredSubscriptions);
+            $this->display($io, $filteredConfiguration);
 
             return self::SUCCESS;
         }
@@ -141,18 +134,18 @@ final class DebugCommand extends Command
         $routeName = $input->getOption('route');
 
         if (null !== $routeName) {
-            if ([] === $filteredSubscriptions = $this->findSubscriptionsForRoute($routeName)) {
+            if ([] === $filteredConfiguration = $this->findSubscriptionsForRoute($routeName)) {
                 $io->warning(\sprintf('No purge subscriptions found for route "%s".', $routeName));
 
                 return self::FAILURE;
             }
 
-            $this->display($io, $filteredSubscriptions);
+            $this->display($io, $filteredConfiguration);
 
             return self::SUCCESS;
         }
 
-        /** @var class-string|non-falsy-string|null $target */
+        /** @var non-empty-string|null $target */
         $target = $input->getArgument('target');
 
         $entities = $this->getEntityCollection();
@@ -200,18 +193,18 @@ final class DebugCommand extends Command
         $field = $io->choice('Select one of the available fields', $fields);
         $withProperties = '*' === $field;
 
-        $filteredSubscriptions = $this->findSubscriptions(
+        $filteredConfiguration = $this->findSubscriptions(
             subscription: $withProperties ? $entity : $entity.'::'.$field,
             withProperties: $withProperties,
         );
 
-        if ([] === $filteredSubscriptions) {
+        if ([] === $filteredConfiguration) {
             $io->warning(\sprintf('No purge subscriptions found matching "%s".', $entity.'::'.$field));
 
             return self::FAILURE;
         }
 
-        $this->display($io, $filteredSubscriptions);
+        $this->display($io, $filteredConfiguration);
 
         $io->info(\sprintf(
             'You can rerun the command with the selected options using:%sphp bin/console purgatory:debug --subscription %s',
@@ -223,9 +216,9 @@ final class DebugCommand extends Command
     }
 
     /**
-     * @param class-string|non-falsy-string $subscription
+     * @param non-empty-string $subscription
      *
-     * @return array<class-string|non-falsy-string, list<array{
+     * @return array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
@@ -234,21 +227,21 @@ final class DebugCommand extends Command
      */
     private function findSubscriptions(string $subscription, bool $withProperties): array
     {
-        $subscriptions = $this->subscriptions();
+        $configuration = $this->configuration()->toArray();
 
         if (!$withProperties) {
-            return isset($subscriptions[$subscription]) ? [$subscription => $subscriptions[$subscription]] : [];
+            return isset($configuration[$subscription]) ? [$subscription => $configuration[$subscription]] : [];
         }
 
         return array_filter(
-            $subscriptions,
+            $configuration,
             static fn (string $key): bool => str_starts_with($key, $subscription),
             \ARRAY_FILTER_USE_KEY,
         );
     }
 
     /**
-     * @return array<class-string|non-falsy-string, list<array{
+     * @return array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
@@ -263,27 +256,27 @@ final class DebugCommand extends Command
                     $subscriptions,
                     static fn (array $subscription): bool => $subscription['routeName'] === $routeName,
                 )),
-                $this->subscriptions(),
+                $this->configuration()->toArray(),
             ),
         );
     }
 
     /**
-     * @param array<class-string|non-falsy-string, list<array{
+     * @param array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
-     * }>> $subscriptions
+     * }>> $configuration
      */
-    private function display(SymfonyStyle $io, array $subscriptions): void
+    private function display(SymfonyStyle $io, array $configuration): void
     {
         $io->title('Purge subscriptions');
 
-        foreach ($subscriptions as $key => $subscriptionCollection) {
+        foreach ($configuration as $key => $subscriptions) {
             $entity = explode('::', $key);
 
-            foreach ($subscriptionCollection as $subscription) {
+            foreach ($subscriptions as $subscription) {
                 $io->table(
                     ['Option', 'Value'],
                     [
@@ -342,17 +335,9 @@ final class DebugCommand extends Command
         );
     }
 
-    /**
-     * @return array<class-string|non-falsy-string, list<array{
-     *     routeName: string,
-     *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
-     *     actions?: non-empty-list<Action>,
-     * }>>
-     */
-    private function subscriptions(): array
+    private function configuration(): Configuration
     {
-        return $this->subscriptions ??= $this->configurationLoader->load();
+        return $this->configuration ??= $this->configurationLoader->load();
     }
 
     /**

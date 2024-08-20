@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
@@ -26,7 +27,7 @@ use Symfony\Component\HttpKernel\Kernel;
 
 final class ConfigurationTest extends AbstractKernelTestCase
 {
-    private static ?array $configuration;
+    private static ?Configuration $configuration;
 
     public static function setUpBeforeClass(): void
     {
@@ -66,15 +67,14 @@ final class ConfigurationTest extends AbstractKernelTestCase
 
     private static function assertSubscriptionExists(string $key, array $subscription): void
     {
-        self::assertArrayHasKey(
-            key: $key,
-            array: self::$configuration,
+        self::assertTrue(
+            condition: self::$configuration->has($key),
             message: \sprintf('Failed asserting that the configuration contains a subscription for "%s".', $key),
         );
 
         self::assertContains(
             needle: $subscription,
-            haystack: self::$configuration[$key],
+            haystack: self::$configuration->get($key),
             message: \sprintf('Failed asserting that the configuration contains the subscription "%s" for the key "%s".', json_encode($subscription), $key),
         );
     }

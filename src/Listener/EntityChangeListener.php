@@ -85,8 +85,8 @@ final class EntityChangeListener
 
             foreach ($routeProvider->provideRoutesFor($action, $entity, $entityChangeSet) as $route) {
                 $this->queuedUrls[$this->urlGenerator->generate(
-                    name: $route['routeName'],
-                    parameters: $route['routeParams'],
+                    name: $route->name,
+                    parameters: $route->params,
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL,
                 )] = true;
             }
