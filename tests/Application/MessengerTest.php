@@ -35,7 +35,7 @@ final class MessengerTest extends AbstractKernelTestCase
         /** @var MessageBusInterface $messageBus */
         $messageBus = $this->getContainer()->get($busId);
 
-        $this->assertNoUrlsArePurged();
+        self::assertNoUrlsArePurged();
         self::assertCount(0, $transport->getSent());
 
         $person = new Person();
@@ -46,7 +46,7 @@ final class MessengerTest extends AbstractKernelTestCase
         $entityManager->persist($person);
         $entityManager->flush();
 
-        $this->assertNoUrlsArePurged();
+        self::assertNoUrlsArePurged();
         self::assertCount(1, $sent = $transport->getSent());
         self::assertSame($busId, $sent[0]->last(BusNameStamp::class)->getBusName());
 
@@ -57,7 +57,7 @@ final class MessengerTest extends AbstractKernelTestCase
 
         $messageBus->dispatch($sent[0]->with(new ReceivedStamp('async')));
 
-        $this->assertUrlIsPurged('/person/'.$person->id);
+        self::assertUrlIsPurged('/person/'.$person->id);
     }
 
     /**
@@ -70,7 +70,7 @@ final class MessengerTest extends AbstractKernelTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
 
-        $this->assertNoUrlsArePurged();
+        self::assertNoUrlsArePurged();
 
         $person = new Person();
         $person->firstName = 'John';
@@ -80,11 +80,11 @@ final class MessengerTest extends AbstractKernelTestCase
         $entityManager->persist($person);
         $entityManager->flush();
 
-        $this->assertNoUrlsArePurged();
+        self::assertNoUrlsArePurged();
 
         self::runCommand(self::$kernel, 'messenger:consume', ['async', '-l' => 1, '-t' => 5]);
 
-        $this->assertUrlIsPurged('/person/'.$person->id);
+        self::assertUrlIsPurged('/person/'.$person->id);
     }
 
     private static function assertUrlIsQueued(string $url, array $urls): void

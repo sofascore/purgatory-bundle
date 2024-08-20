@@ -40,20 +40,20 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             public function testUrlIsPurged(): void
             {
-                $this->getPurger()->purge(['http://localhost/url']);
-                $this->assertUrlIsPurged('http://localhost/url');
-                $this->assertUrlIsPurged('/url');
+                self::getPurger()->purge(['http://localhost/url']);
+                self::assertUrlIsPurged('http://localhost/url');
+                self::assertUrlIsPurged('/url');
 
-                $this->assertUrlIsNotPurged('https://localhost/url');
-                $this->assertUrlIsNotPurged('http://example.test/url');
-                $this->assertUrlIsNotPurged('/url?foo=bar');
-                $this->assertUrlIsNotPurged('/foo');
+                self::assertUrlIsNotPurged('https://localhost/url');
+                self::assertUrlIsNotPurged('http://example.test/url');
+                self::assertUrlIsNotPurged('/url?foo=bar');
+                self::assertUrlIsNotPurged('/foo');
 
-                self::assertSame(['http://localhost/url'], $this->getPurgedUrls(true));
-                self::assertSame(['/url'], $this->getPurgedUrls(false));
+                self::assertSame(['http://localhost/url'], self::getPurgedUrls(true));
+                self::assertSame(['/url'], self::getPurgedUrls(false));
 
-                $this->clearPurger();
-                $this->assertNoUrlsArePurged();
+                self::clearPurger();
+                self::assertNoUrlsArePurged();
             }
 
             protected static function getContainer(): Container
@@ -78,7 +78,7 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             public function testUrlIsPurged(): void
             {
-                $this->getPurger();
+                self::getPurger();
             }
         };
 
@@ -95,7 +95,7 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             public function testUrlIsPurged(): void
             {
-                $this->getPurger();
+                self::getPurger();
             }
 
             protected static function getContainer(): Container

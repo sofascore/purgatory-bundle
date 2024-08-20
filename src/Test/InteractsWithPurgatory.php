@@ -11,42 +11,42 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 trait InteractsWithPurgatory
 {
-    final protected function assertUrlIsPurged(string $url): void
+    final protected static function assertUrlIsPurged(string $url): void
     {
         self::assertContains(
             needle: $url,
-            haystack: $this->getPurgedUrls(str_contains($url, '://')),
+            haystack: self::getPurgedUrls(str_contains($url, '://')),
             message: \sprintf('Failed asserting that the URL "%s" was purged.', $url),
         );
     }
 
-    final protected function assertUrlIsNotPurged(string $url): void
+    final protected static function assertUrlIsNotPurged(string $url): void
     {
         self::assertNotContains(
             needle: $url,
-            haystack: $this->getPurgedUrls(str_contains($url, '://')),
+            haystack: self::getPurgedUrls(str_contains($url, '://')),
             message: \sprintf('Failed asserting that the URL "%s" was not purged.', $url),
         );
     }
 
-    final protected function assertNoUrlsArePurged(): void
+    final protected static function assertNoUrlsArePurged(): void
     {
         self::assertEmpty(
-            actual: $this->getPurger()->getPurgedUrls(),
+            actual: self::getPurger()->getPurgedUrls(),
             message: 'Failed asserting that no URLs were purged.',
         );
     }
 
-    final protected function getPurger(): InMemoryPurger
+    final protected static function getPurger(): InMemoryPurger
     {
-        if (!$this instanceof KernelTestCase) {
+        if (!is_a(static::class, KernelTestCase::class, true)) {
             throw new \LogicException(\sprintf('The "%s" trait can only be used with "%s".', __TRAIT__, KernelTestCase::class));
         }
 
-        $purger = self::getContainer()->get(PurgerInterface::class);
+        $purger = static::getContainer()->get(PurgerInterface::class);
 
         if ($purger instanceof AsyncPurger) {
-            $purger = self::getContainer()->get('sofascore.purgatory.purger.sync');
+            $purger = static::getContainer()->get('sofascore.purgatory.purger.sync');
         }
 
         if (!$purger instanceof InMemoryPurger) {
@@ -56,14 +56,14 @@ trait InteractsWithPurgatory
         return $purger;
     }
 
-    final protected function clearPurger(): void
+    final protected static function clearPurger(): void
     {
-        $this->getPurger()->reset();
+        self::getPurger()->reset();
     }
 
-    final protected function getPurgedUrls(bool $absoluteUrls): array
+    final protected static function getPurgedUrls(bool $absoluteUrls): array
     {
-        $purgedUrls = $this->getPurger()->getPurgedUrls();
+        $purgedUrls = self::getPurger()->getPurgedUrls();
 
         if ($absoluteUrls) {
             return $purgedUrls;

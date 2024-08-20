@@ -30,15 +30,15 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         $em->persist($test);
         $em->flush();
 
-        $this->assertUrlIsPurged('http://localhost/'.$name);
-        $this->assertUrlIsPurged('http://example.test/foo');
-        $this->clearPurger();
+        self::assertUrlIsPurged('http://localhost/'.$name);
+        self::assertUrlIsPurged('http://example.test/foo');
+        self::clearPurger();
 
         $em->remove($test);
         $em->flush();
 
-        $this->assertUrlIsPurged('http://localhost/'.$name);
-        $this->assertUrlIsPurged('http://example.test/foo');
+        self::assertUrlIsPurged('http://localhost/'.$name);
+        self::assertUrlIsPurged('http://example.test/foo');
     }
 
     public function testUrlsAreNotPurgedOnFlushWhenInTransaction(): void
@@ -56,12 +56,12 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
             $em->flush();
         });
 
-        $this->assertNoUrlsArePurged();
+        self::assertNoUrlsArePurged();
 
         $em->flush();
 
-        $this->assertUrlIsPurged('http://localhost/'.$name);
-        $this->assertUrlIsPurged('http://example.test/foo');
+        self::assertUrlIsPurged('http://localhost/'.$name);
+        self::assertUrlIsPurged('http://example.test/foo');
     }
 
     public function testProcessWithNoURLs(): void

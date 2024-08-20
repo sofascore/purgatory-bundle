@@ -56,7 +56,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/'.$person->id);
+        self::assertUrlIsPurged('/person/'.$person->id);
     }
 
     /**
@@ -72,14 +72,14 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/list/men');
+        self::assertUrlIsPurged('/person/list/men');
 
-        $this->clearPurger();
+        self::clearPurger();
         $person->gender = 'female';
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsNotPurged('/person/list/men');
+        self::assertUrlIsNotPurged('/person/list/men');
     }
 
     /**
@@ -95,14 +95,14 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/list/custom-elf');
+        self::assertUrlIsPurged('/person/list/custom-elf');
 
-        $this->clearPurger();
+        self::clearPurger();
         $person->lastName = 'Doe';
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsNotPurged('/person/list/custom-elf');
+        self::assertUrlIsNotPurged('/person/list/custom-elf');
     }
 
     /**
@@ -121,7 +121,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $pet1 = new Animal();
         $pet1->name = 'Floki';
@@ -130,8 +130,8 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($pet1);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets');
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets2');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets2');
     }
 
     /**
@@ -158,32 +158,32 @@ final class ApplicationTest extends AbstractKernelTestCase
         $measurementsUrl = '/animal/'.$animal->id.'/measurements';
         $measurementsAltUrl = '/animal/'.$animal->id.'/measurements-alt';
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $animal->measurements->weight = 100;
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged($measurementsUrl);
-        $this->assertUrlIsPurged($measurementsAltUrl);
-        $this->assertUrlIsPurged($detailsUrl);
+        self::assertUrlIsPurged($measurementsUrl);
+        self::assertUrlIsPurged($measurementsAltUrl);
+        self::assertUrlIsPurged($detailsUrl);
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $animal->measurements->height = 100;
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged($detailsUrl);
-        $this->assertUrlIsPurged($measurementsUrl);
-        $this->assertUrlIsPurged($measurementsAltUrl);
+        self::assertUrlIsPurged($detailsUrl);
+        self::assertUrlIsPurged($measurementsUrl);
+        self::assertUrlIsPurged($measurementsAltUrl);
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $animal->measurements = new Measurements();
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged($detailsUrl);
-        $this->assertUrlIsPurged($measurementsUrl);
-        $this->assertUrlIsPurged($measurementsAltUrl);
+        self::assertUrlIsPurged($detailsUrl);
+        self::assertUrlIsPurged($measurementsUrl);
+        self::assertUrlIsPurged($measurementsAltUrl);
     }
 
     /**
@@ -210,19 +210,19 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet1->name = 'Floki';
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets/names');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets/names');
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet2->name = 'Floki';
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets/names');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets/names');
     }
 
     /**
@@ -246,29 +246,29 @@ final class ApplicationTest extends AbstractKernelTestCase
         $route1 = '/animal/'.$pet->id.'/route1';
         $route2 = '/animal/'.$pet->id.'/route2';
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet->measurements->height = 100;
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged($route1);
-        $this->assertUrlIsPurged($route2);
+        self::assertUrlIsPurged($route1);
+        self::assertUrlIsPurged($route2);
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet->measurements->weight = 100;
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged($route1);
-        $this->assertUrlIsNotPurged($route2);
+        self::assertUrlIsPurged($route1);
+        self::assertUrlIsNotPurged($route2);
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet->measurements->width = 100;
 
         $this->entityManager->flush();
 
-        $this->assertUrlIsNotPurged($route1);
-        $this->assertUrlIsPurged($route2);
+        self::assertUrlIsNotPurged($route1);
+        self::assertUrlIsPurged($route2);
     }
 
     /**
@@ -289,9 +289,9 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets/page/0');
-        $this->assertUrlIsPurged('/person/'.$person->id.'/pets/page/1');
-        $this->assertUrlIsNotPurged('/person/'.$person->id.'/pets/page/2');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets/page/0');
+        self::assertUrlIsPurged('/person/'.$person->id.'/pets/page/1');
+        self::assertUrlIsNotPurged('/person/'.$person->id.'/pets/page/2');
     }
 
     /**
@@ -312,14 +312,14 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet->measurements->height = 100;
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/pet-of-the-day/hr');
-        $this->assertUrlIsPurged('/animal/pet-of-the-day/is');
-        $this->assertUrlIsPurged('/animal/pet-of-the-day/no');
-        $this->assertUrlIsPurged('/animal/pet-of-the-day/au');
+        self::assertUrlIsPurged('/animal/pet-of-the-day/hr');
+        self::assertUrlIsPurged('/animal/pet-of-the-day/is');
+        self::assertUrlIsPurged('/animal/pet-of-the-day/no');
+        self::assertUrlIsPurged('/animal/pet-of-the-day/au');
     }
 
     /**
@@ -340,15 +340,15 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $pet->measurements->height = 100;
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/pet-of-the-month/hr');
-        $this->assertUrlIsPurged('/animal/pet-of-the-month/is');
-        $this->assertUrlIsPurged('/animal/pet-of-the-month/no');
-        $this->assertUrlIsPurged('/animal/pet-of-the-month/au');
-        $this->assertUrlIsPurged('/animal/pet-of-the-month/ar');
+        self::assertUrlIsPurged('/animal/pet-of-the-month/hr');
+        self::assertUrlIsPurged('/animal/pet-of-the-month/is');
+        self::assertUrlIsPurged('/animal/pet-of-the-month/no');
+        self::assertUrlIsPurged('/animal/pet-of-the-month/au');
+        self::assertUrlIsPurged('/animal/pet-of-the-month/ar');
     }
 
     /**
@@ -370,8 +370,8 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/tag/tag1');
-        $this->assertUrlIsPurged('/animal/tag/tag2');
+        self::assertUrlIsPurged('/animal/tag/tag1');
+        self::assertUrlIsPurged('/animal/tag/tag2');
     }
 
     /**
@@ -397,12 +397,12 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $person->gender = 'female';
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
-        $this->assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details');
+        self::assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
+        self::assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details');
     }
 
     /**
@@ -428,12 +428,12 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $person->gender = 'female';
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details-alt');
-        $this->assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details-alt');
+        self::assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details-alt');
+        self::assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details-alt');
     }
 
     /**
@@ -465,22 +465,22 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/for-rating/6');   // getRating
-        $this->assertUrlIsPurged('/animal/for-rating/26');   // getRating
-        $this->assertUrlIsPurged('/animal/for-rating/106'); // __invoke
-        $this->assertUrlIsPurged('/animal/for-rating/126'); // __invoke
-        $this->assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
+        self::assertUrlIsPurged('/animal/for-rating/6');   // getRating
+        self::assertUrlIsPurged('/animal/for-rating/26');   // getRating
+        self::assertUrlIsPurged('/animal/for-rating/106'); // __invoke
+        self::assertUrlIsPurged('/animal/for-rating/126'); // __invoke
+        self::assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $animal->name = 'Bob';
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/animal/for-rating/32');
-        $this->assertUrlIsNotPurged('/animal/for-rating/6');
-        $this->assertUrlIsNotPurged('/animal/for-rating/26');
-        $this->assertUrlIsNotPurged('/animal/for-rating/106');
-        $this->assertUrlIsNotPurged('/animal/for-rating/126');
+        self::assertUrlIsPurged('/animal/for-rating/32');
+        self::assertUrlIsNotPurged('/animal/for-rating/6');
+        self::assertUrlIsNotPurged('/animal/for-rating/26');
+        self::assertUrlIsNotPurged('/animal/for-rating/106');
+        self::assertUrlIsNotPurged('/animal/for-rating/126');
     }
 
     /**
@@ -495,15 +495,15 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->entityManager->persist($person);
         $this->entityManager->flush();
-        $this->assertUrlIsNotPurged('/person/deleted');
+        self::assertUrlIsNotPurged('/person/deleted');
 
         $person->gender = 'female';
         $this->entityManager->flush();
-        $this->assertUrlIsNotPurged('/person/deleted');
+        self::assertUrlIsNotPurged('/person/deleted');
 
         $this->entityManager->remove($person);
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/person/deleted');
+        self::assertUrlIsPurged('/person/deleted');
     }
 
     /**
@@ -518,17 +518,17 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         $this->entityManager->persist($person);
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/person/all-ids');
+        self::assertUrlIsPurged('/person/all-ids');
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $person->gender = 'female';
         $this->entityManager->flush();
-        $this->assertUrlIsNotPurged('/person/all-ids');
+        self::assertUrlIsNotPurged('/person/all-ids');
 
         $this->entityManager->remove($person);
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/person/all-ids');
+        self::assertUrlIsPurged('/person/all-ids');
     }
 
     /**
@@ -545,8 +545,8 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/person/country/hr');
-        $this->assertUrlIsPurged('/person/country');
+        self::assertUrlIsPurged('/person/country/hr');
+        self::assertUrlIsPurged('/person/country');
     }
 
     /**
@@ -567,11 +567,11 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $animal->measurements->height = 10;
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/animal/good-boy-ranking');
+        self::assertUrlIsPurged('/animal/good-boy-ranking');
     }
 
     /**
@@ -585,11 +585,11 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($competition);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
         $competition->numberOfPets = 5;
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/competition/ordered-by-number-of-pets');
+        self::assertUrlIsPurged('/competition/ordered-by-number-of-pets');
     }
 
     /**
@@ -604,7 +604,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->flush();
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $competition = new HumanCompetition();
         $competition->startDate = new \DateTimeImmutable();
@@ -613,7 +613,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($competition);
         $this->entityManager->flush();
 
-        $this->assertUrlIsPurged('/competition/by-winner/'.$person->id);
+        self::assertUrlIsPurged('/competition/by-winner/'.$person->id);
     }
 
     /**
@@ -635,11 +635,11 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($car);
         $this->entityManager->flush();
 
-        $this->assertUrlIsNotPurged('/person/'.$person->id.'/cars');
+        self::assertUrlIsNotPurged('/person/'.$person->id.'/cars');
 
         $car->owner = $person;
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/person/'.$person->id.'/cars');
+        self::assertUrlIsPurged('/person/'.$person->id.'/cars');
     }
 
     /**
@@ -658,24 +658,24 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($person);
         $this->entityManager->persist($car);
         $this->entityManager->flush();
-        $this->assertUrlIsNotPurged('/vehicle/'.$car->id.'/number-of-engines');
+        self::assertUrlIsNotPurged('/vehicle/'.$car->id.'/number-of-engines');
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $plane = new Plane();
         $plane->name = 'Weeee';
         $plane->numberOfEngines = 6;
         $this->entityManager->persist($plane);
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/vehicle/'.$plane->id.'/number-of-engines');
+        self::assertUrlIsPurged('/vehicle/'.$plane->id.'/number-of-engines');
 
-        $this->clearPurger();
+        self::clearPurger();
 
         $ship = new Ship();
         $ship->name = 'Woosh';
         $ship->numberOfEngines = 4;
         $this->entityManager->persist($ship);
         $this->entityManager->flush();
-        $this->assertUrlIsPurged('/vehicle/'.$ship->id.'/number-of-engines');
+        self::assertUrlIsPurged('/vehicle/'.$ship->id.'/number-of-engines');
     }
 }
