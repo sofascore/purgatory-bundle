@@ -148,7 +148,7 @@ class AnimalController
             'id' => 'pets[*].id',
         ],
     )]
-    public function petOwnerDetails(Animal $animal): void
+    public function petOwnerDetails(Animal $animal)
     {
     }
 
@@ -159,7 +159,7 @@ class AnimalController
             'id' => 'petsIds',
         ],
     )]
-    public function petOwnerDetailsAlternative(Animal $animal): void
+    public function petOwnerDetailsAlternative(Animal $animal)
     {
     }
 
@@ -169,6 +169,33 @@ class AnimalController
         target: new ForProperties(['isGoodBoy']),
     )]
     public function goodBoyRankingAction()
+    {
+    }
+
+    #[Route('/for-veterinarian/{id}', 'animals_for_veterinarian')]
+    #[AnnotationRoute('/for-veterinarian/{id}', name: 'animals_for_veterinarian')]
+    #[PurgeOn(Animal::class,
+        target: 'veterinarian',
+        routeParams: [
+            'id' => 'veterinarian?.id',
+        ],
+        if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
+    )]
+    public function animalsForVeterinarianAction(Person $veterinarian)
+    {
+    }
+
+    #[Route('/for-owner-and-veterinarian/{owner_id}-{vet_id}', 'animals_for_owner_and_veterinarian')]
+    #[AnnotationRoute('/for-owner-and-veterinarian/{owner_id}-{vet_id}', name: 'animals_for_owner_and_veterinarian')]
+    #[PurgeOn(Animal::class,
+        target: 'owner',
+        routeParams: [
+            'owner_id' => 'owner.id',
+            'vet_id' => 'veterinarian?.id',
+        ],
+        if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
+    )]
+    public function animalsForOwnerAndVeterinarianAction(Person $veterinarian)
     {
     }
 }

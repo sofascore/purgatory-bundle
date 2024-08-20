@@ -23,7 +23,7 @@ use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAcce
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(CreatedEntityRouteProvider::class)]
@@ -63,10 +63,13 @@ final class CreatedEntityRouteProviderTest extends TestCase
         ], false);
 
         $entity = new \stdClass();
+        $entity->foo = 1;
+        $entity->bar = 2;
+        $entity->baz = 3;
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Create, $entity));
+        self::assertFalse($routeProvider->supports(Action::Delete, $entity));
+        self::assertFalse($routeProvider->supports(Action::Update, $entity));
 
         $routes = [...$routeProvider->provideRoutesFor(
             action: Action::Create,
@@ -118,9 +121,9 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Create, $entity));
+        self::assertFalse($routeProvider->supports(Action::Delete, $entity));
+        self::assertFalse($routeProvider->supports(Action::Update, $entity));
 
         $routes = [...$routeProvider->provideRoutesFor(
             action: Action::Create,
@@ -184,9 +187,9 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $entity = new \stdClass();
 
-        self::assertTrue($routeProvider->supports(Action::Create, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Delete, new \stdClass()));
-        self::assertFalse($routeProvider->supports(Action::Update, new \stdClass()));
+        self::assertTrue($routeProvider->supports(Action::Create, $entity));
+        self::assertFalse($routeProvider->supports(Action::Delete, $entity));
+        self::assertFalse($routeProvider->supports(Action::Update, $entity));
 
         $routes = [...$routeProvider->provideRoutesFor(
             action: Action::Create,
@@ -217,14 +220,6 @@ final class CreatedEntityRouteProviderTest extends TestCase
         $configurationLoader->method('load')
             ->willReturn($subscriptions);
 
-        $propertyAccessor = $this->createMock(PropertyAccessorInterface::class);
-        $propertyAccessor->method('getValue')
-            ->willReturnCallback(fn (object $entity, string $value) => match ($value) {
-                'foo' => 1,
-                'bar' => 2,
-                'baz' => 3,
-            });
-
         $expressionLanguage = null;
         if ($withExpressionLang) {
             $expressionLanguage = $this->createMock(ExpressionLanguage::class);
@@ -232,8 +227,10 @@ final class CreatedEntityRouteProviderTest extends TestCase
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }
 
+        $propertyAccessor = new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor());
+
         $routeParamValueResolvers = [
-            PropertyValues::type() => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
+            PropertyValues::type() => static fn () => new PropertyValuesResolver($propertyAccessor),
             EnumValues::type() => static fn () => new EnumValuesResolver(),
             RawValues::type() => static fn () => new RawValuesResolver(),
         ];

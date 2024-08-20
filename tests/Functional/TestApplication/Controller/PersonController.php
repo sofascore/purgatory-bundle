@@ -125,4 +125,29 @@ class PersonController
     public function personCarsList(Person $person)
     {
     }
+
+    #[Route('/by-name/{name}', 'list_by_name')]
+    #[AnnotationRoute('/by-name/{name}', name: 'list_by_name')]
+    #[PurgeOn(Person::class,
+        routeParams: [
+            'name' => 'firstName',
+        ],
+    )]
+    public function listByNameAction(string $name)
+    {
+    }
+
+    #[Route('/by-full-name/{firstName}/{lastName}', 'list_by_full_name')]
+    #[AnnotationRoute('/by-full-name/{firstName}/{lastName}', name: 'list_by_full_name')]
+    #[PurgeOn(Person::class)]
+    public function listByFullNameAction(string $firstName, string $lastName)
+    {
+    }
+
+    #[Route('/full-name/{firstName}/{lastName}/gender/{gender}', 'list_by_full_name_and_gender')]
+    #[AnnotationRoute('/full-name/{firstName}/{lastName}/gender/{gender}', name: 'list_by_full_name_and_gender')]
+    #[PurgeOn(Person::class)]
+    public function listByFullNameAndGenderAction(string $firstName, string $lastName, string $gender)
+    {
+    }
 }

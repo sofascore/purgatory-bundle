@@ -450,5 +450,21 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 ],
             ],
         ];
+
+        /* @see AnimalController::animalsForVeterinarianAction */
+        yield [
+            'entity' => Animal::class,
+            'properties' => ['veterinarian'],
+            'subscription' => [
+                'routeName' => 'animals_for_veterinarian',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::type(),
+                        'values' => ['veterinarian?.id'],
+                    ],
+                ],
+                'if' => 'obj.name === "Sharp Dressed Dog"',
+            ],
+        ];
     }
 }

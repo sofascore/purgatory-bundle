@@ -372,6 +372,17 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         self::assertUrlIsPurged('/animal/tag/tag1');
         self::assertUrlIsPurged('/animal/tag/tag2');
+
+        self::clearPurger();
+
+        $pet->tags = ['tag3', 'tag4'];
+
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/tag/tag1');
+        self::assertUrlIsPurged('/animal/tag/tag2');
+        self::assertUrlIsPurged('/animal/tag/tag3');
+        self::assertUrlIsPurged('/animal/tag/tag4');
     }
 
     /**
@@ -677,5 +688,158 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->persist($ship);
         $this->entityManager->flush();
         self::assertUrlIsPurged('/vehicle/'.$ship->id.'/number-of-engines');
+    }
+
+    /**
+     * @see PersonController::listByNameAction
+     */
+    public function testOldValuesArePurged(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Ziggy';
+        $person->lastName = 'Stardust';
+        $person->gender = 'both';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-name/Ziggy');
+
+        self::clearPurger();
+
+        $person->firstName = 'Bobby';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-name/Ziggy');
+        self::assertUrlIsPurged('/person/by-name/Bobby');
+    }
+
+    /**
+     * @see PersonController::listByFullNameAction
+     * @see PersonController::listByFullNameAndGenderAction
+     */
+    public function testDoNotPurgeAllCombinationsOfOldAndNewValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-full-name/John/Doe');
+        self::assertUrlIsPurged('/person/full-name/John/Doe/gender/male');
+
+        self::clearPurger();
+
+        $person->firstName = 'Bobby';
+        $person->lastName = 'Brown';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-full-name/John/Doe');
+        self::assertUrlIsPurged('/person/by-full-name/Bobby/Brown');
+        self::assertUrlIsNotPurged('/person/by-full-name/John/Brown');
+        self::assertUrlIsNotPurged('/person/by-full-name/Bobby/Doe');
+
+        self::assertUrlIsPurged('/person/full-name/John/Doe/gender/male');
+        self::assertUrlIsPurged('/person/full-name/Bobby/Brown/gender/male');
+        self::assertUrlIsNotPurged('/person/full-name/John/Brown/gender/male');
+        self::assertUrlIsNotPurged('/person/full-name/Bobby/Doe/gender/male');
+    }
+
+    /**
+     * @see AnimalController::animalsForVeterinarianAction
+     */
+    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
+    public function testOldValuesWithOptionalRouteParamsArePurged(): void
+    {
+        $owner = new Person();
+        $owner->firstName = 'Billy';
+        $owner->lastName = 'Gibbons';
+        $owner->gender = 'male';
+
+        $vet1 = new Person();
+        $vet1->firstName = 'Frank';
+        $vet1->lastName = 'Beard';
+        $vet1->gender = 'male';
+
+        $vet2 = new Person();
+        $vet2->firstName = 'Dusty';
+        $vet2->lastName = 'Hill';
+        $vet2->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Sharp Dressed Dog';
+        $animal->owner = $owner;
+        $animal->veterinarian = $vet1;
+        $owner->pets->add($animal);
+
+        $this->entityManager->persist($vet1);
+        $this->entityManager->persist($vet2);
+        $this->entityManager->persist($owner);
+        $this->entityManager->flush();
+
+        self::clearPurger();
+
+        $animal->veterinarian = $vet2;
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/for-veterinarian/'.$vet1->id); // old URL
+        self::assertUrlIsPurged('/animal/for-veterinarian/'.$vet2->id); // new URL
+
+        self::clearPurger();
+
+        $animal->veterinarian = null;
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/for-veterinarian/'.$vet2->id); // old URL
+        // new URL does not exist because veterinarian is not set
+
+        self::clearPurger();
+        $animal->veterinarian = $vet1;
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/for-veterinarian/'.$vet1->id); // new URL
+        // old URL does not exist
+    }
+
+    /**
+     * @see AnimalController::animalsForOwnerAndVeterinarianAction
+     */
+    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
+    public function testOldValuesWithMissingRouteParamsAreNotPurged(): void
+    {
+        $owner1 = new Person();
+        $owner1->firstName = 'Billy';
+        $owner1->lastName = 'Gibbons';
+        $owner1->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Sharp Dressed Dog';
+        $animal->owner = $owner1;
+        $animal->veterinarian = null;
+        $owner1->pets->add($animal);
+
+        $this->entityManager->persist($owner1);
+        $this->entityManager->flush();
+
+        self::clearPurger();
+
+        $owner2 = new Person();
+        $owner2->firstName = 'Billy';
+        $owner2->lastName = 'Gibbons';
+        $owner2->gender = 'male';
+
+        $animal->owner = $owner2;
+        $owner2->pets->add($animal);
+
+        $this->entityManager->persist($owner2);
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/for-owner-and-veterinarian'),
+        ));
     }
 }

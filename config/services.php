@@ -156,6 +156,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
             ->tag('purgatory.route_provider')
+            ->arg(3, service('sofascore.purgatory.property_accessor'))
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([

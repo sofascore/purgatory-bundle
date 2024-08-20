@@ -44,6 +44,13 @@ class Person
     )]
     public Collection $cars;
 
+    #[ORM\OneToMany(
+        targetEntity: Animal::class,
+        mappedBy: 'veterinarian',
+        cascade: ['PERSIST'],
+    )]
+    public Collection $animalPatients;
+
     public function __construct()
     {
         $this->pets = new ArrayCollection();

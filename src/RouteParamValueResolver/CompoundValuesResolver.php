@@ -30,14 +30,14 @@ final class CompoundValuesResolver implements ValuesResolverInterface
      */
     public function resolve(array $unresolvedValues, object $entity): array
     {
-        $resolvedRouteParameters = [];
+        $values = [];
 
         foreach ($unresolvedValues as $config) {
             /** @var ValuesResolverInterface<array<mixed>> $routeParamValueResolver */
             $routeParamValueResolver = $this->routeParamValueResolverLocator->get($config['type']);
-            $resolvedRouteParameters = [...$resolvedRouteParameters, ...$routeParamValueResolver->resolve($config['values'], $entity)];
+            $values = [...$values, ...$routeParamValueResolver->resolve($config['values'], $entity)];
         }
 
-        return $resolvedRouteParameters;
+        return $values;
     }
 }

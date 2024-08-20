@@ -32,6 +32,13 @@ class Animal
     #[ORM\JoinColumn(nullable: false)]
     public Person $owner;
 
+    #[ORM\ManyToOne(
+        targetEntity: Person::class,
+        inversedBy: 'animalPatients',
+    )]
+    #[ORM\JoinColumn]
+    public ?Person $veterinarian = null;
+
     #[ORM\Column(nullable: true)]
     public ?array $tags = null;
 
