@@ -7,5 +7,5 @@
 /phpstan.dist.neon export-ignore
 /phpstan-baseline.neon export-ignore
 /phpunit.dist.xml export-ignore
-/psalm.xml.dist export-ignore
+/psalm.dist.xml export-ignore
 /psalm-baseline.xml export-ignore
