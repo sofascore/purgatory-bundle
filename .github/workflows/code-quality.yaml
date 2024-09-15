@@ -33,11 +33,6 @@ jobs:
             -   name: Validate composer.json
                 run: composer validate --strict
 
-            -   name: Install Dependencies
-                uses: ramsey/composer-install@v2
-                with:
-                    composer-options: '--prefer-dist'
-
             -   name: Check for PSR Violations
                 run: composer dump --optimize --strict-psr
 
