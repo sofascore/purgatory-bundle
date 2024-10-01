@@ -23,7 +23,7 @@ return (new PhpCsFixer\Config())
         'self_static_accessor' => true,
         'single_line_throw' => false,
         'trailing_comma_in_multiline' => [
-            'elements' => ['arguments', 'arrays', 'match', 'parameters'],
+            'elements' => ['arguments', 'array_destructuring', 'arrays', 'match', 'parameters'],
         ],
         'whitespace_after_comma_in_array' => ['ensure_single_space' => true],
     ])
