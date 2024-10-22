@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle\Purger;
 interface PurgerInterface
 {
     /**
-     * @param iterable<int, string> $urls
+     * @param iterable<int, PurgeRequest> $purgeRequests
      */
-    public function purge(iterable $urls): void;
+    public function purge(iterable $purgeRequests): void;
 }

@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle\Doctrine\DBAL\PurgatoryConnection;
 use Sofascore\PurgatoryBundle\Doctrine\DBAL\PurgatoryDriver;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity\Dummy;
@@ -54,13 +55,13 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
                 $this->entityManager->persist($test);
                 $this->entityManager->flush();
 
-                self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+                self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
                 self::assertNoUrlsArePurged();
 
                 $this->entityManager->remove($test);
                 $this->entityManager->flush();
 
-                self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+                self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
                 self::assertNoUrlsArePurged();
             },
         );
@@ -83,13 +84,13 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         $this->entityManager->persist($test);
         $this->entityManager->flush();
 
-        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
         self::assertNoUrlsArePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
-        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
         self::assertNoUrlsArePurged();
 
         $this->entityManager->getConnection()->commit();
@@ -112,13 +113,13 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
         $this->entityManager->persist($test);
         $this->entityManager->flush();
 
-        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
         self::assertNoUrlsArePurged();
 
         $this->entityManager->remove($test);
         $this->entityManager->flush();
 
-        self::assertSame(['http://localhost/'.$name => true, 'http://example.test/foo' => true], $this->getQueuedUrls());
+        self::assertSame(['http://localhost/'.$name, 'http://example.test/foo'], $this->getQueuedUrls());
         self::assertNoUrlsArePurged();
 
         $this->entityManager->getConnection()->rollBack();
@@ -132,6 +133,8 @@ final class PurgatoryDoctrineTest extends AbstractKernelTestCase
      */
     private function getQueuedUrls(): array
     {
-        return \Closure::bind(fn (): array => $this->queuedUrls, $this->entityChangeListener, EntityChangeListener::class)();
+        $purgeRequests = \Closure::bind(fn (): array => $this->queuedPurgeRequests, $this->entityChangeListener, EntityChangeListener::class)();
+
+        return array_values(array_map(static fn (PurgeRequest $purgeRequest) => $purgeRequest->url, $purgeRequests));
     }
 }

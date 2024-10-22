@@ -1,10 +1,10 @@
 {% extends '@WebProfiler/Profiler/layout.html.twig' %}
 
 {% block toolbar %}
-    {% if collector.totalUrls > 0 %}
+    {% if collector.totalRequests > 0 %}
         {% set icon %}
             {{ source('@Purgatory/purgatory.svg') }}
-            <span class="sf-toolbar-value">{{ collector.totalUrls }}</span>
+            <span class="sf-toolbar-value">{{ collector.totalRequests }}</span>
             <span class="sf-toolbar-info-piece-additional-detail">
                 <span class="sf-toolbar-label">in</span>
                 <span class="sf-toolbar-value">{{ '%0.2f'|format(collector.totalTime * 1000) }}</span>
@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block menu %}
-    <span class="label {{ collector.totalUrls == 0 ? 'disabled' }}">
+    <span class="label {{ collector.totalRequests == 0 ? 'disabled' }}">
         <span class="icon">
             {{ source('@Purgatory/purgatory.svg') }}
         </span>
@@ -30,7 +30,7 @@
 
     <div class="metrics">
         <div class="metric">
-            <span class="value">{{ collector.totalUrls ?: '(none)' }}</span>
+            <span class="value">{{ collector.totalRequests ?: '(none)' }}</span>
             <span class="label">Total URLs</span>
         </div>
         <div class="metric">
@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    {% if collector.totalUrls == 0 %}
+    {% if collector.totalRequests == 0 %}
         <div class="empty">
             <p>No purge requests were made.</p>
         </div>
@@ -60,6 +60,7 @@
                 <tr>
                     <th scope="col" class="key">#</th>
                     <th scope="col">URLs</th>
+                    <th scope="col">Routes</th>
                     <th scope="col">Time</th>
                 </tr>
                 </thead>
@@ -67,7 +68,8 @@
                 {% for key, purge in collector.purges %}
                     <tr>
                         <th scope="row">{{ key + 1 }}</th>
-                        <td>{{ purge.urls|join('\n')|nl2br }}</td>
+                        <td>{{ purge.requests|map(request => request.url)|join('\n')|nl2br }}</td>
+                        <td>{{ purge.requests|map(request => request.route.name)|join('\n')|nl2br }}</td>
                         <td>{{ '%.2f'|format(purge.time * 1000) }} <span class="unit">ms</span></td>
                     </tr>
                 {% endfor %}

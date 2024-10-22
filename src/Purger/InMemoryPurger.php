@@ -6,17 +6,25 @@ namespace Sofascore\PurgatoryBundle\Purger;
 
 final class InMemoryPurger implements PurgerInterface
 {
-    /** @var list<string> */
-    private array $purgedUrls = [];
+    /** @var list<PurgeRequest> */
+    private array $purgedRequests = [];
 
     /**
      * {@inheritDoc}
      */
-    public function purge(iterable $urls): void
+    public function purge(iterable $purgeRequests): void
     {
-        foreach ($urls as $url) {
-            $this->purgedUrls[] = $url;
+        foreach ($purgeRequests as $purgeRequest) {
+            $this->purgedRequests[] = $purgeRequest;
         }
+    }
+
+    /**
+     * @return list<PurgeRequest>
+     */
+    public function getPurgedRequests(): array
+    {
+        return $this->purgedRequests;
     }
 
     /**
@@ -24,11 +32,11 @@ final class InMemoryPurger implements PurgerInterface
      */
     public function getPurgedUrls(): array
     {
-        return $this->purgedUrls;
+        return array_map(static fn (PurgeRequest $purgeRequest): string => $purgeRequest->url, $this->purgedRequests);
     }
 
     public function reset(): void
     {
-        $this->purgedUrls = [];
+        $this->purgedRequests = [];
     }
 }

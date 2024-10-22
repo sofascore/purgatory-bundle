@@ -17,15 +17,15 @@ final class TraceablePurger implements PurgerInterface
     ) {
     }
 
-    public function purge(iterable $urls): void
+    public function purge(iterable $purgeRequests): void
     {
-        /** @var list<string> $urls */
-        $urls = \is_array($urls) ? $urls : iterator_to_array($urls);
+        /** @var list<PurgeRequest> $purgeRequests */
+        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests);
 
         $startTime = microtime(true);
-        $this->purger->purge($urls);
+        $this->purger->purge($purgeRequests);
         $time = microtime(true) - $startTime;
 
-        $this->dataCollector->collectPurgedUrls($urls, $time);
+        $this->dataCollector->collectPurgeRequests($purgeRequests, $time);
     }
 }

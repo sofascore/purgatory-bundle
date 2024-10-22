@@ -7,7 +7,9 @@ namespace Sofascore\PurgatoryBundle\Tests\Purger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle\Exception\PurgeRequestFailedException;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\VarnishPurger;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Component\HttpClient\HttpClient;
@@ -21,30 +23,36 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
 {
     public function testPurgeWithoutHosts(): void
     {
-        $urls = ['http://example1.test/foo', 'http://example2.test/bar'];
+        $purgeRequests = [
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+        ];
 
         $httpClient = new MockHttpClient([
-            static function (string $method, string $url) use ($urls): MockResponse {
+            static function (string $method, string $url) use ($purgeRequests): MockResponse {
                 self::assertSame('PURGE', $method);
-                self::assertSame($urls[0], $url);
+                self::assertSame($purgeRequests[0]->url, $url);
 
                 return new MockResponse();
             },
-            static function (string $method, string $url) use ($urls): MockResponse {
+            static function (string $method, string $url) use ($purgeRequests): MockResponse {
                 self::assertSame('PURGE', $method);
-                self::assertSame($urls[1], $url);
+                self::assertSame($purgeRequests[1]->url, $url);
 
                 return new MockResponse();
             },
         ]);
 
         $purger = new VarnishPurger($httpClient);
-        $purger->purge($urls);
+        $purger->purge($purgeRequests);
     }
 
     public function testPurgeWithHosts(): void
     {
-        $urls = ['http://example1.test/foo', 'http://example2.test/bar'];
+        $purgeRequests = [
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+        ];
 
         $httpClient = new MockHttpClient([
             static function (string $method, string $url, array $options): MockResponse {
@@ -86,7 +94,7 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         ]);
 
         $purger = new VarnishPurger($httpClient, ['http://host1', 'http://host2']);
-        $purger->purge($urls);
+        $purger->purge($purgeRequests);
     }
 
     public function testExceptionIsThrownWhenUrlDoesNotHaveAHost(): void
@@ -96,23 +104,28 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid URL "/foo" provided. The URL must contain a host.');
 
-        $purger->purge(['/foo']);
+        $purger->purge([
+            new PurgeRequest('/foo', new PurgeRoute('route_foo', [], [])),
+        ]);
     }
 
     public function testExceptionIsThrownWhenPurgeRequestsFail(): void
     {
-        $urls = ['http://example1.test/foo', 'http://example2.test/bar'];
+        $purgeRequests = [
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+        ];
 
         $httpClient = new MockHttpClient([
-            static function (string $method, string $url) use ($urls): MockResponse {
+            static function (string $method, string $url) use ($purgeRequests): MockResponse {
                 self::assertSame('PURGE', $method);
-                self::assertSame($urls[0], $url);
+                self::assertSame($purgeRequests[0]->url, $url);
 
                 return new MockResponse();
             },
-            static function (string $method, string $url) use ($urls): MockResponse {
+            static function (string $method, string $url) use ($purgeRequests): MockResponse {
                 self::assertSame('PURGE', $method);
-                self::assertSame($urls[1], $url);
+                self::assertSame($purgeRequests[1]->url, $url);
 
                 return new MockResponse(info: ['http_code' => 400]);
             },
@@ -123,7 +136,7 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         $this->expectException(PurgeRequestFailedException::class);
         $this->expectExceptionMessage('An error occurred while trying to purge 1 URL.');
 
-        $purger->purge($urls);
+        $purger->purge($purgeRequests);
     }
 
     public function testPurgeWithHttpCache(): void
@@ -151,13 +164,17 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         self::assertSame(['fresh'], $response2->getHeaders()['x-symfony-cache']);
         self::assertSame($response1->getContent(), $response2->getContent());
 
-        (new VarnishPurger($decoratedHttpClient))->purge(['http://localhost:8088/']);
+        (new VarnishPurger($decoratedHttpClient))->purge([
+            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [])),
+        ]);
 
         $response3 = $httpClient->request('GET', 'http://localhost:8088/');
         self::assertSame(['miss/store'], $response3->getHeaders()['x-symfony-cache']);
         self::assertNotSame($response2->getContent(), $response3->getContent());
 
-        (new VarnishPurger($decoratedHttpClient, ['http://127.0.0.1:8088']))->purge(['http://localhost:8088/']);
+        (new VarnishPurger($decoratedHttpClient, ['http://127.0.0.1:8088']))->purge([
+            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [])),
+        ]);
 
         $response4 = $httpClient->request('GET', 'http://localhost:8088/');
         self::assertSame(['miss/store'], $response4->getHeaders()['x-symfony-cache']);

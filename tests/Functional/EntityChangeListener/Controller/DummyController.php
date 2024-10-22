@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Contro
 
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity\Dummy;
+use Sofascore\PurgatoryBundle\Tests\Functional\EntityChangeListener\Entity\DummyParent;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,6 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DummyController
 {
     #[PurgeOn(Dummy::class, target: 'name')]
+    #[PurgeOn(DummyParent::class, target: 'dummy', routeParams: ['name' => 'dummy.name'])]
     #[AnnotationRoute('/{name}', name: 'test_index')]
     #[Route('/{name}', 'test_index')]
     public function index()

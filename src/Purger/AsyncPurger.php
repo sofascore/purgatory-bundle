@@ -18,21 +18,21 @@ final class AsyncPurger implements PurgerInterface
     ) {
     }
 
-    public function purge(iterable $urls): void
+    public function purge(iterable $purgeRequests): void
     {
-        if (!$urls) {
+        if (!$purgeRequests) {
             return;
         }
 
-        /** @var list<string> $urls */
-        $urls = \is_array($urls) ? $urls : iterator_to_array($urls, false);
+        /** @var list<PurgeRequest> $purgeRequests */
+        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests, false);
 
         if (null !== $this->batchSize) {
-            foreach (array_chunk($urls, $this->batchSize) as $batch) {
+            foreach (array_chunk($purgeRequests, $this->batchSize) as $batch) {
                 $this->bus->dispatch(new PurgeMessage($batch));
             }
         } else {
-            $this->bus->dispatch(new PurgeMessage($urls));
+            $this->bus->dispatch(new PurgeMessage($purgeRequests));
         }
     }
 }

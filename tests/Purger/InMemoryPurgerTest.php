@@ -8,15 +8,17 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 
 #[CoversClass(InMemoryPurger::class)]
 final class InMemoryPurgerTest extends TestCase
 {
-    #[DataProvider('urlsProvider')]
-    public function testPurge(iterable $urlsToPurge): void
+    #[DataProvider('providePurgeRequests')]
+    public function testPurge(iterable $purgeRequests): void
     {
         $purger = new InMemoryPurger();
-        $purger->purge($urlsToPurge);
+        $purger->purge($purgeRequests);
 
         self::assertSame(['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz'], $purger->getPurgedUrls());
 
@@ -25,9 +27,13 @@ final class InMemoryPurgerTest extends TestCase
         self::assertSame([], $purger->getPurgedUrls());
     }
 
-    public static function urlsProvider(): iterable
+    public static function providePurgeRequests(): iterable
     {
-        $array = ['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz'];
+        $array = [
+            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
+            new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [])),
+        ];
 
         yield 'array' => [
             $array,

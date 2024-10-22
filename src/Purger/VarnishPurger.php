@@ -21,17 +21,20 @@ final class VarnishPurger implements PurgerInterface
     ) {
     }
 
-    public function purge(iterable $urls): void
+    /**
+     * {@inheritDoc}
+     */
+    public function purge(iterable $purgeRequests): void
     {
         $responses = [];
 
-        foreach ($urls as $url) {
+        foreach ($purgeRequests as $purgeRequest) {
             if (!$this->hosts) {
-                $responses[] = $this->httpClient->request(Request::METHOD_PURGE, $url);
+                $responses[] = $this->httpClient->request(Request::METHOD_PURGE, $purgeRequest->url);
                 continue;
             }
 
-            [$urlHost, $urlPathAndQuery] = self::splitUrl($url);
+            [$urlHost, $urlPathAndQuery] = self::splitUrl($purgeRequest->url);
             foreach ($this->hosts as $host) {
                 $responses[] = $this->httpClient->request(Request::METHOD_PURGE, $host.$urlPathAndQuery, [
                     'headers' => [

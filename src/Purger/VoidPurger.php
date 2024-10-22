@@ -9,7 +9,7 @@ final class VoidPurger implements PurgerInterface
     /**
      * {@inheritDoc}
      */
-    public function purge(iterable $urls): void
+    public function purge(iterable $purgeRequests): void
     {
     }
 }

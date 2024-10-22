@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\DataCollector;
 
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -11,11 +12,11 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 /**
  * @internal
  *
- * @property array{purger_name: string, async_transport: ?string, purges: list<array{urls: list<string>, time: float}>} $data
+ * @property array{purger_name: string, async_transport: ?string, purges: list<array{requests: list<PurgeRequest>, time: float}>} $data
  */
 final class PurgatoryDataCollector extends DataCollector
 {
-    private ?int $totalUrls = null;
+    private ?int $totalRequests = null;
     private ?float $totalTime = null;
 
     public function __construct(
@@ -35,16 +36,16 @@ final class PurgatoryDataCollector extends DataCollector
     }
 
     /**
-     * @param list<string> $urls
+     * @param list<PurgeRequest> $purgeRequests
      */
-    public function collectPurgedUrls(array $urls, float $time): void
+    public function collectPurgeRequests(array $purgeRequests, float $time): void
     {
-        $this->data['purges'][] = ['urls' => $urls, 'time' => $time];
+        $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time];
     }
 
-    public function getTotalUrls(): int
+    public function getTotalRequests(): int
     {
-        return $this->totalUrls ??= \count(array_merge(...array_column($this->data['purges'], 'urls')));
+        return $this->totalRequests ??= \count(array_merge(...array_column($this->data['purges'], 'requests')));
     }
 
     public function getTotalTime(): float
@@ -63,7 +64,7 @@ final class PurgatoryDataCollector extends DataCollector
     }
 
     /**
-     * @return list<array{urls: list<string>, time: float}>
+     * @return list<array{requests: list<PurgeRequest>, time: float}>
      */
     public function getPurges(): array
     {
@@ -74,7 +75,7 @@ final class PurgatoryDataCollector extends DataCollector
     {
         $this->initData();
 
-        $this->totalUrls = null;
+        $this->totalRequests = null;
         $this->totalTime = null;
     }
 

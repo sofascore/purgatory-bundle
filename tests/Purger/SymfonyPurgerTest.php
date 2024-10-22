@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Purger;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\SymfonyPurger;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpCache\HttpCache;
@@ -22,7 +24,9 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
             ->with('http://localhost:80/foo');
 
         $purger = new SymfonyPurger($store);
-        $purger->purge(['http://localhost:80/foo']);
+        $purger->purge([
+            new PurgeRequest('http://localhost:80/foo', new PurgeRoute('route_foo', [])),
+        ]);
     }
 
     public function testPurgeWithHttpCache(): void
@@ -35,7 +39,9 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
         self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
         self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
 
-        self::getContainer()->get('sofascore.purgatory.purger.symfony')->purge(['http://localhost/']);
+        self::getContainer()->get('sofascore.purgatory.purger.symfony')->purge([
+            new PurgeRequest('http://localhost/', new PurgeRoute('route_name', [])),
+        ]);
 
         self::assertSame('2', $kernel->handle(Request::create('http://localhost/'))->getContent());
     }

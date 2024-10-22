@@ -23,7 +23,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
-     * }>                      $subscriptions
+     * }> $subscriptions
      */
     public function __construct(
         private readonly string $key,

@@ -16,10 +16,10 @@ final class SymfonyPurger implements PurgerInterface
     /**
      * {@inheritDoc}
      */
-    public function purge(iterable $urls): void
+    public function purge(iterable $purgeRequests): void
     {
-        foreach ($urls as $url) {
-            $this->store->purge($url);
+        foreach ($purgeRequests as $purgeRequest) {
+            $this->store->purge($purgeRequest->url);
         }
     }
 }

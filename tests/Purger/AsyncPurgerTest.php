@@ -9,32 +9,40 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[CoversClass(AsyncPurger::class)]
 final class AsyncPurgerTest extends TestCase
 {
-    #[DataProvider('urlsProvider')]
-    public function testPurgeWithoutBatchSize(?int $batchSize, iterable $urlsToPurge, array $batches): void
+    #[DataProvider('providePurgeRequests')]
+    public function testPurgeWithoutBatchSize(?int $batchSize, iterable $purgeRequests, array $batches): void
     {
         $messageBus = $this->createMock(MessageBusInterface::class);
 
         $messageBus->expects(self::exactly(\count($batches)))->method('dispatch')
             ->willReturnCallback(static function (PurgeMessage $purgeMessage) use (&$batches) {
-                self::assertSame(array_shift($batches), $purgeMessage->urls);
+                self::assertSame(array_shift($batches), $purgeMessage->purgeRequests);
 
                 return new Envelope($purgeMessage);
             })
         ;
 
         $asyncPurger = new AsyncPurger($messageBus, $batchSize);
-        $asyncPurger->purge($urlsToPurge);
+        $asyncPurger->purge($purgeRequests);
     }
 
-    public static function urlsProvider(): iterable
+    public static function providePurgeRequests(): iterable
     {
-        $array = ['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz', 'http://localhost/qux', 'http://localhost/corge'];
+        $array = [
+            $foo = new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
+            $bar = new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
+            $baz = new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [])),
+            $qux = new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', [])),
+            $corge = new PurgeRequest('http://localhost/corge', new PurgeRoute('route_corge', [])),
+        ];
 
         yield 'array' => [
             null,
@@ -51,7 +59,7 @@ final class AsyncPurgerTest extends TestCase
         yield 'ArrayIterator' => [
             2,
             new \ArrayIterator($array),
-            [['http://localhost/foo', 'http://localhost/bar'], ['http://localhost/baz', 'http://localhost/qux'], ['http://localhost/corge']],
+            [[$foo, $bar], [$baz, $qux], [$corge]],
         ];
 
         yield 'Generator' => [
@@ -59,11 +67,11 @@ final class AsyncPurgerTest extends TestCase
             (static function () use ($array) {
                 yield from $array;
             })(),
-            [['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz'], ['http://localhost/qux', 'http://localhost/corge']],
+            [[$foo, $bar, $baz], [$qux, $corge]],
         ];
     }
 
-    public function testPurgeWithNoURLs(): void
+    public function testPurgeWithNoPurgeRequests(): void
     {
         $messageBus = $this->createMock(MessageBusInterface::class);
         $messageBus->expects(self::never())->method('dispatch');

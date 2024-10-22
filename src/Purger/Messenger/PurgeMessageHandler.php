@@ -18,6 +18,6 @@ final class PurgeMessageHandler
 
     public function __invoke(PurgeMessage $message): void
     {
-        $this->purger->purge($message->urls);
+        $this->purger->purge($message->purgeRequests);
     }
 }

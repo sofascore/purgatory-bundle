@@ -9,8 +9,10 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle\Purger\VoidPurger;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
@@ -40,7 +42,9 @@ final class InteractsWithPurgatoryTest extends TestCase
 
             public function testUrlIsPurged(): void
             {
-                self::getPurger()->purge(['http://localhost/url']);
+                self::getPurger()->purge([
+                    new PurgeRequest('http://localhost/url', new PurgeRoute('route_url', [])),
+                ]);
                 self::assertUrlIsPurged('http://localhost/url');
                 self::assertUrlIsPurged('/url');
 

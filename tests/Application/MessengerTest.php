@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Application;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\TestWith;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
@@ -53,7 +54,7 @@ final class MessengerTest extends AbstractKernelTestCase
         /** @var PurgeMessage $message */
         $message = $sent[0]->getMessage();
 
-        self::assertUrlIsQueued('http://localhost/person/'.$person->id, $message->urls);
+        self::assertUrlIsQueued('http://localhost/person/'.$person->id, $message->purgeRequests);
 
         $messageBus->dispatch($sent[0]->with(new ReceivedStamp('async')));
 
@@ -87,8 +88,10 @@ final class MessengerTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('/person/'.$person->id);
     }
 
-    private static function assertUrlIsQueued(string $url, array $urls): void
+    private static function assertUrlIsQueued(string $url, array $purgeRequests): void
     {
+        $urls = array_map(static fn (PurgeRequest $purgeRequest) => $purgeRequest->url, $purgeRequests);
+
         self::assertContains(
             needle: $url,
             haystack: $urls,
