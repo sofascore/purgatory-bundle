@@ -80,6 +80,9 @@ final class YamlMetadataProviderTest extends TestCase
 
         self::assertNull($metadata[0]->purgeOn->actions);
         self::assertSame([Action::Create], $metadata[1]->purgeOn->actions);
+
+        self::assertEmpty($metadata[0]->purgeOn->context);
+        self::assertSame(['qux' => true, 'corge' => 2], $metadata[1]->purgeOn->context);
     }
 
     public function testRouteMetadataWithTags(): void
@@ -123,6 +126,7 @@ final class YamlMetadataProviderTest extends TestCase
         ], $metadata[0]->purgeOn->routeParams);
         self::assertNull($metadata[0]->purgeOn->if);
         self::assertNull($metadata[0]->purgeOn->actions);
+        self::assertEmpty($metadata[0]->purgeOn->context);
     }
 
     public function testMultipleRouteMetadata(): void
@@ -173,6 +177,7 @@ final class YamlMetadataProviderTest extends TestCase
 
         self::assertSame([Action::Create, Action::Update], $metadata[0]->purgeOn->actions);
         self::assertSame([Action::Delete], $metadata[1]->purgeOn->actions);
+        self::assertEmpty($metadata[0]->purgeOn->context);
     }
 
     public function testExceptionIsThrownForInvalidYaml(): void

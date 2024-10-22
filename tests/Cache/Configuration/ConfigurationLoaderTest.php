@@ -48,6 +48,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/foo'),
                     actions: Action::cases(),
                     if: null,
+                    context: [],
                 ),
             ],
             'expectedConfiguration' => [
@@ -70,6 +71,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/foo'),
                     actions: [Action::Create],
                     if: null,
+                    context: [],
                 ),
             ],
             'expectedConfiguration' => [
@@ -92,6 +94,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/foo'),
                     actions: null,
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'Foo',
@@ -101,6 +104,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/bar'),
                     actions: null,
                     if: new Expression('expression'),
+                    context: ['qux' => true, 'corge' => 2],
                 ),
                 new PurgeSubscription(
                     class: 'Foo',
@@ -110,6 +114,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/bar'),
                     actions: null,
                     if: new Expression('expression'),
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'Bar',
@@ -121,6 +126,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/bar'),
                     actions: null,
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'Bar',
@@ -133,6 +139,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/bar/{param1}/{param2}', defaults: ['param2' => null]),
                     actions: [Action::Update],
                     if: null,
+                    context: [],
                 ),
             ],
             'expectedConfiguration' => [
@@ -149,6 +156,7 @@ final class ConfigurationLoaderTest extends TestCase
                     [
                         'routeName' => 'app_route_bar',
                         'if' => 'expression',
+                        'context' => ['qux' => true, 'corge' => 2],
                     ],
                 ],
                 'Bar' => [
@@ -194,6 +202,7 @@ final class ConfigurationLoaderTest extends TestCase
                     route: new Route('/foo/{foo}/{bar}'),
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
             'expectedConfiguration' => [

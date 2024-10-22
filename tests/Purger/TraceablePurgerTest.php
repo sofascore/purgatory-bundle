@@ -19,12 +19,12 @@ final class TraceablePurgerTest extends TestCase
     public function testPurge(): void
     {
         $array = [
-            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
-            new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
+            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [], [])),
+            new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [], [])),
         ];
         $generator = (static function (): \Generator {
-            yield new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', []));
-            yield new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', []));
+            yield new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [], []));
+            yield new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', [], []));
         })();
 
         $expected = [

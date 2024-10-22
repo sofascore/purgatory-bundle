@@ -75,6 +75,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];
@@ -99,6 +100,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];
@@ -122,6 +124,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];
@@ -205,6 +208,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'FooEntity',
@@ -214,6 +218,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];
@@ -240,6 +245,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'FooEntity',
@@ -249,6 +255,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];
@@ -274,6 +281,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'FooEntity',
@@ -283,6 +291,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
+                    context: [],
                 ),
             ],
         ];

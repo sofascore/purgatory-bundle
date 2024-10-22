@@ -130,6 +130,19 @@ final class DebugCommandTest extends AbstractKernelTestCase
             expectedNumberOfActions: 2,
             actions: 'update, delete',
         );
+
+        $display = $this->command->getDisplay();
+
+        self::assertSubstringCount(
+            expectedCount: 2,
+            needle: 'qux: true',
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 2,
+            needle: 'corge: 2',
+            haystack: $display,
+        );
     }
 
     #[TestWith([Post::class, 1, Post::class, 'ANY'])]

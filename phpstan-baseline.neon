@@ -21,7 +21,7 @@ parameters:
 			path: src/Attribute/RouteParamValue/PropertyValues.php
 
 		-
-			message: "#^Method Sofascore\\\\PurgatoryBundle\\\\Cache\\\\Configuration\\\\Subscriptions\\:\\:getIterator\\(\\) should return Traversable\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: true\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>\\}\\> but returns ArrayIterator\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: bool\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>\\}\\>\\.$#"
+			message: "#^Method Sofascore\\\\PurgatoryBundle\\\\Cache\\\\Configuration\\\\Subscriptions\\:\\:getIterator\\(\\) should return Traversable\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: true\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>, context\\?\\: array\\<string, bool\\|float\\|int\\|string\\|null\\>\\}\\> but returns ArrayIterator\\<int, array\\{routeName\\: string, routeParams\\?\\: array\\<string, array\\{type\\: string, values\\: array\\<int, mixed\\>, optional\\?\\: bool\\}\\>, if\\?\\: string, actions\\?\\: non\\-empty\\-array\\<int, Sofascore\\\\PurgatoryBundle\\\\Listener\\\\Enum\\\\Action\\>, context\\?\\: array\\<string, bool\\|float\\|int\\|string\\|null\\>\\}\\>\\.$#"
 			count: 1
 			path: src/Cache/Configuration/Subscriptions.php
 

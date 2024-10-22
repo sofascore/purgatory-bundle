@@ -223,6 +223,7 @@ final class DebugCommand extends Command
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: array<string, ?scalar>,
      * }>>
      */
     private function findSubscriptions(string $subscription, bool $withProperties): array
@@ -246,6 +247,7 @@ final class DebugCommand extends Command
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: array<string, ?scalar>,
      * }>>
      */
     private function findSubscriptionsForRoute(string $routeName): array
@@ -267,6 +269,7 @@ final class DebugCommand extends Command
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: array<string, ?scalar>,
      * }>> $configuration
      */
     private function display(SymfonyStyle $io, array $configuration): void
@@ -286,6 +289,7 @@ final class DebugCommand extends Command
                         ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
                         ['Condition', $subscription['if'] ?? 'NONE'],
                         ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
+                        ['Context', isset($subscription['context']) ? $this->formatContext($subscription['context']) : 'NONE'],
                     ],
                 );
             }
@@ -333,6 +337,19 @@ final class DebugCommand extends Command
             ', ',
             array_map(static fn (Action $action): string => strtolower($action->name), $actions),
         );
+    }
+
+    /**
+     * @param array<string, ?scalar> $context
+     */
+    private function formatContext(array $context): string
+    {
+        $values = [];
+        foreach ($context as $key => $value) {
+            $values[] = \sprintf('%s: %s', $key, var_export($value, true));
+        }
+
+        return implode(\PHP_EOL, $values);
     }
 
     private function configuration(): Configuration

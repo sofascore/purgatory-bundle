@@ -13,7 +13,9 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class EntityChangeListener
@@ -91,11 +93,22 @@ final class EntityChangeListener
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL,
                 );
 
-                $this->queuedPurgeRequests[$url] ??= new PurgeRequest(
+                $this->queuedPurgeRequests[$this->generateHash(
+                    url: $url,
+                    route: $route,
+                )] ??= new PurgeRequest(
                     url: $url,
                     route: $route,
                 );
             }
         }
+    }
+
+    private function generateHash(string $url, PurgeRoute $route): string
+    {
+        $context = $route->context;
+        ksort($context);
+
+        return ContainerBuilder::hash([$url, $context]);
     }
 }

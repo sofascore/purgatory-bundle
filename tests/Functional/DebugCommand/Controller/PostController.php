@@ -38,6 +38,7 @@ class PostController
             'post_id' => 'posts[*].id',
         ],
         actions: [Action::Update, Action::Delete],
+        context: ['qux' => true, 'corge' => 2],
     )]
     public function show(Post $post)
     {

@@ -99,6 +99,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                 yield new PurgeRoute(
                     name: $subscription['routeName'],
                     params: $routeParams,
+                    context: $subscription['context'] ?? [],
                 );
             }
         }

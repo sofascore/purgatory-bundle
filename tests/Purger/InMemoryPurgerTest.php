@@ -30,9 +30,9 @@ final class InMemoryPurgerTest extends TestCase
     public static function providePurgeRequests(): iterable
     {
         $array = [
-            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
-            new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
-            new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [])),
+            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [], [])),
+            new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [], [])),
+            new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [], [])),
         ];
 
         yield 'array' => [

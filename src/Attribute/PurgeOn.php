@@ -30,6 +30,7 @@ final class PurgeOn
      * @param ?non-empty-array<string, string|non-empty-list<string>|ValuesInterface> $routeParams
      * @param string|non-empty-list<string>|null                                      $route
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
+     * @param array<string, ?scalar>                                                  $context
      */
     public function __construct(
         public readonly string $class,
@@ -38,6 +39,7 @@ final class PurgeOn
         string|Expression|null $if = null,
         string|array|null $route = null,
         string|array|Action|null $actions = null,
+        public readonly array $context = [],
     ) {
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;

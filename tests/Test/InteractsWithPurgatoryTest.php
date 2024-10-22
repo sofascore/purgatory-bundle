@@ -43,7 +43,7 @@ final class InteractsWithPurgatoryTest extends TestCase
             public function testUrlIsPurged(): void
             {
                 self::getPurger()->purge([
-                    new PurgeRequest('http://localhost/url', new PurgeRoute('route_url', [])),
+                    new PurgeRequest('http://localhost/url', new PurgeRoute('route_url', [], [])),
                 ]);
                 self::assertUrlIsPurged('http://localhost/url');
                 self::assertUrlIsPurged('/url');

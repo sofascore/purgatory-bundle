@@ -19,6 +19,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competitio
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plane;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plant;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\PropertyAccess\PropertyPath;
@@ -841,5 +842,24 @@ final class ApplicationTest extends AbstractKernelTestCase
             self::getPurgedUrls(false),
             static fn (string $url): bool => str_starts_with($url, '/for-owner-and-veterinarian'),
         ));
+    }
+
+    /**
+     * @see PlantController::detailsAction
+     */
+    public function testPurgeOnWithContext(): void
+    {
+        $plant = new Plant();
+        $plant->name = 'Plant Ash';
+
+        $this->entityManager->persist($plant);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/plant/'.$plant->id);
+
+        $purgeRequests = self::getPurger()->getPurgedRequests();
+
+        self::assertCount(1, $purgeRequests);
+        self::assertSame(['qux' => true, 'corge' => 2], $purgeRequests[0]->route->context);
     }
 }

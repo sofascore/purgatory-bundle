@@ -9,3 +9,6 @@ foo_baz:
         param2: [ bar, baz ]
     if: 'obj.isActive() === true'
     actions: create
+    context:
+        qux: true
+        corge: 2

@@ -86,10 +86,10 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertCount(4, $routes);
         self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
 
-        self::assertSame(['name' => 'foo_route', 'params' => []], (array) $routes[0]);
-        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
-        self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 1, 'param2' => 3]], (array) $routes[2]);
-        self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 2, 'param2' => 3]], (array) $routes[3]);
+        self::assertSame(['name' => 'foo_route', 'params' => [], 'context' => []], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => [], 'context' => []], (array) $routes[1]);
+        self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 1, 'param2' => 3], 'context' => []], (array) $routes[2]);
+        self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 2, 'param2' => 3], 'context' => []], (array) $routes[3]);
     }
 
     public function testProvideRoutesToPurgeWithIf(): void
@@ -142,8 +142,8 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertCount(2, $routes);
         self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
 
-        self::assertSame(['name' => 'foo_route', 'params' => []], (array) $routes[0]);
-        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
+        self::assertSame(['name' => 'foo_route', 'params' => [], 'context' => []], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => [], 'context' => []], (array) $routes[1]);
     }
 
     public function testExceptionIsThrownWhenIfIsUsedWithoutExpressionLangInstalled(): void
@@ -211,14 +211,14 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
 
         // RawValueResolver
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'foo']], (array) $routes[0]);
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 1]], (array) $routes[1]);
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => null]], (array) $routes[2]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'foo'], 'context' => []], (array) $routes[0]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 1], 'context' => []], (array) $routes[1]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => null], 'context' => []], (array) $routes[2]);
 
         // EnumValueResolver
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case1']], (array) $routes[3]);
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case2']], (array) $routes[4]);
-        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case3']], (array) $routes[5]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case1'], 'context' => []], (array) $routes[3]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case2'], 'context' => []], (array) $routes[4]);
+        self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case3'], 'context' => []], (array) $routes[5]);
     }
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): CreatedEntityRouteProvider

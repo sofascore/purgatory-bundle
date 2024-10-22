@@ -24,8 +24,8 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
     public function testPurgeWithoutHosts(): void
     {
         $purgeRequests = [
-            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
-            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [], [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [], [])),
         ];
 
         $httpClient = new MockHttpClient([
@@ -50,8 +50,8 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
     public function testPurgeWithHosts(): void
     {
         $purgeRequests = [
-            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
-            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [], [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [], [])),
         ];
 
         $httpClient = new MockHttpClient([
@@ -112,8 +112,8 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
     public function testExceptionIsThrownWhenPurgeRequestsFail(): void
     {
         $purgeRequests = [
-            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
-            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [])),
+            new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [], [])),
+            new PurgeRequest('http://example2.test/bar', new PurgeRoute('route_bar', [], [])),
         ];
 
         $httpClient = new MockHttpClient([
@@ -165,7 +165,7 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         self::assertSame($response1->getContent(), $response2->getContent());
 
         (new VarnishPurger($decoratedHttpClient))->purge([
-            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [])),
+            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [], [])),
         ]);
 
         $response3 = $httpClient->request('GET', 'http://localhost:8088/');
@@ -173,7 +173,7 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         self::assertNotSame($response2->getContent(), $response3->getContent());
 
         (new VarnishPurger($decoratedHttpClient, ['http://127.0.0.1:8088']))->purge([
-            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [])),
+            new PurgeRequest('http://localhost:8088/', new PurgeRoute('route_name', [], [])),
         ]);
 
         $response4 = $httpClient->request('GET', 'http://localhost:8088/');

@@ -61,6 +61,7 @@
                     <th scope="col" class="key">#</th>
                     <th scope="col">URLs</th>
                     <th scope="col">Routes</th>
+                    <th scope="col">Context</th>
                     <th scope="col">Time</th>
                 </tr>
                 </thead>
@@ -70,6 +71,7 @@
                         <th scope="row">{{ key + 1 }}</th>
                         <td>{{ purge.requests|map(request => request.url)|join('\n')|nl2br }}</td>
                         <td>{{ purge.requests|map(request => request.route.name)|join('\n')|nl2br }}</td>
+                        <td>{{ purge.requests|map(request => request.route.context|json_encode(constant('JSON_FORCE_OBJECT')))|join('\n')|nl2br }}</td>
                         <td>{{ '%.2f'|format(purge.time * 1000) }} <span class="unit">ms</span></td>
                     </tr>
                 {% endfor %}

@@ -49,6 +49,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                     route: new Route('/foo'),
                     actions: [Action::Update],
                     if: null,
+                    context: [],
                 ),
                 new PurgeSubscription(
                     class: 'Foo',
@@ -58,6 +59,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                     route: new Route('/foo'),
                     actions: [Action::Create],
                     if: null,
+                    context: ['qux' => true, 'corge' => 2],
                 ),
             ]);
 
@@ -92,6 +94,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                         ],
                     ],
                     'actions' => [Action::Create],
+                    'context' => ['qux' => true, 'corge' => 2],
                 ],
             ],
         ], $configuration->toArray());

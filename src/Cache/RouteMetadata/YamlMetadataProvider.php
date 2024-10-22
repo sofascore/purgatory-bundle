@@ -31,7 +31,7 @@ use Symfony\Component\Yaml\Yaml;
  */
 final class YamlMetadataProvider implements RouteMetadataProviderInterface
 {
-    private const ALLOWED_KEYS = ['class', 'target', 'route_params', 'if', 'actions'];
+    private const ALLOWED_KEYS = ['class', 'target', 'route_params', 'if', 'actions', 'context'];
     private ?YamlParser $yamlParser = null;
 
     /**
@@ -87,6 +87,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
              *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
              *     if?: ?string,
              *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
+             *     context?: array<string, ?scalar>,
              * } $purgeOn
              */
             foreach ($purgeOns as $purgeOn) {
@@ -109,6 +110,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
      *     if?: ?string,
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
+     *     context?: array<string, ?scalar>,
      * } $purgeOn
      */
     private function validate(array $purgeOn, string $routeName): void
@@ -130,6 +132,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
      *     if?: ?string,
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
+     *     context?: array<string, ?scalar>,
      * } $purgeOn
      */
     private function buildPurgeOn(array $purgeOn): PurgeOn
@@ -140,6 +143,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
             routeParams: isset($purgeOn['route_params']) ? array_map($this->buildRouteParam(...), $purgeOn['route_params']) : null,
             if: $purgeOn['if'] ?? null,
             actions: $purgeOn['actions'] ?? null,
+            context: $purgeOn['context'] ?? [],
         );
     }
 

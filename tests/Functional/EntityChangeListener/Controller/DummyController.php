@@ -22,7 +22,8 @@ class DummyController
     {
     }
 
-    #[PurgeOn(Dummy::class, target: 'name')]
+    #[PurgeOn(Dummy::class, target: 'name', context: ['qux' => true, 'corge' => 2])]
+    #[PurgeOn(DummyParent::class, target: 'dummy', context: ['qux' => true, 'corge' => 2])]
     #[AnnotationRoute('/foo', name: 'test_foo', host: 'example.test')]
     #[Route('/foo', 'test_foo', host: 'example.test')]
     public function foo()

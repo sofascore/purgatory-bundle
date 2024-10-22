@@ -85,6 +85,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             route: $routeMetadata->route,
             actions: $routeMetadata->purgeOn->actions,
             if: $if,
+            context: $routeMetadata->purgeOn->context,
         );
 
         return true;

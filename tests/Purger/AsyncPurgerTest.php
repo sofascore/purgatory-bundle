@@ -37,11 +37,11 @@ final class AsyncPurgerTest extends TestCase
     public static function providePurgeRequests(): iterable
     {
         $array = [
-            $foo = new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
-            $bar = new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
-            $baz = new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [])),
-            $qux = new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', [])),
-            $corge = new PurgeRequest('http://localhost/corge', new PurgeRoute('route_corge', [])),
+            $foo = new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [], [])),
+            $bar = new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [], [])),
+            $baz = new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', [], [])),
+            $qux = new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', [], [])),
+            $corge = new PurgeRequest('http://localhost/corge', new PurgeRoute('route_corge', [], [])),
         ];
 
         yield 'array' => [

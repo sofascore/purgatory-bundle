@@ -25,7 +25,7 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
 
         $purger = new SymfonyPurger($store);
         $purger->purge([
-            new PurgeRequest('http://localhost:80/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://localhost:80/foo', new PurgeRoute('route_foo', [], [])),
         ]);
     }
 
@@ -40,7 +40,7 @@ final class SymfonyPurgerTest extends AbstractKernelTestCase
         self::assertSame('1', $kernel->handle(Request::create('http://localhost/'))->getContent());
 
         self::getContainer()->get('sofascore.purgatory.purger.symfony')->purge([
-            new PurgeRequest('http://localhost/', new PurgeRoute('route_name', [])),
+            new PurgeRequest('http://localhost/', new PurgeRoute('route_name', [], [])),
         ]);
 
         self::assertSame('2', $kernel->handle(Request::create('http://localhost/'))->getContent());

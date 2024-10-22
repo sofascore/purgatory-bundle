@@ -14,6 +14,7 @@ final class Configuration implements \Countable
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: array<string, ?scalar>,
      * }>> $configuration
      */
     public function __construct(
@@ -58,6 +59,7 @@ final class Configuration implements \Countable
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: array<string, ?scalar>,
      * }>>
      */
     public function toArray(): array

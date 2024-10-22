@@ -32,6 +32,11 @@
         0 => 
         %SSofascore\PurgatoryBundle\Listener\Enum\Action::Create,
       ),
+      'context' => 
+      array (
+        'qux' => true,
+        'corge' => 2,
+      ),
     ),
   ),
 );
