@@ -71,12 +71,12 @@ jobs:
                     require_tests: 'true'
                     report_paths: ./junit.xml
 
-            -   name: Report Test Coverage
-                if: ${{ github.event_name == 'pull_request' }}
-                uses: slavcodev/coverage-monitor-action@v1
+            -   name: Upload Test Coverage
+                if: ${{ success() }}
+                uses: codecov/codecov-action@v4
                 with:
-                    github_token: ${{ secrets.GITHUB_TOKEN }}
-                    coverage_path: coverage.xml
-                    threshold_alert: 3
-                    threshold_warning: 50
-                    comment_mode: update
+                    codecov_yml_path: .github/codecov.yaml
+                    fail_ci_if_error: true
+                    file: coverage.xml
+                    flags: ${{ matrix.php }}
+                    token: ${{ secrets.CODECOV_TOKEN }}
