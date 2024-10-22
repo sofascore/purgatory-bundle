@@ -12,8 +12,7 @@ concurrency:
 
 jobs:
     phpunit:
-        # runs-on: ubuntu-latest TODO change this when going public
-        runs-on: [ self-hosted, k8s ]
+        runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
@@ -28,9 +27,6 @@ jobs:
         services:
             postgres:
                 image: postgres:16
-                credentials: # TODO remove this when going public
-                    username: ${{ secrets.DOCKERHUB_USER }}
-                    password: ${{ secrets.DOCKERHUB_TOKEN }}
                 env:
                     POSTGRES_DB: purgatory
                     POSTGRES_PASSWORD: password
@@ -50,14 +46,10 @@ jobs:
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
-                env:
-                    runner: self-hosted # TODO remove this when going public
                 with:
                     php-version: ${{ matrix.php }}
                     ini-values: zend.exception_ignore_args=false
                     tools: flex
-                    extensions: sqlite # TODO remove this when going public
-                    coverage: xdebug # TODO remove this when going public
 
             -   name: Install Dependencies
                 uses: ramsey/composer-install@v2

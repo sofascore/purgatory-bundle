@@ -1,10 +1,16 @@
 {
     "name": "sofascore/purgatory-bundle",
-    "description": "Library for easy construction of cache purge requests.",
+    "description": "A Symfony bundle for creating and sending cache purge requests to HTTP cache backends like Varnish.",
     "type": "symfony-bundle",
     "keywords": [
-        "todo",
-        "todo"
+        "cache",
+        "caching",
+        "http",
+        "http-cache",
+        "http-caching",
+        "invalidation",
+        "purge",
+        "varnish"
     ],
     "license": "MIT",
     "authors": [
