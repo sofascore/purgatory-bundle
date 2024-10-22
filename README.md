@@ -1,7 +1,8 @@
 # SofascorePurgatoryBundle
 
-[![Build Status](https://github.com/sofascore/purgatory-bundle/workflows/Tests/badge.svg)](https://github.com/sofascore/purgatory-bundle/actions)
 [![Latest Stable Version](https://poser.pugx.org/sofascore/purgatory-bundle/v/stable)](https://packagist.org/packages/sofascore/purgatory-bundle)
+[![Build Status](https://github.com/sofascore/purgatory-bundle/workflows/Tests/badge.svg)](https://github.com/sofascore/purgatory-bundle/actions)
+[![Code Coverage](https://codecov.io/gh/sofascore/purgatory-bundle/graph/badge.svg?token=HWMVLVSTIC)](https://codecov.io/gh/sofascore/purgatory-bundle)
 [![License](https://poser.pugx.org/sofascore/purgatory-bundle/license)](https://packagist.org/packages/sofascore/purgatory-bundle)
 
 A Symfony bundle for creating and sending cache purge requests to HTTP cache backends like Varnish.
