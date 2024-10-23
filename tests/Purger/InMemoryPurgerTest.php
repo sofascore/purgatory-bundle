@@ -24,6 +24,7 @@ final class InMemoryPurgerTest extends TestCase
 
         $purger->reset();
 
+        self::assertContainsOnlyInstancesOf(PurgeRequest::class, $purger->getPurgedRequests());
         self::assertSame([], $purger->getPurgedUrls());
     }
 
