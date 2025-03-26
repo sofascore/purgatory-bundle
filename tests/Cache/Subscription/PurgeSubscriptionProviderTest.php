@@ -154,7 +154,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
             ->willReturn($classMetadata);
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->with('FooEntity')
             ->willReturn($entityManager);
 
@@ -305,7 +306,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
             });
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManager')
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->willReturn(null);
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
