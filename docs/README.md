@@ -378,7 +378,7 @@ In this example, the purge will only occur if the post has more than 3,000 upvot
 
 You can also add [custom Expression Language functions](custom-expression-language-functions.md).
 
-### Limiting Purge to Specific Routes
+### Using Purge on Actions with Multiple Routes
 
 By default, the attribute generates URLs for all routes associated with the action. You can limit this to one or more
 specific routes:
@@ -393,6 +393,35 @@ public function detailsAction(Post $post)
 ```
 
 In this example, only the `post_details` route will be purged.
+
+This is useful when dealing with multiple routes that use different route parameters. For example:
+
+```php
+#[Route('/posts', name: 'post_list', methods: 'GET')]
+#[Route('/posts/{category}', name: 'post_list_by_category', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['category' => 'category.slug'])]
+public function listAction(#[MapEntity(mapping: ['category' => 'slug'])] ?Category $category = null)
+{
+}
+```
+
+Changes to `Post` would result in two URLs being generated: `/posts?category=<categorySlug>` and
+`/posts/<categorySlug>`. Because of how Symfony's router handles extra route parameters, the first URL includes an
+unexpected query parameter.
+
+To avoid this, define two separate purge subscriptions, one for each route:
+
+```php
+#[Route('/posts', name: 'post_list', methods: 'GET')]
+#[Route('/posts/{category}', name: 'post_list_by_category', methods: 'GET')]
+#[PurgeOn(Post::class, route: 'post_list')]
+#[PurgeOn(Post::class, routeParams: ['category' => 'category.slug'], route: 'post_list_by_category')]
+public function listAction(#[MapEntity(mapping: ['category' => 'slug'])] ?Category $category = null)
+{
+}
+```
+
+This ensures that the correct URL is generated for each route, without extra query parameters.
 
 ### Limiting by Action Type
 
