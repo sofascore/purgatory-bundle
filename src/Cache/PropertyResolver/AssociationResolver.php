@@ -14,7 +14,6 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
