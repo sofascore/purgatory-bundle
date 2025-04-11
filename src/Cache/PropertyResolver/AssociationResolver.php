@@ -14,6 +14,7 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
@@ -73,7 +74,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
             $expression = (string) $if;
-            $if = new Expression(str_replace('obj', 'obj.'.$this->createGetter($associationClass, $associationTarget), $expression));
+            $getter = $this->createGetter($associationClass, $associationTarget);
+            $inverseIf = str_replace('obj', 'obj.'.$this->createGetter($associationClass, $associationTarget), $expression);
+            $if = new Expression("obj.$getter !== null && ($inverseIf)");
         }
 
         yield new PurgeSubscription(

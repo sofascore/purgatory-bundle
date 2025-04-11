@@ -243,6 +243,23 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 ],
             ],
         ];
+
+        /* @see PersonController::personCarsList */
+        yield [
+            'entity' => Car::class,
+            'subscription' => [
+                'routeName' => 'person_cars_list',
+                'routeParams' => [
+                    'id' => [
+                        'type' => PropertyValues::type(),
+                        'values' => [
+                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
+                        ],
+                    ],
+                ],
+                'if' => "obj.owner !== null && (obj.owner.firstName === 'John')",
+            ],
+        ];
     }
 
     public static function configurationWithTargetProvider(): iterable

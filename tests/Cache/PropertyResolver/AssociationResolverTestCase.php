@@ -104,7 +104,7 @@ abstract class AssociationResolverTestCase extends TestCase
             $subscription[0]->routeParams['param1'],
         );
         self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);
-        self::assertSame('obj.getFoo().isActive() === true', (string) $subscription[0]->if);
+        self::assertSame('obj.getFoo() !== null && (obj.getFoo().isActive() === true)', (string) $subscription[0]->if);
     }
 
     abstract public static function associationProvider(): iterable;

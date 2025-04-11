@@ -122,6 +122,10 @@ class PersonController
     #[Route('/{id}/cars', 'person_cars_list')]
     #[AnnotationRoute('/{id}/cars', name: 'person_cars_list')]
     #[PurgeOn(Person::class, target: 'cars')]
+    #[PurgeOn(Person::class,
+        target: 'cars',
+        if: "obj.firstName === 'John'",
+    )]
     public function personCarsList(Person $person)
     {
     }
