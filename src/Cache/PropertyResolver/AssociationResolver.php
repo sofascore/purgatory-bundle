@@ -73,7 +73,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
             $expression = (string) $if;
-            $if = new Expression(str_replace('obj', 'obj.'.$this->createGetter($associationClass, $associationTarget), $expression));
+            $getter = $this->createGetter($associationClass, $associationTarget);
+            $inverseIf = str_replace('obj', 'obj.'.$this->createGetter($associationClass, $associationTarget), $expression);
+            $if = new Expression("obj.$getter !== null && ($inverseIf)");
         }
 
         yield new PurgeSubscription(
