@@ -119,7 +119,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         };
 
         if (null === $node = $this->expressionLanguage?->parse($expression, ['obj'])->getNodes()) {
-            throw new \RuntimeException('Could not parse expression: '. (string) $expression);
+            throw new \RuntimeException('Could not parse expression: '.(string) $expression);
         }
 
         $inverseIf = $this->replaceObjWithInverse($node, $name, $callType)->dump();
@@ -138,7 +138,6 @@ final class AssociationResolver implements SubscriptionResolverInterface
                 attribute: new ConstantNode(
                     value: $inverse,
                     isIdentifier: true,
-                    isNullSafe: false,
                 ),
                 arguments: new ArgumentsNode(),
                 type: $type,
@@ -150,7 +149,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
 
         /**
          * @var string $key
-         * @var Node $childNode
+         * @var Node   $childNode
          */
         foreach ($node->nodes as $key => $childNode) {
             $newNode->nodes[$key] = $this->replaceObjWithInverse($childNode, $inverse, $type);
