@@ -257,7 +257,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         ],
                     ],
                 ],
-                'if' => "obj.owner !== null && (obj.owner.firstName === 'John')",
+                'if' => 'obj.owner !== null && ((obj.owner.firstName === "John"))',
             ],
         ];
     }

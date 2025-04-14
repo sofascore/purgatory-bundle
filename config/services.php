@@ -93,6 +93,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory.subscription_resolver')
             ->args([
                 service('property_info.reflection_extractor'),
+                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.embeddable', EmbeddableResolver::class)

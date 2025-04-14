@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
@@ -43,7 +44,10 @@ abstract class AssociationResolverTestCase extends TestCase
                 ),
             );
 
-        $resolver = new AssociationResolver($extractor);
+        $resolver = new AssociationResolver(
+            extractor: $extractor,
+            expressionLanguage: new ExpressionLanguage(),
+        );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->method('hasAssociation')
@@ -104,7 +108,7 @@ abstract class AssociationResolverTestCase extends TestCase
             $subscription[0]->routeParams['param1'],
         );
         self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);
-        self::assertSame('obj.getFoo() !== null && (obj.getFoo().isActive() === true)', (string) $subscription[0]->if);
+        self::assertSame('obj.getFoo() !== null && ((obj.getFoo().isActive() === true))', (string) $subscription[0]->if);
     }
 
     abstract public static function associationProvider(): iterable;
@@ -112,7 +116,8 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testFieldNotAssociation(): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            extractor: $this->createMock(PropertyReadInfoExtractorInterface::class),
+            expressionLanguage: new ExpressionLanguage(),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
@@ -146,7 +151,8 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testInvalidAssociationType(array $associationMapping): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            extractor: $this->createMock(PropertyReadInfoExtractorInterface::class),
+            expressionLanguage: new ExpressionLanguage(),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
