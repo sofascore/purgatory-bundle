@@ -119,7 +119,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         };
 
         if (null === $node = $this->expressionLanguage?->parse($expression, ['obj'])->getNodes()) {
-            throw new \RuntimeException('Could not parse expression: '.$expression);
+            throw new \RuntimeException('Could not parse expression: '. (string) $expression);
         }
 
         $inverseIf = $this->replaceObjWithInverse($node, $name, $callType)->dump();
@@ -127,6 +127,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
         return new Expression("obj.$getter !== null && ($inverseIf)");
     }
 
+    /**
+     * @param GetAttrNode::PROPERTY_CALL|GetAttrNode::METHOD_CALL $type
+     */
     private function replaceObjWithInverse(Node $node, string $inverse, int $type): Node
     {
         if ($node instanceof NameNode && 'obj' === $node->attributes['name']) {
@@ -145,6 +148,10 @@ final class AssociationResolver implements SubscriptionResolverInterface
         $newNode = clone $node;
         $newNode->nodes = [];
 
+        /**
+         * @var string $key
+         * @var Node $childNode
+         */
         foreach ($node->nodes as $key => $childNode) {
             $newNode->nodes[$key] = $this->replaceObjWithInverse($childNode, $inverse, $type);
         }
