@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.3.0@222dda8483516044c2ed7a4c3f197d7c9d6c3ddb">
+<files psalm-version="6.10.1@f9fd6bc117e9ce1e854c2ed6777e7135aaa4966b">
   <file src="src/Cache/Configuration/CachedConfigurationLoader.php">
     <MixedArgument>
       <code><![CDATA[require $cache->getPath()]]></code>
@@ -84,5 +84,32 @@
     <DuplicateClass>
       <code><![CDATA[PurgatoryConnection]]></code>
     </DuplicateClass>
+  </file>
+  <file src="src/Maker/MakeRouteProvider.php">
+    <InternalClass>
+      <code><![CDATA[ClassData::create(
+            class: \sprintf('Purgatory\RouteProvider\%s', $name),
+            suffix: 'RouteProvider',
+            useStatements: [
+                RouteProviderInterface::class,
+                PurgeRoute::class,
+                Action::class,
+                $entity,
+            ],
+        )]]></code>
+    </InternalClass>
+    <InternalMethod>
+      <code><![CDATA[ClassData::create(
+            class: \sprintf('Purgatory\RouteProvider\%s', $name),
+            suffix: 'RouteProvider',
+            useStatements: [
+                RouteProviderInterface::class,
+                PurgeRoute::class,
+                Action::class,
+                $entity,
+            ],
+        )]]></code>
+      <code><![CDATA[generateClassFromClassData]]></code>
+    </InternalMethod>
   </file>
 </files>
