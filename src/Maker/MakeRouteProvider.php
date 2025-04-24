@@ -61,7 +61,8 @@ final class MakeRouteProvider extends AbstractMaker
      */
     public function generate(InputInterface $input, ConsoleStyle $io, Generator $generator): void
     {
-        $name = (string) $input->getArgument('name');
+        /** @var string $name */
+        $name = $input->getArgument('name');
 
         if (false === $entity = $this->inputEntity($io)) {
             return;
@@ -102,7 +103,9 @@ final class MakeRouteProvider extends AbstractMaker
     {
         $q = new Question('What entity is the purge route provider for?');
         $q->setTrimmable(true);
-        $purgeEntity = (string) $io->askQuestion($q);
+
+        /** @var string $purgeEntity */
+        $purgeEntity = $io->askQuestion($q);
 
         $entities = $this->getEntityCollection();
         $entities = array_filter(

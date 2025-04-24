@@ -73,4 +73,13 @@ final class MakeRouteProviderTest extends AbstractKernelTestCase
             actual: __DIR__."/../Functional/TestApplication/Generated/Purgatory/RouteProvider/$expected.php",
         );
     }
+
+    public function testInvalidEntityInput(): void
+    {
+        $input = ['foo', 'BlogPost'];
+        $this->command->setInputs([implode(\PHP_EOL, $input).\PHP_EOL]);
+        $this->command->execute([], ['interactive' => true]);
+
+        self::assertStringContainsString('[ERROR] No entities found', $this->command->getDisplay());
+    }
 }
