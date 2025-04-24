@@ -36,6 +36,11 @@ final class MakeRouteProvider extends AbstractMaker
         return 'make:purgatory-provider';
     }
 
+    public static function getCommandDescription(): string
+    {
+        return 'Create a purge route provider';
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -88,11 +93,6 @@ final class MakeRouteProvider extends AbstractMaker
         );
 
         $generator->writeChanges();
-    }
-
-    public static function getCommandDescription(): string
-    {
-        return 'TODO';
     }
 
     /**
