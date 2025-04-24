@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Functional;
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\MakerBundle\MakerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -63,6 +64,7 @@ final class TestKernel extends Kernel
         yield new FrameworkBundle();
         yield new DoctrineBundle();
         yield new PurgatoryBundle();
+        yield new MakerBundle();
     }
 
     public function shutdown(): void

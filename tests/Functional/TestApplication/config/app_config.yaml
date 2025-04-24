@@ -5,3 +5,6 @@ services:
 
     Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\:
         resource: '../'
+
+maker:
+    root_namespace: 'Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Generated'
