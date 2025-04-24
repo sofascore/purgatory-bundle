@@ -1,13 +1,13 @@
-<?= "<?php\n" ?>
+<?php echo "<?php\n"; ?>
 
-namespace <?= $class_data->getNamespace(); ?>;
+namespace <?php echo $class_data->getNamespace(); ?>;
 
-<?= $class_data->getUseStatements() ?>
+<?php echo $class_data->getUseStatements(); ?>
 
 /**
- * @implements RouteProviderInterface<<?= $entity ?>>
+ * @implements RouteProviderInterface<<?php echo $entity; ?>>
  */
-<?= $class_data->getClassDeclaration() ?> implements RouteProviderInterface
+<?php echo $class_data->getClassDeclaration(); ?> implements RouteProviderInterface
 {
     /**
      * {@inheritDoc}
@@ -26,12 +26,12 @@ namespace <?= $class_data->getNamespace(); ?>;
 
     public function supports(Action $action, object $entity): bool
     {
-        return $entity instanceof <?= $entity?>
-<?php if (!isset($actions)): ?>
+        return $entity instanceof <?php echo $entity; ?>
+<?php if (!isset($actions)) { ?>
 ;
-<?php else: ?>
+<?php } else { ?>
 
-            && <?= $actions ?>;
-<?php endif ?>
+            && <?php echo $actions; ?>;
+<?php } ?>
     }
 }
