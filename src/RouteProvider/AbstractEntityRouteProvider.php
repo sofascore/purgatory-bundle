@@ -8,7 +8,7 @@ use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Subscriptions;
-use Sofascore\PurgatoryBundle\Exception\InvalidIfResultException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionResultException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
@@ -75,7 +75,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             if (isset($subscription['if'])) {
                 $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
                 if (!\is_bool($result)) {
-                    throw new InvalidIfResultException($subscription['if'], $result);
+                    throw new InvalidIfExpressionResultException($subscription['if'], $result);
                 }
 
                 if (!$result) {

@@ -15,7 +15,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
-use Sofascore\PurgatoryBundle\Exception\InvalidIfResultException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionResultException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
@@ -365,12 +365,12 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case3']], (array) $routes[5]);
     }
 
-    #[TestWith([null, 'Expected return value of "if" expression (obj.val) to be boolean, got NULL'])]
-    #[TestWith([1, 'Expected return value of "if" expression (obj.val) to be boolean, got integer'])]
-    #[TestWith([0.0, 'Expected return value of "if" expression (obj.val) to be boolean, got double'])]
+    #[TestWith([null, 'Expected return value of "if" expression (obj.val) to be boolean, got null'])]
+    #[TestWith([1, 'Expected return value of "if" expression (obj.val) to be boolean, got int'])]
+    #[TestWith([0.0, 'Expected return value of "if" expression (obj.val) to be boolean, got float'])]
     #[TestWith(['false', 'Expected return value of "if" expression (obj.val) to be boolean, got string'])]
     #[TestWith([[true], 'Expected return value of "if" expression (obj.val) to be boolean, got array'])]
-    #[TestWith([new \stdClass(), 'Expected return value of "if" expression (obj.val) to be boolean, got object'])]
+    #[TestWith([new \stdClass(), 'Expected return value of "if" expression (obj.val) to be boolean, got stdClass'])]
     public function testExceptionIsThrownOnInvalidIfReturnType(mixed $ifResult, string $expectedMessage): void
     {
         $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
@@ -397,7 +397,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             propertyAccessor: $this->createMock(PropertyAccessorInterface::class),
         );
 
-        $this->expectException(InvalidIfResultException::class);
+        $this->expectException(InvalidIfExpressionResultException::class);
         $this->expectExceptionMessage($expectedMessage);
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
     }
