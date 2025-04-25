@@ -7,14 +7,16 @@ namespace Sofascore\PurgatoryBundle\Exception;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
 
-final class InvalidIfExpressionException extends RuntimeException
+final class InvalidIfExpressionException extends InvalidArgumentException
 {
-    private const MESSAGE = 'Invalid "if" expression: "%s"';
+    private const MESSAGE = 'Invalid "if" expression provided: "%s"';
 
-    public function __construct(Expression $expression, SyntaxError $syntaxError)
-    {
+    public function __construct(
+        public readonly Expression $expression,
+        SyntaxError $syntaxError,
+    ) {
         parent::__construct(
-            message: \sprintf(self::MESSAGE, $expression),
+            message: \sprintf(self::MESSAGE, $syntaxError->getMessage()),
             previous: $syntaxError,
         );
     }

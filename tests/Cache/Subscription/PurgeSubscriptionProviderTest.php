@@ -50,7 +50,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $this->createMock(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
-            expressionLanguage: new ExpressionLanguage(),
+            expressionLanguage: null,
         );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
@@ -180,7 +180,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $managerRegistry,
             targetResolverLocator: $targetResolverLocator,
-            expressionLanguage: new ExpressionLanguage(),
+            expressionLanguage: null,
         );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
@@ -322,7 +322,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $managerRegistry,
             targetResolverLocator: $this->createMock(ContainerInterface::class),
-            expressionLanguage: new ExpressionLanguage(),
+            expressionLanguage: null,
         );
 
         $this->expectException(EntityMetadataNotFoundException::class);
@@ -347,7 +347,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $this->createMock(ManagerRegistry::class),
             targetResolverLocator: $this->createMock(ContainerInterface::class),
-            expressionLanguage: new ExpressionLanguage(),
+            expressionLanguage: null,
         );
 
         $this->expectException(\LogicException::class);
@@ -360,21 +360,33 @@ final class PurgeSubscriptionProviderTest extends TestCase
         [...$purgeSubscriptionProvider->provide()];
     }
 
-    #[TestWith(['invalidObj.getMethod()'])]
-    #[TestWith(['entity !== null'])]
-    #[TestWith(['some_function(obj)'])]
-    #[TestWith(['valid_function(author)'])]
-    public function testExceptionIsThrownOnInvalidIfExpression(string $invalidIf): void
+    #[TestWith([
+        'if' => 'invalidObj.getMethod()',
+        'expectedMessage' => 'Invalid "if" expression provided: "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
+    ])]
+    #[TestWith([
+        'if' => 'entity !== null',
+        'expectedMessage' => 'Invalid "if" expression provided: "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
+    ])]
+    #[TestWith([
+        'if' => 'some_function(obj)',
+        'expectedMessage' => 'Invalid "if" expression provided: "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
+    ])]
+    #[TestWith([
+        'if' => 'valid_function(author)',
+        'expectedMessage' => 'Invalid "if" expression provided: "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
+    ])]
+    public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
     {
         $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($invalidIf): iterable {
+            ->willReturnCallback(function () use ($if): iterable {
                 yield new RouteMetadata(
                     routeName: 'foo',
                     route: new Route('/{foo}'),
                     purgeOn: new PurgeOn(
                         class: 'FooEntity',
-                        if: $invalidIf,
+                        if: $if,
                     ),
                     reflectionMethod: null,
                 );
@@ -400,7 +412,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         );
 
         $this->expectException(InvalidIfExpressionException::class);
-        $this->expectExceptionMessage("Invalid \"if\" expression: \"$invalidIf\"");
+        $this->expectExceptionMessage($expectedMessage);
 
         [...$purgeSubscriptionProvider->provide()];
     }
