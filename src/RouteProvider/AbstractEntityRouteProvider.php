@@ -75,7 +75,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             if (isset($subscription['if'])) {
                 $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
                 if (!\is_bool($result)) {
-                    throw new InvalidIfExpressionResultException($subscription['if'], $result);
+                    throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
                 }
 
                 if (!$result) {
