@@ -6,13 +6,16 @@ namespace Sofascore\PurgatoryBundle\Tests\RouteProvider;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfResultException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
@@ -27,6 +30,7 @@ use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
 #[CoversClass(AbstractEntityRouteProvider::class)]
@@ -359,6 +363,43 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case1']], (array) $routes[3]);
         self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case2']], (array) $routes[4]);
         self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case3']], (array) $routes[5]);
+    }
+
+    #[TestWith([null, 'Expected return value of "if" expression (obj.val) to be boolean, got NULL'])]
+    #[TestWith([1, 'Expected return value of "if" expression (obj.val) to be boolean, got integer'])]
+    #[TestWith([0.0, 'Expected return value of "if" expression (obj.val) to be boolean, got double'])]
+    #[TestWith(['false', 'Expected return value of "if" expression (obj.val) to be boolean, got string'])]
+    #[TestWith([[true], 'Expected return value of "if" expression (obj.val) to be boolean, got array'])]
+    #[TestWith([new \stdClass(), 'Expected return value of "if" expression (obj.val) to be boolean, got object'])]
+    public function testExceptionIsThrownOnInvalidIfReturnType(mixed $ifResult, string $expectedMessage): void
+    {
+        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader->expects(self::once())
+            ->method('load')
+            ->willReturn(new Configuration([
+                'stdClass' => [
+                    [
+                        'routeName' => 'foo_route',
+                        'if' => 'obj.val',
+                    ],
+                ],
+            ]));
+
+        $expressionLanguage = $this->createMock(ExpressionLanguage::class);
+        $expressionLanguage->expects(self::once())
+            ->method('evaluate')
+            ->willReturn($ifResult);
+
+        $routeProvider = new UpdatedEntityRouteProvider(
+            configurationLoader: $configurationLoader,
+            expressionLanguage: $expressionLanguage,
+            routeParamValueResolverLocator: $this->createMock(ContainerInterface::class),
+            propertyAccessor: $this->createMock(PropertyAccessorInterface::class),
+        );
+
+        $this->expectException(InvalidIfResultException::class);
+        $this->expectExceptionMessage($expectedMessage);
+        [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
     }
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): UpdatedEntityRouteProvider
