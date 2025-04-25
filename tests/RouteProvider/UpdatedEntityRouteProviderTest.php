@@ -365,12 +365,12 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'foo_route', 'params' => ['foo' => 'case3']], (array) $routes[5]);
     }
 
-    #[TestWith([null, 'Expected return value of "if" expression (obj.val) to be boolean, got null'])]
-    #[TestWith([1, 'Expected return value of "if" expression (obj.val) to be boolean, got int'])]
-    #[TestWith([0.0, 'Expected return value of "if" expression (obj.val) to be boolean, got float'])]
-    #[TestWith(['false', 'Expected return value of "if" expression (obj.val) to be boolean, got string'])]
-    #[TestWith([[true], 'Expected return value of "if" expression (obj.val) to be boolean, got array'])]
-    #[TestWith([new \stdClass(), 'Expected return value of "if" expression (obj.val) to be boolean, got stdClass'])]
+    #[TestWith([null, 'Expected return value of "if" expression (obj.val) to be boolean, got null.'])]
+    #[TestWith([1, 'Expected return value of "if" expression (obj.val) to be boolean, got int.'])]
+    #[TestWith([0.0, 'Expected return value of "if" expression (obj.val) to be boolean, got float.'])]
+    #[TestWith(['false', 'Expected return value of "if" expression (obj.val) to be boolean, got string.'])]
+    #[TestWith([[true], 'Expected return value of "if" expression (obj.val) to be boolean, got array.'])]
+    #[TestWith([new \stdClass(), 'Expected return value of "if" expression (obj.val) to be boolean, got stdClass.'])]
     public function testExceptionIsThrownOnInvalidIfReturnType(mixed $ifResult, string $expectedMessage): void
     {
         $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);

@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle\Exception;
 
 final class InvalidIfExpressionResultException extends \TypeError implements PurgatoryException
 {
-    private const MESSAGE = 'Expected return value of "if" expression (%s) to be boolean, got %s';
+    private const MESSAGE = 'Expected return value of "if" expression (%s) to be boolean, got %s.';
 
     public function __construct(
         public readonly string $expression,
