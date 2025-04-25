@@ -78,7 +78,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                     throw new InvalidIfResultException($subscription['if'], $result);
                 }
 
-                if (false === $result) {
+                if (!$result) {
                     continue;
                 }
             }
