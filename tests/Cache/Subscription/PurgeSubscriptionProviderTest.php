@@ -364,7 +364,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     #[TestWith(['entity !== null'])]
     #[TestWith(['some_function(obj)'])]
     #[TestWith(['valid_function(author)'])]
-    public function testInvalidIfExpression(string $invalidIf): void
+    public function testExceptionIsThrownOnInvalidIfExpression(string $invalidIf): void
     {
         $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
