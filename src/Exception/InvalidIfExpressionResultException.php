@@ -12,6 +12,6 @@ final class InvalidIfExpressionResultException extends \TypeError implements Pur
         public readonly string $expression,
         public readonly mixed $result,
     ) {
-        parent::__construct(\sprintf(self::MESSAGE, $expression, \get_debug_type($result)));
+        parent::__construct(\sprintf(self::MESSAGE, $expression, get_debug_type($result)));
     }
 }
