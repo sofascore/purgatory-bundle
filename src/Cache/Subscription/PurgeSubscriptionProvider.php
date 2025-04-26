@@ -58,7 +58,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             $purgeOn = $routeMetadata->purgeOn;
 
             if (null !== $purgeOn->if) {
-                $this->validateIfExpression($purgeOn->if);
+                $this->validateIfExpression($purgeOn->if, $routeMetadata->routeName);
             }
 
             // if route parameters are not specified, they are same as path variables
@@ -140,12 +140,12 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
-    private function validateIfExpression(Expression $expression): void
+    private function validateIfExpression(Expression $expression, string $route): void
     {
         try {
             $this->expressionLanguage?->lint($expression, ['obj']);
         } catch (SyntaxError $e) {
-            throw new InvalidIfExpressionException($expression, $e);
+            throw new InvalidIfExpressionException($expression, $route, $e);
         }
     }
 }

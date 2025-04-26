@@ -9,14 +9,15 @@ use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 final class InvalidIfExpressionException extends InvalidArgumentException
 {
-    private const MESSAGE = 'Invalid "if" expression provided: "%s"';
+    private const MESSAGE = 'Invalid "if" expression provided for route "%s": "%s"';
 
     public function __construct(
         public readonly Expression $expression,
+        public readonly string $route,
         SyntaxError $syntaxError,
     ) {
         parent::__construct(
-            message: \sprintf(self::MESSAGE, $syntaxError->getMessage()),
+            message: \sprintf(self::MESSAGE, $route, $syntaxError->getMessage()),
             previous: $syntaxError,
         );
     }

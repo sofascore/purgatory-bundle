@@ -362,19 +362,19 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
     #[TestWith([
         'if' => 'invalidObj.getMethod()',
-        'expectedMessage' => 'Invalid "if" expression provided: "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
     ])]
     #[TestWith([
         'if' => 'entity !== null',
-        'expectedMessage' => 'Invalid "if" expression provided: "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
     ])]
     #[TestWith([
         'if' => 'some_function(obj)',
-        'expectedMessage' => 'Invalid "if" expression provided: "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
     ])]
     #[TestWith([
         'if' => 'valid_function(author)',
-        'expectedMessage' => 'Invalid "if" expression provided: "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
     ])]
     public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
     {
