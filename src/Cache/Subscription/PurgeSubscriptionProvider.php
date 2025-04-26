@@ -14,8 +14,12 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\SyntaxError;
 
 /**
  * @internal Used during cache warmup
@@ -31,6 +35,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         private readonly iterable $routeMetadataProviders,
         private readonly ManagerRegistry $managerRegistry,
         private readonly ContainerInterface $targetResolverLocator,
+        private readonly ?ExpressionLanguage $expressionLanguage,
     ) {
     }
 
@@ -51,6 +56,10 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
     {
         foreach ($routeMetadataProvider->provide() as $routeMetadata) {
             $purgeOn = $routeMetadata->purgeOn;
+
+            if (null !== $purgeOn->if) {
+                $this->validateIfExpression($purgeOn->if, $routeMetadata->routeName);
+            }
 
             // if route parameters are not specified, they are same as path variables
             if (null === $purgeOn->routeParams) {
@@ -128,6 +137,15 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 routeName: $routeMetadata->routeName,
                 missingRouteParams: array_values($missingRouteParams),
             );
+        }
+    }
+
+    private function validateIfExpression(Expression $expression, string $routeName): void
+    {
+        try {
+            $this->expressionLanguage?->lint($expression, ['obj']);
+        } catch (SyntaxError $e) {
+            throw new InvalidIfExpressionException($expression, $routeName, $e);
         }
     }
 }

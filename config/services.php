@@ -73,6 +73,7 @@ return static function (ContainerConfigurator $container) {
                 tagged_iterator('purgatory.route_metadata_provider'),
                 service('doctrine'),
                 tagged_locator('purgatory.target_resolver', defaultIndexMethod: 'for'),
+                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.property', PropertyResolver::class)
