@@ -13,11 +13,11 @@ final class InvalidIfExpressionException extends InvalidArgumentException
 
     public function __construct(
         public readonly Expression $expression,
-        public readonly string $route,
+        public readonly string $routeName,
         SyntaxError $syntaxError,
     ) {
         parent::__construct(
-            message: \sprintf(self::MESSAGE, $route, $syntaxError->getMessage()),
+            message: \sprintf(self::MESSAGE, $routeName, $syntaxError->getMessage()),
             previous: $syntaxError,
         );
     }

@@ -140,12 +140,12 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
-    private function validateIfExpression(Expression $expression, string $route): void
+    private function validateIfExpression(Expression $expression, string $routeName): void
     {
         try {
             $this->expressionLanguage?->lint($expression, ['obj']);
         } catch (SyntaxError $e) {
-            throw new InvalidIfExpressionException($expression, $route, $e);
+            throw new InvalidIfExpressionException($expression, $routeName, $e);
         }
     }
 }
