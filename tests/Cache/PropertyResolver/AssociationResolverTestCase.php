@@ -14,6 +14,7 @@ use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpKernel\Kernel;
@@ -188,4 +189,73 @@ abstract class AssociationResolverTestCase extends TestCase
     }
 
     abstract public static function invalidAssociationProvider(): iterable;
+
+    #[DataProvider('associationProvider')]
+    public function testExceptionIsThrownOnUnreadableAssocationTarget(
+        array $associationMapping,
+        bool $isGetAssociationMappedByTargetFieldCalled,
+        bool $isAssociationInverseSide,
+    ): void {
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
+            ->with('BarEntity', 'barProperty')
+            ->willReturn(null);
+
+        $resolver = new AssociationResolver(
+            extractor: $extractor,
+            expressionLanguage: new ExpressionLanguage(),
+        );
+
+        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata->expects(self::once())
+            ->method('hasAssociation')
+            ->with('fooProperty')
+            ->willReturn(true);
+        $classMetadata->method('getAssociationMapping')
+            ->with('fooProperty')
+            ->willReturn($this->createAssociationMapping($associationMapping));
+
+        $classMetadata->method('isAssociationInverseSide')
+            ->with('fooProperty')
+            ->willReturn($isAssociationInverseSide);
+
+
+        if ($isGetAssociationMappedByTargetFieldCalled) {
+            $classMetadata->expects(self::once())
+                ->method('getAssociationMappedByTargetField')
+                ->with('fooProperty')
+                ->willReturn('barProperty');
+        } else {
+            $classMetadata->expects(self::never())
+                ->method('getAssociationMappedByTargetField');
+        }
+
+        $classMetadata->method('getAssociationTargetClass')
+            ->with('fooProperty')
+            ->willReturn('BarEntity');
+
+        $purgeSubscription = $resolver->resolveSubscription(
+            routeMetadata: new RouteMetadata(
+                routeName: 'route_foo',
+                route: new Route('/foo/{param1}/{param2}'),
+                purgeOn: new PurgeOn(
+                    class: 'FooEntity',
+                    if: new Expression('obj.isActive() === true'),
+                ),
+                reflectionMethod: null,
+            ),
+            classMetadata: $classMetadata,
+            routeParams: [
+                'param1' => new PropertyValues('bazProperty'),
+                'param2' => new RawValues('const'),
+            ],
+            target: 'fooProperty',
+        );
+
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage("Unable to create a getter for property \"BarEntity::barProperty\".");
+
+        [...$purgeSubscription];
+    }
 }
