@@ -220,7 +220,6 @@ abstract class AssociationResolverTestCase extends TestCase
             ->with('fooProperty')
             ->willReturn($isAssociationInverseSide);
 
-
         if ($isGetAssociationMappedByTargetFieldCalled) {
             $classMetadata->expects(self::once())
                 ->method('getAssociationMappedByTargetField')
@@ -254,7 +253,7 @@ abstract class AssociationResolverTestCase extends TestCase
         );
 
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage("Unable to create a getter for property \"BarEntity::barProperty\".");
+        $this->expectExceptionMessage('Unable to create a getter for property "BarEntity::barProperty".');
 
         [...$purgeSubscription];
     }
