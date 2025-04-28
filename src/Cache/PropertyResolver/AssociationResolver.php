@@ -12,6 +12,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\InverseValuesAwareInterf
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -118,10 +119,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             PropertyReadInfo::TYPE_PROPERTY => [GetAttrNode::PROPERTY_CALL, $name],
         };
 
-        if (null === $node = $this->expressionLanguage?->parse($expression, ['obj'])->getNodes()) {
-            throw new \RuntimeException('Could not parse expression: '.(string) $expression);
-        }
-
+        $node = $this->getExpressionLanguage()->parse($expression, ['obj'])->getNodes();
         $inverseIf = $this->replaceObjWithInverse($node, $name, $callType)->dump();
 
         return new Expression("obj.$getter !== null && ($inverseIf)");
@@ -156,5 +154,11 @@ final class AssociationResolver implements SubscriptionResolverInterface
         }
 
         return $newNode;
+    }
+
+    private function getExpressionLanguage(): ExpressionLanguage
+    {
+        return $this->expressionLanguage
+            ?? throw new LogicException('You cannot use expressions because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
     }
 }
