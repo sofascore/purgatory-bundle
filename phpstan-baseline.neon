@@ -7,6 +7,12 @@ parameters:
 			path: src/Attribute/RouteParamValue/DynamicValues.php
 
 		-
+			message: '#^Call to function is_a\(\) with arguments class\-string\<BackedEnum\>, ''BackedEnum'' and true will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Attribute/RouteParamValue/EnumValues.php
+
+		-
 			message: '#^Comparison operation "\>" between 7 and 5 is always true\.$#'
 			identifier: greater.alwaysTrue
 			count: 1
@@ -29,12 +35,6 @@ parameters:
 			identifier: varTag.nativeType
 			count: 1
 			path: src/Cache/PropertyResolver/AssociationResolver.php
-
-		-
-			message: '#^Call to function is_subclass_of\(\) with class\-string\<object\> and class\-string will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: src/Cache/PropertyResolver/PropertyResolver.php
 
 		-
 			message: '#^Parameter \#1 \$alias of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues constructor expects string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
