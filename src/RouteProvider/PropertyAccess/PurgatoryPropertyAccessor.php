@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess;
 
-use InvalidArgumentException;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
@@ -27,19 +26,19 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
     /**
      * @param object|array<array-key, mixed> $objectOrArray
      * @param string|PropertyPathInterface   $propertyPath
-     * 
+     *
      * @throws PropertyNotAccessibleException
      * @throws ValueNotIterableException
      */
     public function getValue($objectOrArray, $propertyPath): mixed
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
-            try{
+            try {
                 return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
-            } catch (InvalidArgumentException|AccessException|UnexpectedTypeException) {
+            } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException) {
                 throw new PropertyNotAccessibleException(
-                    \is_array($objectOrArray) ? 'array' : $objectOrArray::class, 
-                    (string)$propertyPath
+                    \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+                    (string) $propertyPath,
                 );
             }
         }
@@ -47,12 +46,12 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
         /** @var array{0: string, 1: string} $propertyPathParts */
         $propertyPathParts = explode(separator: self::DELIMITER, string: (string) $propertyPath, limit: 2);
 
-        try{
+        try {
             $collection = $this->propertyAccessor->getValue($objectOrArray, $propertyPathParts[0]);
-        } catch (InvalidArgumentException|AccessException|UnexpectedTypeException) {
+        } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException) {
             throw new PropertyNotAccessibleException(
-                \is_array($objectOrArray) ? 'array' : $objectOrArray::class, 
-                $propertyPathParts[0]
+                \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+                $propertyPathParts[0],
             );
         }
 

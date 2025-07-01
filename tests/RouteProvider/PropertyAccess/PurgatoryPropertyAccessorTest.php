@@ -149,9 +149,9 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     {
         $this->expectException(PropertyNotAccessibleException::class);
         $this->expectExceptionMessage(
-            sprintf(
-                'Unable to create a getter for property "%s::%s".', 
-                Foo::class, 
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
                 'privateProperty',
             ),
         );
@@ -169,9 +169,9 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     {
         $this->expectException(PropertyNotAccessibleException::class);
         $this->expectExceptionMessage(
-            sprintf(
-                'Unable to create a getter for property "%s::%s".', 
-                Foo::class, 
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
                 'privateProperty',
             ),
         );
@@ -185,7 +185,7 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                             id: 1,
                             children: new ArrayCollection([]),
                         ),
-                    ]
+                    ],
                 ),
             ),
             propertyPath: 'children[*].privateProperty',
@@ -196,9 +196,9 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     {
         $this->expectException(PropertyNotAccessibleException::class);
         $this->expectExceptionMessage(
-            sprintf(
-                'Unable to create a getter for property "%s::%s".', 
-                Foo::class, 
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
                 'nonExistentProperty',
             ),
         );
@@ -216,9 +216,9 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     {
         $this->expectException(PropertyNotAccessibleException::class);
         $this->expectExceptionMessage(
-            sprintf(
-                'Unable to create a getter for property "%s::%s".', 
-                Foo::class, 
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
                 'nonExistentProperty',
             ),
         );
@@ -232,10 +232,10 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                             id: 1,
                             children: new ArrayCollection([]),
                         ),
-                    ]
+                    ],
                 ),
             ),
             propertyPath: 'children[*].nonExistentProperty',
         );
-    }    
+    }
 }
