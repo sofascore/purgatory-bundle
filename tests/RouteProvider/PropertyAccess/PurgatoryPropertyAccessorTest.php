@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
@@ -143,4 +144,98 @@ final class PurgatoryPropertyAccessorTest extends TestCase
             propertyPath: 'id[*].id',
         );
     }
+
+    public function testPropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Unable to create a getter for property "%s::%s".', 
+                Foo::class, 
+                'privateProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty',
+        );
+    }
+
+    public function testTraversableChildPropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Unable to create a getter for property "%s::%s".', 
+                Foo::class, 
+                'privateProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection(
+                    [
+                        new Foo(
+                            id: 1,
+                            children: new ArrayCollection([]),
+                        ),
+                    ]
+                ),
+            ),
+            propertyPath: 'children[*].privateProperty',
+        );
+    }
+
+    public function testPropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Unable to create a getter for property "%s::%s".', 
+                Foo::class, 
+                'nonExistentProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty',
+        );
+    }
+
+    public function testTraversableChildPropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            sprintf(
+                'Unable to create a getter for property "%s::%s".', 
+                Foo::class, 
+                'nonExistentProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection(
+                    [
+                        new Foo(
+                            id: 1,
+                            children: new ArrayCollection([]),
+                        ),
+                    ]
+                ),
+            ),
+            propertyPath: 'children[*].nonExistentProperty',
+        );
+    }    
 }

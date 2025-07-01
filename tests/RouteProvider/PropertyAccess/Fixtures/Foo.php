@@ -11,6 +11,7 @@ class Foo
     public function __construct(
         public readonly int $id,
         public readonly Collection $children,
+        private readonly ?string $privateProperty = 'value',
     ) {
     }
 
