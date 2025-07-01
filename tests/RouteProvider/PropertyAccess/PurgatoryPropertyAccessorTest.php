@@ -165,6 +165,26 @@ final class PurgatoryPropertyAccessorTest extends TestCase
         );
     }
 
+    public function testTraversablePropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
+                'privateProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty[*].values',
+        );
+    }
+
     public function testTraversableChildPropertyNotAccessible(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
@@ -209,6 +229,26 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 children: new ArrayCollection([]),
             ),
             propertyPath: 'nonExistentProperty',
+        );
+    }
+
+    public function testTraversablePropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionMessage(
+            \sprintf(
+                'Unable to create a getter for property "%s::%s".',
+                Foo::class,
+                'nonExistentProperty',
+            ),
+        );
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty[*].values',
         );
     }
 
