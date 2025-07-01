@@ -131,6 +131,28 @@ final class PurgatoryPropertyAccessorTest extends TestCase
         ];
     }
 
+    public function testReadPathPropertyNotExist(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty',
+        ));
+    }
+
+    public function testReadPathPropertyNotAccessible(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty',
+        ));
+    }
+
     public function testNotTraversable(): void
     {
         $this->expectException(ValueNotIterableException::class);
