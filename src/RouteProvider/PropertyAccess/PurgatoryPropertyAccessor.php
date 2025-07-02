@@ -60,6 +60,8 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
     /**
      * @param object|array<array-key, mixed> $objectOrArray
      * @param string|PropertyPathInterface   $propertyPath
+     *
+     * @param-out object|array<array-key, mixed> $objectOrArray
      */
     public function setValue(&$objectOrArray, $propertyPath, mixed $value): void
     {
