@@ -11,7 +11,7 @@ final class PropertyNotAccessibleException extends RuntimeException
     public function __construct(
         public readonly string $class,
         public readonly string $property,
-        public readonly \Throwable $previous,
+        public readonly ?\Throwable $previous = null,
     ) {
         parent::__construct(
             message: \sprintf(self::MESSAGE, $class, $property),
