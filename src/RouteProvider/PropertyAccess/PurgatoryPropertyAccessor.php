@@ -35,10 +35,11 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
             try {
                 return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
-            } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException) {
+            } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException $exception) {
                 throw new PropertyNotAccessibleException(
                     \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
                     (string) $propertyPath,
+                    $exception,
                 );
             }
         }
@@ -48,10 +49,11 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
 
         try {
             $collection = $this->propertyAccessor->getValue($objectOrArray, $propertyPathParts[0]);
-        } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException) {
+        } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException $exception) {
             throw new PropertyNotAccessibleException(
                 \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
                 $propertyPathParts[0],
+                $exception,
             );
         }
 

@@ -12,6 +12,7 @@ use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(PurgatoryPropertyAccessor::class)]
@@ -202,13 +203,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testPropertyNotAccessible(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'privateProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
@@ -222,13 +223,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testTraversablePropertyNotAccessible(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'privateProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
@@ -242,13 +243,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testTraversableChildPropertyNotAccessible(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'privateProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
@@ -269,13 +270,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testPropertyNotExist(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'nonExistentProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
@@ -289,13 +290,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testTraversablePropertyNotExist(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'nonExistentProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
@@ -309,13 +310,13 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     public function testTraversableChildPropertyNotExist(): void
     {
         $this->expectException(PropertyNotAccessibleException::class);
-        $this->expectExceptionMessage(
-            \sprintf(
-                'Unable to create a getter for property "%s::%s".',
-                Foo::class,
-                'nonExistentProperty',
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
             ),
-        );
+        ));
 
         $this->purgatoryPropertyAccessor->getValue(
             objectOrArray: new Foo(
