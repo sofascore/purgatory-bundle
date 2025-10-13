@@ -1,0 +1,35 @@
+<?php
+
+namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Generated\Purgatory\RouteProvider;
+
+use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
+use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
+
+/**
+ * @implements RouteProviderInterface<Ship>
+ */
+final class ShipBuildRouteProvider implements RouteProviderInterface
+{
+    /**
+     * {@inheritDoc}
+     */
+    public function provideRoutesFor(Action $action, object $entity, array $entityChangeSet): iterable
+    {
+        // add with your own logic if needed
+
+        yield new PurgeRoute(
+            name: 'app_route', // replace it with your route
+            params: [
+                'param1' => $entity, // replace it with correct data for route parameters
+            ],
+        );
+    }
+
+    public function supports(Action $action, object $entity): bool
+    {
+        return $entity instanceof Ship
+            && Action::Create === $action;
+    }
+}

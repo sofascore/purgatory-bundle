@@ -18,6 +18,7 @@ use Sofascore\PurgatoryBundle\Cache\TargetResolver\ForPropertiesResolver;
 use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
+use Sofascore\PurgatoryBundle\Maker\MakeRouteProvider;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessageHandler;
@@ -235,5 +236,11 @@ return static function (ContainerConfigurator $container) {
                 service('doctrine'),
             ])
             ->tag('console.command')
+
+        ->set('sofascore.purgatory.maker.make_provider', MakeRouteProvider::class)
+        ->args([
+            service('doctrine'),
+        ])
+        ->tag('maker.command')
     ;
 };
