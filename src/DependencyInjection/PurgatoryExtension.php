@@ -125,6 +125,9 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
 
             $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')
                 ->replaceArgument(1, $files);
+
+            $container->getDefinition('sofascore.purgatory.maker.make_purgeon')
+                ->replaceArgument(3, $files);
         } else {
             $container->removeDefinition('sofascore.purgatory.route_metadata_provider.yaml');
         }
