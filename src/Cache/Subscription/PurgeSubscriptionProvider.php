@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Opis\Closure\ReflectionClosure;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
@@ -16,10 +17,12 @@ use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
+use function Opis\Closure\{serialize, unserialize};
 
 /**
  * @internal Used during cache warmup
@@ -58,7 +61,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             $purgeOn = $routeMetadata->purgeOn;
 
             if (null !== $purgeOn->if) {
-                $this->validateIfExpression($purgeOn->if, $routeMetadata->routeName);
+                $this->validateIf($purgeOn->if, $routeMetadata->routeName, $purgeOn->class);
             }
 
             // if route parameters are not specified, they are same as path variables
@@ -137,6 +140,43 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 routeName: $routeMetadata->routeName,
                 missingRouteParams: array_values($missingRouteParams),
             );
+        }
+    }
+
+    private function validateIf(\Closure|Expression $expression, string $routeName, string $entity): void
+    {
+        if($expression instanceof \Closure) {
+            $this->validateIfClosure($expression, $routeName, $entity);
+            return;
+        }
+
+        $this->validateIfExpression($expression, $routeName);
+    }
+
+    private function validateIfClosure(\Closure $expression, string $routeName, string $entity): void
+    {
+        $reflection = new ReflectionClosure($expression);
+
+        $returnType = $reflection->getReturnType();
+
+        if(!$returnType instanceof \ReflectionNamedType
+            || $returnType->allowsNull()
+            || !in_array($returnType->getName(), ['bool', 'true', 'false'])
+        ) {
+            throw new RuntimeException('Return type of PurgeOn::if closure must be bool');
+        }
+
+        if(1 !== $reflection->getNumberOfParameters()) {
+            throw new RuntimeException('PurgeOn::if closure must have exactly 1 parameter');
+        }
+
+        $parameterType = $reflection->getParameters()[0]->getType();
+
+        if(!$parameterType instanceof \ReflectionNamedType
+            || $parameterType->allowsNull()
+            || !is_a($entity, $parameterType->getName(), true)
+        ) {
+            throw new RuntimeException("Parameter in PurgeOn::if closure must be of type $entity");
         }
     }
 

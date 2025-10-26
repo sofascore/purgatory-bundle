@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider;
 
+use Opis\Closure\Box;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
@@ -13,6 +14,7 @@ use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use function Opis\Closure\unserialize;
 
 /**
  * @internal
@@ -73,7 +75,14 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             }
 
             if (isset($subscription['if'])) {
-                $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
+                if(isset($subscription['closureIf'])) {
+                    /** @var \Closure $closure */
+                    $closure = unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]);
+                    $result = $closure($entity);
+                } else {
+                    $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
+                }
+
                 if (!\is_bool($result)) {
                     throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
                 }

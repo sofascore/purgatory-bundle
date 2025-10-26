@@ -18,7 +18,7 @@ final class PurgeOn
     public readonly ?TargetInterface $target;
     /** @var ?non-empty-array<string, ValuesInterface> */
     public readonly ?array $routeParams;
-    public readonly ?Expression $if;
+    public readonly \Closure|Expression|null $if;
     /** @var ?non-empty-list<string> */
     public readonly ?array $route;
     /** @var ?non-empty-list<Action> */
@@ -35,7 +35,7 @@ final class PurgeOn
         public readonly string $class,
         string|array|TargetInterface|null $target = null,
         ?array $routeParams = null,
-        string|Expression|null $if = null,
+        \Closure|string|Expression|null $if = null,
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
