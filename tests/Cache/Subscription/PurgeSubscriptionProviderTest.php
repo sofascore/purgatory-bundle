@@ -558,7 +558,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             });
 
         $targetResolverLocator = $this->createMock(ContainerInterface::class);
-        $targetResolverLocator->expects($this->never())->method('get');
+        $targetResolverLocator->expects(self::never())->method('get');
 
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
@@ -586,7 +586,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     class: DummyEntity::class,
                     if: static function (DummyEntity $entity): bool {
                         return $entity->getData() > 0;
-                    }
+                    },
                 ),
                 reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
             ),
@@ -683,21 +683,21 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'if' => static function (DummyEntity|int $entity): bool {
                 return $entity->getData() > 0;
             },
-            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type '.DummyEntity::class,
         ];
 
         yield 'nullable parameter type' => [
             'if' => static function (?DummyEntity $entity): bool {
                 return $entity?->getData() > 0;
             },
-            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type '.DummyEntity::class,
         ];
 
         yield 'invalid parameter type' => [
             'if' => static function (\stdClass $entity): bool {
                 return true;
             },
-            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type '.DummyEntity::class,
         ];
     }
 }

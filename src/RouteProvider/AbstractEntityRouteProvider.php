@@ -14,6 +14,7 @@ use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+
 use function Opis\Closure\unserialize;
 
 /**
@@ -75,7 +76,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             }
 
             if (isset($subscription['if'])) {
-                if(isset($subscription['closureIf'])) {
+                if (isset($subscription['closureIf'])) {
                     /** @var \Closure $closure */
                     $closure = unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]);
                     $result = $closure($entity);

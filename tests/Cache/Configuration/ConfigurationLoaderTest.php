@@ -19,7 +19,6 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
-use stdClass;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
 
@@ -245,18 +244,19 @@ final class ConfigurationLoaderTest extends TestCase
         self::assertInstanceOf(Configuration::class, $configuration = $loader->load());
         self::assertSame($expectedConfiguration, $configuration->toArray());
     }
+
     public static function purgeSubscriptionProviderPhp85(): iterable
     {
         yield 'purge subscription without property' => [
             'purgeSubscriptions' => [
                 new PurgeSubscription(
-                    class: stdClass::class,
+                    class: \stdClass::class,
                     property: null,
                     routeParams: [],
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
                     actions: Action::cases(),
-                    if: static function (\stdClass $entity): bool {return true;},
+                    if: static function (\stdClass $entity): bool {return true; },
                 ),
             ],
             'expectedConfiguration' => [

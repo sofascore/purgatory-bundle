@@ -49,11 +49,11 @@ class Php85ConfigurationTest extends AbstractKernelTestCase
     public static function configurationProvider(): iterable
     {
         $expectedIf = <<<'EOF'
-O:16:"Opis\Closure\Box":2:{i:0;i:1;i:1;a:1:{s:4:"info";a:4:{s:3:"key";s:32:"2521276d9b695876a33347478e0d2b3d";s:6:"header";s:167:"namespace Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller;
-use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Plant;";s:4:"body";s:98:"static function (Plant $plant): bool {
-            return $plant->getWaterLevel() === 0;
-        }";s:5:"flags";i:2;}}}
-EOF;
+            O:16:"Opis\Closure\Box":2:{i:0;i:1;i:1;a:1:{s:4:"info";a:4:{s:3:"key";s:32:"2521276d9b695876a33347478e0d2b3d";s:6:"header";s:167:"namespace Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller;
+            use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Plant;";s:4:"body";s:98:"static function (Plant $plant): bool {
+                        return $plant->getWaterLevel() === 0;
+                    }";s:5:"flags";i:2;}}}
+            EOF;
 
         /* @see PlantController::dryPlantsAction */
         yield [
@@ -62,7 +62,7 @@ EOF;
                 'routeName' => 'dry_plants_list',
                 'if' => $expectedIf,
                 'closureIf' => true,
-                'actions' => [Action::Create]
+                'actions' => [Action::Create],
             ],
         ];
     }

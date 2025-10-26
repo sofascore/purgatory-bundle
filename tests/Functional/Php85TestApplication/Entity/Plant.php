@@ -36,6 +36,4 @@ class Plant
     {
         $this->waterLevel = $waterLevel;
     }
-
-
 }

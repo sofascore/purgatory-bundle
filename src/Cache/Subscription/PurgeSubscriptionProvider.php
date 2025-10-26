@@ -22,7 +22,6 @@ use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
-use function Opis\Closure\{serialize, unserialize};
 
 /**
  * @internal Used during cache warmup
@@ -145,8 +144,9 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
 
     private function validateIf(\Closure|Expression $expression, string $routeName, string $entity): void
     {
-        if($expression instanceof \Closure) {
+        if ($expression instanceof \Closure) {
             $this->validateIfClosure($expression, $routeName, $entity);
+
             return;
         }
 
@@ -159,20 +159,20 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
 
         $returnType = $reflection->getReturnType();
 
-        if(!$returnType instanceof \ReflectionNamedType
+        if (!$returnType instanceof \ReflectionNamedType
             || $returnType->allowsNull()
-            || !in_array($returnType->getName(), ['bool', 'true', 'false'])
+            || !\in_array($returnType->getName(), ['bool', 'true', 'false'])
         ) {
             throw new RuntimeException('Return type of PurgeOn::if closure must be bool');
         }
 
-        if(1 !== $reflection->getNumberOfParameters()) {
+        if (1 !== $reflection->getNumberOfParameters()) {
             throw new RuntimeException('PurgeOn::if closure must have exactly 1 parameter');
         }
 
         $parameterType = $reflection->getParameters()[0]->getType();
 
-        if(!$parameterType instanceof \ReflectionNamedType
+        if (!$parameterType instanceof \ReflectionNamedType
             || $parameterType->allowsNull()
             || !is_a($entity, $parameterType->getName(), true)
         ) {
