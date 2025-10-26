@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\RouteProvider;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -400,6 +402,69 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         $this->expectException(InvalidIfExpressionResultException::class);
         $this->expectExceptionMessage($expectedMessage);
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
+    }
+
+    #[RequiresFunction('\Opis\Closure\serialize')]
+    public function testProvideRoutesToPurgeWithClosureIf(): void
+    {
+        $validIf = static function (\stdClass $entity): bool {
+            return true;
+        };
+        $invalidIf = static function (\stdClass $entity): bool {
+            return false;
+        };
+
+        $routeProvider = $this->createRouteProvider([
+            'stdClass' => [
+                [
+                    'routeName' => 'foo_route',
+                    'if' => \Opis\Closure\serialize($validIf),
+                    'closureIf' => true,
+                ],
+            ],
+            'stdClass::foo' => [
+                [
+                    'routeName' => 'bar_route',
+                    'if' => \Opis\Closure\serialize($validIf),
+                    'closureIf' => true,
+                ],
+                [
+                    'routeName' => 'baz_route',
+                    'routeParams' => [
+                        'param1' => [
+                            'type' => PropertyValues::type(),
+                            'values' => ['foo', 'bar'],
+                        ],
+                        'param2' => [
+                            'type' => PropertyValues::type(),
+                            'values' => ['baz'],
+                        ],
+                    ],
+                    'if' => \Opis\Closure\serialize($invalidIf),
+                    'closureIf' => true,
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+
+        self::assertTrue($routeProvider->supports(Action::Update, $entity));
+        self::assertFalse($routeProvider->supports(Action::Delete, $entity));
+        self::assertFalse($routeProvider->supports(Action::Create, $entity));
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Update,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => ['old', 'new'],
+            ],
+        )];
+
+        self::assertCount(2, $routes);
+        self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
+
+        self::assertSame(['name' => 'foo_route', 'params' => []], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
     }
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): UpdatedEntityRouteProvider

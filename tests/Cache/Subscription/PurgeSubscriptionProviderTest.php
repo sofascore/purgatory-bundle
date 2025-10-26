@@ -7,8 +7,10 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\Subscription;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
+use Opis\Closure\ReflectionClosure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -23,7 +25,9 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
+use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyEntity;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyTarget;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -540,6 +544,160 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 reflectionMethod: null,
             ),
             'expectedMissingRequiredParameters' => ['foo', 'baz'],
+        ];
+    }
+
+    #[RequiresMethod(ReflectionClosure::class, '__construct')]
+    #[DataProvider('providerRouteMetadataWithPhp85Features')]
+    public function testWithClosures(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
+    {
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($routeMetadata) {
+                yield $routeMetadata;
+            });
+
+        $targetResolverLocator = $this->createMock(ContainerInterface::class);
+        $targetResolverLocator->expects($this->never())->method('get');
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: $this->createMock(ManagerRegistry::class),
+            targetResolverLocator: $targetResolverLocator,
+            expressionLanguage: null,
+        );
+
+        /** @var PurgeSubscription[] $propertySubscriptions */
+        $propertySubscriptions = [...$purgeSubscriptionProvider->provide()];
+
+        self::assertCount(\count($expectedSubscriptions), $propertySubscriptions);
+        self::assertEquals($expectedSubscriptions, $propertySubscriptions);
+    }
+
+    public static function providerRouteMetadataWithPhp85Features(): iterable
+    {
+        $route = new Route('/foo');
+        yield 'PurgeOn with closure' => [
+            'routeMetadata' => new RouteMetadata(
+                routeName: 'foo',
+                route: $route,
+                purgeOn: new PurgeOn(
+                    class: DummyEntity::class,
+                    if: static function (DummyEntity $entity): bool {
+                        return $entity->getData() > 0;
+                    }
+                ),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
+            ),
+            'expectedSubscriptions' => [
+                new PurgeSubscription(
+                    class: DummyEntity::class,
+                    property: null,
+                    routeParams: [],
+                    routeName: 'foo',
+                    route: $route,
+                    actions: null,
+                    if: static function (DummyEntity $entity): bool {
+                        return $entity->getData() > 0;
+                    },
+                ),
+            ],
+        ];
+    }
+
+    #[RequiresMethod(ReflectionClosure::class, '__construct')]
+    #[DataProvider('provideInvalidClosures')]
+    public function testInvalidClosures(\Closure $if, string $expectedMessage): void
+    {
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($if): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: DummyEntity::class,
+                        if: $if,
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: $this->createMock(ManagerRegistry::class),
+            targetResolverLocator: $this->createMock(ContainerInterface::class),
+            expressionLanguage: new ExpressionLanguage(
+                providers: [
+                    new class implements ExpressionFunctionProviderInterface {
+                        public function getFunctions(): array
+                        {
+                            return [
+                                new ExpressionFunction('valid_function', function () {}, function () {}),
+                            ];
+                        }
+                    },
+                ],
+            ),
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public static function provideInvalidClosures(): iterable
+    {
+        yield 'invalid return type (union)' => [
+            'if' => static function (DummyEntity $entity): int|string {
+                return $entity->getData();
+            },
+            'expectedMessage' => 'Return type of PurgeOn::if closure must be bool',
+        ];
+
+        yield 'nullable return type' => [
+            'if' => static function (DummyEntity $entity): ?bool {
+                return null;
+            },
+            'expectedMessage' => 'Return type of PurgeOn::if closure must be bool',
+        ];
+
+        yield 'invalid return type' => [
+            'if' => static function (DummyEntity $entity): int {
+                return $entity->getData();
+            },
+            'expectedMessage' => 'Return type of PurgeOn::if closure must be bool',
+        ];
+
+        yield 'too many parameters' => [
+            'if' => static function (DummyEntity $entity, array $options): bool {
+                return $entity->getData() > 0;
+            },
+            'expectedMessage' => 'PurgeOn::if closure must have exactly 1 parameter',
+        ];
+
+        yield 'invalid parameter type (union)' => [
+            'if' => static function (DummyEntity|int $entity): bool {
+                return $entity->getData() > 0;
+            },
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
+        ];
+
+        yield 'nullable parameter type' => [
+            'if' => static function (?DummyEntity $entity): bool {
+                return $entity?->getData() > 0;
+            },
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
+        ];
+
+        yield 'invalid parameter type' => [
+            'if' => static function (\stdClass $entity): bool {
+                return true;
+            },
+            'expectedMessage' => 'Parameter in PurgeOn::if closure must be of type ' . DummyEntity::class,
         ];
     }
 }
