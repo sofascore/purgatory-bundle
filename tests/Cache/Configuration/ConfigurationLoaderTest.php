@@ -263,7 +263,7 @@ final class ConfigurationLoaderTest extends TestCase
                 'stdClass' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'if' => 'O:16:"Opis\Closure\Box":2:{i:0;i:1;i:1;a:1:{s:4:"info";a:4:{s:3:"key";s:32:"2a27e41247bbdcbf2bae2d27231c100b";s:6:"header";s:62:"namespace Sofascore\PurgatoryBundle\Tests\Cache\Configuration;";s:4:"body";s:56:"static function (\stdClass $entity): bool {return true;}";s:5:"flags";i:2;}}}',
+                        'if' => 'O:16:"Opis\Closure\Box":2:{i:0;i:1;i:1;a:1:{s:4:"info";a:4:{s:3:"key";s:32:"b2037a8181118b374eef46daefe3a977";s:6:"header";s:62:"namespace Sofascore\PurgatoryBundle\Tests\Cache\Configuration;";s:4:"body";s:57:"static function (\stdClass $entity): bool {return true; }";s:5:"flags";i:2;}}}',
                         'closureIf' => true,
                         'actions' => Action::cases(),
                     ],
