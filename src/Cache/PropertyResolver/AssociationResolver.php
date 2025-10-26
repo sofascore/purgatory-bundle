@@ -72,6 +72,10 @@ final class AssociationResolver implements SubscriptionResolverInterface
         }
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
+            if ($if instanceof \Closure) {
+                // TODO support closures
+                throw new \RuntimeException('Cannot create inverse subscription with closures');
+            }
             $expression = (string) $if;
             $getter = $this->createGetter($associationClass, $associationTarget);
             $inverseIf = str_replace('obj', 'obj.'.$getter, $expression);
