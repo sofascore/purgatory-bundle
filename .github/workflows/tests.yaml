@@ -26,7 +26,7 @@ jobs:
                         symfony: '7.4'
         services:
             postgres:
-                image: postgres:16
+                image: postgres:17
                 env:
                     POSTGRES_DB: purgatory
                     POSTGRES_PASSWORD: password
