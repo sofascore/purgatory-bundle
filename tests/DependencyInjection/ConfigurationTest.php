@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DependencyInjection\Configuration;
@@ -129,6 +130,7 @@ final class ConfigurationTest extends TestCase
     }
 
     #[DataProvider('provideXMLCases')]
+    #[RequiresMethod(XmlFileLoader::class, 'load')]
     public function testXMLConfiguration(string $file, array $expectedConfig): void
     {
         $container = new ContainerBuilder();
