@@ -24,19 +24,12 @@ final class InteractsWithPurgatoryTest extends TestCase
     {
         $container = new Container();
         $container->set($idInMemory, new InMemoryPurger());
-        $container->set($idAsync, new AsyncPurger($this->createMock(MessageBusInterface::class)));
+        $container->set($idAsync, new AsyncPurger(self::createStub(MessageBusInterface::class)));
 
-        $test = new class($container) extends KernelTestCase {
+        $test = new class('name') extends KernelTestCase {
             use InteractsWithPurgatory;
 
-            private static Container $myContainer;
-
-            public function __construct(Container $container)
-            {
-                self::$myContainer = $container;
-
-                parent::__construct('name');
-            }
+            public static Container $myContainer;
 
             public function testUrlIsPurged(): void
             {
@@ -63,6 +56,8 @@ final class InteractsWithPurgatoryTest extends TestCase
                 return self::$myContainer;
             }
         };
+
+        $test::$myContainer = $container;
 
         $test->testUrlIsPurged();
     }

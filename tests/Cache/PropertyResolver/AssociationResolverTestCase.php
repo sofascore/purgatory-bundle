@@ -30,7 +30,7 @@ abstract class AssociationResolverTestCase extends TestCase
         bool $isGetAssociationMappedByTargetFieldCalled,
         bool $isAssociationInverseSide,
     ): void {
-        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor = self::createStub(PropertyReadInfoExtractorInterface::class);
         $extractor->method('getReadInfo')
             ->with('BarEntity', 'barProperty')
             ->willReturn(
@@ -79,7 +79,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     target: new ForProperties(['fooProperty']),
                     if: new Expression('obj.isActive() === true'),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [
@@ -112,10 +112,10 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testFieldNotAssociation(): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            self::createStub(PropertyReadInfoExtractorInterface::class),
         );
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata = self::createStub(ClassMetadata::class);
         $classMetadata->method('hasAssociation')
             ->with('fooProperty')
             ->willReturn(false);
@@ -128,7 +128,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -146,7 +146,7 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testInvalidAssociationType(array $associationMapping): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            self::createStub(PropertyReadInfoExtractorInterface::class),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
@@ -167,7 +167,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],

@@ -148,11 +148,11 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
     public function testExceptionIsThrownWhenEntityMetadataIsNotFound(): void
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration([]));
 
-        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry = self::createStub(ManagerRegistry::class);
         $managerRegistry->method('getManagerForClass')
             ->with(\stdClass::class)
             ->willReturn(null);
@@ -236,15 +236,15 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): RemovedEntityRouteProvider
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration($configuration));
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata = self::createStub(ClassMetadata::class);
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = self::createStub(EntityManagerInterface::class);
 
-        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry = self::createStub(ManagerRegistry::class);
         $managerRegistry->method('getManagerForClass')
             ->with(\stdClass::class)
             ->willReturn($entityManager);
@@ -261,7 +261,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
         $expressionLanguage = null;
         if ($withExpressionLang) {
-            $expressionLanguage = $this->createMock(ExpressionLanguage::class);
+            $expressionLanguage = self::createStub(ExpressionLanguage::class);
             $expressionLanguage->method('evaluate')
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }

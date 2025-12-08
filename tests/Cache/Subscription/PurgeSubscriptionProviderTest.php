@@ -36,7 +36,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     #[DataProvider('provideRouteMetadataWithoutTarget')]
     public function testWithoutTarget(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
     {
-        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () use ($routeMetadata) {
                 yield $routeMetadata;
@@ -48,7 +48,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
             routeMetadataProviders: [$routeMetadataProvider],
-            managerRegistry: $this->createMock(ManagerRegistry::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
             expressionLanguage: null,
         );
@@ -136,7 +136,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     #[DataProvider('provideRouteMetadataWithTarget')]
     public function testWithTarget(RouteMetadata $routeMetadata, array $targetResolverReturn, array $expectedSubscriptions): void
     {
-        $subscriptionResolver = $this->createMock(SubscriptionResolverInterface::class);
+        $subscriptionResolver = self::createStub(SubscriptionResolverInterface::class);
         $subscriptionResolver->method('resolveSubscription')
             ->willReturnCallback(function () use ($expectedSubscriptions) {
                 static $i = 0;
@@ -146,15 +146,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 return true;
             });
 
-        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () use ($routeMetadata) {
                 yield $routeMetadata;
             });
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata = self::createStub(ClassMetadata::class);
 
-        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager = self::createStub(EntityManagerInterface::class);
         $entityManager->method('getClassMetadata')
             ->with('FooEntity')
             ->willReturn($classMetadata);
@@ -165,12 +165,12 @@ final class PurgeSubscriptionProviderTest extends TestCase
             ->with('FooEntity')
             ->willReturn($entityManager);
 
-        $dummyTargetResolver = $this->createMock(TargetResolverInterface::class);
+        $dummyTargetResolver = self::createStub(TargetResolverInterface::class);
         $dummyTargetResolver->method('resolve')
             ->with($routeMetadata->purgeOn->target, $routeMetadata)
             ->willReturn($targetResolverReturn);
 
-        $targetResolverLocator = $this->createMock(ContainerInterface::class);
+        $targetResolverLocator = self::createStub(ContainerInterface::class);
         $targetResolverLocator->method('get')
             ->with(DummyTarget::class)
             ->willReturn($dummyTargetResolver);
@@ -298,7 +298,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
     public function testExceptionIsThrownWhenEntityMetadataIsNotFound(): void
     {
-        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () {
                 yield new RouteMetadata(
@@ -321,7 +321,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             subscriptionResolvers: [],
             routeMetadataProviders: [$routeMetadataProvider],
             managerRegistry: $managerRegistry,
-            targetResolverLocator: $this->createMock(ContainerInterface::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: null,
         );
 
@@ -336,7 +336,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         RouteMetadata $routeMetadata,
         array $expectedMissingRequiredParameters,
     ): void {
-        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () use ($routeMetadata) {
                 yield $routeMetadata;
@@ -345,8 +345,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
             routeMetadataProviders: [$routeMetadataProvider],
-            managerRegistry: $this->createMock(ManagerRegistry::class),
-            targetResolverLocator: $this->createMock(ContainerInterface::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: null,
         );
 
@@ -378,7 +378,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     ])]
     public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
     {
-        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
             ->willReturnCallback(function () use ($if): iterable {
                 yield new RouteMetadata(
@@ -395,8 +395,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
             subscriptionResolvers: [],
             routeMetadataProviders: [$routeMetadataProvider],
-            managerRegistry: $this->createMock(ManagerRegistry::class),
-            targetResolverLocator: $this->createMock(ContainerInterface::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: new ExpressionLanguage(
                 providers: [
                     new class implements ExpressionFunctionProviderInterface {

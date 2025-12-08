@@ -18,7 +18,7 @@ final class ForGroupsResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $propertyListExtractor = $this->createMock(PropertyListExtractorInterface::class);
+        $propertyListExtractor = self::createStub(PropertyListExtractorInterface::class);
         $propertyListExtractor->method('getProperties')
             ->with('FooEntity', ['serializer_groups' => ['group1']])
             ->willReturn(['property1', 'property2']);
@@ -32,7 +32,7 @@ final class ForGroupsResolverTest extends TestCase
                 class: 'FooEntity',
                 target: $target = new ForGroups(['group1']),
             ),
-            reflectionMethod: $this->createMock(\ReflectionMethod::class),
+            reflectionMethod: self::createStub(\ReflectionMethod::class),
         );
 
         $resolved = $resolver->resolve($target, $routeMetadata);

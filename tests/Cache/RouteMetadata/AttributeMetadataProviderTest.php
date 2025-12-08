@@ -38,7 +38,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
         $collection->add(name: 'foo_baz', route: $fooBazRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -125,7 +125,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $collection->add(name: 'foo_baz2', route: $fooBazRoute2);
         $collection->add(name: 'foo_baz3', route: $fooBazRoute3);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -184,7 +184,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $collection->add(name: 'foo', route: $fooRoute);
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -224,7 +224,7 @@ final class AttributeMetadataProviderTest extends TestCase
 
     public function testNotResolvableController(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
 
         $collection = new RouteCollection();
 
@@ -270,7 +270,7 @@ final class AttributeMetadataProviderTest extends TestCase
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
         $collection->add(name: 'foo_baz', route: $fooBazRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -299,7 +299,7 @@ final class AttributeMetadataProviderTest extends TestCase
 
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 

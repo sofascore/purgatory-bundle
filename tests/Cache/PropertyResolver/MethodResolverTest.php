@@ -40,11 +40,11 @@ final class MethodResolverTest extends TestCase
             ));
 
         $resolver = new MethodResolver(
-            [new PropertyResolver($this->createMock(ManagerRegistry::class))],
+            [new PropertyResolver(self::createStub(ManagerRegistry::class))],
             $propertyReadInfoExtractor,
         );
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata = self::createStub(ClassMetadata::class);
         $classMetadata->method('hasField')
             ->willReturnCallback(fn (string $property) => match ($property) {
                 'bar' => true,
@@ -59,7 +59,7 @@ final class MethodResolverTest extends TestCase
                     class: DummyEntity::class,
                     target: new ForProperties([$target]),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -100,7 +100,7 @@ final class MethodResolverTest extends TestCase
             $propertyReadInfoExtractor,
         );
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata = self::createStub(ClassMetadata::class);
 
         $purgeSubscriptions = $resolver->resolveSubscription(
             routeMetadata: new RouteMetadata(
@@ -110,7 +110,7 @@ final class MethodResolverTest extends TestCase
                     class: DummyEntity::class,
                     target: new ForProperties(['bar']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],

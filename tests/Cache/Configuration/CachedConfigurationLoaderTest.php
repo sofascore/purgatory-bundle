@@ -38,7 +38,7 @@ final class CachedConfigurationLoaderTest extends TestCase
 
     public function testSubscriptionsAreCached(): void
     {
-        $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider = self::createStub(PurgeSubscriptionProviderInterface::class);
         $purgeSubscriptionProvider->method('provide')
             ->willReturn([
                 new PurgeSubscription(
@@ -61,7 +61,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                 ),
             ]);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
