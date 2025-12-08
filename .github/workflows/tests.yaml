@@ -48,7 +48,7 @@ jobs:
         name: PHP ${{ matrix.php }} & Symfony ${{ matrix.symfony }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }} Test
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -75,7 +75,7 @@ jobs:
                 run: vendor/bin/phpunit --log-junit=junit.xml --coverage-text --coverage-clover=coverage.xml
 
             -   name: Publish Test Report
-                uses: mikepenz/action-junit-report@v5
+                uses: mikepenz/action-junit-report@v6
                 if: always()
                 with:
                     annotate_only: true
