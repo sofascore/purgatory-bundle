@@ -12,8 +12,15 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\InverseValuesAwareInterf
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\ExpressionLanguage\Node\ArgumentsNode;
+use Symfony\Component\ExpressionLanguage\Node\ConstantNode;
+use Symfony\Component\ExpressionLanguage\Node\GetAttrNode;
+use Symfony\Component\ExpressionLanguage\Node\NameNode;
+use Symfony\Component\ExpressionLanguage\Node\Node;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
@@ -21,6 +28,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
 {
     public function __construct(
         private readonly PropertyReadInfoExtractorInterface $extractor,
+        private readonly ?ExpressionLanguage $expressionLanguage,
     ) {
     }
 
@@ -72,10 +80,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         }
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
-            $expression = (string) $if;
-            $getter = $this->createGetter($associationClass, $associationTarget);
-            $inverseIf = str_replace('obj', 'obj.'.$getter, $expression);
-            $if = new Expression("obj.$getter !== null && ($inverseIf)");
+            $if = $this->createInverseExpression($if, $associationClass, $associationTarget);
         }
 
         yield new PurgeSubscription(
@@ -96,18 +101,64 @@ final class AssociationResolver implements SubscriptionResolverInterface
         return $values instanceof InverseValuesAwareInterface ? $values->buildInverseValuesFor($associationTarget) : $values;
     }
 
-    private function createGetter(string $class, string $property): string
-    {
-        if (null === $readInfo = $this->extractor->getReadInfo($class, $property)) {
-            throw new PropertyNotAccessibleException($class, $property);
+    private function createInverseExpression(
+        Expression $expression,
+        string $associationClass,
+        string $associationTarget,
+    ): Expression {
+        if (null === $readInfo = $this->extractor->getReadInfo($associationClass, $associationTarget)) {
+            throw new PropertyNotAccessibleException($associationClass, $associationTarget);
         }
 
         /** @var PropertyReadInfo::TYPE_* $type */
         $type = $readInfo->getType();
+        $name = $readInfo->getName();
 
-        return match ($type) {
-            PropertyReadInfo::TYPE_METHOD => $readInfo->getName().'()',
-            PropertyReadInfo::TYPE_PROPERTY => $readInfo->getName(),
+        [$callType, $getter] = match ($type) {
+            PropertyReadInfo::TYPE_METHOD => [GetAttrNode::METHOD_CALL, "$name()"],
+            PropertyReadInfo::TYPE_PROPERTY => [GetAttrNode::PROPERTY_CALL, $name],
         };
+
+        $node = $this->getExpressionLanguage()->parse($expression, ['obj'])->getNodes();
+        $inverseIf = $this->replaceObjWithInverse($node, $name, $callType)->dump();
+
+        return new Expression("obj.$getter !== null && ($inverseIf)");
+    }
+
+    /**
+     * @param GetAttrNode::PROPERTY_CALL|GetAttrNode::METHOD_CALL $type
+     */
+    private function replaceObjWithInverse(Node $node, string $inverse, int $type): Node
+    {
+        if ($node instanceof NameNode && 'obj' === $node->attributes['name']) {
+            return new GetAttrNode(
+                node: new NameNode('obj'),
+                attribute: new ConstantNode(
+                    value: $inverse,
+                    isIdentifier: true,
+                ),
+                arguments: new ArgumentsNode(),
+                type: $type,
+            );
+        }
+
+        $newNode = clone $node;
+        $newNode->nodes = [];
+
+        /**
+         * @var string $key
+         * @var Node   $childNode
+         */
+        foreach ($node->nodes as $key => $childNode) {
+            $newNode->nodes[$key] = $this->replaceObjWithInverse($childNode, $inverse, $type);
+        }
+
+        return $newNode;
+    }
+
+    private function getExpressionLanguage(): ExpressionLanguage
+    {
+        return $this->expressionLanguage
+            ?? throw new LogicException('You cannot use expressions because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
     }
 }
