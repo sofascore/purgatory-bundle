@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Comparison operation "\>" between 7 and 5 is always true\.$#'
+			message: '#^Comparison operation "\>" between 8 and 5 is always true\.$#'
 			identifier: greater.alwaysTrue
 			count: 1
 			path: src/Attribute/RouteParamValue/DynamicValues.php
@@ -13,7 +13,7 @@ parameters:
 			path: src/Attribute/RouteParamValue/EnumValues.php
 
 		-
-			message: '#^Comparison operation "\>" between 7 and 5 is always true\.$#'
+			message: '#^Comparison operation "\>" between 8 and 5 is always true\.$#'
 			identifier: greater.alwaysTrue
 			count: 1
 			path: src/Attribute/RouteParamValue/PropertyValues.php
@@ -73,13 +73,13 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: '#^Comparison operation "\>\=" between 4 and 1 is always true\.$#'
-			identifier: greaterOrEqual.alwaysTrue
+			message: '#^Comparison operation "\>\=" between 0 and 1 is always false\.$#'
+			identifier: greaterOrEqual.alwaysFalse
 			count: 1
 			path: src/Command/DebugCommand.php
 
 		-
-			message: '#^Comparison operation "\>\=" between 7 and 7 is always true\.$#'
+			message: '#^Comparison operation "\>\=" between 8 and 7 is always true\.$#'
 			identifier: greaterOrEqual.alwaysTrue
 			count: 1
 			path: src/Command/DebugCommand.php
@@ -103,19 +103,19 @@ parameters:
 			path: src/Command/DebugCommand.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between 7 and 6 will always evaluate to false\.$#'
+			message: '#^Strict comparison using \=\=\= between 8 and 6 will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Command/DebugCommand.php
 
 		-
-			message: '#^Comparison operation "\<\=" between 7 and 5 is always false\.$#'
+			message: '#^Comparison operation "\<\=" between 8 and 5 is always false\.$#'
 			identifier: smallerOrEqual.alwaysFalse
 			count: 1
 			path: src/DependencyInjection/CompilerPass/RegisterExpressionLanguageProvidersPass.php
 
 		-
-			message: '#^Comparison operation "\<\=" between 7 and 5 is always false\.$#'
+			message: '#^Comparison operation "\<\=" between 8 and 5 is always false\.$#'
 			identifier: smallerOrEqual.alwaysFalse
 			count: 1
 			path: src/DependencyInjection/CompilerPass/RegisterRouteParamServicesPass.php
