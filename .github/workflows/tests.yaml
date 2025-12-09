@@ -62,6 +62,13 @@ jobs:
                 run: |
                     composer require --dev --no-update phpunit/phpunit:^10.5
                     sed -i 's/failOnPhpunitDeprecation="true"//g' phpunit.dist.xml
+                    sed -i 's/failOnPhpunitNotice="true"//g' phpunit.dist.xml
+
+            -   name: Downgrade PHPUnit for PHP 8.2
+                if: matrix.php == '8.2'
+                run: |
+                    composer require --dev --no-update phpunit/phpunit:^11.5
+                    sed -i 's/failOnPhpunitNotice="true"//g' phpunit.dist.xml
 
             -   name: Install Dependencies
                 uses: ramsey/composer-install@v3

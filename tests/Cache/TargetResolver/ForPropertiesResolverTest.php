@@ -26,7 +26,7 @@ final class ForPropertiesResolverTest extends TestCase
                 class: 'FooEntity',
                 target: $target = new ForProperties(['property1', 'property2']),
             ),
-            reflectionMethod: $this->createMock(\ReflectionMethod::class),
+            reflectionMethod: self::createStub(\ReflectionMethod::class),
         );
 
         $resolved = $resolver->resolve($target, $routeMetadata);

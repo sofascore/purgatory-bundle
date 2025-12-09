@@ -223,13 +223,13 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): CreatedEntityRouteProvider
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration($configuration));
 
         $expressionLanguage = null;
         if ($withExpressionLang) {
-            $expressionLanguage = $this->createMock(ExpressionLanguage::class);
+            $expressionLanguage = self::createStub(ExpressionLanguage::class);
             $expressionLanguage->method('evaluate')
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }

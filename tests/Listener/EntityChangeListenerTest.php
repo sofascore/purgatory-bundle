@@ -86,7 +86,7 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
 
     public function testProcessWithNoPurgeRequests(): void
     {
-        $urlGenerator = $this->createMock(UrlGeneratorInterface::class);
+        $urlGenerator = self::createStub(UrlGeneratorInterface::class);
         $purger = $this->createMock(PurgerInterface::class);
         $purger->expects(self::never())->method('purge');
 

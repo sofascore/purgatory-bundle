@@ -40,7 +40,7 @@ final class YamlMetadataProviderTest extends TestCase
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
         $collection->add(name: 'foo_baz', route: $fooBazRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -90,7 +90,7 @@ final class YamlMetadataProviderTest extends TestCase
 
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -133,7 +133,7 @@ final class YamlMetadataProviderTest extends TestCase
 
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -177,7 +177,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownForInvalidYaml(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -196,7 +196,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownIfParsedYamlIsNotAnArray(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -218,7 +218,7 @@ final class YamlMetadataProviderTest extends TestCase
         $collection = new RouteCollection();
         $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -237,7 +237,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownForInvalidRoute(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -261,7 +261,7 @@ final class YamlMetadataProviderTest extends TestCase
         $collection = new RouteCollection();
         $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 

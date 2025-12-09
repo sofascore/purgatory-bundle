@@ -26,7 +26,7 @@ final class ConfigurationLoaderTest extends TestCase
     #[DataProvider('purgeSubscriptionProvider')]
     public function testSubscriptions(array $purgeSubscriptions, array $expectedConfiguration): void
     {
-        $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider = self::createStub(PurgeSubscriptionProviderInterface::class);
         $purgeSubscriptionProvider->method('provide')
             ->willReturn($purgeSubscriptions);
 

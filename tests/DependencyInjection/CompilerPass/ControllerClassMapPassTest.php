@@ -31,7 +31,7 @@ final class ControllerClassMapPassTest extends TestCase
 
         $definition = $container->register('sofascore.purgatory.route_metadata_provider.attribute', AttributeMetadataProvider::class)
             ->setArguments([
-                $this->createMock(RouterInterface::class),
+                self::createStub(RouterInterface::class),
                 [],
                 [],
             ]);
