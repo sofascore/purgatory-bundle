@@ -43,6 +43,12 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
+			message: '#^Parameter \#1 \$expression of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\ExpressionValues constructor expects string\|Symfony\\Component\\ExpressionLanguage\\Expression, bool\|float\|int\|list\<bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
+
+		-
 			message: '#^Parameter \#1 \$property of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\PropertyValues constructor expects string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
 			identifier: argument.type
 			count: 1

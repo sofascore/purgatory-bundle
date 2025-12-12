@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
@@ -180,6 +181,29 @@ class AnimalController
         if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
     )]
     public function animalsForOwnerAndVeterinarianAction(Person $veterinarian)
+    {
+    }
+
+    #[Route('/owner-full-name/{full_name}', 'list_by_owner_full_name')]
+    #[PurgeOn(Person::class,
+        target: ['firstName', 'lastName', 'pets'],
+        routeParams: [
+            'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
+        ],
+    )]
+    public function listByOwnerFullName()
+    {
+    }
+
+    #[Route('/veterinarian-full-name/{full_name}', 'list_by_veterinarian_full_name')]
+    #[PurgeOn(Person::class,
+        target: ['firstName', 'lastName', 'animalPatients'],
+        routeParams: [
+            'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
+        ],
+        if: 'obj.isVeterinarian === true',
+    )]
+    public function listByVeterinarianFullName()
     {
     }
 }

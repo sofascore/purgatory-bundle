@@ -23,6 +23,11 @@
       <code><![CDATA[$alias]]></code>
     </PossiblyUndefinedArrayOffset>
   </file>
+  <file src="src/Cache/PropertyResolver/InverseValuesBuilder/ExpressionInverseValuesBuilder.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$expression]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
   <file src="src/Cache/RouteMetadata/AttributeMetadataProvider.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$method]]></code>
@@ -37,6 +42,7 @@
       <code><![CDATA[(array) $value]]></code>
     </ArgumentTypeCoercion>
     <InvalidArgument>
+      <code><![CDATA[$value]]></code>
       <code><![CDATA[$value]]></code>
     </InvalidArgument>
     <PossiblyInvalidArgument>

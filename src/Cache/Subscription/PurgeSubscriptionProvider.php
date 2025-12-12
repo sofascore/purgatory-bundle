@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
@@ -58,7 +59,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             $purgeOn = $routeMetadata->purgeOn;
 
             if (null !== $purgeOn->if) {
-                $this->validateIfExpression($purgeOn->if, $routeMetadata->routeName);
+                $this->validateExpression($purgeOn->if, $routeMetadata->routeName);
             }
 
             // if route parameters are not specified, they are same as path variables
@@ -73,6 +74,11 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                     $routeParams[$pathVariable] = new PropertyValues($pathVariable);
                 }
             } else {
+                foreach ($purgeOn->routeParams as $values) {
+                    if ($values instanceof ExpressionValues) {
+                        $this->validateExpression($values->getValues()[0], $routeMetadata->routeName);
+                    }
+                }
                 $this->validateRouteParams(array_keys($purgeOn->routeParams), $routeMetadata);
                 $routeParams = $purgeOn->routeParams;
             }
@@ -140,7 +146,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
-    private function validateIfExpression(Expression $expression, string $routeName): void
+    private function validateExpression(Expression $expression, string $routeName): void
     {
         try {
             $this->expressionLanguage?->lint($expression, ['obj']);
