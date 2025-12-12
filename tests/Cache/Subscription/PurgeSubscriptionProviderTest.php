@@ -360,63 +360,6 @@ final class PurgeSubscriptionProviderTest extends TestCase
         [...$purgeSubscriptionProvider->provide()];
     }
 
-    #[TestWith([
-        'if' => 'invalidObj.getMethod()',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
-    ])]
-    #[TestWith([
-        'if' => 'entity !== null',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
-    ])]
-    #[TestWith([
-        'if' => 'some_function(obj)',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
-    ])]
-    #[TestWith([
-        'if' => 'valid_function(author)',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
-    ])]
-    public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
-    {
-        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
-        $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($if): iterable {
-                yield new RouteMetadata(
-                    routeName: 'foo',
-                    route: new Route('/{foo}'),
-                    purgeOn: new PurgeOn(
-                        class: 'FooEntity',
-                        if: $if,
-                    ),
-                    reflectionMethod: null,
-                );
-            });
-
-        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
-            subscriptionResolvers: [],
-            routeMetadataProviders: [$routeMetadataProvider],
-            managerRegistry: self::createStub(ManagerRegistry::class),
-            targetResolverLocator: self::createStub(ContainerInterface::class),
-            expressionLanguage: new ExpressionLanguage(
-                providers: [
-                    new class implements ExpressionFunctionProviderInterface {
-                        public function getFunctions(): array
-                        {
-                            return [
-                                new ExpressionFunction('valid_function', function () {}, function () {}),
-                            ];
-                        }
-                    },
-                ],
-            ),
-        );
-
-        $this->expectException(InvalidIfExpressionException::class);
-        $this->expectExceptionMessage($expectedMessage);
-
-        [...$purgeSubscriptionProvider->provide()];
-    }
-
     public static function provideRouteMetadataWithMissingPurgeRouteParams(): iterable
     {
         $route = new Route(
@@ -541,5 +484,62 @@ final class PurgeSubscriptionProviderTest extends TestCase
             ),
             'expectedMissingRequiredParameters' => ['foo', 'baz'],
         ];
+    }
+
+    #[TestWith([
+        'if' => 'invalidObj.getMethod()',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
+    ])]
+    #[TestWith([
+        'if' => 'entity !== null',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
+    ])]
+    #[TestWith([
+        'if' => 'some_function(obj)',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
+    ])]
+    #[TestWith([
+        'if' => 'valid_function(author)',
+        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
+    ])]
+    public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
+    {
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($if): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: 'FooEntity',
+                        if: $if,
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: new ExpressionLanguage(
+                providers: [
+                    new class implements ExpressionFunctionProviderInterface {
+                        public function getFunctions(): array
+                        {
+                            return [
+                                new ExpressionFunction('valid_function', function () {}, function () {}),
+                            ];
+                        }
+                    },
+                ],
+            ),
+        );
+
+        $this->expectException(InvalidIfExpressionException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        [...$purgeSubscriptionProvider->provide()];
     }
 }
