@@ -63,4 +63,10 @@ posts_list:
     class: App\Entity\Post
     route_params:
         type: !dynamic my_service
+
+# Limiting the value passed to the service using a property path
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic [ my_service, prop ]
 ```
