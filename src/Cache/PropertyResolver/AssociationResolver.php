@@ -8,8 +8,9 @@ use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata as ORMClassMetadata;
 use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
 use Doctrine\Persistence\Mapping\ClassMetadata;
-use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\InverseValuesAwareInterface;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\InverseValuesBuilderInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
@@ -21,6 +22,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
 {
     public function __construct(
         private readonly PropertyReadInfoExtractorInterface $extractor,
+        private readonly ContainerInterface $inverseValuesBuilderLocator,
     ) {
     }
 
@@ -68,7 +70,9 @@ final class AssociationResolver implements SubscriptionResolverInterface
         /** @var array<string, ValuesInterface> $inverseRouteParams */
         $inverseRouteParams = [];
         foreach ($routeParams as $routeParam => $values) {
-            $inverseRouteParams[$routeParam] = $this->getInverseValuesFor($values, $associationTarget);
+            $inverseRouteParams[$routeParam] = $this->getInverseValuesBuilderFor($values)
+                ?->build($values, $associationClass, $associationTarget)
+                ?? $values;
         }
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
@@ -91,9 +95,21 @@ final class AssociationResolver implements SubscriptionResolverInterface
         return true;
     }
 
-    private function getInverseValuesFor(ValuesInterface $values, string $associationTarget): ValuesInterface
+    /**
+     * @template T of ValuesInterface
+     *
+     * @param T $values
+     *
+     * @return ?InverseValuesBuilderInterface<T>
+     */
+    private function getInverseValuesBuilderFor(ValuesInterface $values): ?InverseValuesBuilderInterface
     {
-        return $values instanceof InverseValuesAwareInterface ? $values->buildInverseValuesFor($associationTarget) : $values;
+        /** @var ?InverseValuesBuilderInterface<T> $builder */
+        $builder = $this->inverseValuesBuilderLocator->has($type = $values::type())
+            ? $this->inverseValuesBuilderLocator->get($type)
+            : null;
+
+        return $builder;
     }
 
     private function createGetter(string $class, string $property): string

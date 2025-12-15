@@ -8,6 +8,21 @@
       <code><![CDATA[require $cache->getPath()]]></code>
     </UnresolvableInclude>
   </file>
+  <file src="src/Cache/PropertyResolver/InverseValuesBuilder/CompoundInverseValuesBuilder.php">
+    <InvalidArgument>
+      <code><![CDATA[array_map(
+                fn (ValuesInterface $values): ValuesInterface => $this->getInverseValuesBuilderFor($values)
+                    ?->build($values, $associationClass, $associationTarget)
+                    ?? $values,
+                $values->getValues(),
+            )]]></code>
+    </InvalidArgument>
+  </file>
+  <file src="src/Cache/PropertyResolver/InverseValuesBuilder/DynamicInverseValuesBuilder.php">
+    <PossiblyUndefinedArrayOffset>
+      <code><![CDATA[$alias]]></code>
+    </PossiblyUndefinedArrayOffset>
+  </file>
   <file src="src/Cache/RouteMetadata/AttributeMetadataProvider.php">
     <PossiblyUndefinedArrayOffset>
       <code><![CDATA[$method]]></code>
