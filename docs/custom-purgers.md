@@ -32,4 +32,4 @@ purgatory:
 
 In this example, the alias `cloudflare` is used to refer to the custom purger.
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Purger/PurgerInterface.php
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
