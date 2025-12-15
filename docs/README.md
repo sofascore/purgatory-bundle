@@ -362,7 +362,7 @@ class Post
 
 ### Adding Conditional Logic with Expression Language
 
-[Symfony's Expression Language component](https://symfony.com/doc/current/components/expression_language.html) can be
+[Symfony's ExpressionLanguage component](https://symfony.com/doc/current/components/expression_language.html) can be
 used to add conditions that must be met for the purge to occur. In these expressions, the entity is available as the
 `obj` variable:
 

@@ -7,7 +7,7 @@ values to create flexible and powerful purge rules.
 ## Using Nested Properties
 
 You can access nested properties of an entity to define route parameters by
-using [Symfony's Property Access](https://symfony.com/doc/current/components/property_access.html) syntax:
+using [Symfony's PropertyAccess](https://symfony.com/doc/current/components/property_access.html) syntax:
 
 ```php
 #[Route('/author/{id<\d+>}', name: 'author_details', methods: 'GET')]
@@ -134,7 +134,25 @@ public function listAction(string $lang)
 }
 ```
 
-To make this work, ensure your service is tagged correctly in the service configuration:
+By default, the entire entity being purged is passed to the route parameter service.
+If your service only needs a specific part of the entity, you can limit what is passed by providing a second argument to
+`DynamicValues`.
+
+This argument is a **Symfony PropertyAccess property path** and will be resolved against the entity before being passed
+to the service:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+
+#[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues('my_service', 'property')])]
+public function listAction(string $lang)
+{
+}
+```
+
+To make the service available for resolving route parameter values, ensure it is tagged correctly in the service
+configuration:
 
 ```yaml
 # services.yaml

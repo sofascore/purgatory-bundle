@@ -18,7 +18,7 @@ class VehicleController
     #[Route('/{id}/number-of-engines', 'number_of_engines')]
     #[AnnotationRoute('/{id}/number-of-engines', name: 'number_of_engines')]
     #[PurgeOn(Vehicle::class, target: 'numberOfEngines')]
-    public function numberOfEnginesAction(Vehicle $animal)
+    public function numberOfEnginesAction(Vehicle $vehicle)
     {
     }
 }
