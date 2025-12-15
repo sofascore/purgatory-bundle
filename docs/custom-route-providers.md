@@ -56,6 +56,6 @@ App\RouteProvider\MyPostRouteProvider:
 By tagging it with `purgatory.route_provider`, the bundle will automatically recognize and use your custom route
 provider when processing purge requests.
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/RouteProvider/RouteProviderInterface.php
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/RouteProvider/RouteProviderInterface.php
 
-[1]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/RouteProvider/PurgeRoute.php
+[1]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/RouteProvider/PurgeRoute.php

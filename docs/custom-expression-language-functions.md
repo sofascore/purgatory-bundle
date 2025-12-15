@@ -34,4 +34,4 @@ class ShouldPurge
 }
 ```
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Attribute/AsExpressionLanguageFunction.php
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/AsExpressionLanguageFunction.php
