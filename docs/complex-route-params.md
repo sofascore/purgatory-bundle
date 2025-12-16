@@ -129,7 +129,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 
 #[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
 #[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues('my_service')])]
-public function listAction(string $lang)
+public function listAction()
 {
 }
 ```
@@ -146,7 +146,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 
 #[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
 #[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues('my_service', 'property')])]
-public function listAction(string $lang)
+public function listAction()
 {
 }
 ```
