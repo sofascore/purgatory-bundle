@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
-use Symfony\Component\HttpKernel\Kernel;
-
 final class PropertyValues extends AbstractValues implements InverseValuesAwareInterface
 {
     /** @var non-empty-list<string> */
@@ -30,7 +28,7 @@ final class PropertyValues extends AbstractValues implements InverseValuesAwareI
     {
         return new self(
             ...array_map(
-                static fn (string $property): string => \sprintf('%s%s.%s', $association, Kernel::MAJOR_VERSION > 5 ? '?' : '', $property),
+                static fn (string $property): string => \sprintf('%s?.%s', $association, $property),
                 $this->properties,
             ),
         );

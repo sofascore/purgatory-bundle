@@ -23,7 +23,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competitio
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Vehicle;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
-use Symfony\Component\HttpKernel\Kernel;
 
 final class ConfigurationTest extends AbstractKernelTestCase
 {
@@ -123,9 +122,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeParams' => [
                     'person' => [
                         'type' => PropertyValues::type(),
-                        'values' => [
-                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
-                        ],
+                        'values' => ['owner?.id'],
                     ],
                 ],
             ],
@@ -236,9 +233,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeParams' => [
                     'id' => [
                         'type' => PropertyValues::type(),
-                        'values' => [
-                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
-                        ],
+                        'values' => ['owner?.id'],
                     ],
                 ],
             ],
@@ -252,9 +247,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 'routeParams' => [
                     'id' => [
                         'type' => PropertyValues::type(),
-                        'values' => [
-                            Kernel::MAJOR_VERSION > 5 ? 'owner?.id' : 'owner.id',
-                        ],
+                        'values' => ['owner?.id'],
                     ],
                 ],
                 'if' => "obj.owner !== null && (obj.owner.firstName === 'John')",

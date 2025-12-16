@@ -15,7 +15,6 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 use Symfony\Component\Routing\Route;
@@ -100,7 +99,7 @@ abstract class AssociationResolverTestCase extends TestCase
         self::assertNull($subscription[0]->property);
         self::assertSame('BarEntity', $subscription[0]->class);
         self::assertEquals(
-            new PropertyValues(Kernel::MAJOR_VERSION > 5 ? 'barProperty?.bazProperty' : 'barProperty.bazProperty'),
+            new PropertyValues('barProperty?.bazProperty'),
             $subscription[0]->routeParams['param1'],
         );
         self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);

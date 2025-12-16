@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\HttpKernel\Kernel;
 
 final class RegisterExpressionLanguageProvidersPass implements CompilerPassInterface
 {
@@ -35,11 +34,6 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
 
                 $functionReferences[$function] = (new Definition(\Closure::class, [[new Reference($id), $method]]))
                     ->setFactory([\Closure::class, 'fromCallable']);
-
-                if (Kernel::MAJOR_VERSION <= 5) {
-                    $container->setDefinition($factoryId = $id.'.'.$method.'.factory', $functionReferences[$function]);
-                    $functionReferences[$function] = new Reference($factoryId);
-                }
 
                 $usedFunctionNames[$function] = \sprintf('%s::%s', $id, $method);
             }

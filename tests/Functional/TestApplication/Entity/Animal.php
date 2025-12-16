@@ -6,7 +6,6 @@ namespace Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Sofascore\PurgatoryBundle\Attribute\TargetedProperties;
-use Symfony\Component\Serializer\Annotation\Groups as AnnotationGroups;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
@@ -19,7 +18,6 @@ class Animal
 
     #[ORM\Column]
     #[Groups('common')]
-    #[AnnotationGroups('common')]
     public string $name;
 
     #[ORM\Embedded(class: Measurements::class)]
@@ -48,7 +46,6 @@ class Animal
     }
 
     #[Groups('common')]
-    #[AnnotationGroups('common')]
     #[TargetedProperties('measurements')]
     public function isGoodBoy(): bool
     {

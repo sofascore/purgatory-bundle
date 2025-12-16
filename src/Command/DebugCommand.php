@@ -41,15 +41,12 @@ final class DebugCommand extends Command
             'mode' => InputArgument::OPTIONAL,
             'description' => 'The entity name or a substring of its name',
             'default' => null,
+            'suggestedValues' => array_keys($this->getEntityCollection()),
         ];
 
-        if (Kernel::MAJOR_VERSION >= 7 || (Kernel::MAJOR_VERSION === 6 && Kernel::MINOR_VERSION >= 1)) {
-            $params['suggestedValues'] = array_keys($this->getEntityCollection());
-
-            if (Kernel::MAJOR_VERSION === 6) {
-                // cannot use named arguments with SF6
-                $params = array_values($params);
-            }
+        if (Kernel::MAJOR_VERSION === 6) {
+            // cannot use named arguments with SF6
+            $params = array_values($params);
         }
 
         $this->addArgument(...$params);

@@ -1,22 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Comparison operation "\>" between 8 and 5 is always true\.$#'
-			identifier: greater.alwaysTrue
-			count: 1
-			path: src/Attribute/RouteParamValue/DynamicValues.php
-
-		-
 			message: '#^Call to function is_a\(\) with arguments class\-string\<BackedEnum\>, ''BackedEnum'' and true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/Attribute/RouteParamValue/EnumValues.php
-
-		-
-			message: '#^Comparison operation "\>" between 8 and 5 is always true\.$#'
-			identifier: greater.alwaysTrue
-			count: 1
-			path: src/Attribute/RouteParamValue/PropertyValues.php
 
 		-
 			message: '#^Parameter \#1 \$configuration of class Sofascore\\PurgatoryBundle\\Cache\\Configuration\\Configuration constructor expects array\<non\-empty\-string, list\<array\{routeName\: string, routeParams\?\: array\<string, array\{type\: string, values\: list\<mixed\>, optional\?\: true\}\>, if\?\: string, actions\?\: non\-empty\-list\<Sofascore\\PurgatoryBundle\\Listener\\Enum\\Action\>\}\>\>, mixed given\.$#'
@@ -73,52 +61,10 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: '#^Comparison operation "\>\=" between 0 and 1 is always false\.$#'
-			identifier: greaterOrEqual.alwaysFalse
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
-			message: '#^Comparison operation "\>\=" between 8 and 7 is always true\.$#'
-			identifier: greaterOrEqual.alwaysTrue
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
-			message: '#^Result of && is always false\.$#'
-			identifier: booleanAnd.alwaysFalse
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
-			message: '#^Result of \|\| is always true\.$#'
-			identifier: booleanOr.alwaysTrue
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between \*NEVER\* and 6 will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
 			message: '#^Strict comparison using \=\=\= between 8 and 6 will always evaluate to false\.$#'
 			identifier: identical.alwaysFalse
 			count: 1
 			path: src/Command/DebugCommand.php
-
-		-
-			message: '#^Comparison operation "\<\=" between 8 and 5 is always false\.$#'
-			identifier: smallerOrEqual.alwaysFalse
-			count: 1
-			path: src/DependencyInjection/CompilerPass/RegisterExpressionLanguageProvidersPass.php
-
-		-
-			message: '#^Comparison operation "\<\=" between 8 and 5 is always false\.$#'
-			identifier: smallerOrEqual.alwaysFalse
-			count: 1
-			path: src/DependencyInjection/CompilerPass/RegisterRouteParamServicesPass.php
 
 		-
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, ReflectionClass\|ReflectionMethod\)\: void given\.$#'

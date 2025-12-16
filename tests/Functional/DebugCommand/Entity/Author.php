@@ -7,7 +7,6 @@ namespace Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups as AnnotationGroups;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity]
@@ -20,12 +19,10 @@ class Author
 
     #[ORM\Column(length: 255)]
     #[Groups('common')]
-    #[AnnotationGroups('common')]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups('common')]
-    #[AnnotationGroups('common')]
     private ?string $lastName = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]

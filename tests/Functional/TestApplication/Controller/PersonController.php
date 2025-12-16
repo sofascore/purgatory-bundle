@@ -13,23 +13,19 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 #[Route('/person')]
-#[AnnotationRoute('/person')]
 class PersonController
 {
     #[Route('/{id}', 'person_details')]
-    #[AnnotationRoute('/{id}', name: 'person_details')]
     #[PurgeOn(Person::class)]
     public function detailsAction()
     {
     }
 
     #[Route('/list/men', 'person_list_men')]
-    #[AnnotationRoute('/list/men', name: 'person_list_men')]
     #[PurgeOn(Person::class,
         if: new Expression('obj.gender === "male"'),
     )]
@@ -38,7 +34,6 @@ class PersonController
     }
 
     #[Route('/list/custom-elf', 'person_list_custom_elf')]
-    #[AnnotationRoute('/list/custom-elf', name: 'person_list_custom_elf')]
     #[PurgeOn(Person::class,
         if: new Expression('custom_elf(obj)'),
     )]
@@ -47,7 +42,6 @@ class PersonController
     }
 
     #[Route('/{person}/pets', 'pets_list')]
-    #[AnnotationRoute('/{person}/pets', name: 'pets_list')]
     #[PurgeOn(Person::class,
         target: 'pets',
         routeParams: [
@@ -59,7 +53,6 @@ class PersonController
     }
 
     #[Route('/{person}/pets2', 'pets_list_alt')]
-    #[AnnotationRoute('/{person}/pets2', name: 'pets_list_alt')]
     #[PurgeOn(Animal::class,
         routeParams: [
             'person' => 'owner.id',
@@ -70,7 +63,6 @@ class PersonController
     }
 
     #[Route('/{person}/pets/names', 'pets_names')]
-    #[AnnotationRoute('/{person}/pets/names', name: 'pets_names')]
     #[PurgeOn(Animal::class,
         target: ['name'],
         routeParams: [
@@ -82,7 +74,6 @@ class PersonController
     }
 
     #[Route('/{person}/pets/page/{page}', 'pets_paginated')]
-    #[AnnotationRoute('/{person}/pets/page/{page}', name: 'pets_paginated')]
     #[PurgeOn(Animal::class,
         routeParams: [
             'person' => 'owner.id',
@@ -94,21 +85,18 @@ class PersonController
     }
 
     #[Route('/deleted', 'deleted_persons')]
-    #[AnnotationRoute('/deleted', name: 'deleted_persons')]
     #[PurgeOn(Person::class, actions: Action::Delete)]
     public function deletedPersonsAction()
     {
     }
 
     #[Route('/all-ids', 'all_ids')]
-    #[AnnotationRoute('/all-ids', name: 'all_ids')]
     #[PurgeOn(Person::class, actions: [Action::Create, Action::Delete])]
     public function allIdsAction()
     {
     }
 
     #[Route('/country/{country}', 'person_list_for_country')]
-    #[AnnotationRoute('/country/{country}', name: 'person_list_for_country')]
     #[PurgeOn(Person::class,
         target: 'country',
         routeParams: [
@@ -120,7 +108,6 @@ class PersonController
     }
 
     #[Route('/{id}/cars', 'person_cars_list')]
-    #[AnnotationRoute('/{id}/cars', name: 'person_cars_list')]
     #[PurgeOn(Person::class, target: 'cars')]
     #[PurgeOn(Person::class,
         target: 'cars',
@@ -131,7 +118,6 @@ class PersonController
     }
 
     #[Route('/by-name/{name}', 'list_by_name')]
-    #[AnnotationRoute('/by-name/{name}', name: 'list_by_name')]
     #[PurgeOn(Person::class,
         routeParams: [
             'name' => 'firstName',
@@ -142,14 +128,12 @@ class PersonController
     }
 
     #[Route('/by-full-name/{firstName}/{lastName}', 'list_by_full_name')]
-    #[AnnotationRoute('/by-full-name/{firstName}/{lastName}', name: 'list_by_full_name')]
     #[PurgeOn(Person::class)]
     public function listByFullNameAction(string $firstName, string $lastName)
     {
     }
 
     #[Route('/full-name/{firstName}/{lastName}/gender/{gender}', 'list_by_full_name_and_gender')]
-    #[AnnotationRoute('/full-name/{firstName}/{lastName}/gender/{gender}', name: 'list_by_full_name_and_gender')]
     #[PurgeOn(Person::class)]
     public function listByFullNameAndGenderAction(string $firstName, string $lastName, string $gender)
     {
