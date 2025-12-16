@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
@@ -71,6 +72,17 @@ class PostController
         ],
     )]
     public function filterByAuthorAndTag(Author $author)
+    {
+    }
+
+    #[Route('/author-full-name/{full_name}', 'post_filter_by_author_full_name')]
+    #[PurgeOn(Author::class,
+        target: ['firstName', 'lastName'],
+        routeParams: [
+            'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
+        ],
+    )]
+    public function filterByAuthorFullName()
     {
     }
 }

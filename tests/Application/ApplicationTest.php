@@ -493,6 +493,96 @@ final class ApplicationTest extends AbstractKernelTestCase
     }
 
     /**
+     * @see AnimalController::listByOwnerFullName
+     */
+    public function testExpressionValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->width = 1;
+        $animal->measurements->height = 2;
+        $animal->measurements->weight = 3;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/John-Doe');
+
+        self::clearPurger();
+
+        $person->firstName = 'Bob';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/Bob-Doe');
+
+        self::clearPurger();
+
+        $animal->name = 'Bongo';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/Bob-Doe');
+    }
+
+    /**
+     * @see AnimalController::listByVeterinarianFullName
+     */
+    public function testExpressionValuesWhenInverseIsNull(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->width = 1;
+        $animal->measurements->height = 2;
+        $animal->measurements->weight = 3;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/animal/veterinarian-full-name'),
+        ));
+
+        self::clearPurger();
+
+        $vet = new Person();
+        $vet->firstName = 'Frank';
+        $vet->lastName = 'Beard';
+        $vet->gender = 'male';
+        $vet->isVeterinarian = true;
+
+        $animal->veterinarian = $vet;
+
+        $this->entityManager->persist($vet);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/veterinarian-full-name/Frank-Beard');
+
+        self::clearPurger();
+
+        $animal->veterinarian = null;
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/animal/veterinarian-full-name'),
+        ));
+    }
+
+    /**
      * @see PersonController::deletedPersonsAction
      */
     public function testPurgeForActionDeleteOnly(): void
@@ -759,11 +849,13 @@ final class ApplicationTest extends AbstractKernelTestCase
         $vet1->firstName = 'Frank';
         $vet1->lastName = 'Beard';
         $vet1->gender = 'male';
+        $vet1->isVeterinarian = true;
 
         $vet2 = new Person();
         $vet2->firstName = 'Dusty';
         $vet2->lastName = 'Hill';
         $vet2->gender = 'male';
+        $vet2->isVeterinarian = true;
 
         $animal = new Animal();
         $animal->name = 'Sharp Dressed Dog';

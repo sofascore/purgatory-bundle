@@ -56,7 +56,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 10,
+            expectedNumberOfSubscriptions: 12,
         );
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
@@ -65,7 +65,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
-            expectedNumberOfEntities: 5,
+            expectedNumberOfEntities: 7,
             entityClass: Author::class,
         );
 
@@ -94,6 +94,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
         self::assertSubstringCount(
             expectedCount: 3,
             needle: 'page: Dynamic("purgatory.get_page", null)',
+            haystack: $display,
+        );
+        self::assertSubstringCount(
+            expectedCount: 2,
+            needle: 'full_name: Expression("obj.firstName~\"-\"~obj.lastName")',
             haystack: $display,
         );
     }
@@ -134,7 +139,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
     #[TestWith([Post::class, 1, Post::class, 'ANY'])]
     #[TestWith([Author::class, 1, Author::class, 'ANY'])]
-    #[TestWith([Author::class.'::firstName', 2, Author::class, 'firstName'])]
+    #[TestWith([Author::class.'::firstName', 3, Author::class, 'firstName'])]
     public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions, string $entity, string $property): void
     {
         $this->command->execute([
@@ -170,11 +175,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 5,
+            expectedNumberOfSubscriptions: 7,
         );
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
-            expectedNumberOfEntities: 5,
+            expectedNumberOfEntities: 7,
             entityClass: Author::class,
         );
     }
@@ -191,12 +196,12 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
-            expectedNumberOfEntities: 2,
+            expectedNumberOfEntities: 3,
             entityClass: Author::class,
         );
         self::assertNumberOfDisplayedProperties(
             command: $this->command,
-            expectedNumberOfProperties: 2,
+            expectedNumberOfProperties: 3,
             property: 'lastName',
         );
     }
@@ -213,7 +218,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
-            expectedNumberOfEntities: 5,
+            expectedNumberOfEntities: 7,
             entityClass: Author::class,
         );
         self::assertNumberOfDisplayedProperties(
@@ -223,12 +228,12 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
         self::assertNumberOfDisplayedProperties(
             command: $this->command,
-            expectedNumberOfProperties: 2,
+            expectedNumberOfProperties: 3,
             property: 'firstName',
         );
         self::assertNumberOfDisplayedProperties(
             command: $this->command,
-            expectedNumberOfProperties: 2,
+            expectedNumberOfProperties: 3,
             property: 'lastName',
         );
     }

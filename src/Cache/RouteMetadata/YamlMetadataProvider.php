@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
@@ -182,12 +183,14 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
             CompoundValues::type() => new CompoundValues(...array_map($this->buildRouteParam(...), $value)),
             DynamicValues::type() => new DynamicValues(...((array) $value)),
             EnumValues::type() => new EnumValues($value),
+            ExpressionValues::type() => new ExpressionValues($value),
             PropertyValues::type() => new PropertyValues(...((array) $value)),
             RawValues::type() => new RawValues(...((array) $value)),
             default => throw new UnknownYamlTagException($tag, [
                 CompoundValues::type(),
                 DynamicValues::type(),
                 EnumValues::type(),
+                ExpressionValues::type(),
                 PropertyValues::type(),
                 RawValues::type(),
             ]),

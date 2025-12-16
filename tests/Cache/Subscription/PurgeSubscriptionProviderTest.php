@@ -9,10 +9,10 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
@@ -486,22 +486,49 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
-    #[TestWith([
-        'if' => 'invalidObj.getMethod()',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
-    ])]
-    #[TestWith([
-        'if' => 'entity !== null',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
-    ])]
-    #[TestWith([
-        'if' => 'some_function(obj)',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
-    ])]
-    #[TestWith([
-        'if' => 'valid_function(author)',
-        'expectedMessage' => 'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
-    ])]
+    #[DataProvider('provideInvalidExpressions')]
+    public function testExceptionIsThrownOnInvalidRouteParamsExpression(string $expression, string $expectedMessage): void
+    {
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(function () use ($expression): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: 'FooEntity',
+                        routeParams: ['foo' => new ExpressionValues($expression)],
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: new ExpressionLanguage(
+                providers: [
+                    new class implements ExpressionFunctionProviderInterface {
+                        public function getFunctions(): array
+                        {
+                            return [
+                                new ExpressionFunction('valid_function', function () {}, function () {}),
+                            ];
+                        }
+                    },
+                ],
+            ),
+        );
+
+        $this->expectException(InvalidIfExpressionException::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
+    #[DataProvider('provideInvalidExpressions')]
     public function testExceptionIsThrownOnInvalidIfExpression(string $if, string $expectedMessage): void
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
@@ -541,5 +568,25 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $this->expectExceptionMessage($expectedMessage);
 
         [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public static function provideInvalidExpressions(): iterable
+    {
+        yield [
+            'invalidObj.getMethod()',
+            'Invalid "if" expression provided for route "foo": "Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`."',
+        ];
+        yield [
+            'entity !== null',
+            'Invalid "if" expression provided for route "foo": "Variable "entity" is not valid around position 1 for expression `entity !== null`."',
+        ];
+        yield [
+            'some_function(obj)',
+            'Invalid "if" expression provided for route "foo": "The function "some_function" does not exist around position 1 for expression `some_function(obj)`."',
+        ];
+        yield [
+            'valid_function(author)',
+            'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
+        ];
     }
 }

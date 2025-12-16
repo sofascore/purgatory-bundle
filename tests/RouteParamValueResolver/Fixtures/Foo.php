@@ -9,4 +9,6 @@ class Foo
     public ?int $id = null;
 
     public ?Foo $child = null;
+
+    public string $name = '';
 }

@@ -10,3 +10,4 @@ foo_bar:
             - !enum Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
         param5: !dynamic foo
         param6: !dynamic [ foo, bar ]
+        param7: !expression 'constant("App\\Foo::MAP")[obj.geValue()]'

@@ -10,19 +10,16 @@ use Doctrine\ORM\Mapping\OneToOneOwningSideMapping;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage\InverseRelationExpressionTransformer;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\InverseValuesBuilderInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
-use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
-use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\PropertyInfo\PropertyReadInfo;
-use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
 final class AssociationResolver implements SubscriptionResolverInterface
 {
     public function __construct(
-        private readonly PropertyReadInfoExtractorInterface $extractor,
         private readonly ContainerInterface $inverseValuesBuilderLocator,
+        private readonly InverseRelationExpressionTransformer $expressionTransformer,
     ) {
     }
 
@@ -76,10 +73,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         }
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
-            $expression = (string) $if;
-            $getter = $this->createGetter($associationClass, $associationTarget);
-            $inverseIf = str_replace('obj', 'obj.'.$getter, $expression);
-            $if = new Expression("obj.$getter !== null && ($inverseIf)");
+            $if = $this->expressionTransformer->transform($if, $associationClass, $associationTarget, 'false');
         }
 
         yield new PurgeSubscription(
@@ -110,20 +104,5 @@ final class AssociationResolver implements SubscriptionResolverInterface
             : null;
 
         return $builder;
-    }
-
-    private function createGetter(string $class, string $property): string
-    {
-        if (null === $readInfo = $this->extractor->getReadInfo($class, $property)) {
-            throw new PropertyNotAccessibleException($class, $property);
-        }
-
-        /** @var PropertyReadInfo::TYPE_* $type */
-        $type = $readInfo->getType();
-
-        return match ($type) {
-            PropertyReadInfo::TYPE_METHOD => $readInfo->getName().'()',
-            PropertyReadInfo::TYPE_PROPERTY => $readInfo->getName(),
-        };
     }
 }
