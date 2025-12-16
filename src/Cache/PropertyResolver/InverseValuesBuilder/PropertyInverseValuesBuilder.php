@@ -21,7 +21,7 @@ final class PropertyInverseValuesBuilder implements InverseValuesBuilderInterfac
     {
         return new PropertyValues(...array_map(
             static fn (string $property): string => \sprintf('%s?.%s', $associationTarget, $property),
-            $values->getValues(),
+            $values->properties,
         ));
     }
 }

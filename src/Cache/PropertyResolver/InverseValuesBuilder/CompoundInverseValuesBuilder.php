@@ -30,7 +30,7 @@ final class CompoundInverseValuesBuilder implements InverseValuesBuilderInterfac
                 fn (ValuesInterface $values): ValuesInterface => $this->getInverseValuesBuilderFor($values)
                     ?->build($values, $associationClass, $associationTarget)
                     ?? $values,
-                $values->getValues(),
+                $values->values,
             ),
         );
     }

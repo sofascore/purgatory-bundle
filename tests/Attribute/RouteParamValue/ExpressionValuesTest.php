@@ -17,10 +17,8 @@ final class ExpressionValuesTest extends TestCase
     #[TestWith([new Expression('obj.getHeight() * obj.getWidth()')])]
     public function testValueNormalization(string|Expression $expression): void
     {
-        $values = (new ExpressionValues($expression))->getValues();
+        $value = (new ExpressionValues($expression))->expression;
 
-        self::assertArrayHasKey(0, $values);
-        self::assertInstanceOf(Expression::class, $values[0]);
-        self::assertSame((string) $expression, (string) $values[0]);
+        self::assertSame((string) $expression, (string) $value);
     }
 }

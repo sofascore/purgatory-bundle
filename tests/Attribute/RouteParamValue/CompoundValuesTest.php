@@ -23,7 +23,7 @@ final class CompoundValuesTest extends TestCase
     {
         $compoundValues = new CompoundValues(...$values);
 
-        self::assertEquals($expectedValues, $compoundValues->getValues());
+        self::assertEquals($expectedValues, $compoundValues->values);
     }
 
     public function testExceptionIsThrownOnSelf(): void

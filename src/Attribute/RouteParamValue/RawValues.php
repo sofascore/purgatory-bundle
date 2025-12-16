@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 final class RawValues extends AbstractValues
 {
     /** @var non-empty-list<?scalar> */
-    private readonly array $values;
+    public readonly array $values;
 
     public function __construct(
         int|float|string|bool|null $value,
@@ -19,7 +19,7 @@ final class RawValues extends AbstractValues
     /**
      * @return non-empty-list<?scalar>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
         return $this->values;
     }

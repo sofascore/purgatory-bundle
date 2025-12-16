@@ -9,7 +9,7 @@ use Symfony\Component\ExpressionLanguage\Expression;
 
 final class ExpressionValues extends AbstractValues
 {
-    private readonly Expression $expression;
+    public readonly Expression $expression;
 
     public function __construct(
         string|Expression $expression,
@@ -18,19 +18,11 @@ final class ExpressionValues extends AbstractValues
     }
 
     /**
-     * @return list<Expression>
+     * @return non-empty-list<string>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
-        return [$this->expression];
-    }
-
-    public function toArray(): array
-    {
-        return [
-            'type' => self::type(),
-            'values' => [(string) $this->expression],
-        ];
+        return [(string) $this->expression];
     }
 
     public static function type(): string

@@ -19,8 +19,8 @@ final class DynamicInverseValuesBuilder implements InverseValuesBuilderInterface
 
     public function build(ValuesInterface $values, string $associationClass, string $associationTarget): ValuesInterface
     {
-        /** @var string $alias */
-        [$alias, $arg] = $values->getValues();
+        $alias = $values->alias;
+        $arg = $values->arg;
 
         return new DynamicValues(
             alias: $alias,

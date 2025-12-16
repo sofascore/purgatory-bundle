@@ -7,7 +7,7 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 final class PropertyValues extends AbstractValues
 {
     /** @var non-empty-list<string> */
-    private readonly array $properties;
+    public readonly array $properties;
 
     public function __construct(
         string $property,
@@ -19,7 +19,7 @@ final class PropertyValues extends AbstractValues
     /**
      * @return non-empty-list<string>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
         return $this->properties;
     }

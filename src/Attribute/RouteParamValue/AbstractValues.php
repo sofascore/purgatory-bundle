@@ -7,9 +7,14 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 abstract class AbstractValues implements ValuesInterface
 {
     /**
+     * @return non-empty-list<?scalar>
+     */
+    abstract protected function getValues(): array;
+
+    /**
      * {@inheritDoc}
      */
-    public function toArray(): array
+    final public function toArray(): array
     {
         return [
             'type' => static::type(),

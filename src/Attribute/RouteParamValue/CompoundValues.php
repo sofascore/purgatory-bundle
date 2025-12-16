@@ -7,12 +7,12 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 
-final class CompoundValues extends AbstractValues
+final class CompoundValues implements ValuesInterface
 {
     /**
      * @var non-empty-list<ValuesInterface>
      */
-    private readonly array $values;
+    public readonly array $values;
 
     /**
      * @param string|non-empty-list<string>|ValuesInterface $value
@@ -36,14 +36,6 @@ final class CompoundValues extends AbstractValues
         }
 
         $this->values = $normalized;
-    }
-
-    /**
-     * @return list<ValuesInterface>
-     */
-    public function getValues(): array
-    {
-        return $this->values;
     }
 
     /**

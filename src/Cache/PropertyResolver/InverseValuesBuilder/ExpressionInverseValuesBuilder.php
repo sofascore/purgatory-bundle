@@ -25,7 +25,7 @@ final class ExpressionInverseValuesBuilder implements InverseValuesBuilderInterf
 
     public function build(ValuesInterface $values, string $associationClass, string $associationTarget): ValuesInterface
     {
-        [$expression] = $values->getValues();
+        $expression = $values->expression;
 
         $inverseExpression = $this->expressionTransformer->transform($expression, $associationClass, $associationTarget, 'null');
 
