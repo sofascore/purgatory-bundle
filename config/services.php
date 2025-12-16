@@ -8,6 +8,9 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\EmbeddableResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\CompoundInverseValuesBuilder;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\DynamicInverseValuesBuilder;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\PropertyInverseValuesBuilder;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
@@ -93,6 +96,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory.subscription_resolver')
             ->args([
                 service('property_info.reflection_extractor'),
+                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.embeddable', EmbeddableResolver::class)
@@ -100,6 +104,18 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('doctrine'),
             ])
+
+        ->set('sofascore.purgatory.inverse_values_builder.compound', CompoundInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
+            ->args([
+                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
+            ])
+
+        ->set('sofascore.purgatory.inverse_values_builder.dynamic', DynamicInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
+
+        ->set('sofascore.purgatory.inverse_values_builder.property', PropertyInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
 
         ->set('sofascore.purgatory.configuration_loader', ConfigurationLoader::class)
             ->args([

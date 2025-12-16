@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
-final class DynamicValues extends AbstractValues implements InverseValuesAwareInterface
+final class DynamicValues extends AbstractValues
 {
     /**
      * @param string $alias Alias defined in {@see AsRouteParamService} attribute
@@ -21,14 +21,6 @@ final class DynamicValues extends AbstractValues implements InverseValuesAwareIn
     public function getValues(): array
     {
         return [$this->alias, $this->arg];
-    }
-
-    public function buildInverseValuesFor(string $association): ValuesInterface
-    {
-        return new self(
-            alias: $this->alias,
-            arg: null !== $this->arg ? \sprintf('%s?.%s', $association, $this->arg) : $association,
-        );
     }
 
     public static function type(): string

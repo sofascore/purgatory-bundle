@@ -7,13 +7,16 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\PropertyInverseValuesBuilder;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
@@ -42,7 +45,12 @@ abstract class AssociationResolverTestCase extends TestCase
                 ),
             );
 
-        $resolver = new AssociationResolver($extractor);
+        $resolver = new AssociationResolver(
+            $extractor,
+            new ServiceLocator([
+                PropertyValues::type() => static fn () => new PropertyInverseValuesBuilder(),
+            ]),
+        );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->method('hasAssociation')
@@ -112,6 +120,7 @@ abstract class AssociationResolverTestCase extends TestCase
     {
         $resolver = new AssociationResolver(
             self::createStub(PropertyReadInfoExtractorInterface::class),
+            self::createStub(ContainerInterface::class),
         );
 
         $classMetadata = self::createStub(ClassMetadata::class);
@@ -146,6 +155,7 @@ abstract class AssociationResolverTestCase extends TestCase
     {
         $resolver = new AssociationResolver(
             self::createStub(PropertyReadInfoExtractorInterface::class),
+            self::createStub(ContainerInterface::class),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
