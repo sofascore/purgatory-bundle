@@ -9,6 +9,9 @@ use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
+/**
+ * @internal
+ */
 final class InverseRelationExpressionTransformer
 {
     public function __construct(

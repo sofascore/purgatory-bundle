@@ -119,10 +119,31 @@ public function listAction(string $lang)
 In this example, multiple URLs are generated based on all values from the `LanguageCodes` enum and the raw value `XK`
 for the `lang` parameter.
 
+### Using Values Provided by an Expression
+
+You can also map route parameters to values provided dynamically using a **Symfony ExpressionLanguage** expression.
+This is useful when a route parameter cannot be mapped directly to a single property and needs to be composed or
+transformed.
+
+In these expressions, the entity is available as the `obj` variable:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
+
+#[Route('/posts-by-author/{full_name}', name: 'posts_list_by_author', methods: 'GET')]
+#[PurgeOn(Author::class, routeParams: ['full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName')])]
+public function listAction(Author $author)
+{
+}
+```
+
+You can also add [custom Expression Language functions](custom-expression-language-functions.md) to extend the available
+expression syntax.
+
 ### Using Values Provided by a Service
 
-You can also map route parameters to values provided dynamically by a service. This is particularly useful when you need
-route parameters that depend on context or runtime information:
+As an alternative to expressions, route parameter values can be provided dynamically by a service. This is particularly
+useful when you need route parameters that depend on context or runtime information:
 
 ```php
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;

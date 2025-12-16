@@ -1,6 +1,7 @@
 # Custom Expression Language Functions
 
-You can add custom functions to the Expression Language for use with the `if` parameter.
+You can add custom Expression Language functions that can be used by expressions defined in `ExpressionValues` or the
+`if` parameter.
 
 ```php
 #[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
