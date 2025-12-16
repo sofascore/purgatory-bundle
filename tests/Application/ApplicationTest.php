@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
@@ -21,7 +20,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plane;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
-use Symfony\Component\PropertyAccess\PropertyPath;
 
 final class ApplicationTest extends AbstractKernelTestCase
 {
@@ -630,7 +628,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see PersonController::personCarsList
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testNullableInverseRouteParams(): void
     {
         $person = new Person();
@@ -751,7 +748,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::animalsForVeterinarianAction
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testOldValuesWithOptionalRouteParamsArePurged(): void
     {
         $owner = new Person();
@@ -807,7 +803,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::animalsForOwnerAndVeterinarianAction
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testOldValuesWithMissingRouteParamsAreNotPurged(): void
     {
         $owner1 = new Person();

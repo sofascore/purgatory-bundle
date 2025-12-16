@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\RouteProvider;
 
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -31,7 +30,6 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\PropertyAccess\PropertyPath;
 
 #[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(UpdatedEntityRouteProvider::class)]
@@ -145,7 +143,6 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
     }
 
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testProvideRoutesToPurgeWithOldValues(): void
     {
         $routeProvider = $this->createRouteProvider([

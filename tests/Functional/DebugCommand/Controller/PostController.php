@@ -16,16 +16,13 @@ use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Post;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Tag;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum\LanguageCodes;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 #[Route('/post')]
-#[AnnotationRoute('/post')]
 class PostController
 {
     #[Route('/{post_id}', 'post_show')]
-    #[AnnotationRoute('/{post_id}', name: 'post_show')]
     #[PurgeOn(Post::class,
         routeParams: [
             'post_id' => 'id',
@@ -44,7 +41,6 @@ class PostController
     }
 
     #[Route('/{lang}/{page}', 'post_list')]
-    #[AnnotationRoute('/{lang}/{page}', name: 'post_list')]
     #[PurgeOn(Post::class,
         target: new ForGroups('common'),
         routeParams: [
@@ -60,7 +56,6 @@ class PostController
     }
 
     #[Route('/{author_id}/{tag_id}', 'post_filter')]
-    #[AnnotationRoute('/{author_id}/{tag_id}', name: 'post_filter')]
     #[PurgeOn(Author::class,
         target: new ForGroups('common'),
         routeParams: [

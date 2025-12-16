@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="6.3.0@222dda8483516044c2ed7a4c3f197d7c9d6c3ddb">
+<files psalm-version="6.14.2@bbd217fc98c0daa0a13aea2a7f119d03ba3fc9a0">
   <file src="src/Cache/Configuration/CachedConfigurationLoader.php">
     <MixedArgument>
       <code><![CDATA[require $cache->getPath()]]></code>
@@ -40,7 +40,6 @@
       <code><![CDATA[$params]]></code>
     </InvalidArgument>
     <TypeDoesNotContainType>
-      <code><![CDATA[Kernel::MAJOR_VERSION === 6]]></code>
       <code><![CDATA[Kernel::MAJOR_VERSION === 6]]></code>
     </TypeDoesNotContainType>
   </file>
