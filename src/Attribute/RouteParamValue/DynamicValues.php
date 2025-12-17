@@ -10,17 +10,17 @@ final class DynamicValues extends AbstractValues
      * @param string $alias Alias defined in {@see AsRouteParamService} attribute
      */
     public function __construct(
-        private readonly string $alias,
-        private readonly ?string $arg = null,
+        public readonly string $alias,
+        public readonly ?string $propertyPath = null,
     ) {
     }
 
     /**
-     * @return list<?string>
+     * @return non-empty-list<?string>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
-        return [$this->alias, $this->arg];
+        return [$this->alias, $this->propertyPath];
     }
 
     public static function type(): string

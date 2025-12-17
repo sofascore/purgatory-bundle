@@ -76,7 +76,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             } else {
                 foreach ($purgeOn->routeParams as $values) {
                     if ($values instanceof ExpressionValues) {
-                        $this->validateExpression($values->getValues()[0], $routeMetadata->routeName);
+                        $this->validateExpression($values->expression, $routeMetadata->routeName);
                     }
                 }
                 $this->validateRouteParams(array_keys($purgeOn->routeParams), $routeMetadata);

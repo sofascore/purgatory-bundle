@@ -7,11 +7,6 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 interface ValuesInterface
 {
     /**
-     * @return list<mixed>
-     */
-    public function getValues(): array;
-
-    /**
      * @return array{type: string, values: list<mixed>}
      */
     public function toArray(): array;

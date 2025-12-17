@@ -115,7 +115,7 @@ class AnimalController
             'rating' => new CompoundValues(
                 new DynamicValues(alias: 'purgatory.animal_rating2'),
                 new DynamicValues(alias: 'purgatory.animal_rating1'),
-                new DynamicValues(alias: 'purgatory.animal_rating3', arg: 'owner'),
+                new DynamicValues(alias: 'purgatory.animal_rating3', propertyPath: 'owner'),
             ),
         ],
     )]
