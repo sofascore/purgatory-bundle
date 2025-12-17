@@ -12,11 +12,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ExpressionValues` to enable resolution of route parameter values via expressions by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/112
 
+### Changed
+
+- Method `AbstractValues::toArray()` is now `final` by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/130
+- Method `AbstractValues::getValues()` is now `protected` by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/130
+- Rename second constructor argument in `DynamicValues` to `$propertyPath` by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/130
+
 ### Removed
 
 - Symfony v5 support by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/128
 - `InverseValuesAwareInterface`, use dedicated builder services instead by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/123
+- `ValuesInterface::getValues()`, use public properties instead by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/130
 
 ## [1.3.0] - 2025-12-15
 
