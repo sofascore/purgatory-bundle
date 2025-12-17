@@ -10,5 +10,5 @@ vendor/
 .phpunit.cache
 phpunit.xml
 
-# Psalm
-psalm.xml
+# PHPStan
+phpstan.neon
