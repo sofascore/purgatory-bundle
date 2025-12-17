@@ -24,9 +24,8 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
-     * @param string|PropertyPathInterface   $propertyPath
      */
-    public function getValue($objectOrArray, $propertyPath): mixed
+    public function getValue(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): mixed
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
             return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
@@ -59,29 +58,26 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
-     * @param string|PropertyPathInterface   $propertyPath
      *
      * @param-out object|array<array-key, mixed> $objectOrArray
      */
-    public function setValue(&$objectOrArray, $propertyPath, mixed $value): void
+    public function setValue(object|array &$objectOrArray, string|PropertyPathInterface $propertyPath, mixed $value): void
     {
         $this->propertyAccessor->setValue($objectOrArray, $propertyPath, $value);
     }
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
-     * @param string|PropertyPathInterface   $propertyPath
      */
-    public function isWritable($objectOrArray, $propertyPath): bool
+    public function isWritable(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): bool
     {
         return $this->propertyAccessor->isWritable($objectOrArray, $propertyPath);
     }
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
-     * @param string|PropertyPathInterface   $propertyPath
      */
-    public function isReadable($objectOrArray, $propertyPath): bool
+    public function isReadable(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): bool
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
             return $this->propertyAccessor->isReadable($objectOrArray, $propertyPath);
