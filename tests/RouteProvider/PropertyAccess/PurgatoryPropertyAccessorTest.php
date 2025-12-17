@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(PurgatoryPropertyAccessor::class)]
@@ -130,6 +132,60 @@ final class PurgatoryPropertyAccessorTest extends TestCase
         ];
     }
 
+    public function testReadPathPropertyNotExist(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty',
+        ));
+    }
+
+    public function testReadPathPropertyNotAccessible(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty',
+        ));
+    }
+
+    public function testReadTraversableChildPropertyNotExist(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([
+                    new Foo(
+                        id: 1,
+                        children: new ArrayCollection([]),
+                    ),
+                ]),
+            ),
+            propertyPath: 'children[*].nonExistentProperty',
+        ));
+    }
+
+    public function testReadTraversableChildPropertyNotAccessible(): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([
+                    new Foo(
+                        id: 1,
+                        children: new ArrayCollection([]),
+                    ),
+                ]),
+            ),
+            propertyPath: 'children[*].privateProperty',
+        ));
+    }
+
     public function testNotTraversable(): void
     {
         $this->expectException(ValueNotIterableException::class);
@@ -141,6 +197,140 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 children: new ArrayCollection([]),
             ),
             propertyPath: 'id[*].id',
+        );
+    }
+
+    public function testPropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty',
+        );
+    }
+
+    public function testTraversablePropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'privateProperty[*].values',
+        );
+    }
+
+    public function testTraversableChildPropertyNotAccessible(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'privateProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection(
+                    [
+                        new Foo(
+                            id: 1,
+                            children: new ArrayCollection([]),
+                        ),
+                    ],
+                ),
+            ),
+            propertyPath: 'children[*].privateProperty',
+        );
+    }
+
+    public function testPropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty',
+        );
+    }
+
+    public function testTraversablePropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            propertyPath: 'nonExistentProperty[*].values',
+        );
+    }
+
+    public function testTraversableChildPropertyNotExist(): void
+    {
+        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectExceptionObject(new PropertyNotAccessibleException(
+            class: Foo::class,
+            property: 'nonExistentProperty',
+            previous: new NoSuchPropertyException(
+                message: 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            ),
+        ));
+
+        $this->purgatoryPropertyAccessor->getValue(
+            objectOrArray: new Foo(
+                id: 1,
+                children: new ArrayCollection(
+                    [
+                        new Foo(
+                            id: 1,
+                            children: new ArrayCollection([]),
+                        ),
+                    ],
+                ),
+            ),
+            propertyPath: 'children[*].nonExistentProperty',
         );
     }
 }

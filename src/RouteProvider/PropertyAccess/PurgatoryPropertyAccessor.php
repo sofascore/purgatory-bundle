@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess;
 
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
@@ -25,17 +26,36 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
     /**
      * @param object|array<array-key, mixed> $objectOrArray
      * @param string|PropertyPathInterface   $propertyPath
+     *
+     * @throws PropertyNotAccessibleException
+     * @throws ValueNotIterableException
      */
     public function getValue($objectOrArray, $propertyPath): mixed
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
-            return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
+            try {
+                return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
+            } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException $exception) {
+                throw new PropertyNotAccessibleException(
+                    \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+                    (string) $propertyPath,
+                    $exception,
+                );
+            }
         }
 
         /** @var array{0: string, 1: string} $propertyPathParts */
         $propertyPathParts = explode(separator: self::DELIMITER, string: (string) $propertyPath, limit: 2);
 
-        $collection = $this->propertyAccessor->getValue($objectOrArray, $propertyPathParts[0]);
+        try {
+            $collection = $this->propertyAccessor->getValue($objectOrArray, $propertyPathParts[0]);
+        } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException $exception) {
+            throw new PropertyNotAccessibleException(
+                \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+                $propertyPathParts[0],
+                $exception,
+            );
+        }
 
         if (!is_iterable($collection)) {
             throw new ValueNotIterableException($collection, $propertyPathParts[0]);
@@ -91,7 +111,7 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
             $this->getValue($objectOrArray, $propertyPath);
 
             return true;
-        } catch (AccessException|UnexpectedTypeException) {
+        } catch (PropertyNotAccessibleException) {
             return false;
         }
     }
