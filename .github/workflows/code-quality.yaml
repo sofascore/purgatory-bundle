@@ -52,31 +52,9 @@ jobs:
             -   name: PHP Coding Standards Fixer
                 run: php-cs-fixer fix --dry-run --format checkstyle | cs2pr
 
-    psalm:
-        runs-on: ubuntu-latest
-        name: Static Analysis (Psalm)
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v6
-
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ env.PHP_VERSION }}
-                    coverage: none
-                    tools: psalm
-
-            -   name: Install Dependencies
-                uses: ramsey/composer-install@v3
-                with:
-                    composer-options: '--prefer-dist'
-
-            -   name: Run Psalm
-                run: psalm --long-progress --no-diff --output-format=github
-
     phpstan:
         runs-on: ubuntu-latest
-        name: Static Analysis (PHPStan)
+        name: Static Analysis
         steps:
             -   name: Checkout
                 uses: actions/checkout@v6

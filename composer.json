@@ -70,7 +70,6 @@
         "run-checks": [
             "php-cs-fixer fix -vvv",
             "phpunit",
-            "psalm --no-cache",
             "phpstan"
         ]
     },
