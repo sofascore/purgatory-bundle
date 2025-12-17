@@ -52,7 +52,7 @@ final class InverseValuesBuildersTest extends TestCase
 
         $compoundValues = new CompoundValues(
             new DynamicValues('alias'),
-            new DynamicValues('alias', arg: 'obj'),
+            new DynamicValues('alias', propertyPath: 'obj'),
             new EnumValues(DummyIntEnum::class),
             new PropertyValues('obj'),
             new RawValues(1, null, 'str'),
@@ -61,10 +61,10 @@ final class InverseValuesBuildersTest extends TestCase
 
         self::assertEquals(
             expected: new CompoundValues(
-                new DynamicValues('alias', arg: 'association'),
+                new DynamicValues('alias', propertyPath: 'association'),
                 new DynamicValues(
                     alias: 'alias',
-                    arg: 'association?.obj',
+                    propertyPath: 'association?.obj',
                 ),
                 new EnumValues(DummyIntEnum::class),
                 new PropertyValues('association?.obj'),

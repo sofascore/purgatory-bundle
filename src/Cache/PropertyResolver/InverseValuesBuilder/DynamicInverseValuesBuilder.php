@@ -21,7 +21,7 @@ final class DynamicInverseValuesBuilder implements InverseValuesBuilderInterface
     {
         return new DynamicValues(
             alias: $values->alias,
-            arg: null !== $values->arg ? \sprintf('%s?.%s', $associationTarget, $values->arg) : $associationTarget,
+            propertyPath: null !== $values->propertyPath ? \sprintf('%s?.%s', $associationTarget, $values->propertyPath) : $associationTarget,
         );
     }
 }

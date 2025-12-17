@@ -11,7 +11,7 @@ final class DynamicValues extends AbstractValues
      */
     public function __construct(
         public readonly string $alias,
-        public readonly ?string $arg = null,
+        public readonly ?string $propertyPath = null,
     ) {
     }
 
@@ -20,7 +20,7 @@ final class DynamicValues extends AbstractValues
      */
     protected function getValues(): array
     {
-        return [$this->alias, $this->arg];
+        return [$this->alias, $this->propertyPath];
     }
 
     public static function type(): string
