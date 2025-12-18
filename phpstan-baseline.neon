@@ -67,12 +67,6 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between 8 and 6 will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/Command/DebugCommand.php
-
-		-
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, ReflectionClass\|ReflectionMethod\)\: void given\.$#'
 			identifier: argument.type
 			count: 1
