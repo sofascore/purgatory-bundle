@@ -46,7 +46,7 @@ final class MethodResolverTest extends TestCase
 
         $classMetadata = self::createStub(ClassMetadata::class);
         $classMetadata->method('hasField')
-            ->willReturnCallback(fn (string $property) => match ($property) {
+            ->willReturnCallback(static fn (string $property) => match ($property) {
                 'bar' => true,
                 'baz' => true,
             });
