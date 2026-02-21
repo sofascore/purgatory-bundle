@@ -154,8 +154,9 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $classMetadata = self::createStub(ClassMetadata::class);
 
-        $entityManager = self::createStub(EntityManagerInterface::class);
-        $entityManager->method('getClassMetadata')
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())
+            ->method('getClassMetadata')
             ->with('FooEntity')
             ->willReturn($classMetadata);
 
@@ -165,13 +166,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
             ->with('FooEntity')
             ->willReturn($entityManager);
 
-        $dummyTargetResolver = self::createStub(TargetResolverInterface::class);
-        $dummyTargetResolver->method('resolve')
+        $dummyTargetResolver = $this->createMock(TargetResolverInterface::class);
+        $dummyTargetResolver->expects(self::once())
+            ->method('resolve')
             ->with($routeMetadata->purgeOn->target, $routeMetadata)
             ->willReturn($targetResolverReturn);
 
-        $targetResolverLocator = self::createStub(ContainerInterface::class);
-        $targetResolverLocator->method('get')
+        $targetResolverLocator = $this->createMock(ContainerInterface::class);
+        $targetResolverLocator->expects(self::once())
+            ->method('get')
             ->with(DummyTarget::class)
             ->willReturn($dummyTargetResolver);
 

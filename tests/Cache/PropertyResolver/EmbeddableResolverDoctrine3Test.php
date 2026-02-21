@@ -48,8 +48,9 @@ class EmbeddableResolverDoctrine3Test extends TestCase
             ->with('BarEntity')
             ->willReturn($embeddableClassMetadata);
 
-        $managerRegistry = self::createStub(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->with('ParentClass')
             ->willReturn($entityManager);
 
