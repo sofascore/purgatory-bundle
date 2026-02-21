@@ -29,8 +29,9 @@ final class InverseValuesBuildersTest extends TestCase
 {
     public function testBuild(): void
     {
-        $extractor = self::createStub(PropertyReadInfoExtractorInterface::class);
-        $extractor->method('getReadInfo')
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
             ->with(\stdClass::class, 'association')
             ->willReturn(
                 new PropertyReadInfo(

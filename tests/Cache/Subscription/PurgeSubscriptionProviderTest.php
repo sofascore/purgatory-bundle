@@ -38,7 +38,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($routeMetadata) {
+            ->willReturnCallback(static function () use ($routeMetadata) {
                 yield $routeMetadata;
             });
 
@@ -138,7 +138,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     {
         $subscriptionResolver = self::createStub(SubscriptionResolverInterface::class);
         $subscriptionResolver->method('resolveSubscription')
-            ->willReturnCallback(function () use ($expectedSubscriptions) {
+            ->willReturnCallback(static function () use ($expectedSubscriptions) {
                 static $i = 0;
 
                 yield $expectedSubscriptions[$i++];
@@ -148,14 +148,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($routeMetadata) {
+            ->willReturnCallback(static function () use ($routeMetadata) {
                 yield $routeMetadata;
             });
 
         $classMetadata = self::createStub(ClassMetadata::class);
 
-        $entityManager = self::createStub(EntityManagerInterface::class);
-        $entityManager->method('getClassMetadata')
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())
+            ->method('getClassMetadata')
             ->with('FooEntity')
             ->willReturn($classMetadata);
 
@@ -165,13 +166,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
             ->with('FooEntity')
             ->willReturn($entityManager);
 
-        $dummyTargetResolver = self::createStub(TargetResolverInterface::class);
-        $dummyTargetResolver->method('resolve')
+        $dummyTargetResolver = $this->createMock(TargetResolverInterface::class);
+        $dummyTargetResolver->expects(self::once())
+            ->method('resolve')
             ->with($routeMetadata->purgeOn->target, $routeMetadata)
             ->willReturn($targetResolverReturn);
 
-        $targetResolverLocator = self::createStub(ContainerInterface::class);
-        $targetResolverLocator->method('get')
+        $targetResolverLocator = $this->createMock(ContainerInterface::class);
+        $targetResolverLocator->expects(self::once())
+            ->method('get')
             ->with(DummyTarget::class)
             ->willReturn($dummyTargetResolver);
 
@@ -300,7 +303,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () {
+            ->willReturnCallback(static function () {
                 yield new RouteMetadata(
                     routeName: 'foo',
                     route: new Route('/foo'),
@@ -338,7 +341,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     ): void {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($routeMetadata) {
+            ->willReturnCallback(static function () use ($routeMetadata) {
                 yield $routeMetadata;
             });
 
@@ -491,7 +494,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($expression): iterable {
+            ->willReturnCallback(static function () use ($expression): iterable {
                 yield new RouteMetadata(
                     routeName: 'foo',
                     route: new Route('/{foo}'),
@@ -514,7 +517,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                         public function getFunctions(): array
                         {
                             return [
-                                new ExpressionFunction('valid_function', function () {}, function () {}),
+                                new ExpressionFunction('valid_function', static function () {}, static function () {}),
                             ];
                         }
                     },
@@ -533,7 +536,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
-            ->willReturnCallback(function () use ($if): iterable {
+            ->willReturnCallback(static function () use ($if): iterable {
                 yield new RouteMetadata(
                     routeName: 'foo',
                     route: new Route('/{foo}'),
@@ -556,7 +559,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                         public function getFunctions(): array
                         {
                             return [
-                                new ExpressionFunction('valid_function', function () {}, function () {}),
+                                new ExpressionFunction('valid_function', static function () {}, static function () {}),
                             ];
                         }
                     },

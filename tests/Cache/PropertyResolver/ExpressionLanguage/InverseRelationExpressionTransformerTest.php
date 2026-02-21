@@ -20,8 +20,9 @@ final class InverseRelationExpressionTransformerTest extends TestCase
     #[TestWith(['false', PropertyReadInfo::TYPE_METHOD, 'isBar', 'obj.isBar() !== null ? (obj.isBar().firstName~"-"~obj.isBar().lastName) : false'])]
     public function testTransform(string $fallback, string $readInfoType, string $readInfoName, string $expectedExpression): void
     {
-        $extractor = self::createStub(PropertyReadInfoExtractorInterface::class);
-        $extractor->method('getReadInfo')
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
             ->with(\stdClass::class, 'prop')
             ->willReturn(
                 new PropertyReadInfo(
@@ -42,8 +43,9 @@ final class InverseRelationExpressionTransformerTest extends TestCase
 
     public function testExceptionIsThrownWhenPropertyIsNotAccessible(): void
     {
-        $extractor = self::createStub(PropertyReadInfoExtractorInterface::class);
-        $extractor->method('getReadInfo')
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
             ->with(\stdClass::class, 'prop')
             ->willReturn(null);
 

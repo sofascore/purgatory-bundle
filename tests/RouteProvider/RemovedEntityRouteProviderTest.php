@@ -152,8 +152,9 @@ final class RemovedEntityRouteProviderTest extends TestCase
         $configurationLoader->method('load')
             ->willReturn(new Configuration([]));
 
-        $managerRegistry = self::createStub(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->with(\stdClass::class)
             ->willReturn(null);
 
@@ -241,23 +242,22 @@ final class RemovedEntityRouteProviderTest extends TestCase
             ->willReturn(new Configuration($configuration));
 
         $classMetadata = self::createStub(ClassMetadata::class);
+        $classMetadata->method('getFieldNames')
+            ->willReturn(['foo', 'bar', 'baz']);
+        $classMetadata->method('getAssociationNames')
+            ->willReturn([]);
 
-        $entityManager = self::createStub(EntityManagerInterface::class);
-
-        $managerRegistry = self::createStub(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
-            ->with(\stdClass::class)
-            ->willReturn($entityManager);
-
-        $entityManager->method('getClassMetadata')
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())
+            ->method('getClassMetadata')
             ->with(\stdClass::class)
             ->willReturn($classMetadata);
 
-        $classMetadata->method('getFieldNames')
-            ->willReturn(['foo', 'bar', 'baz']);
-
-        $classMetadata->method('getAssociationNames')
-            ->willReturn([]);
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
+            ->with(\stdClass::class)
+            ->willReturn($entityManager);
 
         $expressionLanguage = null;
         if ($withExpressionLang) {

@@ -33,8 +33,9 @@ abstract class AssociationResolverTestCase extends TestCase
         bool $isGetAssociationMappedByTargetFieldCalled,
         bool $isAssociationInverseSide,
     ): void {
-        $extractor = self::createStub(PropertyReadInfoExtractorInterface::class);
-        $extractor->method('getReadInfo')
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
             ->with('BarEntity', 'barProperty')
             ->willReturn(
                 new PropertyReadInfo(
@@ -126,8 +127,9 @@ abstract class AssociationResolverTestCase extends TestCase
             ),
         );
 
-        $classMetadata = self::createStub(ClassMetadata::class);
-        $classMetadata->method('hasAssociation')
+        $classMetadata = $this->createMock(ClassMetadata::class);
+        $classMetadata->expects(self::once())
+            ->method('hasAssociation')
             ->with('fooProperty')
             ->willReturn(false);
 

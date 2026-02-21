@@ -20,8 +20,9 @@ final class ForGroupsResolverTest extends TestCase
 {
     public function testResolve(): void
     {
-        $propertyListExtractor = self::createStub(PropertyListExtractorInterface::class);
-        $propertyListExtractor->method('getProperties')
+        $propertyListExtractor = $this->createMock(PropertyListExtractorInterface::class);
+        $propertyListExtractor->expects(self::once())
+            ->method('getProperties')
             ->with('FooEntity', ['serializer_groups' => ['group1']])
             ->willReturn(['property1', 'property2']);
 
