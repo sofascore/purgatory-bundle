@@ -10,4 +10,8 @@ foo_bar:
             - !enum Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum
         param5: !dynamic foo
         param6: !dynamic [ foo, bar ]
-        param7: !expression 'constant("App\\Foo::MAP")[obj.geValue()]'
+        param7: !dynamic 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass::getValues'
+        param8: !dynamic [ 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass::getValues', 'bar' ]
+        param9: !dynamic [ [ 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass', 'getValues' ] ]
+        param10: !dynamic [ [ 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass', 'getValues' ], 'bar' ]
+        param11: !expression 'constant("App\\Foo::MAP")[obj.geValue()]'

@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Method Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues\:\:normalizeProvider\(\) should return \(array\<string\>&callable\(\)\: mixed\)\|string but returns non\-empty\-array\<object\|string\>&callable\(\)\: mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Attribute/RouteParamValue/DynamicValues.php
+
+		-
 			message: '#^Call to function is_a\(\) with arguments class\-string\<BackedEnum\>, ''BackedEnum'' and true will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -25,12 +31,6 @@ parameters:
 			path: src/Cache/PropertyResolver/AssociationResolver.php
 
 		-
-			message: '#^Parameter \#1 \$alias of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues constructor expects string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
-			identifier: argument.type
-			count: 1
-			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
-
-		-
 			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue\)\: mixed\)\|null, Closure\(non\-empty\-list\<string\>\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue\)\: \(non\-empty\-list\<string\>\|Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\ValuesInterface\|string\) given\.$#'
 			identifier: argument.type
 			count: 1
@@ -50,6 +50,12 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$property of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\PropertyValues constructor expects string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
+
+		-
+			message: '#^Parameter \#1 \$provider of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues constructor expects \(array\<string\>&callable\(\)\: mixed\)\|string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php

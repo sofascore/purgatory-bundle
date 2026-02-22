@@ -22,6 +22,7 @@ use Sofascore\PurgatoryBundle\Exception\RouteNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Exception\UnknownYamlTagException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass;
 use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
@@ -121,7 +122,11 @@ final class YamlMetadataProviderTest extends TestCase
             ),
             'param5' => new DynamicValues('foo'),
             'param6' => new DynamicValues('foo', 'bar'),
-            'param7' => new ExpressionValues('constant("App\\\\Foo::MAP")[obj.geValue()]'),
+            'param7' => new DynamicValues([DummyClass::class, 'getValues']),
+            'param8' => new DynamicValues([DummyClass::class, 'getValues'], 'bar'),
+            'param9' => new DynamicValues([DummyClass::class, 'getValues']),
+            'param10' => new DynamicValues([DummyClass::class, 'getValues'], 'bar'),
+            'param11' => new ExpressionValues('constant("App\\\\Foo::MAP")[obj.geValue()]'),
         ], $metadata[0]->purgeOn->routeParams);
         self::assertNull($metadata[0]->purgeOn->if);
         self::assertNull($metadata[0]->purgeOn->actions);
