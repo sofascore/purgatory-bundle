@@ -140,10 +140,10 @@ public function listAction(Author $author)
 You can also add [custom Expression Language functions](custom-expression-language-functions.md) to extend the available
 expression syntax.
 
-### Using Values Provided by a Service
+### Using Values Provided by a Service or Static Method
 
-As an alternative to expressions, route parameter values can be provided dynamically by a service. This is particularly
-useful when you need route parameters that depend on context or runtime information:
+As an alternative to expressions, route parameter values can be provided dynamically by a service or a static method.
+This is particularly useful when you need route parameters that depend on context or runtime information:
 
 ```php
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
@@ -155,12 +155,11 @@ public function listAction()
 }
 ```
 
-By default, the entire entity being purged is passed to the route parameter service.
-If your service only needs a specific part of the entity, you can limit what is passed by providing a second argument to
-`DynamicValues`.
+By default, the entire entity being purged is passed to the route parameter provider. If your provider only needs a
+specific part of the entity, you can limit what is passed by providing a second argument to `DynamicValues`.
 
 This argument is a **Symfony PropertyAccess property path** and will be resolved against the entity before being passed
-to the service:
+to the provider:
 
 ```php
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
@@ -172,7 +171,7 @@ public function listAction()
 }
 ```
 
-To make the service available for resolving route parameter values, ensure it is tagged correctly in the service
+To make a service available for resolving route parameter values, ensure it is tagged correctly in the service
 configuration:
 
 ```yaml
@@ -191,6 +190,26 @@ use Sofascore\PurgatoryBundle\Attribute\AsRouteParamService;
 class MyService
 {
     public function __invoke(Post $post)
+    {
+        // Return the desired value for the route parameter
+    }
+}
+```
+
+You can also reference a static method directly instead of a service:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+
+#[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues([MyClass::class, 'getValue'])])]
+public function listAction()
+{
+}
+
+final class MyClass
+{
+    public static function getValue(Post $post)
     {
         // Return the desired value for the route parameter
     }

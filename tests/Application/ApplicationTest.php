@@ -479,6 +479,8 @@ final class ApplicationTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('/animal/for-rating/106'); // __invoke
         self::assertUrlIsPurged('/animal/for-rating/126'); // __invoke
         self::assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
+        self::assertUrlIsPurged('/animal/for-rating/600'); // getOtherRating
+        self::assertUrlIsPurged('/animal/for-rating/375'); // getOtherRating
 
         self::clearPurger();
 

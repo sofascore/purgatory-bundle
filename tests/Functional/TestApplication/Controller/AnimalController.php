@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Service\AnimalRatingCalculator;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -113,9 +114,10 @@ class AnimalController
         target: ['measurements'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating2'),
-                new DynamicValues(alias: 'purgatory.animal_rating1'),
-                new DynamicValues(alias: 'purgatory.animal_rating3', propertyPath: 'owner'),
+                new DynamicValues(provider: 'purgatory.animal_rating2'),
+                new DynamicValues(provider: 'purgatory.animal_rating1'),
+                new DynamicValues(provider: 'purgatory.animal_rating3', propertyPath: 'owner'),
+                new DynamicValues(provider: [AnimalRatingCalculator::class, 'getOtherRating']),
             ),
         ],
     )]
@@ -123,7 +125,7 @@ class AnimalController
         target: ['pets'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating3'),
+                new DynamicValues(provider: 'purgatory.animal_rating3'),
             ),
         ],
     )]

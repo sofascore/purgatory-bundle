@@ -75,4 +75,16 @@ posts_list:
     class: App\Entity\Post
     route_params:
         type: !dynamic [ my_service, prop ]
+
+# Using values provided by a static method
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic 'App\\MyClass::getValue'
+
+# Using values provided by a static method with a property path
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic [ 'App\\MyClass::getValue', prop ]
 ```

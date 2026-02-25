@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `ExpressionValues` to enable resolution of route parameter values via expressions by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/112
+- Ability to pass a static method callable as a `DynamicValues` provider by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/137
 
 ### Changed
 
@@ -18,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in https://github.com/sofascore/purgatory-bundle/pull/130
 - Method `AbstractValues::getValues()` is now `protected` by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
+- Rename first constructor argument in `DynamicValues` to `$provider` by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/137
 - Rename second constructor argument in `DynamicValues` to `$propertyPath` by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
 

@@ -23,6 +23,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competitio
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Vehicle;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Service\AnimalRatingCalculator;
 
 final class ConfigurationTest extends AbstractKernelTestCase
 {
@@ -392,6 +393,10 @@ final class ConfigurationTest extends AbstractKernelTestCase
                             [
                                 'type' => DynamicValues::type(),
                                 'values' => ['purgatory.animal_rating3', 'owner'],
+                            ],
+                            [
+                                'type' => DynamicValues::type(),
+                                'values' => [[AnimalRatingCalculator::class, 'getOtherRating'], null],
                             ],
                         ],
                     ],

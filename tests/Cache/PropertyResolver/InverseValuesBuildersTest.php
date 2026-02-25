@@ -64,7 +64,7 @@ final class InverseValuesBuildersTest extends TestCase
             expected: new CompoundValues(
                 new DynamicValues('alias', propertyPath: 'association'),
                 new DynamicValues(
-                    alias: 'alias',
+                    provider: 'alias',
                     propertyPath: 'association?.obj',
                 ),
                 new EnumValues(DummyIntEnum::class),
