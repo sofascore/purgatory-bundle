@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
-use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversClass(RegisterExpressionLanguageProvidersPass::class)]
 final class RegisterExpressionLanguageProvidersPassTest extends TestCase
@@ -71,9 +70,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         self::assertArrayHasKey('one', $argument);
         self::assertInstanceOf(ServiceClosureArgument::class, $argument['one']);
         /** @var Definition $serviceDefinition */
-        $serviceDefinition = Kernel::MAJOR_VERSION > 5
-            ? $argument['one']->getValues()[0]
-            : $this->container->getDefinition((string) $argument['one']->getValues()[0]);
+        $serviceDefinition = $argument['one']->getValues()[0];
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('foo'), '__invoke']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
@@ -81,9 +78,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         self::assertArrayHasKey('two', $argument);
         self::assertInstanceOf(ServiceClosureArgument::class, $argument['two']);
         /** @var Definition $serviceDefinition */
-        $serviceDefinition = Kernel::MAJOR_VERSION > 5
-            ? $argument['two']->getValues()[0]
-            : $this->container->getDefinition((string) $argument['two']->getValues()[0]);
+        $serviceDefinition = $argument['two']->getValues()[0];
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('foo'), 'someMethod']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
@@ -91,9 +86,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         self::assertArrayHasKey('three', $argument);
         self::assertInstanceOf(ServiceClosureArgument::class, $argument['three']);
         /** @var Definition $serviceDefinition */
-        $serviceDefinition = Kernel::MAJOR_VERSION > 5
-            ? $argument['three']->getValues()[0]
-            : $this->container->getDefinition((string) $argument['three']->getValues()[0]);
+        $serviceDefinition = $argument['three']->getValues()[0];
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());

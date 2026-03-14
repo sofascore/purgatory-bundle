@@ -15,4 +15,9 @@ class DummyServiceTwo
     {
         return [$foo->id ?? 0, 1, 2, 3];
     }
+
+    public static function getOtherValueToPurge(Foo $foo): int
+    {
+        return ($foo->id ?? 0) + 200;
+    }
 }

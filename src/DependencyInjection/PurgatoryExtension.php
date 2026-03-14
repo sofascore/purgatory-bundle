@@ -8,6 +8,7 @@ use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle\Attribute\AsExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle\Attribute\AsRouteParamService;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\InverseValuesBuilderInterface;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
@@ -182,6 +183,9 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
 
         $container->registerForAutoconfiguration(SubscriptionResolverInterface::class)
             ->addTag('purgatory.subscription_resolver');
+
+        $container->registerForAutoconfiguration(InverseValuesBuilderInterface::class)
+            ->addTag('purgatory.inverse_values_builder');
 
         $container->registerForAutoconfiguration(TargetResolverInterface::class)
             ->addTag('purgatory.target_resolver');

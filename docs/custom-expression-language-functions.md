@@ -1,6 +1,7 @@
 # Custom Expression Language Functions
 
-You can add custom functions to the Expression Language for use with the `if` parameter.
+You can add custom Expression Language functions that can be used by expressions defined in `ExpressionValues` or the
+`if` parameter.
 
 ```php
 #[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
@@ -34,4 +35,4 @@ class ShouldPurge
 }
 ```
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Attribute/AsExpressionLanguageFunction.php
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/AsExpressionLanguageFunction.php

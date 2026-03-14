@@ -8,13 +8,9 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
-use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
-use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyIntEnum;
-use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversClass(CompoundValues::class)]
 final class CompoundValuesTest extends TestCase
@@ -27,7 +23,7 @@ final class CompoundValuesTest extends TestCase
     {
         $compoundValues = new CompoundValues(...$values);
 
-        self::assertEquals($expectedValues, $compoundValues->getValues());
+        self::assertEquals($expectedValues, $compoundValues->values);
     }
 
     public function testExceptionIsThrownOnSelf(): void
@@ -49,32 +45,5 @@ final class CompoundValuesTest extends TestCase
                 ['type' => RawValues::type(), 'values' => ['baz', 'qux']],
             ],
         ], $compoundValues->toArray());
-    }
-
-    public function testBuildInverseValuesFor(): void
-    {
-        $compoundValues = new CompoundValues(
-            new DynamicValues('alias'),
-            new DynamicValues('alias', arg: 'obj'),
-            new EnumValues(DummyIntEnum::class),
-            new PropertyValues('obj'),
-            new RawValues(1, null, 'str'),
-        );
-
-        self::assertEquals(
-            expected: new CompoundValues(
-                new DynamicValues('alias', arg: 'association'),
-                new DynamicValues(
-                    alias: 'alias',
-                    arg: Kernel::MAJOR_VERSION > 5 ? 'association?.obj' : 'association.obj',
-                ),
-                new EnumValues(DummyIntEnum::class),
-                new PropertyValues(
-                    Kernel::MAJOR_VERSION > 5 ? 'association?.obj' : 'association.obj',
-                ),
-                new RawValues(1, null, 'str'),
-            ),
-            actual: $compoundValues->buildInverseValuesFor('association'),
-        );
     }
 }

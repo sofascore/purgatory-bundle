@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 use Doctrine\Persistence\ManagerRegistry;
 use Opis\Closure\ReflectionClosure;
 use Psr\Container\ContainerInterface;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Attribute\Target\TargetInterface;
@@ -75,6 +76,11 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                     $routeParams[$pathVariable] = new PropertyValues($pathVariable);
                 }
             } else {
+                foreach ($purgeOn->routeParams as $values) {
+                    if ($values instanceof ExpressionValues) {
+                        $this->validateExpression($values->expression, $routeMetadata->routeName);
+                    }
+                }
                 $this->validateRouteParams(array_keys($purgeOn->routeParams), $routeMetadata);
                 $routeParams = $purgeOn->routeParams;
             }
@@ -150,7 +156,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             return;
         }
 
-        $this->validateIfExpression($expression, $routeName);
+        $this->validateExpression($expression, $routeName);
     }
 
     private function validateIfClosure(\Closure $expression, string $routeName, string $entity): void
@@ -180,7 +186,8 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
-    private function validateIfExpression(Expression $expression, string $routeName): void
+
+    private function validateExpression(Expression $expression, string $routeName): void
     {
         try {
             $this->expressionLanguage?->lint($expression, ['obj']);

@@ -25,12 +25,13 @@ final class PropertyResolverTest extends TestCase
     public function testResolveField(): void
     {
         $resolver = new PropertyResolver(
-            managerRegistry: $this->createMock(ManagerRegistry::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->subClasses = [];
-        $classMetadata->method('hasField')
+        $classMetadata->expects(self::once())
+            ->method('hasField')
             ->with('fooProperty')
             ->willReturn(true);
 
@@ -42,7 +43,7 @@ final class PropertyResolverTest extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -64,12 +65,13 @@ final class PropertyResolverTest extends TestCase
     public function testTargetNotField(): void
     {
         $resolver = new PropertyResolver(
-            managerRegistry: $this->createMock(ManagerRegistry::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->subClasses = [];
-        $classMetadata->method('hasField')
+        $classMetadata->expects(self::once())
+            ->method('hasField')
             ->with('fooProperty')
             ->willReturn(false);
 
@@ -81,7 +83,7 @@ final class PropertyResolverTest extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -98,21 +100,25 @@ final class PropertyResolverTest extends TestCase
     public function testResolveAssociation(): void
     {
         $resolver = new PropertyResolver(
-            managerRegistry: $this->createMock(ManagerRegistry::class),
+            managerRegistry: self::createStub(ManagerRegistry::class),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->subClasses = [];
-        $classMetadata->method('hasField')
+        $classMetadata->expects(self::once())
+            ->method('hasField')
             ->with('fooProperty')
             ->willReturn(false);
-        $classMetadata->method('hasAssociation')
+        $classMetadata->expects(self::once())
+            ->method('hasAssociation')
             ->with('fooProperty')
             ->willReturn(true);
-        $classMetadata->method('isSingleValuedAssociation')
+        $classMetadata->expects(self::once())
+            ->method('isSingleValuedAssociation')
             ->with('fooProperty')
             ->willReturn(true);
-        $classMetadata->method('isAssociationInverseSide')
+        $classMetadata->expects(self::once())
+            ->method('isAssociationInverseSide')
             ->with('fooProperty')
             ->willReturn(false);
 
@@ -124,7 +130,7 @@ final class PropertyResolverTest extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -182,7 +188,7 @@ final class PropertyResolverTest extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -256,7 +262,7 @@ final class PropertyResolverTest extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -329,7 +335,7 @@ final class PropertyResolverTest extends TestCase
                         class: DummyEntity::class,
                         target: new ForProperties(['foo']),
                     ),
-                    reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                    reflectionMethod: self::createStub(\ReflectionMethod::class),
                 ),
                 classMetadata: $classMetadata,
                 routeParams: [],

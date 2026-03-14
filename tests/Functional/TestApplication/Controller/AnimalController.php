@@ -8,23 +8,22 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Service\AnimalRatingCalculator;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 #[Route('/animal')]
-#[AnnotationRoute('/animal')]
 class AnimalController
 {
     #[Route('/{animal_id}', 'animal_details')]
-    #[AnnotationRoute('/{animal_id}', name: 'animal_details')]
     #[PurgeOn(Animal::class,
         target: new ForGroups('common'),
         routeParams: [
@@ -36,7 +35,6 @@ class AnimalController
     }
 
     #[Route('/{animal_id}/measurements', 'animal_measurements')]
-    #[AnnotationRoute('/{animal_id}/measurements', name: 'animal_measurements')]
     #[PurgeOn(Animal::class,
         target: new ForProperties(['measurements.height', 'measurements.weight']),
         routeParams: [
@@ -48,7 +46,6 @@ class AnimalController
     }
 
     #[Route('/{animal_id}/measurements-alt', 'animal_measurements_alt')]
-    #[AnnotationRoute('/{animal_id}/measurements-alt', name: 'animal_measurements_alt')]
     #[PurgeOn(Animal::class,
         target: new ForProperties(['goodBoy']),
         routeParams: [
@@ -60,9 +57,7 @@ class AnimalController
     }
 
     #[Route('/{id}/route1', 'animal_route_1')]
-    #[AnnotationRoute('/{id}/route1', name: 'animal_route_1')]
     #[Route('/{id}/route2', 'animal_route_2')]
-    #[AnnotationRoute('/{id}/route2', name: 'animal_route_2')]
     #[PurgeOn(Animal::class,
         target: 'measurements.height',
     )]
@@ -79,7 +74,6 @@ class AnimalController
     }
 
     #[Route('/pet-of-the-day/{country}', 'pet_of_the_day')]
-    #[AnnotationRoute('/pet-of-the-day/{country}', name: 'pet_of_the_day')]
     #[PurgeOn(Animal::class,
         target: new ForGroups('common'),
         routeParams: [
@@ -91,7 +85,6 @@ class AnimalController
     }
 
     #[Route('/pet-of-the-month/{country}', 'pet_of_the_month')]
-    #[AnnotationRoute('/pet-of-the-month/{country}', name: 'pet_of_the_month')]
     #[PurgeOn(Animal::class,
         target: new ForGroups('common'),
         routeParams: [
@@ -106,7 +99,6 @@ class AnimalController
     }
 
     #[Route('/tag/{tag}', 'animal_tag')]
-    #[AnnotationRoute('/tag/{tag}', name: 'animal_tag')]
     #[PurgeOn(Animal::class,
         target: 'tags',
         routeParams: [
@@ -118,14 +110,14 @@ class AnimalController
     }
 
     #[Route('/for-rating/{rating}', 'animals_with_rating')]
-    #[AnnotationRoute('/for-rating/{rating}', name: 'animals_with_rating')]
     #[PurgeOn(Animal::class,
         target: ['measurements'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating2'),
-                new DynamicValues(alias: 'purgatory.animal_rating1'),
-                new DynamicValues(alias: 'purgatory.animal_rating3', arg: 'owner'),
+                new DynamicValues(provider: 'purgatory.animal_rating2'),
+                new DynamicValues(provider: 'purgatory.animal_rating1'),
+                new DynamicValues(provider: 'purgatory.animal_rating3', propertyPath: 'owner'),
+                new DynamicValues(provider: [AnimalRatingCalculator::class, 'getOtherRating']),
             ),
         ],
     )]
@@ -133,7 +125,7 @@ class AnimalController
         target: ['pets'],
         routeParams: [
             'rating' => new CompoundValues(
-                new DynamicValues(alias: 'purgatory.animal_rating3'),
+                new DynamicValues(provider: 'purgatory.animal_rating3'),
             ),
         ],
     )]
@@ -142,7 +134,6 @@ class AnimalController
     }
 
     #[Route('/{id}/owner-details', 'pet_owner_details')]
-    #[AnnotationRoute('/{id}/owner-details', name: 'pet_owner_details')]
     #[PurgeOn(Person::class,
         routeParams: [
             'id' => 'pets[*].id',
@@ -153,7 +144,6 @@ class AnimalController
     }
 
     #[Route('/{id}/owner-details-alt', 'pet_owner_details_alternative')]
-    #[AnnotationRoute('/{id}/owner-details-alt', name: 'pet_owner_details_alternative')]
     #[PurgeOn(Person::class,
         routeParams: [
             'id' => 'petsIds',
@@ -164,7 +154,6 @@ class AnimalController
     }
 
     #[Route('/good-boy-ranking', 'good_boy_ranking')]
-    #[AnnotationRoute('/good-boy-ranking', name: 'good_boy_ranking')]
     #[PurgeOn(Animal::class,
         target: new ForProperties(['isGoodBoy']),
     )]
@@ -173,7 +162,6 @@ class AnimalController
     }
 
     #[Route('/for-veterinarian/{id}', 'animals_for_veterinarian')]
-    #[AnnotationRoute('/for-veterinarian/{id}', name: 'animals_for_veterinarian')]
     #[PurgeOn(Animal::class,
         target: 'veterinarian',
         routeParams: [
@@ -186,7 +174,6 @@ class AnimalController
     }
 
     #[Route('/for-owner-and-veterinarian/{owner_id}-{vet_id}', 'animals_for_owner_and_veterinarian')]
-    #[AnnotationRoute('/for-owner-and-veterinarian/{owner_id}-{vet_id}', name: 'animals_for_owner_and_veterinarian')]
     #[PurgeOn(Animal::class,
         target: 'owner',
         routeParams: [
@@ -196,6 +183,29 @@ class AnimalController
         if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
     )]
     public function animalsForOwnerAndVeterinarianAction(Person $veterinarian)
+    {
+    }
+
+    #[Route('/owner-full-name/{full_name}', 'list_by_owner_full_name')]
+    #[PurgeOn(Person::class,
+        target: ['firstName', 'lastName', 'pets'],
+        routeParams: [
+            'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
+        ],
+    )]
+    public function listByOwnerFullName()
+    {
+    }
+
+    #[Route('/veterinarian-full-name/{full_name}', 'list_by_veterinarian_full_name')]
+    #[PurgeOn(Person::class,
+        target: ['firstName', 'lastName', 'animalPatients'],
+        routeParams: [
+            'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
+        ],
+        if: 'obj.isVeterinarian === true',
+    )]
+    public function listByVeterinarianFullName()
     {
     }
 }

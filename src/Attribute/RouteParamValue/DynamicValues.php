@@ -4,37 +4,58 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
-use Symfony\Component\HttpKernel\Kernel;
-
-final class DynamicValues extends AbstractValues implements InverseValuesAwareInterface
+final class DynamicValues extends AbstractValues
 {
     /**
-     * @param string $alias Alias defined in {@see AsRouteParamService} attribute
+     * @var string|callable-array<string>
+     */
+    public readonly string|array $provider;
+
+    /**
+     * @param string|callable-array<string> $provider Alias defined in {@see AsRouteParamService} attribute or static method callable
      */
     public function __construct(
-        private readonly string $alias,
-        private readonly ?string $arg = null,
+        string|array $provider,
+        public readonly ?string $propertyPath = null,
     ) {
+        $this->provider = self::normalizeProvider($provider);
     }
 
     /**
-     * @return list<?string>
+     * @return array<string|callable-array<string>|null>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
-        return [$this->alias, $this->arg];
-    }
-
-    public function buildInverseValuesFor(string $association): ValuesInterface
-    {
-        return new self(
-            alias: $this->alias,
-            arg: null !== $this->arg ? \sprintf('%s%s.%s', $association, Kernel::MAJOR_VERSION > 5 ? '?' : '', $this->arg) : $association,
-        );
+        return [$this->provider, $this->propertyPath];
     }
 
     public static function type(): string
     {
         return 'dynamic';
+    }
+
+    /**
+     * @param string|callable-array<string|object> $provider
+     *
+     * @return string|callable-array<string>
+     */
+    private static function normalizeProvider(string|array $provider): string|array
+    {
+        if (\is_string($provider)) {
+            if (!str_contains($provider, '::')) {
+                return $provider;
+            }
+            $provider = explode('::', $provider);
+        }
+
+        if (!\is_callable($provider)) {
+            throw new \ValueError('Only static method callables are supported.');
+        }
+
+        if (!\is_string($provider[0])) {
+            throw new \ValueError('Object callables are not supported.');
+        }
+
+        return $provider;
     }
 }

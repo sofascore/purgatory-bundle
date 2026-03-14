@@ -58,9 +58,33 @@ posts_list:
             - !enum App\Enum\LanguageCodes
             - !raw XK
 
+# Using values provided by an expression
+posts_list_by_author:
+    class: App\Entity\Author
+    route_params:
+        full_name: !expression 'obj.firstName~"-"~obj.lastName'
+
 # Using values provided by a service
 posts_list:
     class: App\Entity\Post
     route_params:
         type: !dynamic my_service
+
+# Limiting the value passed to the service using a property path
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic [ my_service, prop ]
+
+# Using values provided by a static method
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic 'App\\MyClass::getValue'
+
+# Using values provided by a static method with a property path
+posts_list:
+    class: App\Entity\Post
+    route_params:
+        type: !dynamic [ 'App\\MyClass::getValue', prop ]
 ```

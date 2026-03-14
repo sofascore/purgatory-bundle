@@ -17,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\HttpKernel\Kernel;
 
 #[AsCommand(
     name: 'purgatory:debug',
@@ -36,23 +35,7 @@ final class DebugCommand extends Command
 
     protected function configure(): void
     {
-        $params = [
-            'name' => 'target',
-            'mode' => InputArgument::OPTIONAL,
-            'description' => 'The entity name or a substring of its name',
-            'default' => null,
-        ];
-
-        if (Kernel::MAJOR_VERSION >= 7 || (Kernel::MAJOR_VERSION === 6 && Kernel::MINOR_VERSION >= 1)) {
-            $params['suggestedValues'] = array_keys($this->getEntityCollection());
-
-            if (Kernel::MAJOR_VERSION === 6) {
-                // cannot use named arguments with SF6
-                $params = array_values($params);
-            }
-        }
-
-        $this->addArgument(...$params);
+        $this->addArgument('target', InputArgument::OPTIONAL, 'The entity name or a substring of its name', null, array_keys($this->getEntityCollection()));
         $this->addOption('subscription', null, InputOption::VALUE_REQUIRED, 'The entity FQCN, optionally followed by a property path separated by "::"');
         $this->addOption('with-properties', null, InputOption::VALUE_NONE, 'Display all property subscriptions for an entity');
         $this->addOption('route', null, InputOption::VALUE_REQUIRED, 'Display subscriptions for specific route');

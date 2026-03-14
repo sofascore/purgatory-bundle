@@ -27,6 +27,9 @@ class Person
     #[ORM\Column]
     public string $gender;
 
+    #[ORM\Column]
+    public bool $isVeterinarian = false;
+
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: Country::class)]
     public ?Country $country = null;
 

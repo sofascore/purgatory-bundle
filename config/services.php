@@ -8,6 +8,11 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\CachedConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\EmbeddableResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage\InverseRelationExpressionTransformer;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\CompoundInverseValuesBuilder;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\DynamicInverseValuesBuilder;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\ExpressionInverseValuesBuilder;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\PropertyInverseValuesBuilder;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\MethodResolver;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\PropertyResolver;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
@@ -28,6 +33,7 @@ use Sofascore\PurgatoryBundle\Purger\VoidPurger;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\CompoundValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\DynamicValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
+use Sofascore\PurgatoryBundle\RouteParamValueResolver\ExpressionValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
@@ -92,7 +98,8 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.subscription_resolver.association', AssociationResolver::class)
             ->tag('purgatory.subscription_resolver')
             ->args([
-                service('property_info.reflection_extractor'),
+                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
+                service('sofascore.purgatory.inverse_relation_expression_transformer'),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.embeddable', EmbeddableResolver::class)
@@ -100,6 +107,29 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('doctrine'),
             ])
+
+        ->set('sofascore.purgatory.inverse_relation_expression_transformer', InverseRelationExpressionTransformer::class)
+            ->args([
+                service('property_info.reflection_extractor'),
+            ])
+
+        ->set('sofascore.purgatory.inverse_values_builder.compound', CompoundInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
+            ->args([
+                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
+            ])
+
+        ->set('sofascore.purgatory.inverse_values_builder.dynamic', DynamicInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
+
+        ->set('sofascore.purgatory.inverse_values_builder.expression', ExpressionInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
+            ->args([
+                service('sofascore.purgatory.inverse_relation_expression_transformer'),
+            ])
+
+        ->set('sofascore.purgatory.inverse_values_builder.property', PropertyInverseValuesBuilder::class)
+            ->tag('purgatory.inverse_values_builder')
 
         ->set('sofascore.purgatory.configuration_loader', ConfigurationLoader::class)
             ->args([
@@ -222,6 +252,12 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 abstract_arg('Route param service locator'),
                 service('sofascore.purgatory.property_accessor'),
+            ])
+
+        ->set('sofascore.purgatory.route_parameter_resolver.expression', ExpressionValuesResolver::class)
+            ->tag('purgatory.route_param_value_resolver')
+            ->args([
+                service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
 
         ->set('sofascore.purgatory.property_accessor', PurgatoryPropertyAccessor::class)

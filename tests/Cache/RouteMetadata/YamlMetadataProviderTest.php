@@ -10,6 +10,7 @@ use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForGroups;
@@ -21,6 +22,7 @@ use Sofascore\PurgatoryBundle\Exception\RouteNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Exception\UnknownYamlTagException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass;
 use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
@@ -40,7 +42,7 @@ final class YamlMetadataProviderTest extends TestCase
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
         $collection->add(name: 'foo_baz', route: $fooBazRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -90,7 +92,7 @@ final class YamlMetadataProviderTest extends TestCase
 
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -120,6 +122,11 @@ final class YamlMetadataProviderTest extends TestCase
             ),
             'param5' => new DynamicValues('foo'),
             'param6' => new DynamicValues('foo', 'bar'),
+            'param7' => new DynamicValues([DummyClass::class, 'getValues']),
+            'param8' => new DynamicValues([DummyClass::class, 'getValues'], 'bar'),
+            'param9' => new DynamicValues([DummyClass::class, 'getValues']),
+            'param10' => new DynamicValues([DummyClass::class, 'getValues'], 'bar'),
+            'param11' => new ExpressionValues('constant("App\\\\Foo::MAP")[obj.geValue()]'),
         ], $metadata[0]->purgeOn->routeParams);
         self::assertNull($metadata[0]->purgeOn->if);
         self::assertNull($metadata[0]->purgeOn->actions);
@@ -133,7 +140,7 @@ final class YamlMetadataProviderTest extends TestCase
 
         $collection->add(name: 'foo_bar', route: $fooBarRoute);
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -177,7 +184,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownForInvalidYaml(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -196,7 +203,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownIfParsedYamlIsNotAnArray(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -218,7 +225,7 @@ final class YamlMetadataProviderTest extends TestCase
         $collection = new RouteCollection();
         $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 
@@ -237,7 +244,7 @@ final class YamlMetadataProviderTest extends TestCase
 
     public function testExceptionIsThrownForInvalidRoute(): void
     {
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn(new RouteCollection());
 
@@ -255,13 +262,13 @@ final class YamlMetadataProviderTest extends TestCase
     }
 
     #[TestWith(['purge_on_with_unknown_target_tag.yaml', 'Unknown YAML tag "for_unknown" provided, known tags are "for_groups", "for_properties".'])]
-    #[TestWith(['purge_on_with_unknown_route_param_tag.yaml', 'Unknown YAML tag "unknown" provided, known tags are "compound", "dynamic", "enum", "property", "raw".'])]
+    #[TestWith(['purge_on_with_unknown_route_param_tag.yaml', 'Unknown YAML tag "unknown" provided, known tags are "compound", "dynamic", "enum", "expression", "property", "raw".'])]
     public function testExceptionIsThrownForUnknownTags(string $file, string $message): void
     {
         $collection = new RouteCollection();
         $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
 
-        $router = $this->createMock(RouterInterface::class);
+        $router = self::createStub(RouterInterface::class);
         $router->method('getRouteCollection')
             ->willReturn($collection);
 

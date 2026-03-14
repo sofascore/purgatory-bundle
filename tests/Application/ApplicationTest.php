@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\RequiresMethod;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
@@ -21,7 +20,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plane;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
-use Symfony\Component\PropertyAccess\PropertyPath;
 
 final class ApplicationTest extends AbstractKernelTestCase
 {
@@ -481,6 +479,8 @@ final class ApplicationTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('/animal/for-rating/106'); // __invoke
         self::assertUrlIsPurged('/animal/for-rating/126'); // __invoke
         self::assertUrlIsPurged('/animal/for-rating/32'); // getOwnerRating
+        self::assertUrlIsPurged('/animal/for-rating/600'); // getOtherRating
+        self::assertUrlIsPurged('/animal/for-rating/375'); // getOtherRating
 
         self::clearPurger();
 
@@ -492,6 +492,96 @@ final class ApplicationTest extends AbstractKernelTestCase
         self::assertUrlIsNotPurged('/animal/for-rating/26');
         self::assertUrlIsNotPurged('/animal/for-rating/106');
         self::assertUrlIsNotPurged('/animal/for-rating/126');
+    }
+
+    /**
+     * @see AnimalController::listByOwnerFullName
+     */
+    public function testExpressionValues(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->width = 1;
+        $animal->measurements->height = 2;
+        $animal->measurements->weight = 3;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/John-Doe');
+
+        self::clearPurger();
+
+        $person->firstName = 'Bob';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/Bob-Doe');
+
+        self::clearPurger();
+
+        $animal->name = 'Bongo';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/owner-full-name/Bob-Doe');
+    }
+
+    /**
+     * @see AnimalController::listByVeterinarianFullName
+     */
+    public function testExpressionValuesWhenInverseIsNull(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->width = 1;
+        $animal->measurements->height = 2;
+        $animal->measurements->weight = 3;
+        $person->pets->add($animal);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/animal/veterinarian-full-name'),
+        ));
+
+        self::clearPurger();
+
+        $vet = new Person();
+        $vet->firstName = 'Frank';
+        $vet->lastName = 'Beard';
+        $vet->gender = 'male';
+        $vet->isVeterinarian = true;
+
+        $animal->veterinarian = $vet;
+
+        $this->entityManager->persist($vet);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/veterinarian-full-name/Frank-Beard');
+
+        self::clearPurger();
+
+        $animal->veterinarian = null;
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/animal/veterinarian-full-name'),
+        ));
     }
 
     /**
@@ -630,7 +720,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see PersonController::personCarsList
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testNullableInverseRouteParams(): void
     {
         $person = new Person();
@@ -751,7 +840,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::animalsForVeterinarianAction
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testOldValuesWithOptionalRouteParamsArePurged(): void
     {
         $owner = new Person();
@@ -763,11 +851,13 @@ final class ApplicationTest extends AbstractKernelTestCase
         $vet1->firstName = 'Frank';
         $vet1->lastName = 'Beard';
         $vet1->gender = 'male';
+        $vet1->isVeterinarian = true;
 
         $vet2 = new Person();
         $vet2->firstName = 'Dusty';
         $vet2->lastName = 'Hill';
         $vet2->gender = 'male';
+        $vet2->isVeterinarian = true;
 
         $animal = new Animal();
         $animal->name = 'Sharp Dressed Dog';
@@ -807,7 +897,6 @@ final class ApplicationTest extends AbstractKernelTestCase
     /**
      * @see AnimalController::animalsForOwnerAndVeterinarianAction
      */
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testOldValuesWithMissingRouteParamsAreNotPurged(): void
     {
         $owner1 = new Person();

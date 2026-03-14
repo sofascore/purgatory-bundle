@@ -7,7 +7,7 @@ values to create flexible and powerful purge rules.
 ## Using Nested Properties
 
 You can access nested properties of an entity to define route parameters by
-using [Symfony's Property Access](https://symfony.com/doc/current/components/property_access.html) syntax:
+using [Symfony's PropertyAccess](https://symfony.com/doc/current/components/property_access.html) syntax:
 
 ```php
 #[Route('/author/{id<\d+>}', name: 'author_details', methods: 'GET')]
@@ -119,22 +119,60 @@ public function listAction(string $lang)
 In this example, multiple URLs are generated based on all values from the `LanguageCodes` enum and the raw value `XK`
 for the `lang` parameter.
 
-### Using Values Provided by a Service
+### Using Values Provided by an Expression
 
-You can also map route parameters to values provided dynamically by a service. This is particularly useful when you need
-route parameters that depend on context or runtime information:
+You can also map route parameters to values provided dynamically using a **Symfony ExpressionLanguage** expression.
+This is useful when a route parameter cannot be mapped directly to a single property and needs to be composed or
+transformed.
+
+In these expressions, the entity is available as the `obj` variable:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
+
+#[Route('/posts-by-author/{full_name}', name: 'posts_list_by_author', methods: 'GET')]
+#[PurgeOn(Author::class, routeParams: ['full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName')])]
+public function listAction(Author $author)
+{
+}
+```
+
+You can also add [custom Expression Language functions](custom-expression-language-functions.md) to extend the available
+expression syntax.
+
+### Using Values Provided by a Service or Static Method
+
+As an alternative to expressions, route parameter values can be provided dynamically by a service or a static method.
+This is particularly useful when you need route parameters that depend on context or runtime information:
 
 ```php
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 
 #[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
 #[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues('my_service')])]
-public function listAction(string $lang)
+public function listAction()
 {
 }
 ```
 
-To make this work, ensure your service is tagged correctly in the service configuration:
+By default, the entire entity being purged is passed to the route parameter provider. If your provider only needs a
+specific part of the entity, you can limit what is passed by providing a second argument to `DynamicValues`.
+
+This argument is a **Symfony PropertyAccess property path** and will be resolved against the entity before being passed
+to the provider:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+
+#[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues('my_service', 'property')])]
+public function listAction()
+{
+}
+```
+
+To make a service available for resolving route parameter values, ensure it is tagged correctly in the service
+configuration:
 
 ```yaml
 # services.yaml
@@ -158,4 +196,24 @@ class MyService
 }
 ```
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Attribute/AsRouteParamService.php
+You can also reference a static method directly instead of a service:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+
+#[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues([MyClass::class, 'getValue'])])]
+public function listAction()
+{
+}
+
+final class MyClass
+{
+    public static function getValue(Post $post)
+    {
+        // Return the desired value for the route parameter
+    }
+}
+```
+
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/AsRouteParamService.php

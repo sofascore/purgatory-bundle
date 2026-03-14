@@ -3,7 +3,7 @@ name: Code Quality
 on:
     push:
     pull_request:
-        branches: [ 1.x ]
+        branches: [ '*.x' ]
     workflow_dispatch:
     schedule:
         -   cron: '0 8 * * *'
@@ -13,7 +13,7 @@ concurrency:
     cancel-in-progress: true
 
 env:
-    PHP_VERSION: '8.3'
+    PHP_VERSION: '8.4'
 
 jobs:
     composer:
@@ -21,7 +21,7 @@ jobs:
         name: Composer Validations
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -40,7 +40,7 @@ jobs:
         name: Coding Standards
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -52,34 +52,12 @@ jobs:
             -   name: PHP Coding Standards Fixer
                 run: php-cs-fixer fix --dry-run --format checkstyle | cs2pr
 
-    psalm:
-        runs-on: ubuntu-latest
-        name: Static Analysis (Psalm)
-        steps:
-            -   name: Checkout
-                uses: actions/checkout@v4
-
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ env.PHP_VERSION }}
-                    coverage: none
-                    tools: psalm
-
-            -   name: Install Dependencies
-                uses: ramsey/composer-install@v3
-                with:
-                    composer-options: '--prefer-dist'
-
-            -   name: Run Psalm
-                run: psalm --long-progress --no-diff --output-format=github
-
     phpstan:
         runs-on: ubuntu-latest
-        name: Static Analysis (PHPStan)
+        name: Static Analysis
         steps:
             -   name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v6
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2

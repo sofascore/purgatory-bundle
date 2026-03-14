@@ -362,7 +362,7 @@ class Post
 
 ### Adding Conditional Logic with Expression Language
 
-[Symfony's Expression Language component](https://symfony.com/doc/current/components/expression_language.html) can be
+[Symfony's ExpressionLanguage component](https://symfony.com/doc/current/components/expression_language.html) can be
 used to add conditions that must be met for the purge to occur. In these expressions, the entity is available as the
 `obj` variable:
 
@@ -517,12 +517,12 @@ This command provides insights into which routes and parameters are associated w
 - [Configure Purge Subscriptions Using YAML](purge-subscriptions-using-yaml.md)
 - [Custom Expression Language Functions](custom-expression-language-functions.md)
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Purger/PurgerInterface.php
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
 
-[1]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Attribute/PurgeOn.php
+[1]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/PurgeOn.php
 
-[2]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Attribute/TargetedProperties.php
+[2]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/TargetedProperties.php
 
-[3]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Listener/Enum/Action.php
+[3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
 
-[4]: https://github.com/sofascore/purgatory-bundle/blob/1.x/src/Test/InteractsWithPurgatory.php
+[4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php

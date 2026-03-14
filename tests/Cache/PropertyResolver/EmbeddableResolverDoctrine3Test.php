@@ -38,7 +38,7 @@ class EmbeddableResolverDoctrine3Test extends TestCase
             ],
         ]);
 
-        $embeddableClassMetadata = $this->createMock(ClassMetadata::class);
+        $embeddableClassMetadata = self::createStub(ClassMetadata::class);
         $embeddableClassMetadata->method('getFieldNames')
             ->willReturn(['foo', 'bar']);
 
@@ -49,7 +49,8 @@ class EmbeddableResolverDoctrine3Test extends TestCase
             ->willReturn($embeddableClassMetadata);
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->with('ParentClass')
             ->willReturn($entityManager);
 
@@ -63,7 +64,7 @@ class EmbeddableResolverDoctrine3Test extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['foo']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -116,7 +117,7 @@ class EmbeddableResolverDoctrine3Test extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['foo']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],

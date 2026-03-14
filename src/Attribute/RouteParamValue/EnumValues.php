@@ -12,7 +12,7 @@ final class EnumValues extends AbstractValues
      * @param class-string<\BackedEnum> $enum
      */
     public function __construct(
-        private readonly string $enum,
+        public readonly string $enum,
     ) {
         if (!is_a($this->enum, \BackedEnum::class, true)) {
             throw new InvalidArgumentException('The argument must be a backed enum.');
@@ -20,9 +20,9 @@ final class EnumValues extends AbstractValues
     }
 
     /**
-     * @return list<class-string<\BackedEnum>>
+     * @return non-empty-list<class-string<\BackedEnum>>
      */
-    public function getValues(): array
+    protected function getValues(): array
     {
         return [$this->enum];
     }

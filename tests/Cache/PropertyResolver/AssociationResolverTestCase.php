@@ -7,15 +7,18 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\PropertyResolver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\AssociationResolver;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage\InverseRelationExpressionTransformer;
+use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\PropertyInverseValuesBuilder;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\Expression;
-use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 use Symfony\Component\Routing\Route;
@@ -31,7 +34,8 @@ abstract class AssociationResolverTestCase extends TestCase
         bool $isAssociationInverseSide,
     ): void {
         $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
-        $extractor->method('getReadInfo')
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
             ->with('BarEntity', 'barProperty')
             ->willReturn(
                 new PropertyReadInfo(
@@ -43,7 +47,12 @@ abstract class AssociationResolverTestCase extends TestCase
                 ),
             );
 
-        $resolver = new AssociationResolver($extractor);
+        $resolver = new AssociationResolver(
+            new ServiceLocator([
+                PropertyValues::type() => static fn () => new PropertyInverseValuesBuilder(),
+            ]),
+            new InverseRelationExpressionTransformer($extractor),
+        );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
         $classMetadata->method('hasAssociation')
@@ -79,7 +88,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     target: new ForProperties(['fooProperty']),
                     if: new Expression('obj.isActive() === true'),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [
@@ -100,11 +109,11 @@ abstract class AssociationResolverTestCase extends TestCase
         self::assertNull($subscription[0]->property);
         self::assertSame('BarEntity', $subscription[0]->class);
         self::assertEquals(
-            new PropertyValues(Kernel::MAJOR_VERSION > 5 ? 'barProperty?.bazProperty' : 'barProperty.bazProperty'),
+            new PropertyValues('barProperty?.bazProperty'),
             $subscription[0]->routeParams['param1'],
         );
         self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);
-        self::assertSame('obj.getFoo() !== null && (obj.getFoo().isActive() === true)', (string) $subscription[0]->if);
+        self::assertSame('obj.getFoo() !== null ? (obj.getFoo().isActive() === true) : false', (string) $subscription[0]->if);
     }
 
     abstract public static function associationProvider(): iterable;
@@ -112,11 +121,15 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testFieldNotAssociation(): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            self::createStub(ContainerInterface::class),
+            new InverseRelationExpressionTransformer(
+                self::createStub(PropertyReadInfoExtractorInterface::class),
+            ),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->method('hasAssociation')
+        $classMetadata->expects(self::once())
+            ->method('hasAssociation')
             ->with('fooProperty')
             ->willReturn(false);
 
@@ -128,7 +141,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -146,7 +159,10 @@ abstract class AssociationResolverTestCase extends TestCase
     public function testInvalidAssociationType(array $associationMapping): void
     {
         $resolver = new AssociationResolver(
-            $this->createMock(PropertyReadInfoExtractorInterface::class),
+            self::createStub(ContainerInterface::class),
+            new InverseRelationExpressionTransformer(
+                self::createStub(PropertyReadInfoExtractorInterface::class),
+            ),
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
@@ -167,7 +183,7 @@ abstract class AssociationResolverTestCase extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                 ),
-                reflectionMethod: $this->createMock(\ReflectionMethod::class),
+                reflectionMethod: self::createStub(\ReflectionMethod::class),
             ),
             classMetadata: $classMetadata,
             routeParams: [],

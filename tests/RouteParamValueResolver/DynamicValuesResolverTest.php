@@ -43,7 +43,7 @@ final class DynamicValuesResolverTest extends TestCase
 
     #[DataProvider('valuesProvider')]
     public function testResolve(
-        string $id,
+        string|array $id,
         ?string $path,
         object $entity,
         array $expectedResult,
@@ -95,6 +95,14 @@ final class DynamicValuesResolverTest extends TestCase
             'path' => null,
             'entity' => $foo,
             'expectedResult' => [5, 1, 2, 3],
+        ];
+
+        $foo = clone $foo;
+        yield 'static callable' => [
+            'id' => [DummyServiceTwo::class, 'getOtherValueToPurge'],
+            'path' => null,
+            'entity' => $foo,
+            'expectedResult' => [205],
         ];
     }
 

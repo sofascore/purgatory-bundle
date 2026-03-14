@@ -32,7 +32,6 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\PropertyAccess\PropertyPath;
 
 #[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(UpdatedEntityRouteProvider::class)]
@@ -146,7 +145,6 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
     }
 
-    #[RequiresMethod(PropertyPath::class, 'isNullSafe')]
     public function testProvideRoutesToPurgeWithOldValues(): void
     {
         $routeProvider = $this->createRouteProvider([
@@ -394,8 +392,8 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         $routeProvider = new UpdatedEntityRouteProvider(
             configurationLoader: $configurationLoader,
             expressionLanguage: $expressionLanguage,
-            routeParamValueResolverLocator: $this->createMock(ContainerInterface::class),
-            propertyAccessor: $this->createMock(PropertyAccessorInterface::class),
+            routeParamValueResolverLocator: self::createStub(ContainerInterface::class),
+            propertyAccessor: self::createStub(PropertyAccessorInterface::class),
         );
 
         $this->expectException(InvalidIfExpressionResultException::class);
@@ -468,13 +466,13 @@ final class UpdatedEntityRouteProviderTest extends TestCase
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): UpdatedEntityRouteProvider
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration($configuration));
 
         $expressionLanguage = null;
         if ($withExpressionLang) {
-            $expressionLanguage = $this->createMock(ExpressionLanguage::class);
+            $expressionLanguage = self::createStub(ExpressionLanguage::class);
             $expressionLanguage->method('evaluate')
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }

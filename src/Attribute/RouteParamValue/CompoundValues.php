@@ -7,12 +7,12 @@ namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 
-final class CompoundValues extends AbstractValues implements InverseValuesAwareInterface
+final class CompoundValues implements ValuesInterface
 {
     /**
      * @var non-empty-list<ValuesInterface>
      */
-    private readonly array $values;
+    public readonly array $values;
 
     /**
      * @param string|non-empty-list<string>|ValuesInterface $value
@@ -39,14 +39,6 @@ final class CompoundValues extends AbstractValues implements InverseValuesAwareI
     }
 
     /**
-     * @return list<ValuesInterface>
-     */
-    public function getValues(): array
-    {
-        return $this->values;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function toArray(): array
@@ -58,18 +50,6 @@ final class CompoundValues extends AbstractValues implements InverseValuesAwareI
                 $this->values,
             ),
         ];
-    }
-
-    public function buildInverseValuesFor(string $association): ValuesInterface
-    {
-        return new self(
-            ...array_map(
-                static fn (ValuesInterface $values): ValuesInterface => $values instanceof InverseValuesAwareInterface
-                    ? $values->buildInverseValuesFor($association)
-                    : $values,
-                $this->values,
-            ),
-        );
     }
 
     public static function type(): string

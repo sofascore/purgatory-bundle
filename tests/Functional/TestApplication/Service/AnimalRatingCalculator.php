@@ -31,4 +31,9 @@ class AnimalRatingCalculator
             initial: 0,
         );
     }
+
+    public static function getOtherRating(Animal $animal): int
+    {
+        return (int) (($animal->measurements->height ?? 1) * ($animal->measurements->weight ?? 1) / ($animal->measurements->width ?? 1) * 100);
+    }
 }

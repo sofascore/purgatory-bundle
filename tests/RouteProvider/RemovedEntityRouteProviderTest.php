@@ -148,12 +148,13 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
     public function testExceptionIsThrownWhenEntityMetadataIsNotFound(): void
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration([]));
 
         $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
             ->with(\stdClass::class)
             ->willReturn(null);
 
@@ -236,32 +237,31 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): RemovedEntityRouteProvider
     {
-        $configurationLoader = $this->createMock(ConfigurationLoaderInterface::class);
+        $configurationLoader = self::createStub(ConfigurationLoaderInterface::class);
         $configurationLoader->method('load')
             ->willReturn(new Configuration($configuration));
 
-        $classMetadata = $this->createMock(ClassMetadata::class);
-
-        $entityManager = $this->createMock(EntityManagerInterface::class);
-
-        $managerRegistry = $this->createMock(ManagerRegistry::class);
-        $managerRegistry->method('getManagerForClass')
-            ->with(\stdClass::class)
-            ->willReturn($entityManager);
-
-        $entityManager->method('getClassMetadata')
-            ->with(\stdClass::class)
-            ->willReturn($classMetadata);
-
+        $classMetadata = self::createStub(ClassMetadata::class);
         $classMetadata->method('getFieldNames')
             ->willReturn(['foo', 'bar', 'baz']);
-
         $classMetadata->method('getAssociationNames')
             ->willReturn([]);
 
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects(self::once())
+            ->method('getClassMetadata')
+            ->with(\stdClass::class)
+            ->willReturn($classMetadata);
+
+        $managerRegistry = $this->createMock(ManagerRegistry::class);
+        $managerRegistry->expects(self::once())
+            ->method('getManagerForClass')
+            ->with(\stdClass::class)
+            ->willReturn($entityManager);
+
         $expressionLanguage = null;
         if ($withExpressionLang) {
-            $expressionLanguage = $this->createMock(ExpressionLanguage::class);
+            $expressionLanguage = self::createStub(ExpressionLanguage::class);
             $expressionLanguage->method('evaluate')
                 ->willReturnOnConsecutiveCalls(true, true, false);
         }

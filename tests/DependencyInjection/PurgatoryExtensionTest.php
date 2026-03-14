@@ -19,6 +19,7 @@ use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyController
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInvalidExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInvalidRouteParamService;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInverseValuesBuilder;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyRouteParamService;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyRouteProvider;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummySubscriptionResolver;
@@ -461,6 +462,23 @@ final class PurgatoryExtensionTest extends TestCase
         $container->compile();
 
         self::assertTrue($container->getDefinition(DummySubscriptionResolver::class)->hasTag('purgatory.subscription_resolver'));
+    }
+
+    public function testInverseValuesBuilderIsTagged(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__);
+        $container->registerExtension($extension = new PurgatoryExtension());
+
+        $container->register(DummyInverseValuesBuilder::class)
+            ->setAutoconfigured(true)
+            ->setPublic(true);
+
+        $container->loadFromExtension($extension->getAlias(), []);
+
+        $container->compile();
+
+        self::assertTrue($container->getDefinition(DummyInverseValuesBuilder::class)->hasTag('purgatory.inverse_values_builder'));
     }
 
     public function testTargetResolverIsTagged(): void
