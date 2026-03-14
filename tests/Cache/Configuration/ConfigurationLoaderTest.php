@@ -236,7 +236,8 @@ final class ConfigurationLoaderTest extends TestCase
     public function testSubscriptionsWithPhp85Features(array $purgeSubscriptions, array $expectedConfiguration): void
     {
         $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
-        $purgeSubscriptionProvider->method('provide')
+        $purgeSubscriptionProvider->expects(self::once())
+            ->method('provide')
             ->willReturn($purgeSubscriptions);
 
         $loader = new ConfigurationLoader($purgeSubscriptionProvider);
