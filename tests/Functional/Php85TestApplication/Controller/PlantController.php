@@ -18,9 +18,9 @@ class PlantController
     #[AnnotationRoute('/plants/dry', name: 'dry_plants_list')]
     #[PurgeOn(Plant::class,
         if: static function (Plant $plant): bool {
-            return $plant->getWaterLevel() === 0;
+            return 0 === $plant->getWaterLevel();
         },
-        actions: Action::Create
+        actions: Action::Create,
     )]
     public function dryPlantsAction()
     {

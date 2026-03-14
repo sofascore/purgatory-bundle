@@ -186,7 +186,6 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         }
     }
 
-
     private function validateExpression(Expression $expression, string $routeName): void
     {
         try {
