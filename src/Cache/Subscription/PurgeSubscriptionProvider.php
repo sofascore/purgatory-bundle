@@ -16,9 +16,9 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfClosureException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
-use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -169,11 +169,11 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             || $returnType->allowsNull()
             || !\in_array($returnType->getName(), ['bool', 'true', 'false'])
         ) {
-            throw new RuntimeException('Return type of PurgeOn::if closure must be bool');
+            throw new InvalidIfClosureException($routeName, 'Return type must be bool');
         }
 
         if (1 !== $reflection->getNumberOfParameters()) {
-            throw new RuntimeException('PurgeOn::if closure must have exactly 1 parameter');
+            throw new InvalidIfClosureException($routeName, 'Closure must have exactly 1 parameter');
         }
 
         $parameterType = $reflection->getParameters()[0]->getType();
@@ -182,7 +182,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             || $parameterType->allowsNull()
             || !is_a($entity, $parameterType->getName(), true)
         ) {
-            throw new RuntimeException("Parameter in PurgeOn::if closure must be of type $entity");
+            throw new InvalidIfClosureException($routeName, "Parameter in closure must be of type $entity");
         }
     }
 
