@@ -13,7 +13,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\PlantController;
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Plant;
 
-#[RequiresPhp('>= 8.5')]
+#[RequiresPhp('>= 8.5.0')]
 #[RequiresFunction('\Opis\Closure\serialize')]
 class Php85ConfigurationTest extends AbstractKernelTestCase
 {
