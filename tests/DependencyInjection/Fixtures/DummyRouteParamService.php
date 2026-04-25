@@ -9,12 +9,12 @@ use Sofascore\PurgatoryBundle\Attribute\AsRouteParamService;
 #[AsRouteParamService('alias_class')]
 class DummyRouteParamService
 {
-    public function __invoke()
+    public function __invoke(): void
     {
     }
 
     #[AsRouteParamService('alias_foo')]
-    public function foo()
+    public function foo(): void
     {
     }
 }

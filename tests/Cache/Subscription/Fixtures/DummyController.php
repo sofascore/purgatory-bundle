@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures;
 
 class DummyController
 {
-    public function barAction()
+    public function barAction(): void
     {
     }
 }

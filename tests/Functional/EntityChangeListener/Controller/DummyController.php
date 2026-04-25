@@ -16,13 +16,13 @@ class DummyController
     #[PurgeOn(Dummy::class, target: 'name')]
     #[PurgeOn(DummyParent::class, target: 'dummy', routeParams: ['name' => 'dummy.name'])]
     #[Route('/{name}', 'test_index')]
-    public function index()
+    public function index(): void
     {
     }
 
     #[PurgeOn(Dummy::class, target: 'name')]
     #[Route('/foo', 'test_foo', host: 'example.test')]
-    public function foo()
+    public function foo(): void
     {
     }
 }
