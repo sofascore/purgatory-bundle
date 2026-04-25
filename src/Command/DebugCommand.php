@@ -6,6 +6,8 @@ namespace Sofascore\PurgatoryBundle\Command;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use Opis\Closure\Box;
+use Opis\Closure\ReflectionClosure;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
@@ -17,6 +19,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+
+use function Opis\Closure\unserialize;
 
 #[AsCommand(
     name: 'purgatory:debug',
@@ -249,6 +253,7 @@ final class DebugCommand extends Command
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string,
+     *     closureIf?: true,
      *     actions?: non-empty-list<Action>,
      * }>> $configuration
      */
@@ -260,6 +265,15 @@ final class DebugCommand extends Command
             $entity = explode('::', $key);
 
             foreach ($subscriptions as $subscription) {
+                if (isset($subscription['closureIf'])) {
+                    $r = new ReflectionClosure(unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]));
+                    $closureBody = $r->info()->getIncludePHP(false);
+
+                    $if = rtrim(substr($closureBody, strpos($closureBody, 'return ') + \strlen('return ')), ';');
+                } else {
+                    $if = $subscription['if'] ?? 'NONE';
+                }
+
                 $io->table(
                     ['Option', 'Value'],
                     [
@@ -267,7 +281,7 @@ final class DebugCommand extends Command
                         ['Property', $entity[1] ?? 'ANY'],
                         ['Route Name', $subscription['routeName']],
                         ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
-                        ['Condition', $subscription['if'] ?? 'NONE'],
+                        ['Condition', $if],
                         ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
                     ],
                 );

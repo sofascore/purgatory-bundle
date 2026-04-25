@@ -81,6 +81,11 @@ class PostController
         routeParams: [
             'full_name' => new ExpressionValues('obj.firstName~"-"~obj.lastName'),
         ],
+        if: static function (Author $author): bool {
+            return !$author->getPosts()->isEmpty()
+                && null !== $author->getFirstName()
+                && null !== $author->getLastName();
+        },
     )]
     public function filterByAuthorFullName()
     {
