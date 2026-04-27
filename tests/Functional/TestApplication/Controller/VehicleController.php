@@ -15,7 +15,7 @@ class VehicleController
 {
     #[Route('/{id}/number-of-engines', 'number_of_engines')]
     #[PurgeOn(Vehicle::class, target: 'numberOfEngines')]
-    public function numberOfEnginesAction(Vehicle $vehicle)
+    public function numberOfEnginesAction(Vehicle $vehicle): void
     {
     }
 }

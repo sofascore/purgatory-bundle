@@ -19,7 +19,7 @@ class AuthorController
             'author_id' => 'id',
         ],
     )]
-    public function show(Author $author)
+    public function show(Author $author): void
     {
     }
 }

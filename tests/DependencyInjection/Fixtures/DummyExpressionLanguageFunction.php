@@ -9,12 +9,12 @@ use Sofascore\PurgatoryBundle\Attribute\AsExpressionLanguageFunction;
 #[AsExpressionLanguageFunction('function_class')]
 class DummyExpressionLanguageFunction
 {
-    public function __invoke()
+    public function __invoke(): void
     {
     }
 
     #[AsExpressionLanguageFunction('function_foo')]
-    public function foo()
+    public function foo(): void
     {
     }
 }
