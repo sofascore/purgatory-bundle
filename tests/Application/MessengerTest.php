@@ -83,7 +83,7 @@ final class MessengerTest extends AbstractKernelTestCase
 
         self::assertNoUrlsArePurged();
 
-        self::runCommand(self::$kernel, 'messenger:consume', ['async', '-l' => 1, '-t' => 5]);
+        self::executeCommand(self::$kernel, 'messenger:consume', ['async', '-l' => 1, '-t' => 5]);
 
         self::assertUrlIsPurged('/person/'.$person->id);
     }
