@@ -18,7 +18,7 @@ class CompetitionController
     #[Route('/ordered-by-number-of-pets', 'competitions_ordered_by_number_of_pets')]
     #[AnnotationRoute('/ordered-by-number-of-pets', name: 'competitions_ordered_by_number_of_pets')]
     #[PurgeOn(Competition::class, target: 'numberOfPets')]
-    public function orderedCompetitionsAction()
+    public function orderedCompetitionsAction(): void
     {
     }
 
@@ -30,7 +30,7 @@ class CompetitionController
             'winner_id' => 'winner.id',
         ],
     )]
-    public function competitionsByWinnerAction()
+    public function competitionsByWinnerAction(): void
     {
     }
 }

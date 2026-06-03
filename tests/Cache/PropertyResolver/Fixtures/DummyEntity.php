@@ -9,7 +9,7 @@ use Sofascore\PurgatoryBundle\Attribute\TargetedProperties;
 class DummyEntity
 {
     #[TargetedProperties('bar', 'baz')]
-    public function getFoo()
+    public function getFoo(): void
     {
     }
 }

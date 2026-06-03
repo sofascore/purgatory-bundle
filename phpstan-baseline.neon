@@ -73,8 +73,8 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: '#^Comparison operation "\>\=" between 0 and 1 is always false\.$#'
-			identifier: greaterOrEqual.alwaysFalse
+			message: '#^Comparison operation "\>\=" between 1 and 1 is always true\.$#'
+			identifier: greaterOrEqual.alwaysTrue
 			count: 1
 			path: src/Command/DebugCommand.php
 

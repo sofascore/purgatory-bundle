@@ -9,16 +9,16 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 class DummyController
 {
     #[PurgeOn('test')]
-    public function methodWithPurgeOn()
+    public function methodWithPurgeOn(): void
     {
     }
 
-    public function methodWithoutPurgeOn()
+    public function methodWithoutPurgeOn(): void
     {
     }
 
     #[PurgeOn('test')]
-    public function anotherMethodWithPurgeOn()
+    public function anotherMethodWithPurgeOn(): void
     {
     }
 }
