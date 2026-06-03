@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues\:\:normalizeProvider\(\) should return \(array\<string\>&callable\(\)\: mixed\)\|string but returns non\-empty\-array\<object\|string\>&callable\(\)\: mixed\.$#'
+			message: '#^Method Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues\:\:normalizeProvider\(\) should return \(non\-empty\-list\<string\>&callable\(\)\: mixed\)\|string but returns non\-empty\-list\<object\|string\>&callable\(\)\: mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: src/Attribute/RouteParamValue/DynamicValues.php
@@ -55,7 +55,7 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
-			message: '#^Parameter \#1 \$provider of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues constructor expects \(array\<string\>&callable\(\)\: mixed\)\|string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
+			message: '#^Parameter \#1 \$provider of class Sofascore\\PurgatoryBundle\\Attribute\\RouteParamValue\\DynamicValues constructor expects \(non\-empty\-list\<string\>&callable\(\)\: mixed\)\|string, bool\|float\|int\|string\|Symfony\\Component\\Yaml\\Tag\\TaggedValue given\.$#'
 			identifier: argument.type
 			count: 1
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
