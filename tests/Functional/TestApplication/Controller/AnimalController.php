@@ -31,7 +31,7 @@ class AnimalController
             'animal_id' => 'id',
         ],
     )]
-    public function detailAction(Animal $animal)
+    public function detailAction(Animal $animal): void
     {
     }
 
@@ -43,7 +43,7 @@ class AnimalController
             'animal_id' => 'id',
         ],
     )]
-    public function measurementsAction(Animal $animal)
+    public function measurementsAction(Animal $animal): void
     {
     }
 
@@ -55,7 +55,7 @@ class AnimalController
             'animal_id' => 'id',
         ],
     )]
-    public function measurementsAltAction(Animal $animal)
+    public function measurementsAltAction(Animal $animal): void
     {
     }
 
@@ -74,7 +74,7 @@ class AnimalController
         target: 'measurements.width',
         route: 'animal_route_2',
     )]
-    public function someRandomRouteAction(Animal $animal)
+    public function someRandomRouteAction(Animal $animal): void
     {
     }
 
@@ -86,7 +86,7 @@ class AnimalController
             'country' => new EnumValues(Country::class),
         ],
     )]
-    public function petOfTheDayAction(Country $country)
+    public function petOfTheDayAction(Country $country): void
     {
     }
 
@@ -101,7 +101,7 @@ class AnimalController
             ),
         ],
     )]
-    public function petOfTheMonthAction(string $country)
+    public function petOfTheMonthAction(string $country): void
     {
     }
 
@@ -113,7 +113,7 @@ class AnimalController
             'tag' => 'tags',
         ],
     )]
-    public function tagAction(string $tag)
+    public function tagAction(string $tag): void
     {
     }
 
@@ -137,7 +137,7 @@ class AnimalController
             ),
         ],
     )]
-    public function animalsForRatingAction(int $rating)
+    public function animalsForRatingAction(int $rating): void
     {
     }
 
@@ -148,7 +148,7 @@ class AnimalController
             'id' => 'pets[*].id',
         ],
     )]
-    public function petOwnerDetails(Animal $animal)
+    public function petOwnerDetails(Animal $animal): void
     {
     }
 
@@ -159,7 +159,7 @@ class AnimalController
             'id' => 'petsIds',
         ],
     )]
-    public function petOwnerDetailsAlternative(Animal $animal)
+    public function petOwnerDetailsAlternative(Animal $animal): void
     {
     }
 
@@ -168,7 +168,7 @@ class AnimalController
     #[PurgeOn(Animal::class,
         target: new ForProperties(['isGoodBoy']),
     )]
-    public function goodBoyRankingAction()
+    public function goodBoyRankingAction(): void
     {
     }
 
@@ -181,7 +181,7 @@ class AnimalController
         ],
         if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
     )]
-    public function animalsForVeterinarianAction(Person $veterinarian)
+    public function animalsForVeterinarianAction(Person $veterinarian): void
     {
     }
 
@@ -195,7 +195,7 @@ class AnimalController
         ],
         if: 'obj.name === "Sharp Dressed Dog"', // temporary because sf5 does not support optional property accesses
     )]
-    public function animalsForOwnerAndVeterinarianAction(Person $veterinarian)
+    public function animalsForOwnerAndVeterinarianAction(Person $veterinarian): void
     {
     }
 }

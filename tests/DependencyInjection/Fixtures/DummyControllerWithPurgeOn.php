@@ -9,12 +9,12 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 #[PurgeOn('test')]
 class DummyControllerWithPurgeOn
 {
-    public function __invoke()
+    public function __invoke(): void
     {
     }
 
     #[PurgeOn('test')]
-    public function methodWithPurgeOn()
+    public function methodWithPurgeOn(): void
     {
     }
 }

@@ -24,7 +24,7 @@ class PersonController
     #[Route('/{id}', 'person_details')]
     #[AnnotationRoute('/{id}', name: 'person_details')]
     #[PurgeOn(Person::class)]
-    public function detailsAction()
+    public function detailsAction(): void
     {
     }
 
@@ -33,7 +33,7 @@ class PersonController
     #[PurgeOn(Person::class,
         if: new Expression('obj.gender === "male"'),
     )]
-    public function personListMaleAction()
+    public function personListMaleAction(): void
     {
     }
 
@@ -42,7 +42,7 @@ class PersonController
     #[PurgeOn(Person::class,
         if: new Expression('custom_elf(obj)'),
     )]
-    public function personListCustomElfAction()
+    public function personListCustomElfAction(): void
     {
     }
 
@@ -54,7 +54,7 @@ class PersonController
             'person' => 'id',
         ],
     )]
-    public function petsAction(Person $person)
+    public function petsAction(Person $person): void
     {
     }
 
@@ -65,7 +65,7 @@ class PersonController
             'person' => 'owner.id',
         ],
     )]
-    public function petsActionAlternative(Person $person)
+    public function petsActionAlternative(Person $person): void
     {
     }
 
@@ -77,7 +77,7 @@ class PersonController
             'person' => 'owner.id',
         ],
     )]
-    public function petsNamesAction(Person $person)
+    public function petsNamesAction(Person $person): void
     {
     }
 
@@ -89,21 +89,21 @@ class PersonController
             'page' => new RawValues(0, 1),
         ],
     )]
-    public function petsPaginatedAction()
+    public function petsPaginatedAction(): void
     {
     }
 
     #[Route('/deleted', 'deleted_persons')]
     #[AnnotationRoute('/deleted', name: 'deleted_persons')]
     #[PurgeOn(Person::class, actions: Action::Delete)]
-    public function deletedPersonsAction()
+    public function deletedPersonsAction(): void
     {
     }
 
     #[Route('/all-ids', 'all_ids')]
     #[AnnotationRoute('/all-ids', name: 'all_ids')]
     #[PurgeOn(Person::class, actions: [Action::Create, Action::Delete])]
-    public function allIdsAction()
+    public function allIdsAction(): void
     {
     }
 
@@ -115,7 +115,7 @@ class PersonController
             'country' => new CompoundValues('alpha2', new RawValues(null)),
         ],
     )]
-    public function personListForCountryAction(?Country $country = null)
+    public function personListForCountryAction(?Country $country = null): void
     {
     }
 
@@ -126,7 +126,7 @@ class PersonController
         target: 'cars',
         if: "obj.firstName === 'John'",
     )]
-    public function personCarsList(Person $person)
+    public function personCarsList(Person $person): void
     {
     }
 
@@ -137,21 +137,21 @@ class PersonController
             'name' => 'firstName',
         ],
     )]
-    public function listByNameAction(string $name)
+    public function listByNameAction(string $name): void
     {
     }
 
     #[Route('/by-full-name/{firstName}/{lastName}', 'list_by_full_name')]
     #[AnnotationRoute('/by-full-name/{firstName}/{lastName}', name: 'list_by_full_name')]
     #[PurgeOn(Person::class)]
-    public function listByFullNameAction(string $firstName, string $lastName)
+    public function listByFullNameAction(string $firstName, string $lastName): void
     {
     }
 
     #[Route('/full-name/{firstName}/{lastName}/gender/{gender}', 'list_by_full_name_and_gender')]
     #[AnnotationRoute('/full-name/{firstName}/{lastName}/gender/{gender}', name: 'list_by_full_name_and_gender')]
     #[PurgeOn(Person::class)]
-    public function listByFullNameAndGenderAction(string $firstName, string $lastName, string $gender)
+    public function listByFullNameAndGenderAction(string $firstName, string $lastName, string $gender): void
     {
     }
 }

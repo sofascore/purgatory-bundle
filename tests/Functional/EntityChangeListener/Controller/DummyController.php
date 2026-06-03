@@ -18,14 +18,14 @@ class DummyController
     #[PurgeOn(DummyParent::class, target: 'dummy', routeParams: ['name' => 'dummy.name'])]
     #[AnnotationRoute('/{name}', name: 'test_index')]
     #[Route('/{name}', 'test_index')]
-    public function index()
+    public function index(): void
     {
     }
 
     #[PurgeOn(Dummy::class, target: 'name')]
     #[AnnotationRoute('/foo', name: 'test_foo', host: 'example.test')]
     #[Route('/foo', 'test_foo', host: 'example.test')]
-    public function foo()
+    public function foo(): void
     {
     }
 }
