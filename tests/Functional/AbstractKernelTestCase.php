@@ -58,8 +58,8 @@ abstract class AbstractKernelTestCase extends KernelTestCase
             static::bootKernel($options);
         }
 
-        self::runCommand(self::$kernel, 'doctrine:schema:drop', ['--force' => true]);
-        self::runCommand(self::$kernel, 'doctrine:schema:create');
+        self::executeCommand(self::$kernel, 'doctrine:schema:drop', ['--force' => true]);
+        self::executeCommand(self::$kernel, 'doctrine:schema:create');
     }
 
     protected static function getKernelClass(): string
@@ -89,7 +89,7 @@ abstract class AbstractKernelTestCase extends KernelTestCase
         return sys_get_temp_dir().'/Purgatory_'.substr(strrchr(static::class, '\\'), 1);
     }
 
-    protected static function runCommand(KernelInterface $kernel, string $command, array $parameters = []): void
+    protected static function executeCommand(KernelInterface $kernel, string $command, array $parameters = []): void
     {
         $application = new Application($kernel);
         $application->setAutoExit(false);
