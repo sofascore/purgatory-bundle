@@ -22,7 +22,7 @@ class PlantController
         },
         actions: Action::Create,
     )]
-    public function dryPlantsAction()
+    public function dryPlantsAction(): void
     {
     }
 }

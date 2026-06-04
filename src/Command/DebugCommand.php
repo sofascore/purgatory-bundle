@@ -265,8 +265,10 @@ final class DebugCommand extends Command
             $entity = explode('::', $key);
 
             foreach ($subscriptions as $subscription) {
-                if (isset($subscription['closureIf'])) {
-                    $r = new ReflectionClosure(unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]));
+                if (isset($subscription['closureIf'], $subscription['if'])) {
+                    /** @var \Closure $closure */
+                    $closure = unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]);
+                    $r = new ReflectionClosure($closure);
                     $closureBody = $r->info()->getIncludePHP(false);
 
                     $if = rtrim(substr($closureBody, strpos($closureBody, 'return ') + \strlen('return ')), ';');
