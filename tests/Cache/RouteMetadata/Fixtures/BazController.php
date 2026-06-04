@@ -9,12 +9,12 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 #[PurgeOn('foo')]
 class BazController
 {
-    public function __invoke()
+    public function __invoke(): void
     {
     }
 
     #[PurgeOn('bar')]
-    public function barAction()
+    public function barAction(): void
     {
     }
 }

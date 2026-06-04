@@ -9,12 +9,12 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 class BarController
 {
     #[PurgeOn('foo', route: 'foo_bar1')]
-    public function fooAction()
+    public function fooAction(): void
     {
     }
 
     #[PurgeOn('foo', route: ['foo_baz1', 'foo_baz3'])]
-    public function bazAction()
+    public function bazAction(): void
     {
     }
 }

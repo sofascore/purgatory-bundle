@@ -6,7 +6,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures;
 
 class DummyClass
 {
-    public static function getValues()
+    public static function getValues(): void
     {
     }
 }

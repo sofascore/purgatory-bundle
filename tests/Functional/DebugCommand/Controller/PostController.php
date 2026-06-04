@@ -37,7 +37,7 @@ class PostController
         ],
         actions: [Action::Update, Action::Delete],
     )]
-    public function show(Post $post)
+    public function show(Post $post): void
     {
     }
 
@@ -52,7 +52,7 @@ class PostController
             'page' => new DynamicValues('purgatory.get_page'),
         ],
     )]
-    public function list()
+    public function list(): void
     {
     }
 
@@ -71,7 +71,7 @@ class PostController
             'tag_id' => 'id',
         ],
     )]
-    public function filterByAuthorAndTag(Author $author)
+    public function filterByAuthorAndTag(Author $author): void
     {
     }
 
@@ -87,7 +87,7 @@ class PostController
                 && null !== $author->getLastName();
         },
     )]
-    public function filterByAuthorFullName()
+    public function filterByAuthorFullName(): void
     {
     }
 }
