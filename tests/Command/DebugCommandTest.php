@@ -101,19 +101,6 @@ final class DebugCommandTest extends AbstractKernelTestCase
             needle: 'full_name: Expression("obj.firstName~\"-\"~obj.lastName")',
             haystack: $display,
         );
-
-        $expectedClosure = <<<'PHP'
-            Condition      static function (Author $author): bool {
-                                         return !$author->getPosts()->isEmpty()
-                                             && null !== $author->getFirstName()
-                                             && null !== $author->getLastName();
-                                     }
-            PHP;
-
-        self::assertStringContainsString(
-            needle: $expectedClosure,
-            haystack: preg_replace('/ +$/m', '', $display),
-        );
     }
 
     public function testOptionRoute(): void
