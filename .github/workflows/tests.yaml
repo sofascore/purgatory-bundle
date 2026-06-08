@@ -98,7 +98,7 @@ jobs:
 
             -   name: Upload Test Coverage
                 if: ${{ success() && (github.event_name == 'pull_request' || vars.UPLOAD_COVERAGE == 'true') }}
-                uses: codecov/codecov-action@v5
+                uses: codecov/codecov-action@v7
                 with:
                     codecov_yml_path: .github/codecov.yaml
                     fail_ci_if_error: true
