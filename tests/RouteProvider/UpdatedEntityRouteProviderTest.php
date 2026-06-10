@@ -270,9 +270,9 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             entity: $entity,
             entityChangeSet: [
                 'pets' => new PersistentCollection(
-                    em: self::createStub(EntityManagerInterface::class),
-                    typeClass: new ClassMetadata(\stdClass::class),
-                    collection: new ArrayCollection([$oldPet1, $oldPet2]),
+                    self::createStub(EntityManagerInterface::class),
+                    new ClassMetadata(\stdClass::class),
+                    new ArrayCollection([$oldPet1, $oldPet2]),
                 ),
             ],
         )];
