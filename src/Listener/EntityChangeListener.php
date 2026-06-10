@@ -9,7 +9,6 @@ use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
@@ -76,8 +75,6 @@ final class EntityChangeListener
     private function handleChanges(LifecycleEventArgs $eventArgs, Action $action): void
     {
         $entity = $eventArgs->getObject();
-
-        /** @var array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet */
         $entityChangeSet = $eventArgs->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
 
         foreach ($this->routeProviders as $routeProvider) {
