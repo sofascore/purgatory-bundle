@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\RouteProvider;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
@@ -232,6 +236,51 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'foo_route', 'params' => ['param1' => 'two']], (array) $routes[2]);
         self::assertSame(['name' => 'embeddable_route', 'params' => ['param1' => 4]], (array) $routes[3]);
         self::assertSame(['name' => 'association_route', 'params' => ['param1' => 5]], (array) $routes[4]);
+    }
+
+    public function testOldValuesFromDereferencedCollectionAreSkipped(): void
+    {
+        $routeProvider = $this->createRouteProvider([
+            'stdClass::pets' => [
+                [
+                    'routeName' => 'pets_route',
+                    'routeParams' => [
+                        'param1' => [
+                            'type' => PropertyValues::type(),
+                            'values' => ['pets[*].id'],
+                        ],
+                    ],
+                ],
+            ],
+        ], false);
+
+        $newPet = new \stdClass();
+        $newPet->id = 3;
+
+        $entity = new \stdClass();
+        $entity->pets = new ArrayCollection([$newPet]);
+
+        $oldPet1 = new \stdClass();
+        $oldPet1->id = 1;
+        $oldPet2 = new \stdClass();
+        $oldPet2->id = 2;
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Update,
+            entity: $entity,
+            entityChangeSet: [
+                'pets' => new PersistentCollection(
+                    self::createStub(EntityManagerInterface::class),
+                    new ClassMetadata(\stdClass::class),
+                    new ArrayCollection([$oldPet1, $oldPet2]),
+                ),
+            ],
+        )];
+
+        self::assertCount(1, $routes);
+        self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
+
+        self::assertSame(['name' => 'pets_route', 'params' => ['param1' => 3]], (array) $routes[0]);
     }
 
     public function testProvideRoutesToPurgeWithArrayAccess(): void

@@ -75,8 +75,6 @@ final class EntityChangeListener
     private function handleChanges(LifecycleEventArgs $eventArgs, Action $action): void
     {
         $entity = $eventArgs->getObject();
-
-        /** @var array<string, array{mixed, mixed}> $entityChangeSet */
         $entityChangeSet = $eventArgs->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
 
         foreach ($this->routeProviders as $routeProvider) {
