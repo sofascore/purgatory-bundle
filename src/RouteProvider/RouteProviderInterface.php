@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider;
 
+use Doctrine\ORM\PersistentCollection;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 
 /**
@@ -12,8 +13,8 @@ use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 interface RouteProviderInterface
 {
     /**
-     * @param T                                  $entity
-     * @param array<string, array{mixed, mixed}> $entityChangeSet
+     * @param T                                                                          $entity
+     * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
      *
      * @return iterable<int, PurgeRoute>
      */

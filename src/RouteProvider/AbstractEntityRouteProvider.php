@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider;
 
+use Doctrine\ORM\PersistentCollection;
 use Opis\Closure\Box;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
@@ -25,7 +26,7 @@ use function Opis\Closure\unserialize;
 abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 {
     /**
-     * @param array<string, array{mixed, mixed}> $entityChangeSet
+     * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
      *
      * @return array<int, string>
      */
@@ -64,7 +65,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param array<string, array{mixed, mixed}> $entityChangeSet
+     * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
      *
      * @return iterable<int, PurgeRoute>
      */
@@ -123,9 +124,9 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * @param array<string, list<?scalar>>                                             $routeParamValues
-     * @param array<string, array{type: string, values: list<mixed>, optional?: true}> $routeParamConfigs
-     * @param array<string, array{mixed, mixed}>                                       $entityChangeSet
+     * @param array<string, list<?scalar>>                                               $routeParamValues
+     * @param array<string, array{type: string, values: list<mixed>, optional?: true}>   $routeParamConfigs
+     * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
      *
      * @return list<array<string, ?scalar>>
      */

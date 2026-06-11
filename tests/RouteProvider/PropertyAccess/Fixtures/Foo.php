@@ -11,6 +11,8 @@ class Foo
     public function __construct(
         public readonly int $id,
         public readonly Collection $children,
+        public readonly ?self $linked = null,
+        public readonly ?Collection $nullableChildren = null,
     ) {
     }
 

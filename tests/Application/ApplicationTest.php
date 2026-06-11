@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
@@ -412,6 +413,43 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         self::assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
         self::assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details');
+    }
+
+    /**
+     * @see AnimalController::petOwnerDetails
+     */
+    public function testPurgeAfterCollectionDereference(): void
+    {
+        $person = new Person();
+        $person->firstName = 'Purga';
+        $person->lastName = 'Tory';
+        $person->gender = 'male';
+
+        $pet1 = new Animal();
+        $pet1->name = 'Poppy';
+        $pet1->owner = $person;
+        $person->pets->add($pet1);
+
+        $pet2 = new Animal();
+        $pet2->name = 'Bobby';
+        $pet2->owner = $person;
+        $person->pets->add($pet2);
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
+        self::assertUrlIsPurged('/animal/'.$pet2->id.'/owner-details');
+
+        self::clearPurger();
+
+        // the entity change set now contains the old collection instead of an [old, new] pair
+        $person->pets = new ArrayCollection([$pet1]);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/animal/'.$pet1->id.'/owner-details');
+        // old values are not computed for a dereferenced collection
+        self::assertUrlIsNotPurged('/animal/'.$pet2->id.'/owner-details');
     }
 
     /**
