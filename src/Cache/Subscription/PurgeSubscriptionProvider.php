@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
-use Opis\Closure\ReflectionClosure;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
@@ -161,7 +160,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
 
     private function validateIfClosure(\Closure $expression, string $routeName, string $entity): void
     {
-        $reflection = new ReflectionClosure($expression);
+        $reflection = new \ReflectionFunction($expression);
 
         $returnType = $reflection->getReturnType();
 
