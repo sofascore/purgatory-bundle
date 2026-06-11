@@ -34,6 +34,9 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
     private ?Configuration $configuration = null;
 
+    /** @var array<string, \Closure> */
+    private array $unserializedClosures = [];
+
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
         private readonly ?ExpressionLanguage $expressionLanguage,
@@ -78,8 +81,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
             if (isset($subscription['if'])) {
                 if (isset($subscription['closureIf'])) {
-                    /** @var \Closure $closure */
-                    $closure = unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]);
+                    $closure = $this->unserializedClosures[$subscription['if']] ??= $this->unserializeClosure($subscription['if']);
 
                     /** @var bool $result */
                     $result = $closure($entity);
@@ -181,5 +183,11 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     {
         return $this->expressionLanguage
             ?? throw new LogicException('You cannot use expressions because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
+    }
+
+    private function unserializeClosure(string $serializedClosure): \Closure
+    {
+        /** @var \Closure */
+        return unserialize($serializedClosure, options: ['allowed_classes' => [Box::class]]);
     }
 }
