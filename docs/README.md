@@ -378,6 +378,33 @@ In this example, the purge will only occur if the post has more than 3,000 upvot
 
 You can also add [custom Expression Language functions](custom-expression-language-functions.md).
 
+### Adding Conditional Logic with Closures
+
+Starting with [PHP 8.5](https://www.php.net/releases/8.5/en.php), closures can be used in attributes, so the same
+condition can be written in plain PHP instead of an expression. The closure receives the entity as its only argument:
+
+```php
+#[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, if: static function (Post $post): bool {
+    return $post->upvotes > 3000;
+})]
+public function detailsAction(Post $post)
+{
+}
+```
+
+This feature requires the [`opis/closure`](https://github.com/opis/closure) package:
+
+```sh
+composer require opis/closure
+```
+
+The closure must:
+
+- have exactly one parameter, typed with the subscribed entity class or one of its parents,
+- declare a non-nullable `bool` return type.
+
+
 ### Using Purge on Actions with Multiple Routes
 
 By default, the attribute generates URLs for all routes associated with the action. You can limit this to one or more
