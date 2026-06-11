@@ -80,13 +80,15 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                 if (isset($subscription['closureIf'])) {
                     /** @var \Closure $closure */
                     $closure = unserialize($subscription['if'], options: ['allowed_classes' => [Box::class]]);
+
+                    /** @var bool $result */
                     $result = $closure($entity);
                 } else {
                     $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
-                }
 
-                if (!\is_bool($result)) {
-                    throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
+                    if (!\is_bool($result)) {
+                        throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
+                    }
                 }
 
                 if (!$result) {
