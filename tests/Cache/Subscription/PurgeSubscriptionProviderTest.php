@@ -742,7 +742,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
 
         yield 'closure bound to an instance' => [
-            'if' => \Closure::bind(function (DummyEntity $entity): bool {
+            'if' => \Closure::bind(static function (DummyEntity $entity): bool {
                 return true;
             }, new DummyEntity(), DummyEntity::class),
             'expectedMessage' => 'Closure must be static',
