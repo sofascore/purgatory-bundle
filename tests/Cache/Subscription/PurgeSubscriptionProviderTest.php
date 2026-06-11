@@ -740,5 +740,28 @@ final class PurgeSubscriptionProviderTest extends TestCase
             },
             'expectedMessage' => 'Parameter in closure must be of type '.DummyEntity::class,
         ];
+
+        yield 'closure bound to an instance' => [
+            'if' => \Closure::bind(function (DummyEntity $entity): bool {
+                return true;
+            }, new DummyEntity(), DummyEntity::class),
+            'expectedMessage' => 'Closure must be static',
+        ];
+
+        $number = 1;
+        yield 'captured scalar variable' => [
+            'if' => static function (DummyEntity $entity) use ($number): bool {
+                return $entity->getData() > $number;
+            },
+            'expectedMessage' => 'Closure must not capture variables',
+        ];
+
+        $object = new DummyEntity();
+        yield 'captured object variable' => [
+            'if' => static function (DummyEntity $entity) use ($object): bool {
+                return $entity->getData() > $object->getData();
+            },
+            'expectedMessage' => 'Closure must not capture variables',
+        ];
     }
 }

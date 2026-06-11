@@ -162,6 +162,14 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
     {
         $reflection = new \ReflectionFunction($expression);
 
+        if (null !== $reflection->getClosureThis()) {
+            throw new InvalidIfClosureException($routeName, 'Closure must be static');
+        }
+
+        if ([] !== $reflection->getClosureUsedVariables()) {
+            throw new InvalidIfClosureException($routeName, 'Closure must not capture variables');
+        }
+
         $returnType = $reflection->getReturnType();
 
         if (!$returnType instanceof \ReflectionNamedType
