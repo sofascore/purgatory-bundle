@@ -39,6 +39,10 @@ final class PurgeOn
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
+        if ($if instanceof \Closure && !\function_exists('Opis\Closure\serialize')) {
+            throw new LogicException('You cannot use a closure for the "if" attribute because the "opis/closure" package is not installed. Try running "composer require opis/closure".');
+        }
+
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;
         $this->if = \is_string($if) ? self::normalizeExpression($if) : $if;
