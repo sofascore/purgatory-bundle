@@ -187,7 +187,9 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
     private function unserializeClosure(string $serializedClosure): \Closure
     {
-        /* @var \Closure */
-        return unserialize($serializedClosure, options: ['allowed_classes' => [Box::class]]);
+        /** @var \Closure $closure */
+        $closure = unserialize($serializedClosure, options: ['allowed_classes' => [Box::class]]);
+
+        return $closure;
     }
 }
