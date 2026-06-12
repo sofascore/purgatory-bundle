@@ -58,6 +58,13 @@
         "symfony/serializer": "^5.4 || ^6.4 || ^7.4 || ^8.0",
         "symfony/yaml": "^5.4 || ^6.4 || ^7.4 || ^8.0"
     },
+    "suggest": {
+        "symfony/expression-language": "To use expressions in the #[PurgeOn] attribute, e.g. for the \"if\" condition or route parameters",
+        "symfony/http-client": "To use the Varnish purger",
+        "symfony/messenger": "To purge URLs asynchronously",
+        "symfony/serializer": "To resolve purge targets from serialization groups with `ForGroups`",
+        "symfony/yaml": "To configure purge subscriptions using YAML files"
+    },
     "conflict": {
         "symfony/cache": "<5.4",
         "symfony/expression-language": "<5.4",
