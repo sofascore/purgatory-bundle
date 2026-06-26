@@ -54,7 +54,7 @@ jobs:
         name: PHP ${{ matrix.php }} & Symfony ${{ matrix.symfony }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }} Test
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
