@@ -54,7 +54,7 @@ jobs:
         name: PHP ${{ matrix.php }} & Symfony ${{ matrix.symfony }}${{ matrix.dependencies == 'lowest' && ' (lowest)' || '' }} Test
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -77,7 +77,7 @@ jobs:
                     sed -i 's/failOnPhpunitNotice="true"//g' phpunit.dist.xml
 
             -   name: Install Dependencies
-                uses: ramsey/composer-install@v3
+                uses: ramsey/composer-install@v4
                 with:
                     composer-options: '--prefer-dist'
                     dependency-versions: ${{ matrix.dependencies }}
