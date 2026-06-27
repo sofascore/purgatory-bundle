@@ -281,6 +281,9 @@ final class DebugCommand extends Command
         }
     }
 
+    /**
+     * @param array<mixed> $serializedClosure
+     */
     private function formatClosureCondition(array $serializedClosure): string
     {
         /** @var \Closure $closure */
