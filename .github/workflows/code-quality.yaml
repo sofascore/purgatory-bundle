@@ -21,7 +21,7 @@ jobs:
         name: Composer Validations
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -40,7 +40,7 @@ jobs:
         name: Coding Standards
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -57,7 +57,7 @@ jobs:
         name: Static Analysis
         steps:
             -   name: Checkout
-                uses: actions/checkout@v6
+                uses: actions/checkout@v7
 
             -   name: Setup PHP
                 uses: shivammathur/setup-php@v2
@@ -67,7 +67,7 @@ jobs:
                     tools: phpstan
 
             -   name: Install Dependencies
-                uses: ramsey/composer-install@v3
+                uses: ramsey/composer-install@v4
                 with:
                     composer-options: '--prefer-dist'
 
