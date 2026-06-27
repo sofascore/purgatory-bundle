@@ -50,12 +50,11 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
 
         $this->command->assertCommandIsSuccessful();
 
-        // The closure source is dedented relative to its declaration: the body is
-        // indented one level under "static function" and the closing brace lines up
-        // with it. In the table, every line is padded to the value column (offset 17).
-        $expectedClosure = 'Condition      static function (Plant $plant): bool {'."\n"
-            .str_repeat(' ', 21).'return 0 === $plant->getWaterLevel();'."\n"
-            .str_repeat(' ', 17).'}';
+        $expectedClosure = <<<'PHP'
+            Condition      static function (Plant $plant): bool {
+                                 return 0 === $plant->getWaterLevel();
+                             }
+            PHP;
 
         self::assertStringContainsString(
             needle: $expectedClosure,
