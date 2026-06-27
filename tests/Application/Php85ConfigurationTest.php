@@ -6,7 +6,6 @@ namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
-use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
@@ -60,9 +59,9 @@ class Php85ConfigurationTest extends AbstractKernelTestCase
                         'dryPlantsAction()',
                         2,
                         0,
-                        20
-                      ],
-                      'mask' => 1
+                        20,
+                    ],
+                    'mask' => 1,
                 ],
                 'actions' => [Action::Create],
             ],

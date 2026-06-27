@@ -245,7 +245,6 @@ final class ConfigurationLoaderTest extends TestCase
         self::assertSame($expectedConfiguration, $configuration->toArray());
     }
 
-
     private const \Closure SAMPLE_IF = static function (\stdClass $entity): bool {return true; };
 
     public static function purgeSubscriptionProviderPhp85(): iterable
