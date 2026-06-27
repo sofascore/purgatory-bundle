@@ -39,8 +39,8 @@ final class PurgeOn
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
-        if ($if instanceof \Closure && !\function_exists('Opis\Closure\serialize')) {
-            throw new LogicException('You cannot use a closure for the "if" attribute because the "opis/closure" package is not installed. Try running "composer require opis/closure".');
+        if ($if instanceof \Closure && !\function_exists('deepclone_to_array')) {
+            throw new LogicException('You cannot use a closure for the "if" attribute because deepclone support is not available. Install the "symfony/polyfill-deepclone" package (run "composer require symfony/polyfill-deepclone") or the "symfony/deepclone" PHP extension (https://github.com/symfony/php-ext-deepclone).');
         }
 
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;

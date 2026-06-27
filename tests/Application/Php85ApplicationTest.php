@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
@@ -13,7 +12,6 @@ use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\P
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Plant;
 
 #[RequiresPhp('>= 8.5.0')]
-#[RequiresFunction('\Opis\Closure\serialize')]
 final class Php85ApplicationTest extends AbstractKernelTestCase
 {
     use InteractsWithPurgatory;

@@ -449,29 +449,28 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
     }
 
-    #[RequiresFunction('\Opis\Closure\serialize')]
+    private const \Closure VALID_IF = static function (\stdClass $entity): bool {
+        return true;
+    };
+
+    private const \Closure INVALID_IF = static function (\stdClass $entity): bool {
+        return false;
+    };
+
+    #[RequiresFunction('deepclone_to_array')]
     public function testProvideRoutesToPurgeWithClosureIf(): void
     {
-        $validIf = static function (\stdClass $entity): bool {
-            return true;
-        };
-        $invalidIf = static function (\stdClass $entity): bool {
-            return false;
-        };
-
         $routeProvider = $this->createRouteProvider([
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'if' => \Opis\Closure\serialize($validIf),
-                    'closureIf' => true,
+                    'if' => deepclone_to_array(self::VALID_IF),
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'if' => \Opis\Closure\serialize($validIf),
-                    'closureIf' => true,
+                    'if' => deepclone_to_array(self::VALID_IF),
                 ],
                 [
                     'routeName' => 'baz_route',
@@ -485,8 +484,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
                             'values' => ['baz'],
                         ],
                     ],
-                    'if' => \Opis\Closure\serialize($invalidIf),
-                    'closureIf' => true,
+                    'if' => deepclone_to_array(self::INVALID_IF),
                 ],
             ],
         ], false);

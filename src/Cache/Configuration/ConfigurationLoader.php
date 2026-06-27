@@ -8,8 +8,6 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
 use Symfony\Component\Routing\Route;
 
-use function Opis\Closure\serialize;
-
 final class ConfigurationLoader implements ConfigurationLoaderInterface
 {
     public function __construct(
@@ -41,8 +39,7 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
 
             if (null !== $subscription->if) {
                 if ($subscription->if instanceof \Closure) {
-                    $config['if'] = serialize($subscription->if);
-                    $config['closureIf'] = true;
+                    $config['if'] = deepclone_to_array($subscription->if);
                 } else {
                     $config['if'] = (string) $subscription->if;
                 }

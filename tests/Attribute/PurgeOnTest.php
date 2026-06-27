@@ -47,7 +47,7 @@ final class PurgeOnTest extends TestCase
         self::assertEquals($expectedValue, $purgeOn->$property);
     }
 
-    #[RequiresFunction('\Opis\Closure\serialize')]
+    #[RequiresFunction('deepclone_to_array')]
     public function testIfWithClosure(): void
     {
         $if = static fn (\stdClass $obj): bool => true;

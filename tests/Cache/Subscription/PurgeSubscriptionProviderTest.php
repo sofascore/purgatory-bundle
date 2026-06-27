@@ -7,10 +7,9 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\Subscription;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
-use Opis\Closure\ReflectionClosure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
@@ -597,7 +596,6 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
-    #[RequiresMethod(ReflectionClosure::class, '__construct')]
     #[DataProvider('providerRouteMetadataWithPhp85Features')]
     public function testWithClosures(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
     {
@@ -657,7 +655,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
-    #[RequiresMethod(ReflectionClosure::class, '__construct')]
+    #[RequiresFunction('deepclone_to_array')]
     #[DataProvider('provideInvalidClosures')]
     public function testInvalidClosures(\Closure $if, string $expectedMessage): void
     {

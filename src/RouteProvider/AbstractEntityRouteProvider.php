@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\RouteProvider;
 
 use Doctrine\ORM\PersistentCollection;
-use Opis\Closure\Box;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
@@ -15,8 +14,6 @@ use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-
-use function Opis\Closure\unserialize;
 
 /**
  * @internal
@@ -33,9 +30,6 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     private ?Configuration $configuration = null;
-
-    /** @var array<string, \Closure> */
-    private array $unserializedClosures = [];
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
@@ -80,8 +74,9 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
             }
 
             if (isset($subscription['if'])) {
-                if (isset($subscription['closureIf'])) {
-                    $closure = $this->unserializedClosures[$subscription['if']] ??= $this->unserializeClosure($subscription['if']);
+                if (\is_array($subscription['if'])) {
+                    /** @var \Closure $closure */
+                    $closure = deepclone_from_array($subscription['if']);
 
                     /** @var bool $result */
                     $result = $closure($entity);
@@ -183,13 +178,5 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     {
         return $this->expressionLanguage
             ?? throw new LogicException('You cannot use expressions because the Symfony ExpressionLanguage component is not installed. Try running "composer require symfony/expression-language".');
-    }
-
-    private function unserializeClosure(string $serializedClosure): \Closure
-    {
-        /** @var \Closure $closure */
-        $closure = unserialize($serializedClosure, options: ['allowed_classes' => [Box::class]]);
-
-        return $closure;
     }
 }

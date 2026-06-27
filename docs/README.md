@@ -393,11 +393,13 @@ public function detailsAction(Post $post)
 }
 ```
 
-This feature requires the [`opis/closure`](https://github.com/opis/closure) package:
+This feature requires the [`symfony/polyfill-deepclone`](https://github.com/symfony/polyfill-deepclone) package:
 
 ```sh
-composer require opis/closure
+composer require symfony/polyfill-deepclone
 ```
+
+For better performance you can instead install the [`symfony/deepclone`](https://github.com/symfony/php-ext-deepclone) PHP extension.
 
 The closure must:
 

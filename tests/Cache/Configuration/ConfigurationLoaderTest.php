@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Cache\Configuration;
 
-use Opis\Closure\ReflectionClosure;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\RequiresMethod;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
@@ -231,7 +230,7 @@ final class ConfigurationLoaderTest extends TestCase
         ];
     }
 
-    #[RequiresMethod(ReflectionClosure::class, '__construct')]
+    #[RequiresPhp('>= 8.5.0')]
     #[DataProvider('purgeSubscriptionProviderPhp85')]
     public function testSubscriptionsWithPhp85Features(array $purgeSubscriptions, array $expectedConfiguration): void
     {
@@ -246,6 +245,9 @@ final class ConfigurationLoaderTest extends TestCase
         self::assertSame($expectedConfiguration, $configuration->toArray());
     }
 
+
+    private const \Closure SAMPLE_IF = static function (\stdClass $entity): bool {return true; };
+
     public static function purgeSubscriptionProviderPhp85(): iterable
     {
         yield 'purge subscription without property' => [
@@ -257,15 +259,14 @@ final class ConfigurationLoaderTest extends TestCase
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
                     actions: Action::cases(),
-                    if: static function (\stdClass $entity): bool {return true; },
+                    if: self::SAMPLE_IF,
                 ),
             ],
             'expectedConfiguration' => [
                 'stdClass' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'if' => 'O:16:"Opis\Closure\Box":2:{i:0;i:1;i:1;a:1:{s:4:"info";a:4:{s:3:"key";s:32:"b2037a8181118b374eef46daefe3a977";s:6:"header";s:62:"namespace Sofascore\PurgatoryBundle\Tests\Cache\Configuration;";s:4:"body";s:57:"static function (\stdClass $entity): bool {return true; }";s:5:"flags";i:2;}}}',
-                        'closureIf' => true,
+                        'if' => deepclone_to_array(self::SAMPLE_IF),
                         'actions' => Action::cases(),
                     ],
                 ],
