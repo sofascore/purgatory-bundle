@@ -30,6 +30,7 @@ use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\RouteProvider\UpdatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -449,14 +450,6 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
     }
 
-    private const \Closure VALID_IF = static function (\stdClass $entity): bool {
-        return true;
-    };
-
-    private const \Closure INVALID_IF = static function (\stdClass $entity): bool {
-        return false;
-    };
-
     #[RequiresFunction('deepclone_to_array')]
     public function testProvideRoutesToPurgeWithClosureIf(): void
     {
@@ -464,13 +457,13 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             'stdClass' => [
                 [
                     'routeName' => 'foo_route',
-                    'if' => deepclone_to_array(self::VALID_IF),
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
                 ],
             ],
             'stdClass::foo' => [
                 [
                     'routeName' => 'bar_route',
-                    'if' => deepclone_to_array(self::VALID_IF),
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
                 ],
                 [
                     'routeName' => 'baz_route',
@@ -484,7 +477,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
                             'values' => ['baz'],
                         ],
                     ],
-                    'if' => deepclone_to_array(self::INVALID_IF),
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_FALSE),
                 ],
             ],
         ], false);

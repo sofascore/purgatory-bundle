@@ -17,6 +17,7 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
@@ -245,11 +246,9 @@ final class ConfigurationLoaderTest extends TestCase
         self::assertSame($expectedConfiguration, $configuration->toArray());
     }
 
-    private const \Closure SAMPLE_IF = static function (\stdClass $entity): bool {return true; };
-
     public static function purgeSubscriptionProviderPhp85(): iterable
     {
-        yield 'purge subscription without property' => [
+        yield 'purge subscription with closure if' => [
             'purgeSubscriptions' => [
                 new PurgeSubscription(
                     class: \stdClass::class,
@@ -258,14 +257,14 @@ final class ConfigurationLoaderTest extends TestCase
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
                     actions: Action::cases(),
-                    if: self::SAMPLE_IF,
+                    if: ClosureIfHolder::RETURNS_TRUE,
                 ),
             ],
             'expectedConfiguration' => [
                 'stdClass' => [
                     [
                         'routeName' => 'app_route_foo',
-                        'if' => deepclone_to_array(self::SAMPLE_IF),
+                        'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
                         'actions' => Action::cases(),
                     ],
                 ],
