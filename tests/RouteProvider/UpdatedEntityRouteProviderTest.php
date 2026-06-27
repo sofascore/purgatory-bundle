@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\RequiresFunction;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -450,7 +450,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
     }
 
-    #[RequiresFunction('deepclone_to_array')]
+    #[RequiresPhp('>= 8.5.0')]
     public function testProvideRoutesToPurgeWithClosureIf(): void
     {
         $routeProvider = $this->createRouteProvider([

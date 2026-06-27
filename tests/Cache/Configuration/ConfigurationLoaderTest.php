@@ -232,24 +232,12 @@ final class ConfigurationLoaderTest extends TestCase
     }
 
     #[RequiresPhp('>= 8.5.0')]
-    #[DataProvider('purgeSubscriptionProviderPhp85')]
-    public function testSubscriptionsWithPhp85Features(array $purgeSubscriptions, array $expectedConfiguration): void
+    public function testSubscriptionsWithClosureIf(): void
     {
         $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
         $purgeSubscriptionProvider->expects(self::once())
             ->method('provide')
-            ->willReturn($purgeSubscriptions);
-
-        $loader = new ConfigurationLoader($purgeSubscriptionProvider);
-
-        self::assertInstanceOf(Configuration::class, $configuration = $loader->load());
-        self::assertSame($expectedConfiguration, $configuration->toArray());
-    }
-
-    public static function purgeSubscriptionProviderPhp85(): iterable
-    {
-        yield 'purge subscription with closure if' => [
-            'purgeSubscriptions' => [
+            ->willReturn([
                 new PurgeSubscription(
                     class: \stdClass::class,
                     property: null,
@@ -259,16 +247,19 @@ final class ConfigurationLoaderTest extends TestCase
                     actions: Action::cases(),
                     if: ClosureIfHolder::RETURNS_TRUE,
                 ),
-            ],
-            'expectedConfiguration' => [
-                'stdClass' => [
-                    [
-                        'routeName' => 'app_route_foo',
-                        'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
-                        'actions' => Action::cases(),
-                    ],
+            ]);
+
+        $loader = new ConfigurationLoader($purgeSubscriptionProvider);
+
+        self::assertInstanceOf(Configuration::class, $configuration = $loader->load());
+        self::assertSame([
+            'stdClass' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
+                    'actions' => Action::cases(),
                 ],
             ],
-        ];
+        ], $configuration->toArray());
     }
 }
