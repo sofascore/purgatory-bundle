@@ -18,7 +18,7 @@ env:
 jobs:
     composer:
         runs-on: ubuntu-latest
-        name: Composer Validations
+        name: Composer Validation
         steps:
             -   name: Checkout
                 uses: actions/checkout@v7
