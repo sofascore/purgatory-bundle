@@ -239,6 +239,61 @@ final class PurgatoryExtensionTest extends TestCase
         ));
     }
 
+    public function testMappingFilesAreLoadedFromProjectConfigDirWhenConfigDirParamIsNotSet(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
+        self::assertSame(
+            [
+                __DIR__.'/Fixtures/app/config/purgatory/one.yaml',
+                __DIR__.'/Fixtures/app/config/purgatory/two.yml',
+            ],
+            $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
+        );
+    }
+
+    public function testMappingFilesAreLoadedOnlyFromKernelConfigDirWhenSet(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+        $container->setParameter('.kernel.config_dir', __DIR__.'/Fixtures/app/apps/sub/config');
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
+        self::assertSame(
+            [
+                __DIR__.'/Fixtures/app/apps/sub/config/purgatory/six.yaml',
+            ],
+            $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
+        );
+    }
+
+    public function testMappingFilesAreLoadedOnceWhenKernelConfigDirMatchesProjectConfigDir(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+        $container->setParameter('.kernel.config_dir', __DIR__.'/Fixtures/app/config');
+
+        $extension = new PurgatoryExtension();
+        $extension->load([], $container);
+
+        self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
+        self::assertSame(
+            [
+                __DIR__.'/Fixtures/app/config/purgatory/one.yaml',
+                __DIR__.'/Fixtures/app/config/purgatory/two.yml',
+            ],
+            $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
+        );
+    }
+
     public function testYamlMetadataProviderIsRemovedWhenThereAreNoFiles(): void
     {
         $container = new ContainerBuilder();
