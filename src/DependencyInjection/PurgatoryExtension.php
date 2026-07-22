@@ -218,9 +218,16 @@ final class PurgatoryExtension extends ConfigurableExtension implements PrependE
             }
         };
 
-        /** @var string $projectDir */
-        $projectDir = $container->getParameter('kernel.project_dir');
-        if ($container->fileExists($dir = $projectDir.'/config/purgatory', '/^$/')) {
+        if ($container->hasParameter('.kernel.config_dir')) {
+            /** @var string $configDir */
+            $configDir = $container->getParameter('.kernel.config_dir');
+        } else {
+            /** @var string $projectDir */
+            $projectDir = $container->getParameter('kernel.project_dir');
+            $configDir = $projectDir.'/config';
+        }
+
+        if ($container->fileExists($dir = $configDir.'/purgatory', '/^$/')) {
             yield from $registerMappingFilesFromDir($dir);
         }
 
