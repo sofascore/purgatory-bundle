@@ -1,8 +1,8 @@
 # SofascorePurgatoryBundle
 
 [![Latest Stable Version](https://poser.pugx.org/sofascore/purgatory-bundle/v/stable)](https://packagist.org/packages/sofascore/purgatory-bundle)
-[![Build Status](https://github.com/sofascore/purgatory-bundle/workflows/Tests/badge.svg)](https://github.com/sofascore/purgatory-bundle/actions)
-[![Code Coverage](https://codecov.io/gh/sofascore/purgatory-bundle/graph/badge.svg?token=HWMVLVSTIC)](https://codecov.io/gh/sofascore/purgatory-bundle)
+[![Build Status](https://github.com/sofascore/purgatory-bundle/actions/workflows/tests.yaml/badge.svg?branch=2.x)](https://github.com/sofascore/purgatory-bundle/actions/workflows/tests.yaml)
+[![Code Coverage](https://codecov.io/gh/sofascore/purgatory-bundle/branch/2.x/graph/badge.svg?token=HWMVLVSTIC)](https://codecov.io/gh/sofascore/purgatory-bundle)
 [![License](https://poser.pugx.org/sofascore/purgatory-bundle/license)](https://packagist.org/packages/sofascore/purgatory-bundle)
 
 Purgatory is a Symfony bundle for HTTP cache invalidation, designed to automatically generate and send cache purge
