@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class RegisterPurgerPass implements CompilerPassInterface
+final class RegisterPurgerCompilerPass implements CompilerPassInterface
 {
     /**
      * {@inheritDoc}

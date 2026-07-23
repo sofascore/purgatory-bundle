@@ -9,8 +9,8 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
-use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\DependencyInjection\RegisterPurgerCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -665,7 +665,7 @@ final class PurgatoryExtensionTest extends TestCase
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', __DIR__);
         $container->registerExtension($extension = new PurgatoryExtension());
-        $container->addCompilerPass(new RegisterPurgerPass());
+        $container->addCompilerPass(new RegisterPurgerCompilerPass());
 
         $container->register('profiler', \stdClass::class);
         $container->register('twig', \stdClass::class);
