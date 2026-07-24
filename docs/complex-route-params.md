@@ -51,7 +51,7 @@ elements within the collections are purged:
 
 ```php
 #[Route('/posts/{tag}/{commentId<\d+>}', name: 'posts_list', methods: 'GET')]
-#[PurgeOn(Post::class, routeParams: ['tag' => 'tags[*].id', 'commentId' => 'comments[*].id'])]
+#[PurgeOn(Post::class, routeParams: ['tag' => 'tags[*].name', 'commentId' => 'comments[*].id'])]
 public function listAction(string $tag, Comment $comment)
 {
 }
@@ -134,9 +134,8 @@ public function listAction()
 }
 ```
 
-By default, the entire entity being purged is passed to the route parameter service.
-If your service only needs a specific part of the entity, you can limit what is passed by providing a second argument to
-`DynamicValues`.
+By default, the entire entity being purged is passed to the route parameter service. If your service only needs a
+specific part of the entity, you can limit what is passed by providing a second argument to `DynamicValues`.
 
 This argument is a **Symfony PropertyAccess property path** and will be resolved against the entity before being passed
 to the service:
