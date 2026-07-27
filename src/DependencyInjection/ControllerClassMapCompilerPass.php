@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class ControllerClassMapPass implements CompilerPassInterface
+final class ControllerClassMapCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

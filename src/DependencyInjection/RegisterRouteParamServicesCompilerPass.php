@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
-final class RegisterRouteParamServicesPass implements CompilerPassInterface
+final class RegisterRouteParamServicesCompilerPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

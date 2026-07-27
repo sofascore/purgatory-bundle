@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterPurgerPass;
-use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\DependencyInjection\RegisterPurgerCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 
-#[CoversClass(RegisterPurgerPass::class)]
-final class RegisterPurgerPassTest extends TestCase
+#[CoversClass(RegisterPurgerCompilerPass::class)]
+final class RegisterPurgerCompilerPassTest extends TestCase
 {
     private ContainerBuilder $container;
 
@@ -21,9 +21,11 @@ final class RegisterPurgerPassTest extends TestCase
     {
         $this->container = new ContainerBuilder();
         $this->container->setParameter('kernel.project_dir', __DIR__);
+        $this->container->setParameter('kernel.build_dir', __DIR__);
+        $this->container->setParameter('kernel.environment', 'dev');
         $this->container->register('http_cache.store', Store::class);
 
-        (new PurgatoryExtension())->load([], $this->container);
+        (new PurgatoryBundle())->getContainerExtension()->load([], $this->container);
     }
 
     protected function tearDown(): void
@@ -33,7 +35,7 @@ final class RegisterPurgerPassTest extends TestCase
 
     public function testDefaultPurgerIsSetToSymfonyPurgerIfHttpCacheStoreExists(): void
     {
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.symfony', (string) $this->container->getAlias('sofascore.purgatory.purger'));
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));
@@ -46,7 +48,7 @@ final class RegisterPurgerPassTest extends TestCase
     {
         $this->container->removeDefinition('http_cache.store');
 
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.void', (string) $this->container->getAlias('sofascore.purgatory.purger'));
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));
@@ -59,7 +61,7 @@ final class RegisterPurgerPassTest extends TestCase
     {
         $this->container->setParameter('.sofascore.purgatory.purger.name', 'in-memory');
 
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.in_memory', (string) $this->container->getAlias('sofascore.purgatory.purger'));
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));
@@ -70,7 +72,7 @@ final class RegisterPurgerPassTest extends TestCase
         $this->container->setParameter('.sofascore.purgatory.purger.name', 'in-memory');
         $this->container->removeDefinition('http_cache.store');
 
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.in_memory', (string) $this->container->getAlias('sofascore.purgatory.purger'));
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory.purger.symfony'));
@@ -80,7 +82,7 @@ final class RegisterPurgerPassTest extends TestCase
     {
         $this->container->setParameter('.sofascore.purgatory.purger.name', 'sofascore.purgatory.purger.in_memory');
 
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
 
         self::assertSame('sofascore.purgatory.purger.in_memory', (string) $this->container->getAlias('sofascore.purgatory.purger'));
     }
@@ -92,6 +94,6 @@ final class RegisterPurgerPassTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The configured purger service "invalid" does not exist.');
 
-        (new RegisterPurgerPass())->process($this->container);
+        (new RegisterPurgerCompilerPass())->process($this->container);
     }
 }

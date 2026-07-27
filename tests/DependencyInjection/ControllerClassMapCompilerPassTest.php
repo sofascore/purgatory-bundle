@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
-use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\ControllerClassMapPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\ControllerClassMapCompilerPass;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyController;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouterInterface;
 
-#[CoversClass(ControllerClassMapPass::class)]
-final class ControllerClassMapPassTest extends TestCase
+#[CoversClass(ControllerClassMapCompilerPass::class)]
+final class ControllerClassMapCompilerPassTest extends TestCase
 {
     #[TestWith([DummyController::class, DummyController::class, true])]
     #[TestWith([DummyController::class, DummyController::class, false])]
@@ -36,7 +36,7 @@ final class ControllerClassMapPassTest extends TestCase
                 [],
             ]);
 
-        $compilerPass = new ControllerClassMapPass();
+        $compilerPass = new ControllerClassMapCompilerPass();
         $compilerPass->process($container);
 
         $classMap = $definition->getArgument(1);

@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterExpressionLanguageProvidersPass;
-use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\DependencyInjection\RegisterExpressionLanguageProvidersCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-#[CoversClass(RegisterExpressionLanguageProvidersPass::class)]
-final class RegisterExpressionLanguageProvidersPassTest extends TestCase
+#[CoversClass(RegisterExpressionLanguageProvidersCompilerPass::class)]
+final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
 {
     private ContainerBuilder $container;
 
@@ -24,7 +24,10 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
     {
         $this->container = new ContainerBuilder();
         $this->container->setParameter('kernel.project_dir', __DIR__);
-        (new PurgatoryExtension())->load([], $this->container);
+        $this->container->setParameter('kernel.build_dir', __DIR__);
+        $this->container->setParameter('kernel.environment', 'dev');
+
+        (new PurgatoryBundle())->getContainerExtension()->load([], $this->container);
     }
 
     protected function tearDown(): void
@@ -52,7 +55,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         $this->container->register(id: 'other_provider', class: \stdClass::class)
             ->addTag('purgatory.expression_language_provider');
 
-        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
         $compilerPass->process($this->container);
 
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
@@ -103,7 +106,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
     {
         $this->container->removeDefinition('sofascore.purgatory.expression_language');
 
-        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
         $compilerPass->process($this->container);
 
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
@@ -111,7 +114,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
 
     public function testExpressionLangProviderIsRemovedWhenThereAreNoFunctions(): void
     {
-        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
         $compilerPass->process($this->container);
 
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
@@ -131,7 +134,7 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
             attributes: ['function' => 'one', 'method' => '__invoke'],
         );
 
-        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The function name "one" is already used by "foo::__invoke".');

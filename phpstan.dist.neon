@@ -6,5 +6,4 @@ parameters:
     paths:
         - src
     excludePaths:
-        - src/DependencyInjection/Configuration.php
         - src/Doctrine/DBAL/PurgatoryConnection.php
