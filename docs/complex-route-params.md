@@ -51,7 +51,7 @@ elements within the collections are purged:
 
 ```php
 #[Route('/posts/{tag}/{commentId<\d+>}', name: 'posts_list', methods: 'GET')]
-#[PurgeOn(Post::class, routeParams: ['tag' => 'tags[*].id', 'commentId' => 'comments[*].id'])]
+#[PurgeOn(Post::class, routeParams: ['tag' => 'tags[*].name', 'commentId' => 'comments[*].id'])]
 public function listAction(string $tag, Comment $comment)
 {
 }

@@ -25,8 +25,8 @@ It also provides a `void` purger, which can be used during development when cach
 purger simply ignores all purge requests, making it ideal for non-production environments. Additionally, an `in-memory`
 purger is included, specifically designed for testing purposes.
 
-For advanced use cases, you can create [custom purgers](custom-purgers.md) to integrate with any custom or
-third-party HTTP cache backend that fits your project requirements.
+For advanced use cases, you can create [custom purgers](custom-purgers.md) to integrate with any custom or third-party
+HTTP cache backend that fits your project requirements.
 
 ### Configuring Symfony's HTTP Cache
 
@@ -40,6 +40,8 @@ To use the Symfony purger, add the following configuration:
 purgatory:
     purger: symfony
 ```
+
+This is a shorthand for `purger: { name: symfony }`.
 
 ### Configuring Varnish Cache
 
@@ -123,9 +125,15 @@ bin/console messenger:consume async
 
 ## How It Works
 
-The bundle listens to **Doctrine** lifecycle events (`postUpdate`, `postRemove`, `postPersist`) to automatically detect
-when entities are modified, created, or deleted. When these changes are flushed to the database, the bundle steps in to
+The bundle listens to **Doctrine** lifecycle events (`postPersist`, `postUpdate`, `preRemove`) to automatically detect
+when entities are created, modified, or deleted. When these changes are flushed to the database, the bundle steps in to
 process them.
+
+By default, the bundle registers a Doctrine DBAL middleware that triggers the processing of collected purge requests
+right after the database transaction is committed. This ensures purges only happen for changes that were actually
+persisted. If the middleware is disabled (`doctrine_middleware: { enabled: false }`), the bundle falls back to
+Doctrine's `postFlush` event instead, which runs after changes are flushed but before an eventual wrapping transaction
+is committed.
 
 The bundle uses **purge subscriptions**, which are predefined rules that associate specific entities and their
 properties with corresponding routes and route parameters. These subscriptions help identify which content should be
@@ -147,8 +155,8 @@ entities and properties, giving you greater control over purging behavior in mor
 Purge subscriptions can be configured using the [`#[PurgeOn]`][1] attribute. Controllers using this attribute **MUST**
 be registered as services.
 
-You can also configure purge subscriptions [using YAML](purge-subscriptions-using-yaml.md). This is particularly
-useful if you have routes without an associated controller or action.
+You can also configure purge subscriptions [using YAML](purge-subscriptions-using-yaml.md). This is particularly useful
+if you have routes without an associated controller or action.
 
 ### Basic Example
 
@@ -455,7 +463,18 @@ when@test:
 ```
 
 To write tests, use the `InteractsWithPurgatory` trait in your test class, which provides helper methods to verify
-purged URLs and clear the in-memory purger:
+purged URLs and clear the in-memory purger.
+
+The following example assumes a `post_details` route with a `{slug}` parameter, where the slug is generated from the
+post's title:
+
+```php
+#[Route('/post/{slug}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['slug' => 'slug'])]
+public function detailsAction(Post $post)
+{
+}
+```
 
 ```php
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -465,17 +484,17 @@ class PurgeTest extends KernelTestCase
 {
     use InteractsWithPurgatory;
 
-    // ...
-
     public function testPurgePost()
     {
+        $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
+
         // Create and persist a new Post entity
         $post = new Post();
         $post->title = 'Title';
         $post->text = 'Text';
 
-        $this->entityManager->persist($post);
-        $this->entityManager->flush();
+        $entityManager->persist($post);
+        $entityManager->flush();
 
         // Assert that the URL for the post has been purged
         self::assertUrlIsPurged('/post/title');
@@ -486,7 +505,7 @@ class PurgeTest extends KernelTestCase
         // Update the Post entity and flush the changes
         $post->title = 'Title New';
 
-        $this->entityManager->flush();
+        $entityManager->flush();
 
         // Assert that both the old and new URLs have been purged
         self::assertUrlIsPurged('/post/title');
@@ -518,11 +537,7 @@ This command provides insights into which routes and parameters are associated w
 - [Custom Expression Language Functions](custom-expression-language-functions.md)
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
-
 [1]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/PurgeOn.php
-
 [2]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/TargetedProperties.php
-
 [3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
-
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php

@@ -11,6 +11,20 @@ public function detailsAction(Post $post)
 }
 ```
 
+When used in an `if` expression, the function's return value determines whether the purge occurs, so it should return a
+boolean. When used in an `ExpressionValues` expression, it should return the value (or an array of values) to use for
+the route parameter:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
+
+#[Route('/posts-by-author/{full_name}', name: 'posts_list_by_author', methods: 'GET')]
+#[PurgeOn(Author::class, routeParams: ['full_name' => new ExpressionValues('author_full_name(obj)')])]
+public function listAction(Author $author)
+{
+}
+```
+
 To enable this functionality, make sure your service is tagged correctly in the service configuration:
 
 ```yaml
