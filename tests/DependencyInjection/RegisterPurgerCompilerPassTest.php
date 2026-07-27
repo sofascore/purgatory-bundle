@@ -6,9 +6,9 @@ namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterPurgerCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\HttpCache\Store;
 
@@ -21,9 +21,11 @@ final class RegisterPurgerCompilerPassTest extends TestCase
     {
         $this->container = new ContainerBuilder();
         $this->container->setParameter('kernel.project_dir', __DIR__);
+        $this->container->setParameter('kernel.build_dir', __DIR__);
+        $this->container->setParameter('kernel.environment', 'dev');
         $this->container->register('http_cache.store', Store::class);
 
-        (new PurgatoryExtension())->load([], $this->container);
+        (new PurgatoryBundle())->getContainerExtension()->load([], $this->container);
     }
 
     protected function tearDown(): void

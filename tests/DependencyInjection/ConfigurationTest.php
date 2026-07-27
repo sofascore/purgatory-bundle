@@ -9,20 +9,19 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\DependencyInjection\Configuration;
-use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
-#[CoversClass(Configuration::class)]
+#[CoversClass(PurgatoryBundle::class)]
 final class ConfigurationTest extends TestCase
 {
     public function testDefaultConfig(): void
     {
-        $config = (new Processor())->processConfiguration(new Configuration(), ['purgatory' => []]);
+        $config = $this->processConfiguration(['purgatory' => []]);
 
         self::assertSame([
             'mapping_paths' => [],
@@ -53,7 +52,7 @@ final class ConfigurationTest extends TestCase
 
     public function testPurgerHostsValidation(): void
     {
-        $config = (new Processor())->processConfiguration(new Configuration(), [
+        $config = $this->processConfiguration([
             'purgatory' => [
                 'purger' => [
                     'hosts' => [
@@ -75,7 +74,7 @@ final class ConfigurationTest extends TestCase
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Cannot set the messenger bus without defining the transport.');
 
-        (new Processor())->processConfiguration(new Configuration(), [
+        $this->processConfiguration([
             'purgatory' => [
                 'messenger' => [
                     'bus' => 'some_id',
@@ -89,7 +88,7 @@ final class ConfigurationTest extends TestCase
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('Cannot set the batch size without defining the transport.');
 
-        (new Processor())->processConfiguration(new Configuration(), [
+        $this->processConfiguration([
             'purgatory' => [
                 'messenger' => [
                     'batch_size' => 1,
@@ -105,7 +104,7 @@ final class ConfigurationTest extends TestCase
         $this->expectException(InvalidConfigurationException::class);
         $this->expectExceptionMessage('The batch size must be a number greater than 0.');
 
-        (new Processor())->processConfiguration(new Configuration(), [
+        $this->processConfiguration([
             'purgatory' => [
                 'messenger' => [
                     'transport' => 'foo',
@@ -117,16 +116,16 @@ final class ConfigurationTest extends TestCase
 
     public function testDoctrineListenerPrioritiesConifgurationForSingleValue(): void
     {
-        $configuration = (new Processor())->processConfiguration(new Configuration(), [
+        $config = $this->processConfiguration([
             'purgatory' => [
                 'doctrine_event_listener_priorities' => 100,
             ],
         ]);
 
-        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['preRemove']);
-        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postPersist']);
-        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postUpdate']);
-        self::assertSame(100, $configuration['doctrine_event_listener_priorities']['postFlush']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['preRemove']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postPersist']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postUpdate']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postFlush']);
     }
 
     #[DataProvider('provideXMLCases')]
@@ -134,13 +133,13 @@ final class ConfigurationTest extends TestCase
     public function testXMLConfiguration(string $file, array $expectedConfig): void
     {
         $container = new ContainerBuilder();
-        $container->registerExtension(new PurgatoryExtension());
+        $container->registerExtension((new PurgatoryBundle())->getContainerExtension());
         $locator = new FileLocator(__DIR__.'/Fixtures/xml');
 
         $xmlFileLoader = new XmlFileLoader($container, $locator);
         $xmlFileLoader->load($file);
 
-        $config = (new Processor())->processConfiguration(new Configuration(), $container->getExtensionConfig('purgatory'));
+        $config = $this->processConfiguration($container->getExtensionConfig('purgatory'));
 
         self::assertSame($expectedConfig, $config);
     }
@@ -212,5 +211,12 @@ final class ConfigurationTest extends TestCase
                 'profiler_integration' => true,
             ],
         ];
+    }
+
+    private function processConfiguration(array $configs): array
+    {
+        $configuration = (new PurgatoryBundle())->getContainerExtension()->getConfiguration([], new ContainerBuilder());
+
+        return (new Processor())->processConfiguration($configuration, $configs);
     }
 }

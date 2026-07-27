@@ -76,19 +76,19 @@ parameters:
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, ReflectionClass\|ReflectionMethod\)\: void given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/DependencyInjection/PurgatoryExtension.php
+			path: src/PurgatoryBundle.php
 
 		-
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsRouteParamService, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsRouteParamService, ReflectionClass\|ReflectionMethod\)\: void given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/DependencyInjection/PurgatoryExtension.php
+			path: src/PurgatoryBundle.php
 
 		-
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\PurgeOn, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\PurgeOn, ReflectionClass\|ReflectionMethod\)\: void given\.$#'
 			identifier: argument.type
 			count: 1
-			path: src/DependencyInjection/PurgatoryExtension.php
+			path: src/PurgatoryBundle.php
 
 		-
 			message: '#^Trait Sofascore\\PurgatoryBundle\\Test\\InteractsWithPurgatory is used zero times and is not analysed\.$#'
