@@ -3,6 +3,10 @@
 Purge subscriptions can also be configured using YAML. This is particularly useful if you have routes without an
 associated controller or action.
 
+Each top-level key is the **route name** the subscription applies to. YAML files placed in `config/purgatory/` are
+loaded automatically. To load definitions from other files or directories, list them under the `mapping_paths`
+configuration option.
+
 To get started, create a YAML file in `config/purgatory/`, for example:
 
 ```yaml

@@ -11,8 +11,8 @@ entities and generates URLs that need purging based on configured routes.
 
 ## Features
 
-- **Doctrine Event Integration**: Listens to **Doctrine** lifecycle events (`postUpdate`, `postRemove`, `postPersist`)
-  to automatically detect when entities are modified, created, or deleted.
+- **Doctrine Event Integration**: Listens to **Doctrine** lifecycle events (`postPersist`, `postUpdate`, `preRemove`)
+  to automatically detect when entities are created, modified, or deleted.
 
 - **Automatic URL Generation**: Automatically generates purge requests for relevant URLs based on the affected entities
   and their associated routes.
