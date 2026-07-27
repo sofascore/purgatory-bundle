@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\DependencyInjection;
 
-use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ConfigurationExtensionInterface;
@@ -20,7 +19,6 @@ use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 final class BundleExtensionWrapper extends Extension implements PrependExtensionInterface
 {
     public function __construct(
-        private readonly PurgatoryBundle $bundle,
         private readonly ExtensionInterface&ConfigurationExtensionInterface&PrependExtensionInterface $extension,
     ) {
     }
@@ -50,6 +48,11 @@ final class BundleExtensionWrapper extends Extension implements PrependExtension
 
     public function getNamespace(): string
     {
-        return $this->bundle->getXMLNamespace();
+        return 'http://sofascore.com/schema/dic/purgatory';
+    }
+
+    public function getXsdValidationBasePath(): string
+    {
+        return \dirname(__DIR__, 2).'/config/schema';
     }
 }

@@ -40,14 +40,19 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Yaml\Parser as YamlParser;
 
 final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterface
 {
+    private ?BundleExtensionWrapper $wrappedExtension = null;
+
     public function build(ContainerBuilder $container): void
     {
-        /* @TODO Remove when Symfony <8.1 support is dropped, {@see https://github.com/symfony/symfony/pull/62800} */
-        $container->addCompilerPass($this, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        // @TODO Remove when Symfony <8.1 support is dropped, {@see https://github.com/symfony/symfony/pull/62800}
+        if (Kernel::VERSION_ID < 80100) {
+            $container->addCompilerPass($this, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        }
 
         $container->addCompilerPass(new ControllerClassMapCompilerPass());
         $container->addCompilerPass(new RegisterExpressionLanguageProvidersCompilerPass());
@@ -295,17 +300,13 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
      */
     public function getContainerExtension(): ExtensionInterface
     {
-        /** @var ExtensionInterface&ConfigurationExtensionInterface&PrependExtensionInterface $extension */
-        $extension = parent::getContainerExtension();
+        if (null === $this->wrappedExtension) {
+            /** @var ExtensionInterface&ConfigurationExtensionInterface&PrependExtensionInterface $extension */
+            $extension = parent::getContainerExtension();
 
-        return new BundleExtensionWrapper($this, $extension);
-    }
+            $this->wrappedExtension = new BundleExtensionWrapper($extension);
+        }
 
-    /**
-     * @internal
-     */
-    public function getXMLNamespace(): string
-    {
-        return 'http://sofascore.com/schema/dic/purgatory';
+        return $this->wrappedExtension;
     }
 }

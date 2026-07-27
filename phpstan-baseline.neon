@@ -73,6 +73,12 @@ parameters:
 			path: src/Cache/RouteMetadata/YamlMetadataProvider.php
 
 		-
+			message: '#^Comparison operation "\<" between 80101 and 80100 is always false\.$#'
+			identifier: smaller.alwaysFalse
+			count: 1
+			path: src/PurgatoryBundle.php
+
+		-
 			message: '#^Parameter \#2 \$configurator of method Symfony\\Component\\DependencyInjection\\ContainerBuilder\:\:registerAttributeForAutoconfiguration\(\) expects callable\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, Reflector\)\: void, Closure\(Symfony\\Component\\DependencyInjection\\ChildDefinition, Sofascore\\PurgatoryBundle\\Attribute\\AsExpressionLanguageFunction, ReflectionClass\|ReflectionMethod\)\: void given\.$#'
 			identifier: argument.type
 			count: 1

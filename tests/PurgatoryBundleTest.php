@@ -31,10 +31,12 @@ use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\ResourceInterface;
+use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpKernel\Kernel;
 
 #[CoversClass(PurgatoryBundle::class)]
 final class PurgatoryBundleTest extends TestCase
@@ -872,6 +874,13 @@ final class PurgatoryBundleTest extends TestCase
 
         $container->registerExtension($extension);
         $bundle->build($container);
+
+        // On Symfony 8.1+ the kernel registers the bundle as a compiler pass instead of build(),
+        // but since these tests don't use a kernel, it must be done manually, {@see https://github.com/symfony/symfony/pull/62800}
+        // @TODO Make unconditional when Symfony <8.1 support is dropped
+        if (Kernel::VERSION_ID >= 80100) {
+            $container->addCompilerPass($bundle, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
+        }
 
         return $container;
     }
