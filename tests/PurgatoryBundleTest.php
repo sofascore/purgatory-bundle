@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
+namespace Sofascore\PurgatoryBundle\Tests;
 
 use Doctrine\ORM\Events as DoctrineEvents;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
@@ -26,14 +27,219 @@ use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummySubscripti
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyTargetResolver;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyValuesResolver;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\FrameworkExtension;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\ResourceInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 
 #[CoversClass(PurgatoryBundle::class)]
-final class PurgatoryExtensionTest extends TestCase
+final class PurgatoryBundleTest extends TestCase
 {
+    public function testDefaultConfig(): void
+    {
+        $config = $this->processConfiguration(['purgatory' => []]);
+
+        self::assertSame([
+            'mapping_paths' => [],
+            'route_ignore_patterns' => [],
+            'doctrine_middleware' => [
+                'enabled' => true,
+                'priority' => null,
+            ],
+            'doctrine_event_listener_priorities' => [
+                'preRemove' => null,
+                'postPersist' => null,
+                'postUpdate' => null,
+                'postFlush' => null,
+            ],
+            'purger' => [
+                'name' => null,
+                'hosts' => [],
+                'http_client' => null,
+            ],
+            'messenger' => [
+                'transport' => null,
+                'bus' => null,
+                'batch_size' => null,
+            ],
+            'profiler_integration' => true,
+        ], $config);
+    }
+
+    public function testPurgerHostsValidation(): void
+    {
+        $config = $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'hosts' => [
+                        'http://foo.bar',
+                        'https://baz-qux/',
+                    ],
+                ],
+            ],
+        ]);
+
+        self::assertSame([
+            'http://foo.bar',
+            'https://baz-qux',
+        ], $config['purger']['hosts']);
+    }
+
+    public function testMessengerBusWithoutTransportValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set the messenger bus without defining the transport.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'messenger' => [
+                    'bus' => 'some_id',
+                ],
+            ],
+        ]);
+    }
+
+    public function testMessengerBatchSizeWithoutTransportValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('Cannot set the batch size without defining the transport.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'messenger' => [
+                    'batch_size' => 1,
+                ],
+            ],
+        ]);
+    }
+
+    #[TestWith([0])]
+    #[TestWith([-1])]
+    public function testMessengerBatchSizeGreaterThanZeroValidation(int $batchSize): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The batch size must be a number greater than 0.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'messenger' => [
+                    'transport' => 'foo',
+                    'batch_size' => $batchSize,
+                ],
+            ],
+        ]);
+    }
+
+    public function testDoctrineListenerPrioritiesConifgurationForSingleValue(): void
+    {
+        $config = $this->processConfiguration([
+            'purgatory' => [
+                'doctrine_event_listener_priorities' => 100,
+            ],
+        ]);
+
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['preRemove']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postPersist']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postUpdate']);
+        self::assertSame(100, $config['doctrine_event_listener_priorities']['postFlush']);
+    }
+
+    #[DataProvider('provideXMLCases')]
+    #[RequiresMethod(XmlFileLoader::class, 'load')]
+    public function testXMLConfiguration(string $file, array $expectedConfig): void
+    {
+        $container = new ContainerBuilder();
+        $container->registerExtension((new PurgatoryBundle())->getContainerExtension());
+        $locator = new FileLocator(__DIR__.'/DependencyInjection/Fixtures/xml');
+
+        $xmlFileLoader = new XmlFileLoader($container, $locator);
+        $xmlFileLoader->load($file);
+
+        $config = $this->processConfiguration($container->getExtensionConfig('purgatory'));
+
+        self::assertSame($expectedConfig, $config);
+    }
+
+    public static function provideXMLCases(): iterable
+    {
+        yield 'all' => [
+            'all.xml',
+            [
+                'profiler_integration' => false,
+                'doctrine_middleware' => [
+                    'priority' => 5,
+                    'enabled' => true,
+                ],
+                'doctrine_event_listener_priorities' => [
+                    'preRemove' => 10,
+                    'postPersist' => 20,
+                    'postUpdate' => 30,
+                    'postFlush' => 40,
+                ],
+                'purger' => [
+                    'name' => 'varnish',
+                    'http_client' => 'foo.client',
+                    'hosts' => [
+                        'http://foo.bar',
+                        'http://baz.qux',
+                    ],
+                ],
+                'messenger' => [
+                    'transport' => 'async',
+                    'bus' => 'command_bus',
+                    'batch_size' => 100,
+                ],
+                'mapping_paths' => [
+                    '%kernel.project_dir%/one.yaml',
+                    '%kernel.project_dir%/two.yaml',
+                ],
+                'route_ignore_patterns' => [
+                    0 => '/^_profiler/',
+                    1 => '/^_wdt/',
+                ],
+            ],
+        ];
+        yield 'short listener' => [
+            'short_options.xml',
+            [
+                'doctrine_middleware' => [
+                    'enabled' => false,
+                    'priority' => null,
+                ],
+                'doctrine_event_listener_priorities' => [
+                    'preRemove' => 10,
+                    'postPersist' => 10,
+                    'postUpdate' => 10,
+                    'postFlush' => 10,
+                ],
+                'mapping_paths' => [],
+                'route_ignore_patterns' => [],
+                'purger' => [
+                    'name' => null,
+                    'hosts' => [],
+                    'http_client' => null,
+                ],
+                'messenger' => [
+                    'transport' => null,
+                    'bus' => null,
+                    'batch_size' => null,
+                ],
+                'profiler_integration' => true,
+            ],
+        ];
+    }
+
+    private function processConfiguration(array $configs): array
+    {
+        $configuration = (new PurgatoryBundle())->getContainerExtension()->getConfiguration([], new ContainerBuilder());
+
+        return (new Processor())->processConfiguration($configuration, $configs);
+    }
+
     public function testControllerWithPurgeOnIsTagged(): void
     {
         $container = self::getContainer();
@@ -197,21 +403,21 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertSame($expectedHttpClient, (string) $container->getDefinition('sofascore.purgatory.purger.varnish')->getArgument(0));
     }
 
-    #[TestWith([[], ['config/purgatory/one.yaml', 'config/purgatory/two.yml'], __DIR__.'/Fixtures/app/config/purgatory'])]
+    #[TestWith([[], ['config/purgatory/one.yaml', 'config/purgatory/two.yml'], __DIR__.'/DependencyInjection/Fixtures/app/config/purgatory'])]
     #[TestWith([
-        [__DIR__.'/Fixtures/app/config/three.yaml'],
+        [__DIR__.'/DependencyInjection/Fixtures/app/config/three.yaml'],
         ['config/purgatory/one.yaml', 'config/purgatory/two.yml', 'config/three.yaml'],
-        __DIR__.'/Fixtures/app/config/three.yaml',
+        __DIR__.'/DependencyInjection/Fixtures/app/config/three.yaml',
     ])]
     #[TestWith([
-        [__DIR__.'/Fixtures/app/config/additional'],
+        [__DIR__.'/DependencyInjection/Fixtures/app/config/additional'],
         ['config/purgatory/one.yaml', 'config/purgatory/two.yml', 'config/additional/five.yaml', 'config/additional/four.yml'],
-        __DIR__.'/Fixtures/app/config/additional',
+        __DIR__.'/DependencyInjection/Fixtures/app/config/additional',
     ])]
     public function testMappingPathsAreSet(array $mappingPaths, array $expectedFiles, string $expectedResource): void
     {
         $container = self::getContainer();
-        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+        $container->setParameter('kernel.project_dir', __DIR__.'/DependencyInjection/Fixtures/app');
 
         $extension = $container->getExtension('purgatory');
         $extension->load([
@@ -222,7 +428,7 @@ final class PurgatoryExtensionTest extends TestCase
 
         self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
         self::assertSame(
-            array_map(static fn (string $file): string => __DIR__.'/Fixtures/app/'.$file, $expectedFiles),
+            array_map(static fn (string $file): string => __DIR__.'/DependencyInjection/Fixtures/app/'.$file, $expectedFiles),
             $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
         );
 
@@ -235,7 +441,7 @@ final class PurgatoryExtensionTest extends TestCase
     public function testMappingFilesAreLoadedFromProjectConfigDirWhenConfigDirParamIsNotSet(): void
     {
         $container = self::getContainer();
-        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
+        $container->setParameter('kernel.project_dir', __DIR__.'/DependencyInjection/Fixtures/app');
 
         $extension = $container->getExtension('purgatory');
         $extension->load([], $container);
@@ -243,8 +449,8 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
         self::assertSame(
             [
-                __DIR__.'/Fixtures/app/config/purgatory/one.yaml',
-                __DIR__.'/Fixtures/app/config/purgatory/two.yml',
+                __DIR__.'/DependencyInjection/Fixtures/app/config/purgatory/one.yaml',
+                __DIR__.'/DependencyInjection/Fixtures/app/config/purgatory/two.yml',
             ],
             $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
         );
@@ -253,8 +459,8 @@ final class PurgatoryExtensionTest extends TestCase
     public function testMappingFilesAreLoadedOnlyFromKernelConfigDirWhenSet(): void
     {
         $container = self::getContainer();
-        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
-        $container->setParameter('.kernel.config_dir', __DIR__.'/Fixtures/app/apps/sub/config');
+        $container->setParameter('kernel.project_dir', __DIR__.'/DependencyInjection/Fixtures/app');
+        $container->setParameter('.kernel.config_dir', __DIR__.'/DependencyInjection/Fixtures/app/apps/sub/config');
 
         $extension = $container->getExtension('purgatory');
         $extension->load([], $container);
@@ -262,7 +468,7 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
         self::assertSame(
             [
-                __DIR__.'/Fixtures/app/apps/sub/config/purgatory/six.yaml',
+                __DIR__.'/DependencyInjection/Fixtures/app/apps/sub/config/purgatory/six.yaml',
             ],
             $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
         );
@@ -271,8 +477,8 @@ final class PurgatoryExtensionTest extends TestCase
     public function testMappingFilesAreLoadedOnceWhenKernelConfigDirMatchesProjectConfigDir(): void
     {
         $container = self::getContainer();
-        $container->setParameter('kernel.project_dir', __DIR__.'/Fixtures/app');
-        $container->setParameter('.kernel.config_dir', __DIR__.'/Fixtures/app/config');
+        $container->setParameter('kernel.project_dir', __DIR__.'/DependencyInjection/Fixtures/app');
+        $container->setParameter('.kernel.config_dir', __DIR__.'/DependencyInjection/Fixtures/app/config');
 
         $extension = $container->getExtension('purgatory');
         $extension->load([], $container);
@@ -280,8 +486,8 @@ final class PurgatoryExtensionTest extends TestCase
         self::assertTrue($container->hasDefinition('sofascore.purgatory.route_metadata_provider.yaml'));
         self::assertSame(
             [
-                __DIR__.'/Fixtures/app/config/purgatory/one.yaml',
-                __DIR__.'/Fixtures/app/config/purgatory/two.yml',
+                __DIR__.'/DependencyInjection/Fixtures/app/config/purgatory/one.yaml',
+                __DIR__.'/DependencyInjection/Fixtures/app/config/purgatory/two.yml',
             ],
             $container->getDefinition('sofascore.purgatory.route_metadata_provider.yaml')->getArgument(1),
         );
