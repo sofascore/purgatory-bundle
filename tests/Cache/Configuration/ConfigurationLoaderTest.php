@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Cache\Configuration;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
@@ -16,6 +17,7 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoader;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
@@ -227,5 +229,37 @@ final class ConfigurationLoaderTest extends TestCase
                 ],
             ],
         ];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testSubscriptionsWithClosureIf(): void
+    {
+        $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider->expects(self::once())
+            ->method('provide')
+            ->willReturn([
+                new PurgeSubscription(
+                    class: \stdClass::class,
+                    property: null,
+                    routeParams: [],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo'),
+                    actions: Action::cases(),
+                    if: ClosureIfHolder::RETURNS_TRUE,
+                ),
+            ]);
+
+        $loader = new ConfigurationLoader($purgeSubscriptionProvider);
+
+        self::assertInstanceOf(Configuration::class, $configuration = $loader->load());
+        self::assertSame([
+            'stdClass' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
+                    'actions' => Action::cases(),
+                ],
+            ],
+        ], $configuration->toArray());
     }
 }

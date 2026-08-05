@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -29,6 +30,7 @@ use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\RouteProvider\UpdatedEntityRouteProvider;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -446,6 +448,59 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         $this->expectException(InvalidIfExpressionResultException::class);
         $this->expectExceptionMessage($expectedMessage);
         [...$routeProvider->provideRoutesFor(Action::Update, new \stdClass(), [])];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testProvideRoutesToPurgeWithClosureIf(): void
+    {
+        $routeProvider = $this->createRouteProvider([
+            'stdClass' => [
+                [
+                    'routeName' => 'foo_route',
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
+                ],
+            ],
+            'stdClass::foo' => [
+                [
+                    'routeName' => 'bar_route',
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_TRUE),
+                ],
+                [
+                    'routeName' => 'baz_route',
+                    'routeParams' => [
+                        'param1' => [
+                            'type' => PropertyValues::type(),
+                            'values' => ['foo', 'bar'],
+                        ],
+                        'param2' => [
+                            'type' => PropertyValues::type(),
+                            'values' => ['baz'],
+                        ],
+                    ],
+                    'if' => deepclone_to_array(ClosureIfHolder::RETURNS_FALSE),
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+
+        self::assertTrue($routeProvider->supports(Action::Update, $entity));
+        self::assertFalse($routeProvider->supports(Action::Delete, $entity));
+        self::assertFalse($routeProvider->supports(Action::Create, $entity));
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Update,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => ['old', 'new'],
+            ],
+        )];
+
+        self::assertCount(2, $routes);
+        self::assertContainsOnlyInstancesOf(PurgeRoute::class, $routes);
+
+        self::assertSame(['name' => 'foo_route', 'params' => []], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
     }
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): UpdatedEntityRouteProvider

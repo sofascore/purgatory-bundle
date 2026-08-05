@@ -13,6 +13,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/112
 - Ability to pass a static method callable as a `DynamicValues` provider by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/137
+- Ability to use a closure as the `PurgeOn` `if` condition on PHP 8.5+ by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/116
 
 ### Changed
 

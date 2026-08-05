@@ -204,7 +204,7 @@ final class DebugCommand extends Command
      * @return array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
+     *     if?: string|array<mixed>,
      *     actions?: non-empty-list<Action>,
      * }>>
      */
@@ -227,7 +227,7 @@ final class DebugCommand extends Command
      * @return array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
+     *     if?: string|array<mixed>,
      *     actions?: non-empty-list<Action>,
      * }>>
      */
@@ -248,7 +248,7 @@ final class DebugCommand extends Command
      * @param array<non-empty-string, list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
+     *     if?: string|array<mixed>,
      *     actions?: non-empty-list<Action>,
      * }>> $configuration
      */
@@ -260,6 +260,12 @@ final class DebugCommand extends Command
             $entity = explode('::', $key);
 
             foreach ($subscriptions as $subscription) {
+                if (isset($subscription['if']) && \is_array($subscription['if'])) {
+                    $if = $this->formatClosureCondition($subscription['if']);
+                } else {
+                    $if = \is_string($subscription['if'] ?? null) ? $subscription['if'] : 'NONE';
+                }
+
                 $io->table(
                     ['Option', 'Value'],
                     [
@@ -267,12 +273,49 @@ final class DebugCommand extends Command
                         ['Property', $entity[1] ?? 'ANY'],
                         ['Route Name', $subscription['routeName']],
                         ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
-                        ['Condition', $subscription['if'] ?? 'NONE'],
+                        ['Condition', $if],
                         ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
                     ],
                 );
             }
         }
+    }
+
+    /**
+     * @param array<mixed> $serializedClosure
+     */
+    private function formatClosureCondition(array $serializedClosure): string
+    {
+        /** @var \Closure $closure */
+        $closure = deepclone_from_array($serializedClosure);
+        $reflection = new \ReflectionFunction($closure);
+
+        $file = $reflection->getFileName();
+        $startLine = $reflection->getStartLine();
+        $endLine = $reflection->getEndLine();
+
+        if (false === $file || false === $startLine || false === $endLine || false === $lines = @file($file)) {
+            return 'CLOSURE';
+        }
+
+        $sourceLines = array_map(
+            static fn (string $line): string => rtrim($line, "\r\n"),
+            \array_slice($lines, $startLine - 1, $endLine - $startLine + 1),
+        );
+
+        $indent = '';
+        if (preg_match('/^(\s*).*?(?=(?:static\s+)?(?:function|fn)\b)/', $sourceLines[0], $matches)) {
+            $indent = $matches[1];
+            $sourceLines[0] = substr($sourceLines[0], \strlen($matches[0]));
+        }
+
+        foreach ($sourceLines as $i => $line) {
+            if ($i > 0 && '' !== $indent && str_starts_with($line, $indent)) {
+                $sourceLines[$i] = substr($line, \strlen($indent));
+            }
+        }
+
+        return rtrim(rtrim(implode("\n", $sourceLines)), ',');
     }
 
     /**

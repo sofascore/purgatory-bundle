@@ -23,7 +23,7 @@ final class PurgeSubscription
         public readonly string $routeName,
         public readonly Route $route,
         public readonly ?array $actions,
-        public readonly ?Expression $if = null,
+        public readonly \Closure|Expression|null $if = null,
     ) {
     }
 }

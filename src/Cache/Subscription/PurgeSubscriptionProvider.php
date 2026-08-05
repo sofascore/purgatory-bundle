@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfClosureException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
@@ -59,7 +60,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             $purgeOn = $routeMetadata->purgeOn;
 
             if (null !== $purgeOn->if) {
-                $this->validateExpression($purgeOn->if, $routeMetadata->routeName);
+                $this->validateIf($purgeOn->if, $routeMetadata->routeName, $purgeOn->class);
             }
 
             // if route parameters are not specified, they are same as path variables
@@ -143,6 +144,52 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 routeName: $routeMetadata->routeName,
                 missingRouteParams: array_values($missingRouteParams),
             );
+        }
+    }
+
+    private function validateIf(\Closure|Expression $expression, string $routeName, string $entity): void
+    {
+        if ($expression instanceof \Closure) {
+            $this->validateIfClosure($expression, $routeName, $entity);
+
+            return;
+        }
+
+        $this->validateExpression($expression, $routeName);
+    }
+
+    private function validateIfClosure(\Closure $expression, string $routeName, string $entity): void
+    {
+        $reflection = new \ReflectionFunction($expression);
+
+        if (null !== $reflection->getClosureThis()) {
+            throw new InvalidIfClosureException($routeName, 'Closure must be static');
+        }
+
+        if ([] !== $reflection->getClosureUsedVariables()) {
+            throw new InvalidIfClosureException($routeName, 'Closure must not capture variables');
+        }
+
+        $returnType = $reflection->getReturnType();
+
+        if (!$returnType instanceof \ReflectionNamedType
+            || $returnType->allowsNull()
+            || !\in_array($returnType->getName(), ['bool', 'true', 'false'])
+        ) {
+            throw new InvalidIfClosureException($routeName, 'Return type must be bool');
+        }
+
+        if (1 !== $reflection->getNumberOfParameters()) {
+            throw new InvalidIfClosureException($routeName, 'Closure must have exactly 1 parameter');
+        }
+
+        $parameterType = $reflection->getParameters()[0]->getType();
+
+        if (!$parameterType instanceof \ReflectionNamedType
+            || $parameterType->allowsNull()
+            || !is_a($entity, $parameterType->getName(), true)
+        ) {
+            throw new InvalidIfClosureException($routeName, "Parameter in closure must be of type $entity");
         }
     }
 

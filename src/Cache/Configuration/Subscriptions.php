@@ -10,7 +10,7 @@ use Sofascore\PurgatoryBundle\Listener\Enum\Action;
  * @implements \IteratorAggregate<int, array{
  *     routeName: string,
  *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
- *     if?: string,
+ *     if?: string|array<mixed>,
  *     actions?: non-empty-list<Action>,
  * }>
  */
@@ -21,7 +21,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      * @param list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
+     *     if?: string|array<mixed>,
      *     actions?: non-empty-list<Action>,
      * }> $subscriptions
      */
@@ -53,7 +53,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      * @return list<array{
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
-     *     if?: string,
+     *     if?: string|array<mixed>,
      *     actions?: non-empty-list<Action>,
      * }>
      */

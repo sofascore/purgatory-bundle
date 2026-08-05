@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Attribute;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
@@ -44,5 +45,15 @@ final class PurgeOnTest extends TestCase
         );
 
         self::assertEquals($expectedValue, $purgeOn->$property);
+    }
+
+    #[RequiresFunction('deepclone_to_array')]
+    public function testIfWithClosure(): void
+    {
+        $if = static fn (\stdClass $obj): bool => true;
+
+        $purgeOn = new PurgeOn(\stdClass::class, if: $if);
+
+        self::assertSame($if, $purgeOn->if);
     }
 }
