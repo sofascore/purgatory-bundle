@@ -78,7 +78,7 @@ return static function (ContainerConfigurator $container) {
                 tagged_iterator('purgatory.subscription_resolver'),
                 tagged_iterator('purgatory.route_metadata_provider'),
                 service('doctrine'),
-                tagged_locator('purgatory.target_resolver', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory.target_resolver', indexAttribute: 'for'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
             ])
 
@@ -98,7 +98,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.subscription_resolver.association', AssociationResolver::class)
             ->tag('purgatory.subscription_resolver')
             ->args([
-                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory.inverse_values_builder', indexAttribute: 'for'),
                 service('sofascore.purgatory.inverse_relation_expression_transformer'),
             ])
 
@@ -116,7 +116,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.inverse_values_builder.compound', CompoundInverseValuesBuilder::class)
             ->tag('purgatory.inverse_values_builder')
             ->args([
-                tagged_locator('purgatory.inverse_values_builder', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory.inverse_values_builder', indexAttribute: 'for'),
             ])
 
         ->set('sofascore.purgatory.inverse_values_builder.dynamic', DynamicInverseValuesBuilder::class)
@@ -172,7 +172,7 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('sofascore.purgatory.configuration_loader'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
-                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory.route_param_value_resolver', indexAttribute: 'for'),
             ])
 
         ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
@@ -232,7 +232,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.route_param_value_resolver.compound', CompoundValuesResolver::class)
             ->tag('purgatory.route_param_value_resolver')
             ->args([
-                tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+                tagged_locator('purgatory.route_param_value_resolver', indexAttribute: 'for'),
             ])
 
         ->set('sofascore.purgatory.route_param_value_resolver.enum', EnumValuesResolver::class)

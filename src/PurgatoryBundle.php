@@ -16,6 +16,7 @@ use Sofascore\PurgatoryBundle\DependencyInjection\ControllerClassMapCompilerPass
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterExpressionLanguageProvidersCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterPurgerCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterRouteParamServicesCompilerPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\ResolveTaggedLocatorIndexPass;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
@@ -58,6 +59,9 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
         $container->addCompilerPass(new RegisterExpressionLanguageProvidersCompilerPass());
         $container->addCompilerPass(new RegisterPurgerCompilerPass());
         $container->addCompilerPass(new RegisterRouteParamServicesCompilerPass());
+        // Runs after all before-optimization passes so that late-added tags are seen,
+        // but before ServiceLocatorTagPass which consumes the "for" attribute.
+        $container->addCompilerPass(new ResolveTaggedLocatorIndexPass(), PassConfig::TYPE_OPTIMIZE, 1);
     }
 
     public function configure(DefinitionConfigurator $definition): void
