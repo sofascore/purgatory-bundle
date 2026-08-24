@@ -31,7 +31,7 @@ entities and generates URLs that need purging based on configured routes.
 ## Requirements
 
 - [PHP 8.1](http://php.net/releases/8_1_0.php) or higher
-- [Symfony 6.4](https://symfony.com/roadmap/6.4) or [Symfony 7.4](https://symfony.com/roadmap/7.4) or higher
+- [Symfony 6.4](https://symfony.com/roadmap/6.4), [Symfony 7.4](https://symfony.com/roadmap/7.4), [Symfony 8.1](https://symfony.com/roadmap/8.1) or higher
 
 ## Installation
 
