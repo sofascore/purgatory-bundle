@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\YamlMetadataProvider;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\ForGroupsResolver;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\ForPropertiesResolver;
+use Sofascore\PurgatoryBundle\Cache\TargetResolver\ForResponseGroupsResolver;
 use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
@@ -65,6 +66,12 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory.target_resolver')
             ->args([
                 service('property_info.serializer_extractor')->nullOnInvalid(),
+            ])
+
+        ->set('sofascore.purgatory.target_resolver.for_response_groups', ForResponseGroupsResolver::class)
+            ->tag('purgatory.target_resolver')
+            ->args([
+                service('sofascore.purgatory.target_resolver.for_groups'),
             ])
 
         ->set('sofascore.purgatory.purge_subscription_provider', PurgeSubscriptionProvider::class)

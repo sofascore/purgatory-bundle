@@ -12,6 +12,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PostController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Car;
@@ -20,8 +21,10 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competitio
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Measurements;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Plane;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Post;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Ship;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
+use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
 final class ApplicationTest extends AbstractKernelTestCase
@@ -879,5 +882,47 @@ final class ApplicationTest extends AbstractKernelTestCase
             self::getPurgedUrls(false),
             static fn (string $url): bool => str_starts_with($url, '/for-owner-and-veterinarian'),
         ));
+    }
+
+    /**
+     * @see PostController::detailsAction
+     * @see PostController::fullDetailsAction
+     */
+    #[RequiresMethod(Serialize::class, '__construct')]
+    public function testPurgeOnWithResponseGroupsTarget(): void
+    {
+        $post = new Post();
+        $post->title = 'Title';
+        $post->text = 'Text';
+
+        $this->entityManager->persist($post);
+        $this->entityManager->flush();
+
+        $detailsUrl = '/post/'.$post->id;
+        $fullDetailsUrl = '/post/'.$post->id.'/full';
+
+        self::assertUrlIsPurged($detailsUrl);
+        self::assertUrlIsPurged($fullDetailsUrl);
+
+        self::clearPurger();
+
+        $post->views = 10;
+        $this->entityManager->flush();
+
+        self::assertNoUrlsArePurged();
+
+        $post->text = 'New text';
+        $this->entityManager->flush();
+
+        self::assertUrlIsNotPurged($detailsUrl);
+        self::assertUrlIsPurged($fullDetailsUrl);
+
+        self::clearPurger();
+
+        $post->title = 'New title';
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged($detailsUrl);
+        self::assertUrlIsPurged($fullDetailsUrl);
     }
 }

@@ -6,12 +6,14 @@ namespace Sofascore\PurgatoryBundle\Tests\Functional;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PostController;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\ErrorHandler\ErrorHandler;
+use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\HttpKernel\Kernel;
 
 final class TestKernel extends Kernel
@@ -127,5 +129,12 @@ final class TestKernel extends Kernel
         if ('' !== $this->config) {
             $loader->load($this->config);
         }
+
+        // Must run last since the config file may register the controllers again
+        $loader->load(static function (ContainerBuilder $container) {
+            if (!class_exists(Serialize::class) && $container->hasDefinition(PostController::class)) {
+                $container->removeDefinition(PostController::class);
+            }
+        });
     }
 }
