@@ -127,16 +127,4 @@ final class ForResponseGroupsResolverTest extends TestCase
 
         $resolver->resolve($target, $routeMetadata);
     }
-
-    public function testExceptionIsThrownWhenSerializeAttributeIsNotAvailable(): void
-    {
-        if (class_exists(Serialize::class)) {
-            self::markTestSkipped('Requires Symfony HttpKernel < 8.1.');
-        }
-
-        $this->expectException(LogicException::class);
-        $this->expectExceptionMessage('You cannot use the "ForResponseGroups" attribute because the "#[Serialize]" attribute is not available. Try upgrading "symfony/http-kernel" to version 8.1 or higher.');
-
-        new ForResponseGroupsResolver(new ForGroupsResolver(self::createStub(PropertyListExtractorInterface::class)));
-    }
 }

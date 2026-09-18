@@ -19,9 +19,6 @@ final class ForResponseGroupsResolver implements TargetResolverInterface
     public function __construct(
         private readonly ForGroupsResolver $forGroupsResolver,
     ) {
-        if (!class_exists(Serialize::class)) {
-            throw new LogicException('You cannot use the "ForResponseGroups" attribute because the "#[Serialize]" attribute is not available. Try upgrading "symfony/http-kernel" to version 8.1 or higher.');
-        }
     }
 
     /**
