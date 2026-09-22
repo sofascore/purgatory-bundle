@@ -27,6 +27,11 @@ final class InverseRelationExpressionTransformer
         return new Expression("obj.$getter !== null ? ($inverseExpression) : $fallback");
     }
 
+    public function assertReadable(string $class, string $property): void
+    {
+        $this->createGetter($class, $property);
+    }
+
     private function createGetter(string $class, string $property): string
     {
         if (null === $readInfo = $this->extractor->getReadInfo($class, $property)) {

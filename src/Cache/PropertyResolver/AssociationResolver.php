@@ -78,6 +78,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             if ($if instanceof \Closure) {
                 // The closure expects the original entity, but the inverse subscription fires on the
                 // associated entity. Carry the inverse field so it can be navigated back at runtime.
+                $this->expressionTransformer->assertReadable($associationClass, $associationTarget);
                 $closurePropertyPath = $associationTarget;
             } else {
                 $if = $this->expressionTransformer->transform($if, $associationClass, $associationTarget, 'false');
