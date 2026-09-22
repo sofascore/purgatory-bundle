@@ -766,5 +766,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
             },
             'expectedMessage' => 'Closure must not capture variables',
         ];
+
+        yield 'first-class callable of a static method' => [
+            'if' => DummyEntity::isValid(...),
+            'expectedMessage' => 'First-class callables are not supported, use a static closure',
+        ];
+
+        yield 'first-class callable of a function' => [
+            'if' => is_object(...),
+            'expectedMessage' => 'First-class callables are not supported, use a static closure',
+        ];
     }
 }

@@ -10,4 +10,9 @@ class DummyEntity
     {
         return 1;
     }
+
+    public static function isValid(self $entity): bool
+    {
+        return $entity->getData() > 0;
+    }
 }

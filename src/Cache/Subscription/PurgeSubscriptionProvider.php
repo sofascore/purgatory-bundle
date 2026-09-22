@@ -170,6 +170,10 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             throw new InvalidIfClosureException($routeName, 'Closure must not capture variables');
         }
 
+        if (!$reflection->isAnonymous()) {
+            throw new InvalidIfClosureException($routeName, 'First-class callables are not supported, use a static closure');
+        }
+
         $returnType = $reflection->getReturnType();
 
         if (!$returnType instanceof \ReflectionNamedType
