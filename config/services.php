@@ -173,6 +173,7 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory.configuration_loader'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
                 tagged_locator('purgatory.route_param_value_resolver', defaultIndexMethod: 'for'),
+                service('sofascore.purgatory.property_accessor'),
             ])
 
         ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
@@ -182,12 +183,11 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.route_provider.removed_entity', RemovedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
             ->tag('purgatory.route_provider')
-            ->arg(3, service('doctrine'))
+            ->arg(4, service('doctrine'))
 
         ->set('sofascore.purgatory.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
             ->tag('purgatory.route_provider')
-            ->arg(3, service('sofascore.purgatory.property_accessor'))
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([
