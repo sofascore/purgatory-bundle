@@ -33,6 +33,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `ValuesInterface::getValues()`, use public properties instead by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
 
+## [1.6.0] - 2026-09-21
+
+### Added
+
+- Add the `ForResponseGroups` target which resolves properties from the serialization groups of the `#[Serialize]`
+  attribute by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/154
+
 ## [1.5.0] - 2026-08-25
 
 ### Changed
@@ -105,6 +112,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Initial release
 
 [2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.0...v2.0.0
+[1.6.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.1...v1.3.2

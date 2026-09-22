@@ -368,6 +368,27 @@ class Post
 }
 ```
 
+If the controller method uses Symfony's [`#[Serialize]`][5] attribute (available since Symfony 8.1) to serialize its
+response, use the `ForResponseGroups` target instead to reuse the serialization groups configured there, so they don't
+have to be repeated:
+
+```php
+use Symfony\Component\HttpKernel\Attribute\Serialize;
+
+#[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, target: new ForResponseGroups())]
+#[Serialize(context: ['groups' => 'common'])]
+public function detailsAction(Post $post): Post
+{
+    return $post;
+}
+```
+
+This is equivalent to using `new ForGroups('common')` and behaves the same way. The `#[Serialize]` attribute must define
+at least one serialization group, otherwise an exception is thrown during cache warmup. Since the groups are read from
+the controller method, this target can only be used with the `#[PurgeOn]` attribute and is not available in the YAML
+configuration.
+
 ### Adding Conditional Logic with Expression Language
 
 [Symfony's ExpressionLanguage component](https://symfony.com/doc/current/components/expression_language.html) can be
@@ -541,3 +562,4 @@ This command provides insights into which routes and parameters are associated w
 [2]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/TargetedProperties.php
 [3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php
+[5]: https://github.com/symfony/symfony/blob/8.1/src/Symfony/Component/HttpKernel/Attribute/Serialize.php
