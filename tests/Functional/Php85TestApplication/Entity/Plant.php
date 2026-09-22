@@ -17,9 +17,22 @@ class Plant
     #[ORM\Column]
     private int $waterLevel;
 
-    public function __construct(int $waterLevel)
+    #[ORM\ManyToOne(
+        targetEntity: Garden::class,
+        inversedBy: 'plants',
+    )]
+    private ?Garden $garden;
+
+    #[ORM\OneToOne(
+        targetEntity: Garden::class,
+        mappedBy: 'bestPlant',
+    )]
+    private ?Garden $bestInGarden = null;
+
+    public function __construct(int $waterLevel, ?Garden $garden = null)
     {
         $this->waterLevel = $waterLevel;
+        $this->garden = $garden;
     }
 
     public function getId(): int
@@ -35,5 +48,20 @@ class Plant
     public function setWaterLevel(int $waterLevel): void
     {
         $this->waterLevel = $waterLevel;
+    }
+
+    public function getGarden(): ?Garden
+    {
+        return $this->garden;
+    }
+
+    public function getBestInGarden(): ?Garden
+    {
+        return $this->bestInGarden;
+    }
+
+    public function setBestInGarden(?Garden $bestInGarden): void
+    {
+        $this->bestInGarden = $bestInGarden;
     }
 }

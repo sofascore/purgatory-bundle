@@ -59,11 +59,65 @@ class Php85ConfigurationTest extends AbstractKernelTestCase
                         'dryPlantsAction()',
                         2,
                         0,
-                        20,
+                        21,
                     ],
                     'mask' => 1,
                 ],
                 'actions' => [Action::Create],
+            ],
+        ];
+
+        /* @see PlantController::gardenPlantsAction */
+        yield [
+            'entity' => Plant::class,
+            'subscription' => [
+                'routeName' => 'garden_plants_list',
+                'routeParams' => [
+                    'garden' => [
+                        'type' => 'property',
+                        'values' => ['garden?.id'],
+                    ],
+                ],
+                'if' => [
+                    'classes' => '',
+                    'objectMeta' => 0,
+                    'prepared' => [
+                        'Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\PlantController',
+                        'gardenPlantsAction()',
+                        2,
+                        0,
+                        37,
+                    ],
+                    'mask' => 1,
+                ],
+                'closureProperty' => 'garden',
+            ],
+        ];
+
+        /* @see PlantController::gardenPlantsAction */
+        yield [
+            'entity' => Plant::class,
+            'subscription' => [
+                'routeName' => 'garden_plants_list',
+                'routeParams' => [
+                    'garden' => [
+                        'type' => 'property',
+                        'values' => ['bestInGarden?.id'],
+                    ],
+                ],
+                'if' => [
+                    'classes' => '',
+                    'objectMeta' => 0,
+                    'prepared' => [
+                        'Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\PlantController',
+                        'gardenPlantsAction()',
+                        3,
+                        0,
+                        46,
+                    ],
+                    'mask' => 1,
+                ],
+                'closureProperty' => 'bestInGarden',
             ],
         ];
     }
