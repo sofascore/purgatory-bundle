@@ -61,4 +61,38 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
             haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
         );
     }
+
+    public function testClosurePropertyIsRendered(): void
+    {
+        $this->command->execute([
+            '--route' => 'garden_plants_list',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        $display = preg_replace('/ +$/m', '', $this->command->getDisplay());
+
+        self::assertStringContainsString(
+            needle: <<<'PHP'
+                Condition      Called with entity's property: garden (no purge if null)
+                                 static function (Garden $garden): bool {
+                                     return $garden->isPublic();
+                                 }
+                PHP,
+            haystack: $display,
+        );
+
+        self::assertStringContainsString(
+            needle: <<<'PHP'
+                Condition      Called with entity's property: bestInGarden (no purge if null)
+                                 static function (Garden $garden): bool {
+                                     return $garden->isPublic();
+                                 }
+                PHP,
+            haystack: $display,
+        );
+
+        // the direct subscription on Garden is not navigated through a property
+        self::assertSame(2, substr_count($display, 'Called with'));
+    }
 }
