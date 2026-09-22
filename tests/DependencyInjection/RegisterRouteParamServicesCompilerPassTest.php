@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
+namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterRouteParamServicesPass;
-use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
+use Sofascore\PurgatoryBundle\DependencyInjection\RegisterRouteParamServicesCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-#[CoversClass(RegisterRouteParamServicesPass::class)]
-final class RegisterRouteParamServicesPassTest extends TestCase
+#[CoversClass(RegisterRouteParamServicesCompilerPass::class)]
+final class RegisterRouteParamServicesCompilerPassTest extends TestCase
 {
     private ContainerBuilder $container;
 
@@ -24,7 +24,10 @@ final class RegisterRouteParamServicesPassTest extends TestCase
     {
         $this->container = new ContainerBuilder();
         $this->container->setParameter('kernel.project_dir', __DIR__);
-        (new PurgatoryExtension())->load([], $this->container);
+        $this->container->setParameter('kernel.build_dir', __DIR__);
+        $this->container->setParameter('kernel.environment', 'dev');
+
+        (new PurgatoryBundle())->getContainerExtension()->load([], $this->container);
     }
 
     protected function tearDown(): void
@@ -49,7 +52,7 @@ final class RegisterRouteParamServicesPassTest extends TestCase
                 attributes: ['alias' => 'three', 'method' => 'anotherMethod'],
             );
 
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $compilerPass = new RegisterRouteParamServicesCompilerPass();
         $compilerPass->process($this->container);
 
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.route_parameter_resolver.dynamic'));
@@ -91,7 +94,7 @@ final class RegisterRouteParamServicesPassTest extends TestCase
 
     public function testDynamicResolverIsRemovedWhenThereAreNoServices(): void
     {
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $compilerPass = new RegisterRouteParamServicesCompilerPass();
         $compilerPass->process($this->container);
 
         self::assertFalse($this->container->hasDefinition('sofascore.purgatory.route_parameter_resolver.dynamic'));
@@ -108,7 +111,7 @@ final class RegisterRouteParamServicesPassTest extends TestCase
             attributes: ['alias' => 'one', 'method' => '__invoke'],
         );
 
-        $compilerPass = new RegisterRouteParamServicesPass();
+        $compilerPass = new RegisterRouteParamServicesCompilerPass();
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The alias "one" is already used by "foo::__invoke".');

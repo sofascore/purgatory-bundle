@@ -20,7 +20,7 @@ class CloudflarePurger implements PurgerInterface
 }
 ```
 
-### Enabling Your Custom Purger
+## Enabling Your Custom Purger
 
 To enable your custom purger, update your configuration file with the alias you specified:
 

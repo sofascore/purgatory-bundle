@@ -1,8 +1,8 @@
 # SofascorePurgatoryBundle
 
 [![Latest Stable Version](https://poser.pugx.org/sofascore/purgatory-bundle/v/stable)](https://packagist.org/packages/sofascore/purgatory-bundle)
-[![Build Status](https://github.com/sofascore/purgatory-bundle/workflows/Tests/badge.svg)](https://github.com/sofascore/purgatory-bundle/actions)
-[![Code Coverage](https://codecov.io/gh/sofascore/purgatory-bundle/graph/badge.svg?token=HWMVLVSTIC)](https://codecov.io/gh/sofascore/purgatory-bundle)
+[![Build Status](https://github.com/sofascore/purgatory-bundle/actions/workflows/tests.yaml/badge.svg?branch=2.x)](https://github.com/sofascore/purgatory-bundle/actions/workflows/tests.yaml)
+[![Code Coverage](https://codecov.io/gh/sofascore/purgatory-bundle/branch/2.x/graph/badge.svg?token=HWMVLVSTIC)](https://codecov.io/gh/sofascore/purgatory-bundle)
 [![License](https://poser.pugx.org/sofascore/purgatory-bundle/license)](https://packagist.org/packages/sofascore/purgatory-bundle)
 
 Purgatory is a Symfony bundle for HTTP cache invalidation, designed to automatically generate and send cache purge
@@ -11,8 +11,8 @@ entities and generates URLs that need purging based on configured routes.
 
 ## Features
 
-- **Doctrine Event Integration**: Listens to **Doctrine** lifecycle events (`postUpdate`, `postRemove`, `postPersist`)
-  to automatically detect when entities are modified, created, or deleted.
+- **Doctrine Event Integration**: Listens to **Doctrine** lifecycle events (`postPersist`, `postUpdate`, `preRemove`)
+  to automatically detect when entities are created, modified, or deleted.
 
 - **Automatic URL Generation**: Automatically generates purge requests for relevant URLs based on the affected entities
   and their associated routes.
@@ -31,7 +31,7 @@ entities and generates URLs that need purging based on configured routes.
 ## Requirements
 
 - [PHP 8.1](http://php.net/releases/8_1_0.php) or higher
-- [Symfony 6.4](https://symfony.com/roadmap/6.4) or [Symfony 7.4](https://symfony.com/roadmap/7.4) or higher
+- [Symfony 6.4](https://symfony.com/roadmap/6.4), [Symfony 7.4](https://symfony.com/roadmap/7.4), [Symfony 8.1](https://symfony.com/roadmap/8.1) or higher
 
 ## Installation
 
