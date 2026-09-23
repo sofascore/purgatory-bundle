@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 
 /**
  * @implements ValuesResolverInterface<non-empty-list<string>>
@@ -13,7 +13,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 final class PropertyValuesResolver implements ValuesResolverInterface
 {
     public function __construct(
-        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly PurgatoryPropertyAccessor $propertyAccessor,
     ) {
     }
 

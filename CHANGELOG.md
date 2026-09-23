@@ -28,6 +28,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/issues/156
 - Mark `CreatedEntityRouteProvider`, `UpdatedEntityRouteProvider` and `RemovedEntityRouteProvider` as `@internal` by
   @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/157
+- Constructors of `DynamicValuesResolver` and `PropertyValuesResolver` now require a `PurgatoryPropertyAccessor`
+  instead of a `PropertyAccessorInterface` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/158
 
 ### Removed
 

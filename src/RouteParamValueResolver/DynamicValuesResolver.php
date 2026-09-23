@@ -7,8 +7,8 @@ namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * @implements ValuesResolverInterface<array{0: string|callable-array<string>, 1: ?string}>
@@ -17,7 +17,7 @@ final class DynamicValuesResolver implements ValuesResolverInterface
 {
     public function __construct(
         private readonly ContainerInterface $routeParamServiceLocator,
-        private readonly PropertyAccessorInterface $propertyAccessor,
+        private readonly PurgatoryPropertyAccessor $propertyAccessor,
     ) {
     }
 

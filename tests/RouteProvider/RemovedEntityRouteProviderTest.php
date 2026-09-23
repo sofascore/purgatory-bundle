@@ -269,7 +269,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
         $propertyAccessor = new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         $routeParamValueResolvers = [
-            PropertyValues::type() => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
+            PropertyValues::type() => static fn () => new PropertyValuesResolver($propertyAccessor),
             EnumValues::type() => static fn () => new EnumValuesResolver(),
             RawValues::type() => static fn () => new RawValuesResolver(),
         ];
