@@ -65,7 +65,7 @@
         "symfony/http-client": "To use the Varnish purger",
         "symfony/messenger": "To purge URLs asynchronously",
         "symfony/polyfill-deepclone": "To use a closure as the \"if\" condition of a #[PurgeOn] attribute (PHP 8.5+)",
-        "symfony/serializer": "To resolve purge targets from serialization groups with `ForGroups`",
+        "symfony/serializer": "To resolve purge targets from serialization groups with `ForGroups` or `ForResponseGroups`",
         "symfony/yaml": "To configure purge subscriptions using YAML files"
     },
     "conflict": {

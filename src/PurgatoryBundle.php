@@ -51,7 +51,7 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
     public function build(ContainerBuilder $container): void
     {
         // @TODO Remove when Symfony <8.1 support is dropped, {@see https://github.com/symfony/symfony/pull/62800}
-        if (Kernel::VERSION_ID < 80100) {
+        if (Kernel::VERSION_ID < 80100) { // @phpstan-ignore smaller.alwaysFalse
             $container->addCompilerPass($this, PassConfig::TYPE_BEFORE_OPTIMIZATION, -1000);
         }
 

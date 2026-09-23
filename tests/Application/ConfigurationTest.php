@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Application;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresMethod;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
@@ -16,14 +17,17 @@ use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PostController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Car;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Competition\Competition;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Person;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Post;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Vehicle;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Enum\Country;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Service\AnimalRatingCalculator;
+use Symfony\Component\HttpKernel\Attribute\Serialize;
 
 final class ConfigurationTest extends AbstractKernelTestCase
 {
@@ -65,6 +69,40 @@ final class ConfigurationTest extends AbstractKernelTestCase
                 subscription: $subscription,
             );
         }
+    }
+
+    /**
+     * @see PostController::detailsAction
+     * @see PostController::fullDetailsAction
+     */
+    #[RequiresMethod(Serialize::class, '__construct')]
+    public function testConfigurationWithResponseGroupsTarget(): void
+    {
+        $routeParams = [
+            'post_id' => [
+                'type' => PropertyValues::type(),
+                'values' => ['id'],
+            ],
+        ];
+
+        self::assertSubscriptionExists(
+            key: Post::class.'::title',
+            subscription: ['routeName' => 'post_details', 'routeParams' => $routeParams],
+        );
+        self::assertSubscriptionExists(
+            key: Post::class.'::title',
+            subscription: ['routeName' => 'post_full_details', 'routeParams' => $routeParams],
+        );
+        self::assertSubscriptionExists(
+            key: Post::class.'::text',
+            subscription: ['routeName' => 'post_full_details', 'routeParams' => $routeParams],
+        );
+
+        self::assertNotContains(
+            needle: ['routeName' => 'post_details', 'routeParams' => $routeParams],
+            haystack: self::$configuration->get(Post::class.'::text'),
+        );
+        self::assertFalse(self::$configuration->has(Post::class.'::views'));
     }
 
     private static function assertSubscriptionExists(string $key, array $subscription): void
