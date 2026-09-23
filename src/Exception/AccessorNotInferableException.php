@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Exception;
 
-final class PropertyNotAccessibleException extends RuntimeException
+final class AccessorNotInferableException extends RuntimeException
 {
-    private const MESSAGE = 'Unable to create a getter for property "%s::%s".';
+    private const MESSAGE = 'Unable to infer an accessor for property "%s::%s".';
 
     public function __construct(
         public readonly string $class,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage;
 
-use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
+use Sofascore\PurgatoryBundle\Exception\AccessorNotInferableException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
@@ -21,16 +21,16 @@ final class InverseRelationExpressionTransformer
 
     public function transform(Expression $expression, string $class, string $property, string $fallback): Expression
     {
-        $getter = $this->createGetter($class, $property);
-        $inverseExpression = str_replace('obj', 'obj.'.$getter, (string) $expression);
+        $accessor = $this->createAccessor($class, $property);
+        $inverseExpression = str_replace('obj', 'obj.'.$accessor, (string) $expression);
 
-        return new Expression("obj.$getter !== null ? ($inverseExpression) : $fallback");
+        return new Expression("obj.$accessor !== null ? ($inverseExpression) : $fallback");
     }
 
-    private function createGetter(string $class, string $property): string
+    private function createAccessor(string $class, string $property): string
     {
         if (null === $readInfo = $this->extractor->getReadInfo($class, $property)) {
-            throw new PropertyNotAccessibleException($class, $property);
+            throw new AccessorNotInferableException($class, $property);
         }
 
         /** @var PropertyReadInfo::TYPE_* $type */
