@@ -33,7 +33,6 @@ use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 #[CoversClass(AbstractEntityRouteProvider::class)]
 #[CoversClass(UpdatedEntityRouteProvider::class)]
@@ -440,7 +439,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             configurationLoader: $configurationLoader,
             expressionLanguage: $expressionLanguage,
             routeParamValueResolverLocator: self::createStub(ContainerInterface::class),
-            propertyAccessor: self::createStub(PropertyAccessorInterface::class),
+            propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
         );
 
         $this->expectException(InvalidIfExpressionResultException::class);
@@ -464,7 +463,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         $propertyAccessor = new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor());
 
         $routeParamValueResolvers = [
-            PropertyValues::type() => static fn () => new PropertyValuesResolver(new PurgatoryPropertyAccessor($propertyAccessor)),
+            PropertyValues::type() => static fn () => new PropertyValuesResolver($propertyAccessor),
             EnumValues::type() => static fn () => new EnumValuesResolver(),
             RawValues::type() => static fn () => new RawValuesResolver(),
         ];
@@ -475,7 +474,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
             new ServiceLocator($routeParamValueResolvers + [
                 CompoundValues::type() => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
             ]),
-            new PurgatoryPropertyAccessor($propertyAccessor),
+            $propertyAccessor,
         );
     }
 }
