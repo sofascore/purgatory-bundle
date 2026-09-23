@@ -13,6 +13,9 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
+/**
+ * @internal
+ */
 final class UpdatedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function __construct(

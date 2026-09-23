@@ -26,6 +26,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/130
 - Rename `PropertyNotAccessibleException` to `AccessorNotInferableException` by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/issues/156
+- Mark `CreatedEntityRouteProvider`, `UpdatedEntityRouteProvider` and `RemovedEntityRouteProvider` as `@internal` by
+  @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/157
 
 ### Removed
 
