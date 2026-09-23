@@ -11,6 +11,9 @@ use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
+/**
+ * @internal
+ */
 final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function __construct(

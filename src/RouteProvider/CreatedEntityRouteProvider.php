@@ -6,6 +6,9 @@ namespace Sofascore\PurgatoryBundle\RouteProvider;
 
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 
+/**
+ * @internal
+ */
 final class CreatedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function supports(Action $action, object $entity): bool
