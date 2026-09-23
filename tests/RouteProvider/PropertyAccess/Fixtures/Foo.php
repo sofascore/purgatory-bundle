@@ -13,6 +13,7 @@ class Foo
         public readonly Collection $children,
         public readonly ?self $linked = null,
         public readonly ?Collection $nullableChildren = null,
+        private readonly ?string $privateProperty = 'value',
     ) {
     }
 

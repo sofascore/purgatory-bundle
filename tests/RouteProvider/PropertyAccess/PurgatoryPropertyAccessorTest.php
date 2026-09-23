@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
+use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 #[CoversClass(PurgatoryPropertyAccessor::class)]
@@ -202,14 +204,23 @@ final class PurgatoryPropertyAccessorTest extends TestCase
     }
 
     #[DataProvider('notTraversableProvider')]
-    public function testNotTraversableThrows(object $object, string $propertyPath, string $expectedMessage): void
+    public function testNotTraversableThrows(object $object, string $propertyPath, string $expectedPreviousMessage): void
     {
         self::assertFalse($this->purgatoryPropertyAccessor->isReadable($object, $propertyPath));
 
-        $this->expectException(ValueNotIterableException::class);
-        $this->expectExceptionMessage($expectedMessage);
-
-        $this->purgatoryPropertyAccessor->getValue($object, $propertyPath);
+        try {
+            $this->purgatoryPropertyAccessor->getValue($object, $propertyPath);
+            self::fail('Expected a PropertyNotAccessibleException to be thrown.');
+        } catch (PropertyNotAccessibleException $exception) {
+            self::assertSame($object::class, $exception->class);
+            self::assertSame($propertyPath, $exception->property);
+            self::assertSame(
+                \sprintf('Unable to access property path "%s" on "%s".', $propertyPath, $object::class),
+                $exception->getMessage(),
+            );
+            self::assertInstanceOf(NoSuchIndexException::class, $exception->getPrevious());
+            self::assertSame($expectedPreviousMessage, $exception->getPrevious()->getMessage());
+        }
     }
 
     public static function notTraversableProvider(): iterable
@@ -220,7 +231,7 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 children: new ArrayCollection([]),
             ),
             'propertyPath' => 'id[*].id',
-            'expectedMessage' => 'Expected an iterable, "int" given at property path "id[*]".',
+            'expectedPreviousMessage' => 'Cannot expand the wildcard in path "id[*].id" because the value of type "int" is not iterable.',
         ];
 
         yield 'non-null-safe collection resolving to null' => [
@@ -230,7 +241,7 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 nullableChildren: null,
             ),
             'propertyPath' => 'nullableChildren[*].id',
-            'expectedMessage' => 'Expected an iterable, "null" given at property path "nullableChildren[*]".',
+            'expectedPreviousMessage' => 'Cannot expand the wildcard in path "nullableChildren[*].id" because the value of type "null" is not iterable.',
         ];
 
         yield 'null-safe parent present but non-null-safe collection resolving to null' => [
@@ -244,7 +255,94 @@ final class PurgatoryPropertyAccessorTest extends TestCase
                 ),
             ),
             'propertyPath' => 'linked?.nullableChildren[*].id',
-            'expectedMessage' => 'Expected an iterable, "null" given at property path "linked?.nullableChildren[*]".',
+            'expectedPreviousMessage' => 'Cannot expand the wildcard in path "linked?.nullableChildren[*].id" because the value of type "null" is not iterable.',
+        ];
+    }
+
+    #[DataProvider('notAccessibleProvider')]
+    public function testNotAccessibleThrows(object $object, string $propertyPath, string $expectedPreviousMessage): void
+    {
+        self::assertFalse($this->purgatoryPropertyAccessor->isReadable($object, $propertyPath));
+
+        try {
+            $this->purgatoryPropertyAccessor->getValue($object, $propertyPath);
+            self::fail('Expected a PropertyNotAccessibleException to be thrown.');
+        } catch (PropertyNotAccessibleException $exception) {
+            self::assertSame($object::class, $exception->class);
+            self::assertSame($propertyPath, $exception->property);
+            self::assertSame(
+                \sprintf('Unable to access property path "%s" on "%s".', $propertyPath, $object::class),
+                $exception->getMessage(),
+            );
+            self::assertInstanceOf(NoSuchPropertyException::class, $exception->getPrevious());
+            self::assertSame($expectedPreviousMessage, $exception->getPrevious()->getMessage());
+        }
+    }
+
+    public static function notAccessibleProvider(): iterable
+    {
+        yield 'non-existent property' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            'propertyPath' => 'nonExistentProperty',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+        ];
+
+        yield 'private property' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            'propertyPath' => 'privateProperty',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+        ];
+
+        yield 'non-existent traversable property' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            'propertyPath' => 'nonExistentProperty[*].values',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+        ];
+
+        yield 'private traversable property' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([]),
+            ),
+            'propertyPath' => 'privateProperty[*].values',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+        ];
+
+        yield 'non-existent property of a traversable child' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([
+                    new Foo(
+                        id: 2,
+                        children: new ArrayCollection([]),
+                    ),
+                ]),
+            ),
+            'propertyPath' => 'children[*].nonExistentProperty',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+        ];
+
+        yield 'private property of a traversable child' => [
+            'object' => new Foo(
+                id: 1,
+                children: new ArrayCollection([
+                    new Foo(
+                        id: 2,
+                        children: new ArrayCollection([]),
+                    ),
+                ]),
+            ),
+            'propertyPath' => 'children[*].privateProperty',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
         ];
     }
 }
