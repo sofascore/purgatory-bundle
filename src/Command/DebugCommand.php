@@ -321,7 +321,7 @@ final class DebugCommand extends Command
             }
         }
 
-        return rtrim(rtrim(implode(PHP_EOL, $sourceLines)), ',');
+        return rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ',');
     }
 
     /**
