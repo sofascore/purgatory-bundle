@@ -141,6 +141,18 @@ class PersonController
     {
     }
 
+    #[Route('/by-locale/{locale}', 'list_by_locale')]
+    #[AnnotationRoute('/by-locale/{locale}', name: 'list_by_locale')]
+    #[PurgeOn(Person::class,
+        target: 'settings',
+        routeParams: [
+            'locale' => 'settings[locale]',
+        ],
+    )]
+    public function listByLocaleAction(string $locale): void
+    {
+    }
+
     #[Route('/by-full-name/{firstName}/{lastName}', 'list_by_full_name')]
     #[AnnotationRoute('/by-full-name/{firstName}/{lastName}', name: 'list_by_full_name')]
     #[PurgeOn(Person::class)]

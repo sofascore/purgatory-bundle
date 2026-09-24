@@ -756,6 +756,31 @@ final class ApplicationTest extends AbstractKernelTestCase
     }
 
     /**
+     * @see PersonController::listByLocaleAction
+     */
+    public function testOldValuesFromArrayColumnArePurged(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+        $person->settings = ['locale' => 'en'];
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-locale/en');
+
+        self::clearPurger();
+
+        $person->settings = ['locale' => 'de'];
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/person/by-locale/en');
+        self::assertUrlIsPurged('/person/by-locale/de');
+    }
+
+    /**
      * @see PersonController::listByFullNameAction
      * @see PersonController::listByFullNameAndGenderAction
      */
