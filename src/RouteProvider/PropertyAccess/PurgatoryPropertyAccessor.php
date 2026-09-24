@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess;
 
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
+use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
 use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
@@ -33,21 +34,15 @@ final class PurgatoryPropertyAccessor
     {
         try {
             return $this->doGetValue($objectOrArray, $propertyPath, (string) $propertyPath);
-        } catch (\InvalidArgumentException|AccessException|UnexpectedTypeException $exception) {
-            throw new PropertyNotAccessibleException(
-                \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
-                (string) $propertyPath,
-                $exception,
-            );
+        } catch (ExceptionInterface $exception) {
+            throw $this->createException($objectOrArray, $propertyPath, $exception);
         }
     }
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
      *
-     * @throws \InvalidArgumentException
-     * @throws AccessException
-     * @throws UnexpectedTypeException
+     * @throws ExceptionInterface
      */
     private function doGetValue(object|array $objectOrArray, string|PropertyPathInterface $propertyPath, string $fullPropertyPath): mixed
     {
@@ -93,20 +88,44 @@ final class PurgatoryPropertyAccessor
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
+     *
+     * @throws PropertyNotAccessibleException
      */
     public function isReadable(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): bool
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
-            return $this->propertyAccessor->isReadable($objectOrArray, $propertyPath);
+            try {
+                return $this->propertyAccessor->isReadable($objectOrArray, $propertyPath);
+            } catch (ExceptionInterface $exception) {
+                throw $this->createException($objectOrArray, $propertyPath, $exception);
+            }
         }
 
         try {
             $this->getValue($objectOrArray, $propertyPath);
 
             return true;
-        } catch (PropertyNotAccessibleException) {
-            return false;
+        } catch (PropertyNotAccessibleException $exception) {
+            $previous = $exception->getPrevious();
+
+            if ($previous instanceof AccessException || $previous instanceof UnexpectedTypeException) {
+                return false;
+            }
+
+            throw $exception;
         }
+    }
+
+    /**
+     * @param object|array<array-key, mixed> $objectOrArray
+     */
+    private function createException(object|array $objectOrArray, string|PropertyPathInterface $propertyPath, ExceptionInterface $previous): PropertyNotAccessibleException
+    {
+        return new PropertyNotAccessibleException(
+            \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+            (string) $propertyPath,
+            $previous,
+        );
     }
 
     /**

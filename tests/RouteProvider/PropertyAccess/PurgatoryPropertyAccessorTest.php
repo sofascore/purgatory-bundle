@@ -10,7 +10,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Bar;
 use Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo;
+use Symfony\Component\PropertyAccess\Exception\InvalidPropertyPathException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -321,28 +323,59 @@ final class PurgatoryPropertyAccessorTest extends TestCase
             'object' => new Foo(
                 id: 1,
                 children: new ArrayCollection([
-                    new Foo(
-                        id: 2,
-                        children: new ArrayCollection([]),
-                    ),
+                    new Bar(id: 2),
                 ]),
             ),
             'propertyPath' => 'children[*].nonExistentProperty',
-            'expectedPreviousMessage' => 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "nonExistentProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Bar".',
         ];
 
         yield 'private property of a traversable child' => [
             'object' => new Foo(
                 id: 1,
                 children: new ArrayCollection([
-                    new Foo(
-                        id: 2,
-                        children: new ArrayCollection([]),
-                    ),
+                    new Bar(id: 2),
                 ]),
             ),
             'propertyPath' => 'children[*].privateProperty',
-            'expectedPreviousMessage' => 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Foo".',
+            'expectedPreviousMessage' => 'Can\'t get a way to read the property "privateProperty" in class "Sofascore\PurgatoryBundle\Tests\RouteProvider\PropertyAccess\Fixtures\Bar".',
+        ];
+    }
+
+    #[DataProvider('invalidPropertyPathProvider')]
+    public function testInvalidPropertyPathThrows(string $propertyPath, string $expectedPreviousMessage): void
+    {
+        $object = new Foo(
+            id: 1,
+            children: new ArrayCollection([]),
+        );
+
+        foreach ([
+            $this->purgatoryPropertyAccessor->isReadable(...),
+            $this->purgatoryPropertyAccessor->getValue(...),
+        ] as $method) {
+            try {
+                $method($object, $propertyPath);
+                self::fail('Expected a PropertyNotAccessibleException to be thrown.');
+            } catch (PropertyNotAccessibleException $exception) {
+                self::assertSame(Foo::class, $exception->class);
+                self::assertSame($propertyPath, $exception->property);
+                self::assertInstanceOf(InvalidPropertyPathException::class, $exception->getPrevious());
+                self::assertSame($expectedPreviousMessage, $exception->getPrevious()->getMessage());
+            }
+        }
+    }
+
+    public static function invalidPropertyPathProvider(): iterable
+    {
+        yield 'unclosed index' => [
+            'propertyPath' => 'children[',
+            'expectedPreviousMessage' => 'Could not parse property path "children[". Unexpected token "[" at position 8.',
+        ];
+
+        yield 'wildcard without a base path' => [
+            'propertyPath' => '[*].id',
+            'expectedPreviousMessage' => 'The property path should not be empty.',
         ];
     }
 }
