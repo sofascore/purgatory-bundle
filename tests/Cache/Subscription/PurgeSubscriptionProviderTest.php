@@ -686,7 +686,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         );
 
         $this->expectException(InvalidIfClosureException::class);
-        $this->expectExceptionMessage($expectedMessage);
+        $this->expectExceptionMessage('Invalid "if" closure provided for route "foo": "'.$expectedMessage.'"');
 
         [...$purgeSubscriptionProvider->provide()];
     }
@@ -697,49 +697,49 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'if' => static function (DummyEntity $entity): int|string {
                 return $entity->getData();
             },
-            'expectedMessage' => 'Return type must be bool',
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
         ];
 
         yield 'nullable return type' => [
             'if' => static function (DummyEntity $entity): ?bool {
                 return null;
             },
-            'expectedMessage' => 'Return type must be bool',
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
         ];
 
         yield 'invalid return type' => [
             'if' => static function (DummyEntity $entity): int {
                 return $entity->getData();
             },
-            'expectedMessage' => 'Return type must be bool',
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
         ];
 
         yield 'too many parameters' => [
             'if' => static function (DummyEntity $entity, array $options): bool {
                 return $entity->getData() > 0;
             },
-            'expectedMessage' => 'Closure must have exactly 1 parameter',
+            'expectedMessage' => 'The closure must have exactly one parameter.',
         ];
 
         yield 'invalid parameter type (union)' => [
             'if' => static function (DummyEntity|int $entity): bool {
                 return $entity->getData() > 0;
             },
-            'expectedMessage' => 'Parameter in closure must be of type '.DummyEntity::class,
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
         ];
 
         yield 'nullable parameter type' => [
             'if' => static function (?DummyEntity $entity): bool {
                 return $entity?->getData() > 0;
             },
-            'expectedMessage' => 'Parameter in closure must be of type '.DummyEntity::class,
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
         ];
 
         yield 'invalid parameter type' => [
             'if' => static function (\stdClass $entity): bool {
                 return true;
             },
-            'expectedMessage' => 'Parameter in closure must be of type '.DummyEntity::class,
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
         ];
 
         yield 'closure bound to an instance' => [
@@ -751,7 +751,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     };
                 }
             })->getIf(),
-            'expectedMessage' => 'Closure must be static',
+            'expectedMessage' => 'The closure must be static.',
         ];
 
         $number = 1;
@@ -759,7 +759,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'if' => static function (DummyEntity $entity) use ($number): bool {
                 return $entity->getData() > $number;
             },
-            'expectedMessage' => 'Closure must not capture variables',
+            'expectedMessage' => 'The closure must not capture variables.',
         ];
 
         $object = new DummyEntity();
@@ -767,17 +767,17 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'if' => static function (DummyEntity $entity) use ($object): bool {
                 return $entity->getData() > $object->getData();
             },
-            'expectedMessage' => 'Closure must not capture variables',
+            'expectedMessage' => 'The closure must not capture variables.',
         ];
 
         yield 'first-class callable of a static method' => [
             'if' => DummyEntity::isValid(...),
-            'expectedMessage' => 'First-class callables are not supported, use a static closure',
+            'expectedMessage' => 'First-class callables are not supported, use a static closure instead.',
         ];
 
         yield 'first-class callable of a function' => [
             'if' => is_object(...),
-            'expectedMessage' => 'First-class callables are not supported, use a static closure',
+            'expectedMessage' => 'First-class callables are not supported, use a static closure instead.',
         ];
     }
 }

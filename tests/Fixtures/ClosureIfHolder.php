@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Fixtures;
 
 /**
- * Holds closures declared in constant expressions so deepclone can serialize them.
+ * Holds closures declared in constant expressions so DeepClone can serialize them.
  *
- * The closure literals live in this fixture rather than inline in the tests because
- * constant-expression closures only parse on PHP 8.5+. Keeping them in a separately
- * autoloaded class means the file is loaded only when a PHP 8.5+ test
- * references it, so the test suites still parse on older PHP versions.
+ * Closures in constant expressions only parse on PHP 8.5+, so they live in this separately autoloaded
+ * class instead of inline in the tests. The file is loaded only when a PHP 8.5+ test references it,
+ * which keeps the test suite parseable on older PHP versions.
  */
 final class ClosureIfHolder
 {

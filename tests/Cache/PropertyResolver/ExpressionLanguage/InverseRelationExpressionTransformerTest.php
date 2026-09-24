@@ -55,19 +55,4 @@ final class InverseRelationExpressionTransformerTest extends TestCase
 
         $expressionTransformer->transform(new Expression('obj.firstName~"-"~obj.lastName'), \stdClass::class, 'prop', 'null');
     }
-
-    public function testAssertReadableThrowsWhenPropertyIsNotAccessible(): void
-    {
-        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
-        $extractor->expects(self::once())
-            ->method('getReadInfo')
-            ->with(\stdClass::class, 'prop')
-            ->willReturn(null);
-
-        $expressionTransformer = new InverseRelationExpressionTransformer($extractor);
-
-        $this->expectException(AccessorNotInferableException::class);
-
-        $expressionTransformer->assertReadable(\stdClass::class, 'prop');
-    }
 }

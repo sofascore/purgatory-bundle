@@ -27,11 +27,6 @@ final class InverseRelationExpressionTransformer
         return new Expression("obj.$accessor !== null ? ($inverseExpression) : $fallback");
     }
 
-    public function assertReadable(string $class, string $property): void
-    {
-        $this->createAccessor($class, $property);
-    }
-
     private function createAccessor(string $class, string $property): string
     {
         if (null === $readInfo = $this->extractor->getReadInfo($class, $property)) {

@@ -15,9 +15,8 @@ final class PurgeSubscription
      * @param class-string                   $class
      * @param array<string, ValuesInterface> $routeParams
      * @param ?non-empty-list<Action>        $actions
-     * @param ?string                        $inversePropertyPath property path used to navigate from the changed
-     *                                                            entity to the entity the closure expects, when the
-     *                                                            closure `if` is attached to an inverse subscription
+     * @param ?string                        $inversePropertyPath path back to the entity the `if` closure expects,
+     *                                                            set on inverse subscriptions
      */
     public function __construct(
         public readonly string $class,

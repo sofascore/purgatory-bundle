@@ -205,6 +205,7 @@ final class DebugCommand extends Command
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string|array<mixed>,
+     *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
      */
@@ -262,14 +263,14 @@ final class DebugCommand extends Command
             $entity = explode('::', $key);
 
             foreach ($subscriptions as $subscription) {
-                if (isset($subscription['if']) && \is_array($subscription['if'])) {
-                    $if = $this->formatClosureCondition($subscription['if']);
+                $if = $subscription['if'] ?? 'NONE';
+
+                if (\is_array($if)) {
+                    $if = $this->formatClosureCondition($if);
 
                     if (isset($subscription['inversePropertyPath'])) {
-                        $if = \sprintf("Called with entity's property: %s (no purge if null)\n%s", $subscription['inversePropertyPath'], $if);
+                        $if = \sprintf('Called with the value of "%s" (skipped if null):%s%s', $subscription['inversePropertyPath'], \PHP_EOL, $if);
                     }
-                } else {
-                    $if = \is_string($subscription['if'] ?? null) ? $subscription['if'] : 'NONE';
                 }
 
                 $io->table(
@@ -310,7 +311,7 @@ final class DebugCommand extends Command
         );
 
         $indent = '';
-        if (preg_match('/^(\s*).*?(?=(?:static\s+)?(?:function|fn)\b)/', $sourceLines[0], $matches)) {
+        if (preg_match('/^(\s*).*?(?=(?:static\s+)?function\b)/', $sourceLines[0], $matches)) {
             $indent = $matches[1];
             $sourceLines[0] = substr($sourceLines[0], \strlen($matches[0]));
         }

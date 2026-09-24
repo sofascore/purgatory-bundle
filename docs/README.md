@@ -422,19 +422,32 @@ public function detailsAction(Post $post)
 }
 ```
 
-This feature requires the [`symfony/polyfill-deepclone`](https://github.com/symfony/polyfill-deepclone) package:
+This feature requires DeepClone, which you can install with the
+[`symfony/polyfill-deepclone`](https://github.com/symfony/polyfill-deepclone) package:
 
 ```sh
 composer require symfony/polyfill-deepclone
 ```
 
-For better performance you can instead install the [`symfony/deepclone`](https://github.com/symfony/php-ext-deepclone) PHP extension.
+For better performance, you can instead install the [PHP extension](https://github.com/symfony/php-ext-deepclone)
+with [PIE](https://github.com/php/pie):
+
+```sh
+pie install symfony/deepclone
+```
 
 The closure must:
 
+- be an anonymous function, first-class callables such as `Post::isPopular(...)` are not supported,
 - have exactly one parameter, typed with the subscribed entity class or one of its parents,
 - declare a non-nullable `bool` return type.
 
+These requirements are validated during cache warmup.
+
+When [targeting a `OneTo*` relation](#targeting-oneto-relations), the closure still receives the entity passed to
+`#[PurgeOn]`, not the related entity that changed. If the relation back to that entity is `null`, no purge occurs.
+
+Closures can only be used with the `#[PurgeOn]` attribute and are not available in the YAML configuration.
 
 ### Using Purge on Actions with Multiple Routes
 

@@ -6,10 +6,12 @@ namespace Sofascore\PurgatoryBundle\Exception;
 
 final class InvalidIfClosureException extends InvalidArgumentException
 {
+    private const MESSAGE = 'Invalid "if" closure provided for route "%s": "%s"';
+
     public function __construct(
         public readonly string $routeName,
-        string $message,
+        string $reason,
     ) {
-        parent::__construct("Invalid 'if' closure for route '$routeName': $message");
+        parent::__construct(\sprintf(self::MESSAGE, $routeName, $reason));
     }
 }

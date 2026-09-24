@@ -56,6 +56,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string|array<mixed>,
+     *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
      * }>
      */

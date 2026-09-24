@@ -60,11 +60,11 @@
         "symfony/yaml": "^6.4 || ^7.4 || ^8.1"
     },
     "suggest": {
-        "symfony/deepclone": "Faster, native PHP extension alternative to symfony/polyfill-deepclone for using a closure as the \"if\" condition of a #[PurgeOn] attribute (PHP 8.5+)",
+        "ext-deepclone": "To use a faster, native alternative to symfony/polyfill-deepclone (install it with \"pie install symfony/deepclone\")",
         "symfony/expression-language": "To use expressions in the #[PurgeOn] attribute, e.g. for the \"if\" condition or route parameters",
         "symfony/http-client": "To use the Varnish purger",
         "symfony/messenger": "To purge URLs asynchronously",
-        "symfony/polyfill-deepclone": "To use a closure as the \"if\" condition of a #[PurgeOn] attribute (PHP 8.5+)",
+        "symfony/polyfill-deepclone": "To use a closure for the \"if\" condition in the #[PurgeOn] attribute (PHP 8.5+)",
         "symfony/serializer": "To resolve purge targets from serialization groups with `ForGroups` or `ForResponseGroups`",
         "symfony/yaml": "To configure purge subscriptions using YAML files"
     },

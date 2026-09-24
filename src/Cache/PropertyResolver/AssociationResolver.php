@@ -14,11 +14,14 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage\InverseR
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\InverseValuesBuilderInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
+use Sofascore\PurgatoryBundle\Exception\AccessorNotInferableException;
+use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
 final class AssociationResolver implements SubscriptionResolverInterface
 {
     public function __construct(
         private readonly ContainerInterface $inverseValuesBuilderLocator,
+        private readonly PropertyReadInfoExtractorInterface $extractor,
         private readonly InverseRelationExpressionTransformer $expressionTransformer,
     ) {
     }
@@ -78,7 +81,10 @@ final class AssociationResolver implements SubscriptionResolverInterface
             if ($if instanceof \Closure) {
                 // The closure expects the original entity, but the inverse subscription fires on the
                 // associated entity. Carry the inverse field so it can be navigated back at runtime.
-                $this->expressionTransformer->assertReadable($associationClass, $associationTarget);
+                if (null === $this->extractor->getReadInfo($associationClass, $associationTarget)) {
+                    throw new AccessorNotInferableException($associationClass, $associationTarget);
+                }
+
                 $inversePropertyPath = $associationTarget;
             } else {
                 $if = $this->expressionTransformer->transform($if, $associationClass, $associationTarget, 'false');

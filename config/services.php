@@ -106,6 +106,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory.subscription_resolver')
             ->args([
                 tagged_locator('purgatory.inverse_values_builder', indexAttribute: 'for'),
+                service('property_info.reflection_extractor'),
                 service('sofascore.purgatory.inverse_relation_expression_transformer'),
             ])
 

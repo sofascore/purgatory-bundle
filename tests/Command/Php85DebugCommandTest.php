@@ -74,7 +74,7 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
 
         self::assertStringContainsString(
             needle: <<<'PHP'
-                Condition      Called with entity's property: garden (no purge if null)
+                Condition      Called with the value of "garden" (skipped if null):
                                  static function (Garden $garden): bool {
                                      return $garden->isPublic();
                                  }
@@ -84,7 +84,7 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
 
         self::assertStringContainsString(
             needle: <<<'PHP'
-                Condition      Called with entity's property: bestInGarden (no purge if null)
+                Condition      Called with the value of "bestInGarden" (skipped if null):
                                  static function (Garden $garden): bool {
                                      return $garden->isPublic();
                                  }
