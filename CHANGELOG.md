@@ -26,6 +26,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/137
 - Rename second constructor argument in `DynamicValues` to `$propertyPath` by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
+- Rename `PropertyNotAccessibleException` to `AccessorNotInferableException` by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/issues/156
+- Mark `CreatedEntityRouteProvider`, `UpdatedEntityRouteProvider` and `RemovedEntityRouteProvider` as `@internal` by
+  @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/157
+- Constructors of `DynamicValuesResolver` and `PropertyValuesResolver` now require a `PurgatoryPropertyAccessor`
+  instead of a `PropertyAccessorInterface` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/158
 
 ### Removed
 

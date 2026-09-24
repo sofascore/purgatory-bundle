@@ -8,7 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\ExpressionLanguage\InverseRelationExpressionTransformer;
-use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
+use Sofascore\PurgatoryBundle\Exception\AccessorNotInferableException;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
@@ -51,7 +51,7 @@ final class InverseRelationExpressionTransformerTest extends TestCase
 
         $expressionTransformer = new InverseRelationExpressionTransformer($extractor);
 
-        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectException(AccessorNotInferableException::class);
 
         $expressionTransformer->transform(new Expression('obj.firstName~"-"~obj.lastName'), \stdClass::class, 'prop', 'null');
     }
@@ -66,7 +66,7 @@ final class InverseRelationExpressionTransformerTest extends TestCase
 
         $expressionTransformer = new InverseRelationExpressionTransformer($extractor);
 
-        $this->expectException(PropertyNotAccessibleException::class);
+        $this->expectException(AccessorNotInferableException::class);
 
         $expressionTransformer->assertReadable(\stdClass::class, 'prop');
     }

@@ -13,8 +13,8 @@ use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionResultException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 
 /**
  * @internal
@@ -36,7 +36,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         private readonly ConfigurationLoaderInterface $configurationLoader,
         private readonly ?ExpressionLanguage $expressionLanguage,
         private readonly ContainerInterface $routeParamValueResolverLocator,
-        protected readonly PropertyAccessorInterface $propertyAccessor,
+        protected readonly PurgatoryPropertyAccessor $propertyAccessor,
     ) {
     }
 

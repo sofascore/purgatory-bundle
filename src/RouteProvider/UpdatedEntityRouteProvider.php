@@ -9,6 +9,9 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\PropertyAccess\PropertyPath;
 
+/**
+ * @internal
+ */
 final class UpdatedEntityRouteProvider extends AbstractEntityRouteProvider
 {
     public function supports(Action $action, object $entity): bool

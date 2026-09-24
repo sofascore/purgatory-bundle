@@ -15,7 +15,7 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
 /**
  * @internal
  */
-final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
+final class PurgatoryPropertyAccessor
 {
     private const DELIMITER = '[*].';
 
@@ -70,24 +70,6 @@ final class PurgatoryPropertyAccessor implements PropertyAccessorInterface
         }
 
         return array_merge(...$values);
-    }
-
-    /**
-     * @param object|array<array-key, mixed> $objectOrArray
-     *
-     * @param-out object|array<array-key, mixed> $objectOrArray
-     */
-    public function setValue(object|array &$objectOrArray, string|PropertyPathInterface $propertyPath, mixed $value): void
-    {
-        $this->propertyAccessor->setValue($objectOrArray, $propertyPath, $value);
-    }
-
-    /**
-     * @param object|array<array-key, mixed> $objectOrArray
-     */
-    public function isWritable(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): bool
-    {
-        return $this->propertyAccessor->isWritable($objectOrArray, $propertyPath);
     }
 
     /**
