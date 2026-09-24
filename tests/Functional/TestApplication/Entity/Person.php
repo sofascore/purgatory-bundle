@@ -30,6 +30,12 @@ class Person
     #[ORM\Column(type: Types::STRING, nullable: true, enumType: Country::class)]
     public ?Country $country = null;
 
+    /**
+     * @var array<string, string>
+     */
+    #[ORM\Column(type: Types::JSON)]
+    public array $settings = [];
+
     #[ORM\OneToMany(
         targetEntity: Animal::class,
         mappedBy: 'owner',
