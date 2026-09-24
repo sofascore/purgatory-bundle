@@ -9,7 +9,6 @@ use Sofascore\PurgatoryBundle\Attribute\Target\ForResponseGroups;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Post;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\Serialize;
-use Symfony\Component\Routing\Annotation\Route as AnnotationRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -17,11 +16,9 @@ use Symfony\Component\Routing\Attribute\Route;
  */
 #[AsController]
 #[Route('/post')]
-#[AnnotationRoute('/post')]
 class PostController
 {
     #[Route('/{post_id}', 'post_details')]
-    #[AnnotationRoute('/{post_id}', name: 'post_details')]
     #[PurgeOn(Post::class,
         target: new ForResponseGroups(),
         routeParams: [
@@ -35,7 +32,6 @@ class PostController
     }
 
     #[Route('/{post_id}/full', 'post_full_details')]
-    #[AnnotationRoute('/{post_id}/full', name: 'post_full_details')]
     #[PurgeOn(Post::class,
         target: new ForResponseGroups(),
         routeParams: [
