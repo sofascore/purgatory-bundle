@@ -13,6 +13,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/112
 - Ability to pass a static method callable as a `DynamicValues` provider by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/137
+- Ability to use a closure as the `if` condition of `#[PurgeOn]` on PHP 8.5+ by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/116
 
 ### Changed
 
@@ -30,6 +32,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/157
 - Constructors of `DynamicValuesResolver` and `PropertyValuesResolver` now require a `PurgatoryPropertyAccessor`
   instead of a `PropertyAccessorInterface` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/158
+- Constructor of `AssociationResolver` now requires an inverse values builder locator, a
+  `PropertyReadInfoExtractorInterface` and an `InverseRelationExpressionTransformer` by @HypeMC and @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/123, https://github.com/sofascore/purgatory-bundle/pull/112
+  and https://github.com/sofascore/purgatory-bundle/pull/116
 - `PropertyNotAccessibleException` is now thrown when a property path cannot be read, with the original property
   accessor exception as the previous exception by @klezaic in https://github.com/sofascore/purgatory-bundle/pull/110
 

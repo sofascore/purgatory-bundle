@@ -18,7 +18,7 @@ final class PurgeOn
     public readonly ?TargetInterface $target;
     /** @var ?non-empty-array<string, ValuesInterface> */
     public readonly ?array $routeParams;
-    public readonly ?Expression $if;
+    public readonly \Closure|Expression|null $if;
     /** @var ?non-empty-list<string> */
     public readonly ?array $route;
     /** @var ?non-empty-list<Action> */
@@ -35,10 +35,14 @@ final class PurgeOn
         public readonly string $class,
         string|array|TargetInterface|null $target = null,
         ?array $routeParams = null,
-        string|Expression|null $if = null,
+        \Closure|string|Expression|null $if = null,
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
+        if ($if instanceof \Closure && !\function_exists('deepclone_to_array')) {
+            throw new LogicException('You cannot use a closure for the "if" attribute because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
+        }
+
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;
         $this->if = \is_string($if) ? self::normalizeExpression($if) : $if;

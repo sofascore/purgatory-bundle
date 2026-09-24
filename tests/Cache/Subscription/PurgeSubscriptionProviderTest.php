@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresFunction;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
@@ -22,8 +24,10 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfClosureException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyController;
+use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyEntity;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyTarget;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
@@ -590,6 +594,190 @@ final class PurgeSubscriptionProviderTest extends TestCase
         yield [
             'valid_function(author)',
             'Invalid "if" expression provided for route "foo": "Variable "author" is not valid around position 16 for expression `valid_function(author)`."',
+        ];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    #[DataProvider('providerRouteMetadataWithPhp85Features')]
+    public function testWithClosures(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
+    {
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->expects(self::once())
+            ->method('provide')
+            ->willReturnCallback(static function () use ($routeMetadata) {
+                yield $routeMetadata;
+            });
+
+        $targetResolverLocator = $this->createMock(ContainerInterface::class);
+        $targetResolverLocator->expects(self::never())->method('get');
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: $targetResolverLocator,
+            expressionLanguage: null,
+        );
+
+        /** @var PurgeSubscription[] $propertySubscriptions */
+        $propertySubscriptions = [...$purgeSubscriptionProvider->provide()];
+
+        self::assertCount(\count($expectedSubscriptions), $propertySubscriptions);
+        self::assertEquals($expectedSubscriptions, $propertySubscriptions);
+    }
+
+    public static function providerRouteMetadataWithPhp85Features(): iterable
+    {
+        $route = new Route('/foo');
+        $if = static function (DummyEntity $entity): bool {
+            return $entity->getData() > 0;
+        };
+
+        yield 'PurgeOn with closure' => [
+            'routeMetadata' => new RouteMetadata(
+                routeName: 'foo',
+                route: $route,
+                purgeOn: new PurgeOn(
+                    class: DummyEntity::class,
+                    if: $if,
+                ),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
+            ),
+            'expectedSubscriptions' => [
+                new PurgeSubscription(
+                    class: DummyEntity::class,
+                    property: null,
+                    routeParams: [],
+                    routeName: 'foo',
+                    route: $route,
+                    actions: null,
+                    if: $if,
+                ),
+            ],
+        ];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    #[RequiresFunction('deepclone_to_array')]
+    #[DataProvider('provideInvalidClosures')]
+    public function testInvalidClosures(\Closure $if, string $expectedMessage): void
+    {
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->expects(self::once())
+            ->method('provide')
+            ->willReturnCallback(static function () use ($if): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: DummyEntity::class,
+                        if: $if,
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: self::createStub(ExpressionLanguage::class),
+        );
+
+        $this->expectException(InvalidIfClosureException::class);
+        $this->expectExceptionMessage('Invalid "if" closure provided for route "foo": "'.$expectedMessage.'"');
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public static function provideInvalidClosures(): iterable
+    {
+        yield 'invalid return type (union)' => [
+            'if' => static function (DummyEntity $entity): int|string {
+                return $entity->getData();
+            },
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
+        ];
+
+        yield 'nullable return type' => [
+            'if' => static function (DummyEntity $entity): ?bool {
+                return null;
+            },
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
+        ];
+
+        yield 'invalid return type' => [
+            'if' => static function (DummyEntity $entity): int {
+                return $entity->getData();
+            },
+            'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
+        ];
+
+        yield 'too many parameters' => [
+            'if' => static function (DummyEntity $entity, array $options): bool {
+                return $entity->getData() > 0;
+            },
+            'expectedMessage' => 'The closure must have exactly one parameter.',
+        ];
+
+        yield 'invalid parameter type (union)' => [
+            'if' => static function (DummyEntity|int $entity): bool {
+                return $entity->getData() > 0;
+            },
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
+        ];
+
+        yield 'nullable parameter type' => [
+            'if' => static function (?DummyEntity $entity): bool {
+                return $entity?->getData() > 0;
+            },
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
+        ];
+
+        yield 'invalid parameter type' => [
+            'if' => static function (\stdClass $entity): bool {
+                return true;
+            },
+            'expectedMessage' => 'The closure parameter must be typed as "'.DummyEntity::class.'" or one of its parent types.',
+        ];
+
+        yield 'closure bound to an instance' => [
+            'if' => (new class {
+                public function getIf(): \Closure
+                {
+                    return function (DummyEntity $entity): bool {
+                        return $this instanceof self;
+                    };
+                }
+            })->getIf(),
+            'expectedMessage' => 'The closure must be static.',
+        ];
+
+        $number = 1;
+        yield 'captured scalar variable' => [
+            'if' => static function (DummyEntity $entity) use ($number): bool {
+                return $entity->getData() > $number;
+            },
+            'expectedMessage' => 'The closure must not capture variables.',
+        ];
+
+        $object = new DummyEntity();
+        yield 'captured object variable' => [
+            'if' => static function (DummyEntity $entity) use ($object): bool {
+                return $entity->getData() > $object->getData();
+            },
+            'expectedMessage' => 'The closure must not capture variables.',
+        ];
+
+        yield 'first-class callable of a static method' => [
+            'if' => DummyEntity::isValid(...),
+            'expectedMessage' => 'First-class callables are not supported, use a static closure instead.',
+        ];
+
+        yield 'first-class callable of a function' => [
+            'if' => is_object(...),
+            'expectedMessage' => 'First-class callables are not supported, use a static closure instead.',
         ];
     }
 }

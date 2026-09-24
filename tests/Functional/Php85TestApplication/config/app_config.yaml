@@ -1,0 +1,7 @@
+services:
+    _defaults:
+        autoconfigure: true
+        autowire: true
+
+    Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\:
+        resource: '../'

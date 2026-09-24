@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
@@ -20,9 +21,10 @@ final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
         ConfigurationLoaderInterface $configurationLoader,
         ?ExpressionLanguage $expressionLanguage,
         ContainerInterface $routeParamValueResolverLocator,
+        PurgatoryPropertyAccessor $propertyAccessor,
         private readonly ManagerRegistry $managerRegistry,
     ) {
-        parent::__construct($configurationLoader, $expressionLanguage, $routeParamValueResolverLocator);
+        parent::__construct($configurationLoader, $expressionLanguage, $routeParamValueResolverLocator, $propertyAccessor);
     }
 
     public function supports(Action $action, object $entity): bool

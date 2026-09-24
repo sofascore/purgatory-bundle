@@ -15,6 +15,8 @@ final class PurgeSubscription
      * @param class-string                   $class
      * @param array<string, ValuesInterface> $routeParams
      * @param ?non-empty-list<Action>        $actions
+     * @param ?string                        $inversePropertyPath path back to the entity the `if` closure expects,
+     *                                                            set on inverse subscriptions
      */
     public function __construct(
         public readonly string $class,
@@ -23,7 +25,8 @@ final class PurgeSubscription
         public readonly string $routeName,
         public readonly Route $route,
         public readonly ?array $actions,
-        public readonly ?Expression $if = null,
+        public readonly \Closure|Expression|null $if = null,
+        public readonly ?string $inversePropertyPath = null,
     ) {
     }
 }

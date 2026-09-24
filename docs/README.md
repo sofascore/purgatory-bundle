@@ -407,6 +407,48 @@ In this example, the purge will only occur if the post has more than 3,000 upvot
 
 You can also add [custom Expression Language functions](custom-expression-language-functions.md).
 
+### Adding Conditional Logic with Closures
+
+Starting with [PHP 8.5](https://www.php.net/releases/8.5/en.php), closures can be used in attributes, so the same
+condition can be written in plain PHP instead of an expression. The closure receives the entity as its only argument:
+
+```php
+#[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, if: static function (Post $post): bool {
+    return $post->upvotes > 3000;
+})]
+public function detailsAction(Post $post)
+{
+}
+```
+
+This feature requires DeepClone, which you can install with the
+[`symfony/polyfill-deepclone`](https://github.com/symfony/polyfill-deepclone) package:
+
+```sh
+composer require symfony/polyfill-deepclone
+```
+
+For better performance, you can instead install the [PHP extension](https://github.com/symfony/php-ext-deepclone)
+with [PIE](https://github.com/php/pie):
+
+```sh
+pie install symfony/deepclone
+```
+
+The closure must:
+
+- be an anonymous function, first-class callables such as `Post::isPopular(...)` are not supported,
+- have exactly one parameter, typed with the subscribed entity class or one of its parents,
+- declare a non-nullable `bool` return type.
+
+These requirements are validated during cache warmup.
+
+When [targeting a `OneTo*` relation](#targeting-oneto-relations), the closure still receives the entity passed to
+`#[PurgeOn]`, not the related entity that changed. If the relation back to that entity is `null`, no purge occurs.
+
+Closures can only be used with the `#[PurgeOn]` attribute and are not available in the YAML configuration.
+
 ### Using Purge on Actions with Multiple Routes
 
 By default, the attribute generates URLs for all routes associated with the action. You can limit this to one or more

@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionResultException;
 use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
+use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 
 /**
@@ -30,11 +31,14 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     private ?Configuration $configuration = null;
+    /** @var array<non-empty-string, array<int, \Closure>> */
+    private array $closures = [];
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
         private readonly ?ExpressionLanguage $expressionLanguage,
         private readonly ContainerInterface $routeParamValueResolverLocator,
+        protected readonly PurgatoryPropertyAccessor $propertyAccessor,
     ) {
     }
 
@@ -68,15 +72,29 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
      */
     private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
     {
-        foreach ($subscriptions as $subscription) {
+        foreach ($subscriptions as $index => $subscription) {
             if (isset($subscription['actions']) && !\in_array($action, $subscription['actions'], true)) {
                 continue;
             }
 
             if (isset($subscription['if'])) {
-                $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
-                if (!\is_bool($result)) {
-                    throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
+                if (\is_array($subscription['if'])) {
+                    $closure = $this->getIfClosure($subscriptions->key(), $index, $subscription['if']);
+                    $subject = $entity;
+
+                    if (isset($subscription['inversePropertyPath'])) {
+                        // inverse subscription: navigate from the changed entity back to the entity
+                        // the closure expects, a null relation means there is nothing to purge
+                        $subject = $this->propertyAccessor->getValue($entity, $subscription['inversePropertyPath']);
+                    }
+
+                    $result = \is_object($subject) && $closure($subject);
+                } else {
+                    $result = $this->getExpressionLanguage()->evaluate($subscription['if'], ['obj' => $entity]);
+
+                    if (!\is_bool($result)) {
+                        throw new InvalidIfExpressionResultException($subscription['routeName'], $subscription['if'], $result);
+                    }
                 }
 
                 if (!$result) {
@@ -163,6 +181,23 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         $this->configuration ??= $this->configurationLoader->load();
 
         return $this->configuration->has($key) ? $this->configuration->get($key) : null;
+    }
+
+    /**
+     * @param non-empty-string $key
+     * @param array<mixed>     $serializedClosure
+     */
+    private function getIfClosure(string $key, int $index, array $serializedClosure): \Closure
+    {
+        if (isset($this->closures[$key][$index])) {
+            return $this->closures[$key][$index];
+        }
+
+        if (!($closure = deepclone_from_array($serializedClosure)) instanceof \Closure) {
+            throw new LogicException(\sprintf('Expected the "if" condition for subscription "%s" to be a closure, got %s.', $key, get_debug_type($closure)));
+        }
+
+        return $this->closures[$key][$index] = $closure;
     }
 
     private function getExpressionLanguage(): ExpressionLanguage

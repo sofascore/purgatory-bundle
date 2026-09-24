@@ -54,14 +54,17 @@
         "symfony/filesystem": "^6.4 || ^7.4 || ^8.1",
         "symfony/http-client": "^6.4 || ^7.4 || ^8.1",
         "symfony/messenger": "^6.4 || ^7.4 || ^8.1",
+        "symfony/polyfill-deepclone": "^1.39",
         "symfony/process": "^6.4 || ^7.4 || ^8.1",
         "symfony/serializer": "^6.4 || ^7.4 || ^8.1",
         "symfony/yaml": "^6.4 || ^7.4 || ^8.1"
     },
     "suggest": {
+        "ext-deepclone": "To use a faster, native alternative to symfony/polyfill-deepclone (install it with \"pie install symfony/deepclone\")",
         "symfony/expression-language": "To use expressions in the #[PurgeOn] attribute, e.g. for the \"if\" condition or route parameters",
         "symfony/http-client": "To use the Varnish purger",
         "symfony/messenger": "To purge URLs asynchronously",
+        "symfony/polyfill-deepclone": "To use a closure for the \"if\" condition in the #[PurgeOn] attribute (PHP 8.5+)",
         "symfony/serializer": "To resolve purge targets from serialization groups with `ForGroups` or `ForResponseGroups`",
         "symfony/yaml": "To configure purge subscriptions using YAML files"
     },

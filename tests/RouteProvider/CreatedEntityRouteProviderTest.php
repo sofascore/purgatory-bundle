@@ -248,6 +248,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
             new ServiceLocator($routeParamValueResolvers + [
                 CompoundValues::type() => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
             ]),
+            $propertyAccessor,
         );
     }
 }

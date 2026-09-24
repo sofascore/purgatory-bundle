@@ -162,6 +162,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
             $configurationLoader,
             null,
             new ServiceLocator([]),
+            new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
             $managerRegistry,
         );
 
@@ -280,6 +281,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
             new ServiceLocator($routeParamValueResolvers + [
                 CompoundValues::type() => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
             ]),
+            $propertyAccessor,
             $managerRegistry,
         );
     }

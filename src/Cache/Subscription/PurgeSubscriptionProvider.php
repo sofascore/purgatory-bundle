@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfClosureException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
@@ -59,7 +60,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             $purgeOn = $routeMetadata->purgeOn;
 
             if (null !== $purgeOn->if) {
-                $this->validateExpression($purgeOn->if, $routeMetadata->routeName);
+                $this->validateIf($purgeOn->if, $routeMetadata->routeName, $purgeOn->class);
             }
 
             // if route parameters are not specified, they are same as path variables
@@ -143,6 +144,56 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 routeName: $routeMetadata->routeName,
                 missingRouteParams: array_values($missingRouteParams),
             );
+        }
+    }
+
+    private function validateIf(\Closure|Expression $if, string $routeName, string $entity): void
+    {
+        if ($if instanceof \Closure) {
+            $this->validateIfClosure($if, $routeName, $entity);
+
+            return;
+        }
+
+        $this->validateExpression($if, $routeName);
+    }
+
+    private function validateIfClosure(\Closure $closure, string $routeName, string $entity): void
+    {
+        $reflection = new \ReflectionFunction($closure);
+
+        if (null !== $reflection->getClosureThis()) {
+            throw new InvalidIfClosureException($routeName, 'The closure must be static.');
+        }
+
+        if ([] !== $reflection->getClosureUsedVariables()) {
+            throw new InvalidIfClosureException($routeName, 'The closure must not capture variables.');
+        }
+
+        if (!$reflection->isAnonymous()) {
+            throw new InvalidIfClosureException($routeName, 'First-class callables are not supported, use a static closure instead.');
+        }
+
+        $returnType = $reflection->getReturnType();
+
+        if (!$returnType instanceof \ReflectionNamedType
+            || $returnType->allowsNull()
+            || !\in_array($returnType->getName(), ['bool', 'true', 'false'], true)
+        ) {
+            throw new InvalidIfClosureException($routeName, 'The closure must declare a non-nullable bool return type.');
+        }
+
+        if (1 !== $reflection->getNumberOfParameters()) {
+            throw new InvalidIfClosureException($routeName, 'The closure must have exactly one parameter.');
+        }
+
+        $parameterType = $reflection->getParameters()[0]->getType();
+
+        if (!$parameterType instanceof \ReflectionNamedType
+            || $parameterType->allowsNull()
+            || !is_a($entity, $parameterType->getName(), true)
+        ) {
+            throw new InvalidIfClosureException($routeName, \sprintf('The closure parameter must be typed as "%s" or one of its parent types.', $entity));
         }
     }
 
