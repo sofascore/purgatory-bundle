@@ -128,7 +128,6 @@ class PersonController
     }
 
     #[Route('/by-locale/{locale}', 'list_by_locale')]
-    #[AnnotationRoute('/by-locale/{locale}', name: 'list_by_locale')]
     #[PurgeOn(Person::class,
         target: 'settings',
         routeParams: [
