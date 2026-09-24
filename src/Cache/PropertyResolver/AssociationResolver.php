@@ -72,14 +72,14 @@ final class AssociationResolver implements SubscriptionResolverInterface
                 ?? $values;
         }
 
-        $closurePropertyPath = null;
+        $inversePropertyPath = null;
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
             if ($if instanceof \Closure) {
                 // The closure expects the original entity, but the inverse subscription fires on the
                 // associated entity. Carry the inverse field so it can be navigated back at runtime.
                 $this->expressionTransformer->assertReadable($associationClass, $associationTarget);
-                $closurePropertyPath = $associationTarget;
+                $inversePropertyPath = $associationTarget;
             } else {
                 $if = $this->expressionTransformer->transform($if, $associationClass, $associationTarget, 'false');
             }
@@ -93,7 +93,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             route: $routeMetadata->route,
             actions: $routeMetadata->purgeOn->actions,
             if: $if,
-            closurePropertyPath: $closurePropertyPath,
+            inversePropertyPath: $inversePropertyPath,
         );
 
         return true;

@@ -228,7 +228,7 @@ final class DebugCommand extends Command
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string|array<mixed>,
-     *     closureProperty?: string,
+     *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
      * }>>
      */
@@ -250,7 +250,7 @@ final class DebugCommand extends Command
      *     routeName: string,
      *     routeParams?: array<string, array{type: string, values: list<mixed>, optional?: true}>,
      *     if?: string|array<mixed>,
-     *     closureProperty?: string,
+     *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
      * }>> $configuration
      */
@@ -265,8 +265,8 @@ final class DebugCommand extends Command
                 if (isset($subscription['if']) && \is_array($subscription['if'])) {
                     $if = $this->formatClosureCondition($subscription['if']);
 
-                    if (isset($subscription['closureProperty'])) {
-                        $if = \sprintf("Called with entity's property: %s (no purge if null)\n%s", $subscription['closureProperty'], $if);
+                    if (isset($subscription['inversePropertyPath'])) {
+                        $if = \sprintf("Called with entity's property: %s (no purge if null)\n%s", $subscription['inversePropertyPath'], $if);
                     }
                 } else {
                     $if = \is_string($subscription['if'] ?? null) ? $subscription['if'] : 'NONE';

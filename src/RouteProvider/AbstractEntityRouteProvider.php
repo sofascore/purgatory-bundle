@@ -80,10 +80,10 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                     /** @var \Closure $closure */
                     $closure = deepclone_from_array($subscription['if']);
 
-                    if (isset($subscription['closureProperty'])) {
+                    if (isset($subscription['inversePropertyPath'])) {
                         // inverse subscription: navigate from the changed entity back to the entity
                         // the closure expects; a null relation means there is nothing to purge
-                        $related = $this->propertyAccessor->getValue($entity, $subscription['closureProperty']);
+                        $related = $this->propertyAccessor->getValue($entity, $subscription['inversePropertyPath']);
 
                         if (null === $related) {
                             continue;

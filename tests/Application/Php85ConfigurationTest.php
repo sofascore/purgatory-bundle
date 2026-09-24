@@ -90,7 +90,7 @@ class Php85ConfigurationTest extends AbstractKernelTestCase
                     ],
                     'mask' => 1,
                 ],
-                'closureProperty' => 'garden',
+                'inversePropertyPath' => 'garden',
             ],
         ];
 
@@ -117,7 +117,7 @@ class Php85ConfigurationTest extends AbstractKernelTestCase
                     ],
                     'mask' => 1,
                 ],
-                'closureProperty' => 'bestInGarden',
+                'inversePropertyPath' => 'bestInGarden',
             ],
         ];
     }

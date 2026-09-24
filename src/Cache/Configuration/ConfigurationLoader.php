@@ -41,8 +41,8 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 if ($subscription->if instanceof \Closure) {
                     $config['if'] = deepclone_to_array($subscription->if);
 
-                    if (null !== $subscription->closurePropertyPath) {
-                        $config['closureProperty'] = $subscription->closurePropertyPath;
+                    if (null !== $subscription->inversePropertyPath) {
+                        $config['inversePropertyPath'] = $subscription->inversePropertyPath;
                     }
                 } else {
                     $config['if'] = (string) $subscription->if;

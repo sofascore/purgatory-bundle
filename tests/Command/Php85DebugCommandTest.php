@@ -62,7 +62,7 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
-    public function testClosurePropertyIsRendered(): void
+    public function testInversePropertyPathIsRendered(): void
     {
         $this->command->execute([
             '--route' => 'garden_plants_list',

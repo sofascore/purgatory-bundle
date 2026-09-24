@@ -15,7 +15,7 @@ final class PurgeSubscription
      * @param class-string                   $class
      * @param array<string, ValuesInterface> $routeParams
      * @param ?non-empty-list<Action>        $actions
-     * @param ?string                        $closurePropertyPath property path used to navigate from the changed
+     * @param ?string                        $inversePropertyPath property path used to navigate from the changed
      *                                                            entity to the entity the closure expects, when the
      *                                                            closure `if` is attached to an inverse subscription
      */
@@ -27,7 +27,7 @@ final class PurgeSubscription
         public readonly Route $route,
         public readonly ?array $actions,
         public readonly \Closure|Expression|null $if = null,
-        public readonly ?string $closurePropertyPath = null,
+        public readonly ?string $inversePropertyPath = null,
     ) {
     }
 }
