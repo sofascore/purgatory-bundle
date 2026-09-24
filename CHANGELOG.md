@@ -32,6 +32,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/157
 - Constructors of `DynamicValuesResolver` and `PropertyValuesResolver` now require a `PurgatoryPropertyAccessor`
   instead of a `PropertyAccessorInterface` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/158
+- `PropertyNotAccessibleException` is now thrown when a property path cannot be read, with the original property
+  accessor exception as the previous exception by @klezaic in https://github.com/sofascore/purgatory-bundle/pull/110
 
 ### Removed
 
@@ -40,6 +42,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/123
 - `ValuesInterface::getValues()`, use public properties instead by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
+- `ValueNotIterableException`, `PropertyNotAccessibleException` is thrown instead by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/110
 
 ## [1.6.0] - 2026-09-21
 

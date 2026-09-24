@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess;
 
-use Sofascore\PurgatoryBundle\Exception\ValueNotIterableException;
+use Sofascore\PurgatoryBundle\Exception\PropertyNotAccessibleException;
 use Symfony\Component\PropertyAccess\Exception\AccessException;
-use Symfony\Component\PropertyAccess\Exception\InvalidArgumentException;
+use Symfony\Component\PropertyAccess\Exception\ExceptionInterface;
+use Symfony\Component\PropertyAccess\Exception\NoSuchIndexException;
 use Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\PropertyAccess\PropertyPath;
@@ -27,12 +28,23 @@ final class PurgatoryPropertyAccessor
     /**
      * @param object|array<array-key, mixed> $objectOrArray
      *
-     * @throws InvalidArgumentException
-     * @throws AccessException
-     * @throws UnexpectedTypeException
-     * @throws ValueNotIterableException
+     * @throws PropertyNotAccessibleException
      */
     public function getValue(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): mixed
+    {
+        try {
+            return $this->doGetValue($objectOrArray, $propertyPath, (string) $propertyPath);
+        } catch (ExceptionInterface $exception) {
+            throw $this->createException($objectOrArray, $propertyPath, $exception);
+        }
+    }
+
+    /**
+     * @param object|array<array-key, mixed> $objectOrArray
+     *
+     * @throws ExceptionInterface
+     */
+    private function doGetValue(object|array $objectOrArray, string|PropertyPathInterface $propertyPath, string $fullPropertyPath): mixed
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
             return $this->propertyAccessor->getValue($objectOrArray, $propertyPath);
@@ -53,7 +65,8 @@ final class PurgatoryPropertyAccessor
                 return null;
             }
 
-            throw new ValueNotIterableException($collection, (string) $basePropertyPath);
+            // Mirrors the exception thrown by the native wildcard support added in Symfony 8.2
+            throw new NoSuchIndexException(\sprintf('Cannot expand the wildcard in path "%s" because the value of type "%s" is not iterable.', $fullPropertyPath, get_debug_type($collection)));
         }
 
         $values = [];
@@ -61,9 +74,10 @@ final class PurgatoryPropertyAccessor
         /** @var object|array<array-key, mixed> $item */
         foreach ($collection as $item) {
             /** @var scalar|list<?scalar>|null $value */
-            $value = $this->getValue(
+            $value = $this->doGetValue(
                 objectOrArray: $item,
                 propertyPath: $propertyPathParts[1],
+                fullPropertyPath: $fullPropertyPath,
             );
 
             $values[] = \is_array($value) ? $value : [$value];
@@ -74,20 +88,44 @@ final class PurgatoryPropertyAccessor
 
     /**
      * @param object|array<array-key, mixed> $objectOrArray
+     *
+     * @throws PropertyNotAccessibleException
      */
     public function isReadable(object|array $objectOrArray, string|PropertyPathInterface $propertyPath): bool
     {
         if (!str_contains((string) $propertyPath, self::DELIMITER)) {
-            return $this->propertyAccessor->isReadable($objectOrArray, $propertyPath);
+            try {
+                return $this->propertyAccessor->isReadable($objectOrArray, $propertyPath);
+            } catch (ExceptionInterface $exception) {
+                throw $this->createException($objectOrArray, $propertyPath, $exception);
+            }
         }
 
         try {
             $this->getValue($objectOrArray, $propertyPath);
 
             return true;
-        } catch (AccessException|UnexpectedTypeException|ValueNotIterableException) {
-            return false;
+        } catch (PropertyNotAccessibleException $exception) {
+            $previous = $exception->getPrevious();
+
+            if ($previous instanceof AccessException || $previous instanceof UnexpectedTypeException) {
+                return false;
+            }
+
+            throw $exception;
         }
+    }
+
+    /**
+     * @param object|array<array-key, mixed> $objectOrArray
+     */
+    private function createException(object|array $objectOrArray, string|PropertyPathInterface $propertyPath, ExceptionInterface $previous): PropertyNotAccessibleException
+    {
+        return new PropertyNotAccessibleException(
+            \is_array($objectOrArray) ? 'array' : $objectOrArray::class,
+            (string) $propertyPath,
+            $previous,
+        );
     }
 
     /**
