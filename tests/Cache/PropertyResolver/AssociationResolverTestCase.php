@@ -137,13 +137,13 @@ abstract class AssociationResolverTestCase extends TestCase
 
         $this->expectException(AccessorNotInferableException::class);
 
-        iterator_to_array($this->resolveSubscription(
+        [...$this->resolveSubscription(
             extractor: $extractor,
             associationMapping: $associationMapping,
             isGetAssociationMappedByTargetFieldCalled: $isGetAssociationMappedByTargetFieldCalled,
             isAssociationInverseSide: $isAssociationInverseSide,
             if: static fn (object $entity): bool => true,
-        ));
+        )];
     }
 
     public function testFieldNotAssociation(): void
