@@ -42,6 +42,11 @@ post_details:
     class: App\Entity\Post
     if: 'obj.upvotes > 3000'
 
+# Adding conditional logic with a static method
+post_details:
+    class: App\Entity\Post
+    if: 'App\\MyClass::isPopular'
+
 # Adding multiple purge subscriptions
 post_details:
     - class: App\Entity\Post

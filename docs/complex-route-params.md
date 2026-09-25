@@ -140,9 +140,10 @@ public function listAction(Author $author)
 You can also add [custom Expression Language functions](custom-expression-language-functions.md) to extend the available
 expression syntax.
 
-### Using Values Provided by a Service or Static Method
+### Using Values Provided by a Service, Static Method or Closure
 
-As an alternative to expressions, route parameter values can be provided dynamically by a service or a static method.
+As an alternative to expressions, route parameter values can be provided dynamically by a service, a static method or a
+closure.
 This is particularly useful when you need route parameters that depend on context or runtime information:
 
 ```php
@@ -213,6 +214,21 @@ final class MyClass
     {
         // Return the desired value for the route parameter
     }
+}
+```
+
+Starting with PHP 8.5, you can also pass a closure, see [Using Closures](README.md#using-closures) for its
+requirements:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
+
+#[Route('/posts/{type}', name: 'posts_list', methods: 'GET')]
+#[PurgeOn(Post::class, routeParams: ['type' => new DynamicValues(static function (Post $post): string {
+    // Return the desired value for the route parameter
+})])]
+public function listAction()
+{
 }
 ```
 

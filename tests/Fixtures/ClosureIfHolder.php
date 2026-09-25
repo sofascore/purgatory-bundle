@@ -20,4 +20,8 @@ final class ClosureIfHolder
     public const \Closure RETURNS_FALSE = static function (\stdClass $entity): bool {
         return false;
     };
+
+    public const \Closure VALUES = static function (object $entity): array {
+        return [7, 8];
+    };
 }

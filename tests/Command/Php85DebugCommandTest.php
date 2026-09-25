@@ -187,4 +187,18 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
         // the direct subscription on Garden is not navigated through a property
         self::assertSame(2, substr_count($display, 'Receives'));
     }
+
+    public function testDynamicValuesClosureIsRendered(): void
+    {
+        $this->command->execute([
+            '--route' => 'plants_by_level',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: 'Route Params   level: Dynamic(Closure defined in Controller/WateringController.php:20, null)'.\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
 }

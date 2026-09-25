@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\EnumValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
@@ -19,6 +20,7 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterf
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\IfCallables;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
 
@@ -261,5 +263,76 @@ final class ConfigurationLoaderTest extends TestCase
                 ],
             ],
         ], $configuration->toArray());
+    }
+
+    public function testSubscriptionsWithCallableIf(): void
+    {
+        $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider->expects(self::once())
+            ->method('provide')
+            ->willReturn([
+                new PurgeSubscription(
+                    class: \stdClass::class,
+                    property: null,
+                    routeParams: [],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo'),
+                    actions: null,
+                    if: [IfCallables::class, 'isTrue'],
+                    inversePropertyPath: 'bar',
+                ),
+            ]);
+
+        self::assertSame([
+            'stdClass' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'if' => [IfCallables::class, 'isTrue'],
+                    'inversePropertyPath' => 'bar',
+                ],
+            ],
+        ], (new ConfigurationLoader($purgeSubscriptionProvider))->load()->toArray());
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testDynamicValuesClosuresAreSerialized(): void
+    {
+        $purgeSubscriptionProvider = $this->createMock(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider->expects(self::once())
+            ->method('provide')
+            ->willReturn([
+                new PurgeSubscription(
+                    class: \stdClass::class,
+                    property: null,
+                    routeParams: [
+                        'foo' => new DynamicValues(ClosureIfHolder::VALUES, 'bar'),
+                        'baz' => new CompoundValues(new RawValues(1), new DynamicValues(ClosureIfHolder::VALUES)),
+                    ],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo/{foo}/{baz}'),
+                    actions: null,
+                ),
+            ]);
+
+        self::assertSame([
+            'stdClass' => [
+                [
+                    'routeName' => 'app_route_foo',
+                    'routeParams' => [
+                        'foo' => [
+                            'type' => 'dynamic',
+                            'values' => [deepclone_to_array(ClosureIfHolder::VALUES), 'bar'],
+                        ],
+                        'baz' => [
+                            'type' => 'compound',
+                            'values' => [
+                                ['type' => 'raw', 'values' => [1]],
+                                ['type' => 'dynamic', 'values' => [deepclone_to_array(ClosureIfHolder::VALUES), null]],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ], (new ConfigurationLoader($purgeSubscriptionProvider))->load()->toArray());
     }
 }

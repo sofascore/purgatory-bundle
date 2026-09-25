@@ -15,6 +15,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/137
 - Ability to use a closure as the `if` condition of `#[PurgeOn]` on PHP 8.5+ by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/116
+- Ability to use a static method callable as the `if` condition of `#[PurgeOn]` by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/163
+- Ability to pass a closure as a `DynamicValues` provider on PHP 8.5+ by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/163
 
 ### Changed
 

@@ -407,6 +407,27 @@ In this example, the purge will only occur if the post has more than 3,000 upvot
 
 You can also add [custom Expression Language functions](custom-expression-language-functions.md).
 
+### Adding Conditional Logic with Static Methods
+
+The condition can also be a public static method, referenced as `[Class::class, 'method']` or `'Class::method'`. The
+method receives the entity as its only argument:
+
+```php
+#[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, if: [self::class, 'isPopular'])]
+public function detailsAction(Post $post)
+{
+}
+
+public static function isPopular(Post $post): bool
+{
+    return $post->upvotes > 3000;
+}
+```
+
+The method must have exactly one parameter, typed with the subscribed entity class or one of its parents, and declare a
+non-nullable `bool` return type. These requirements are validated during cache warmup.
+
 ### Adding Conditional Logic with Closures
 
 Starting with [PHP 8.5](https://www.php.net/releases/8.5/en.php), closures can be used in attributes, so the same
@@ -422,7 +443,20 @@ public function detailsAction(Post $post)
 }
 ```
 
-This feature requires DeepClone, which you can install with the
+Besides the [requirements for all closures](#using-closures), the closure must have exactly one parameter, typed with
+the subscribed entity class or one of its parents, and declare a non-nullable `bool` return type. These requirements
+are validated during cache warmup.
+
+When [targeting a `OneTo*` relation](#targeting-oneto-relations), the closure still receives the entity passed to
+`#[PurgeOn]`, not the related entity that changed. If the relation back to that entity is `null`, no purge occurs.
+
+### Using Closures
+
+Starting with [PHP 8.5](https://www.php.net/releases/8.5/en.php), closures can be used in attributes, e.g. as the
+[`if` condition](#adding-conditional-logic-with-closures) or as a
+[`DynamicValues` provider](complex-route-params.md#using-values-provided-by-a-service-static-method-or-closure).
+
+Since purge subscriptions are cached, closures are serialized using DeepClone, which you can install with the
 [`symfony/polyfill-deepclone`](https://github.com/symfony/polyfill-deepclone) package:
 
 ```sh
@@ -436,18 +470,9 @@ with [PIE](https://github.com/php/pie):
 pie install symfony/deepclone
 ```
 
-The closure must:
-
-- be an anonymous function, first-class callables such as `Post::isPopular(...)` are not supported,
-- have exactly one parameter, typed with the subscribed entity class or one of its parents,
-- declare a non-nullable `bool` return type.
-
-These requirements are validated during cache warmup.
-
-When [targeting a `OneTo*` relation](#targeting-oneto-relations), the closure still receives the entity passed to
-`#[PurgeOn]`, not the related entity that changed. If the relation back to that entity is `null`, no purge occurs.
-
-Closures can only be used with the `#[PurgeOn]` attribute and are not available in the YAML configuration.
+Closures must be anonymous functions, first-class callables such as `Post::isPopular(...)` are not supported. This is
+validated during cache warmup. Closures can only be used with the `#[PurgeOn]` attribute and are not available in the
+YAML configuration.
 
 ### Using Purge on Actions with Multiple Routes
 

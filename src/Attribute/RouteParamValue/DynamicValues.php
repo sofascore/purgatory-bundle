@@ -4,25 +4,27 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Attribute\RouteParamValue;
 
+use Sofascore\PurgatoryBundle\Exception\LogicException;
+
 final class DynamicValues extends AbstractValues
 {
     /**
-     * @var string|callable-array<string>
+     * @var string|callable-array<string>|\Closure
      */
-    public readonly string|array $provider;
+    public readonly string|array|\Closure $provider;
 
     /**
-     * @param string|callable-array<string> $provider Alias defined in {@see AsRouteParamService} attribute or static method callable
+     * @param string|callable-array<string>|\Closure $provider Alias defined in {@see AsRouteParamService} attribute, static method callable or closure
      */
     public function __construct(
-        string|array $provider,
+        string|array|\Closure $provider,
         public readonly ?string $propertyPath = null,
     ) {
         $this->provider = self::normalizeProvider($provider);
     }
 
     /**
-     * @return array<string|callable-array<string>|null>
+     * @return array<string|callable-array<string>|\Closure|null>
      */
     protected function getValues(): array
     {
@@ -35,12 +37,20 @@ final class DynamicValues extends AbstractValues
     }
 
     /**
-     * @param string|callable-array<string|object> $provider
+     * @param string|callable-array<string|object>|\Closure $provider
      *
-     * @return string|callable-array<string>
+     * @return string|callable-array<string>|\Closure
      */
-    private static function normalizeProvider(string|array $provider): string|array
+    private static function normalizeProvider(string|array|\Closure $provider): string|array|\Closure
     {
+        if ($provider instanceof \Closure) {
+            if (!\function_exists('deepclone_to_array')) {
+                throw new LogicException('You cannot use a closure as a "DynamicValues" provider because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
+            }
+
+            return $provider;
+        }
+
         if (\is_string($provider)) {
             if (!str_contains($provider, '::')) {
                 return $provider;

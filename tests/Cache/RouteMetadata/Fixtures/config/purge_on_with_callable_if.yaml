@@ -1,0 +1,5 @@
+foo_bar:
+    -   class: Foo
+        if: 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass::isValid'
+    -   class: Foo
+        if: [ 'Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\DummyClass', isValid ]

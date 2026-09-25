@@ -35,6 +35,20 @@ final class DynamicValuesTest extends TestCase
 
         new DynamicValues([new DummyInstanceCallable(), 'handle']);
     }
+
+    public function testClosureProvider(): void
+    {
+        $provider = static fn (object $entity): array => [];
+
+        self::assertSame($provider, (new DynamicValues($provider))->provider);
+    }
+
+    public function testClosureProviderToArray(): void
+    {
+        $provider = static fn (object $entity): array => [];
+
+        self::assertSame(['type' => 'dynamic', 'values' => [$provider, 'bar']], (new DynamicValues($provider, 'bar'))->toArray());
+    }
 }
 
 final class DummyStaticCallable

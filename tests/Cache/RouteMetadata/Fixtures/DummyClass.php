@@ -9,4 +9,9 @@ class DummyClass
     public static function getValues(): void
     {
     }
+
+    public static function isValid(object $entity): bool
+    {
+        return true;
+    }
 }

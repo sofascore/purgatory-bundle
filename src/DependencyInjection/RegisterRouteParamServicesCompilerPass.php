@@ -33,11 +33,8 @@ final class RegisterRouteParamServicesCompilerPass implements CompilerPassInterf
             }
         }
 
-        if ($routeParamServiceRefs) {
-            $container->getDefinition('sofascore.purgatory.route_parameter_resolver.dynamic')
-                ->replaceArgument(0, ServiceLocatorTagPass::register($container, $routeParamServiceRefs));
-        } else {
-            $container->removeDefinition('sofascore.purgatory.route_parameter_resolver.dynamic');
-        }
+        // static method callables and closures don't need a service, so the resolver is kept even without any
+        $container->getDefinition('sofascore.purgatory.route_parameter_resolver.dynamic')
+            ->replaceArgument(0, ServiceLocatorTagPass::register($container, $routeParamServiceRefs));
     }
 }

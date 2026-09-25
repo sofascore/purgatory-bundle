@@ -79,7 +79,10 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
             if (isset($subscription['if'])) {
                 if (\is_array($subscription['if'])) {
-                    $closure = $this->getIfClosure($subscriptions->key(), $index, $subscription['if']);
+                    // a callable array is a static method, anything else a serialized closure
+                    $closure = \is_callable($subscription['if'])
+                        ? $subscription['if'](...)
+                        : $this->getIfClosure($subscriptions->key(), $index, $subscription['if']);
                     $subject = $entity;
 
                     if (isset($subscription['inversePropertyPath'])) {
