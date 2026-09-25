@@ -6,10 +6,14 @@ namespace Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\DynamicValuesResolver;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
+use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\CountingClosureHolder;
 use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\DummyServiceOne;
 use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\DummyServiceTwo;
 use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\Foo;
@@ -104,6 +108,29 @@ final class DynamicValuesResolverTest extends TestCase
             'entity' => $foo,
             'expectedResult' => [205],
         ];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testResolveClosure(): void
+    {
+        self::assertSame(
+            expected: [7, 8],
+            actual: $this->resolver->resolve(
+                unresolvedValues: [deepclone_to_array(ClosureIfHolder::VALUES), null],
+                entity: new Foo(),
+            ),
+        );
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testClosureIsRebuiltOnlyOnce(): void
+    {
+        $purgeOn = (new \ReflectionMethod(CountingClosureHolder::class, 'action'))->getAttributes(PurgeOn::class)[0]->newInstance();
+        $unresolvedValues = [deepclone_to_array($purgeOn->routeParams['foo']->provider), null];
+
+        // a rebuilt closure has its own static variables, so the count restarts unless the closure is reused
+        self::assertSame([1], $this->resolver->resolve($unresolvedValues, new Foo()));
+        self::assertSame([2], $this->resolver->resolve($unresolvedValues, new Foo()));
     }
 
     public function testExceptionIsThrownWhenServiceIsNotFound(): void

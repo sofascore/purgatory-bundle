@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\Animal
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PostController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\StaticMethodController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Car;
@@ -1039,5 +1040,79 @@ final class ApplicationTest extends AbstractKernelTestCase
 
         self::assertUrlIsPurged($detailsUrl);
         self::assertUrlIsPurged($fullDetailsUrl);
+    }
+
+    /**
+     * @see StaticMethodController::veterinariansAction
+     */
+    public function testIfWithStaticMethod(): void
+    {
+        $vet = new Person();
+        $vet->firstName = 'Frank';
+        $vet->lastName = 'Beard';
+        $vet->gender = 'male';
+        $vet->isVeterinarian = true;
+
+        $this->entityManager->persist($vet);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/static-method/veterinarians');
+        self::clearPurger();
+
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $this->entityManager->persist($person);
+        $this->entityManager->flush();
+
+        self::assertUrlIsNotPurged('/static-method/veterinarians');
+    }
+
+    /**
+     * @see StaticMethodController::veterinarianPatientsAction
+     */
+    public function testIfWithStaticMethodOnInverseRelation(): void
+    {
+        $vet = new Person();
+        $vet->firstName = 'Frank';
+        $vet->lastName = 'Beard';
+        $vet->gender = 'male';
+        $vet->isVeterinarian = true;
+
+        $owner = new Person();
+        $owner->firstName = 'John';
+        $owner->lastName = 'Doe';
+        $owner->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $owner;
+        $animal->veterinarian = $vet;
+
+        $this->entityManager->persist($vet);
+        $this->entityManager->persist($owner);
+        $this->entityManager->persist($animal);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/static-method/veterinarian/'.$vet->id.'/patients');
+        self::clearPurger();
+
+        // the owner is not a veterinarian
+        $animal->veterinarian = $owner;
+        $this->entityManager->flush();
+
+        self::assertUrlIsNotPurged('/static-method/veterinarian/'.$owner->id.'/patients');
+        self::clearPurger();
+
+        // a null relation means there is nothing to purge
+        $animal->veterinarian = null;
+        $this->entityManager->flush();
+
+        self::assertFalse(array_any(
+            self::getPurgedUrls(false),
+            static fn (string $url): bool => str_starts_with($url, '/static-method/veterinarian/'),
+        ));
     }
 }

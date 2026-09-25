@@ -86,7 +86,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
              *     class: class-string,
              *     target?: string|non-empty-list<string>|TaggedValue|null,
              *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
-             *     if?: ?string,
+             *     if?: string|callable-array<string>|null,
              *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
              * } $purgeOn
              */
@@ -108,7 +108,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     class: class-string,
      *     target?: string|non-empty-list<string>|TaggedValue|null,
      *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
-     *     if?: ?string,
+     *     if?: string|callable-array<string>|null,
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
      * } $purgeOn
      */
@@ -129,7 +129,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     class: class-string,
      *     target?: string|non-empty-list<string>|TaggedValue|null,
      *     route_params?: ?non-empty-array<string, string|non-empty-list<string>|TaggedValue>,
-     *     if?: ?string,
+     *     if?: string|callable-array<string>|null,
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
      * } $purgeOn
      */

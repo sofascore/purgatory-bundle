@@ -92,12 +92,16 @@ final class RegisterRouteParamServicesCompilerPassTest extends TestCase
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
     }
 
-    public function testDynamicResolverIsRemovedWhenThereAreNoServices(): void
+    public function testDynamicResolverIsKeptWhenThereAreNoServices(): void
     {
         $compilerPass = new RegisterRouteParamServicesCompilerPass();
         $compilerPass->process($this->container);
 
-        self::assertFalse($this->container->hasDefinition('sofascore.purgatory.route_parameter_resolver.dynamic'));
+        self::assertTrue($this->container->hasDefinition('sofascore.purgatory.route_parameter_resolver.dynamic'));
+        self::assertInstanceOf(
+            Reference::class,
+            $this->container->getDefinition('sofascore.purgatory.route_parameter_resolver.dynamic')->getArgument(0),
+        );
     }
 
     public function testExceptionIsThrownWhenSameAliasIsUsedMultipleTimes(): void

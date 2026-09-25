@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Command;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
@@ -270,9 +271,16 @@ final class DebugCommand extends Command
                 $if = $subscription['if'] ?? 'NONE';
 
                 if (\is_array($if)) {
-                    /** @var \Closure $closure */
-                    $closure = deepclone_from_array($if);
-                    $if = $this->formatClosureCondition($closure, $subscription['inversePropertyPath'] ?? null);
+                    // a callable array is a static method, anything else a serialized closure
+                    if (\is_callable($if, true, $callableName)) {
+                        $if = isset($subscription['inversePropertyPath'])
+                            ? \sprintf('Receives "%s" of the changed entity:%s%s', $subscription['inversePropertyPath'], \PHP_EOL, $callableName)
+                            : $callableName;
+                    } else {
+                        /** @var \Closure $closure */
+                        $closure = deepclone_from_array($if);
+                        $if = $this->formatClosureCondition($closure, $subscription['inversePropertyPath'] ?? null);
+                    }
                 }
 
                 $io->table(
@@ -422,11 +430,36 @@ final class DebugCommand extends Command
                 $newValues[] = $this->formatRouteParamValue($value['type'], $value['values']);
             }
             $values = $newValues;
+        } elseif (DynamicValues::type() === $type) {
+            [$provider, $propertyPath] = $values;
+            $values = [$this->formatDynamicValuesProvider($provider), json_encode($propertyPath, flags: \JSON_THROW_ON_ERROR)];
         } else {
             $values = array_map(static fn (mixed $val): string => json_encode($val, flags: \JSON_THROW_ON_ERROR), $values);
         }
 
         return \sprintf('%s(%s)', ucfirst($type), implode(', ', $values));
+    }
+
+    private function formatDynamicValuesProvider(mixed $provider): string
+    {
+        // a service alias is a string, a callable array a static method, anything else a serialized closure
+        if (!\is_array($provider)) {
+            return json_encode($provider, flags: \JSON_THROW_ON_ERROR);
+        }
+
+        if (\is_callable($provider, true, $callableName)) {
+            return $callableName;
+        }
+
+        /** @var \Closure $closure */
+        $closure = deepclone_from_array($provider);
+        $reflection = new \ReflectionFunction($closure);
+
+        if (false === ($file = $reflection->getFileName()) || false === ($line = $reflection->getStartLine())) {
+            return 'Closure';
+        }
+
+        return 'Closure defined in '.$this->formatLocation($file, $line);
     }
 
     /**

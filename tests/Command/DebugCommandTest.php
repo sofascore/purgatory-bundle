@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\TestWith;
 use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Controller\ImageController;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Post;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum\LanguageCodes;
@@ -56,11 +57,11 @@ final class DebugCommandTest extends AbstractKernelTestCase
 
         self::assertNumberOfDisplayedSubscriptions(
             command: $this->command,
-            expectedNumberOfSubscriptions: 12,
+            expectedNumberOfSubscriptions: 14,
         );
         self::assertNumberOfDisplayedEntities(
             command: $this->command,
-            expectedNumberOfEntities: 4,
+            expectedNumberOfEntities: 5,
             entityClass: Post::class,
         );
         self::assertNumberOfDisplayedEntities(
@@ -137,7 +138,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
-    #[TestWith([Post::class, 1, Post::class, 'ANY'])]
+    #[TestWith([Post::class, 2, Post::class, 'ANY'])]
     #[TestWith([Author::class, 1, Author::class, 'ANY'])]
     #[TestWith([Author::class.'::firstName', 3, Author::class, 'firstName'])]
     public function testOptionSubscription(string $subscriptionOption, int $numberOfSubscriptions, string $entity, string $property): void
@@ -277,6 +278,34 @@ final class DebugCommandTest extends AbstractKernelTestCase
             ],
             'expectedMessage' => 'No purge subscriptions found matching "foo".',
         ];
+    }
+
+    public function testStaticMethodIfAndDynamicValuesAreRendered(): void
+    {
+        $this->command->execute([
+            '--route' => 'image_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        $display = preg_replace('/ +$/m', '', $this->command->getDisplay());
+
+        self::assertStringContainsString('Route Params   name: Dynamic('.ImageController::class.'::getNames, null)'.\PHP_EOL, $display);
+        self::assertStringContainsString('Condition      '.ImageController::class.'::hasPath'.\PHP_EOL, $display);
+    }
+
+    public function testStaticMethodIfOnInverseRelationIsRendered(): void
+    {
+        $this->command->execute([
+            '--route' => 'image_list_by_writer',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: 'Condition      Receives "author" of the changed entity:'.\PHP_EOL.'                 '.ImageController::class.'::hasImage'.\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
     }
 
     private static function assertNumberOfDisplayedSubscriptions(

@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Cache\Configuration;
 
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProviderInterface;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\Route;
 
 final class ConfigurationLoader implements ConfigurationLoaderInterface
@@ -38,14 +39,15 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
             }
 
             if (null !== $subscription->if) {
-                if ($subscription->if instanceof \Closure) {
-                    $config['if'] = deepclone_to_array($subscription->if);
+                if ($subscription->if instanceof Expression) {
+                    $config['if'] = (string) $subscription->if;
+                } else {
+                    // a static method callable is kept as is, a closure gets serialized
+                    $config['if'] = \is_array($subscription->if) ? $subscription->if : deepclone_to_array($subscription->if);
 
                     if (null !== $subscription->inversePropertyPath) {
                         $config['inversePropertyPath'] = $subscription->inversePropertyPath;
                     }
-                } else {
-                    $config['if'] = (string) $subscription->if;
                 }
             }
 
@@ -69,6 +71,13 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
         $configs = [];
         foreach ($routeParams as $routeParam => $values) {
             $config = $values->toArray();
+
+            // closures, e.g. a DynamicValues provider, are serialized so the configuration can be cached
+            array_walk_recursive($config, static function (mixed &$value): void {
+                if ($value instanceof \Closure) {
+                    $value = deepclone_to_array($value);
+                }
+            });
 
             if ($route->hasDefault($routeParam)) {
                 $config['optional'] = true;

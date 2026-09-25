@@ -18,7 +18,8 @@ final class PurgeOn
     public readonly ?TargetInterface $target;
     /** @var ?non-empty-array<string, ValuesInterface> */
     public readonly ?array $routeParams;
-    public readonly \Closure|Expression|null $if;
+    /** @var callable-array<string>|\Closure|Expression|null */
+    public readonly array|\Closure|Expression|null $if;
     /** @var ?non-empty-list<string> */
     public readonly ?array $route;
     /** @var ?non-empty-list<Action> */
@@ -28,6 +29,7 @@ final class PurgeOn
      * @param class-string                                                            $class
      * @param string|non-empty-list<string>|TargetInterface|null                      $target
      * @param ?non-empty-array<string, string|non-empty-list<string>|ValuesInterface> $routeParams
+     * @param string|callable-array<string>|\Closure|Expression|null                  $if
      * @param string|non-empty-list<string>|null                                      $route
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      */
@@ -35,7 +37,7 @@ final class PurgeOn
         public readonly string $class,
         string|array|TargetInterface|null $target = null,
         ?array $routeParams = null,
-        \Closure|string|Expression|null $if = null,
+        string|array|\Closure|Expression|null $if = null,
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
@@ -45,7 +47,7 @@ final class PurgeOn
 
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
         $this->routeParams = null !== $routeParams ? self::normalizeRouteParams($routeParams) : null;
-        $this->if = \is_string($if) ? self::normalizeExpression($if) : $if;
+        $this->if = \is_string($if) || \is_array($if) ? self::normalizeIf($if) : $if;
         $this->route = \is_string($route) ? [$route] : $route;
         $this->actions = null !== $actions ? self::normalizeActions($actions) : null;
     }
@@ -74,6 +76,33 @@ final class PurgeOn
         return !$value instanceof ValuesInterface
             ? new PropertyValues(...(\is_array($value) ? $value : [$value]))
             : $value;
+    }
+
+    /**
+     * @param string|callable-array<string|object> $if
+     *
+     * @return callable-array<string>|Expression
+     */
+    private static function normalizeIf(string|array $if): array|Expression
+    {
+        if (\is_string($if)) {
+            // "Class::method" is never a valid expression, as ExpressionLanguage has no "::" operator
+            if (!preg_match('/^(\\\\?[a-zA-Z_\x80-\xff][\w\x80-\xff\\\\]*)::([a-zA-Z_\x80-\xff][\w\x80-\xff]*)$/', $if, $matches)) {
+                return self::normalizeExpression($if);
+            }
+
+            $if = [ltrim($matches[1], '\\'), $matches[2]];
+        }
+
+        if (!\is_callable($if)) {
+            throw new \ValueError('Only static method callables are supported.');
+        }
+
+        if (!\is_string($if[0])) {
+            throw new \ValueError('Object callables are not supported.');
+        }
+
+        return $if;
     }
 
     private static function normalizeExpression(string $if): Expression

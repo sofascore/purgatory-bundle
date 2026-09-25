@@ -15,6 +15,7 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\Invers
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Exception\AccessorNotInferableException;
+use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
 
 final class AssociationResolver implements SubscriptionResolverInterface
@@ -78,7 +79,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
         $inversePropertyPath = null;
 
         if (null !== $if = $routeMetadata->purgeOn->if) {
-            if ($if instanceof \Closure) {
+            if (!$if instanceof Expression) {
                 // The closure expects the original entity, but the inverse subscription fires on the
                 // associated entity. Carry the inverse field so it can be navigated back at runtime.
                 if (null === $this->extractor->getReadInfo($associationClass, $associationTarget)) {

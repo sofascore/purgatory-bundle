@@ -20,6 +20,7 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\InverseValuesBuilder\Proper
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Exception\AccessorNotInferableException;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\IfCallables;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\PropertyInfo\PropertyReadInfo;
@@ -146,6 +147,44 @@ abstract class AssociationResolverTestCase extends TestCase
         )];
     }
 
+    #[DataProvider('associationProvider')]
+    public function testResolveAssociationsWithCallableIf(
+        array $associationMapping,
+        bool $isGetAssociationMappedByTargetFieldCalled,
+        bool $isAssociationInverseSide,
+    ): void {
+        $extractor = $this->createMock(PropertyReadInfoExtractorInterface::class);
+        $extractor->expects(self::once())
+            ->method('getReadInfo')
+            ->with('BarEntity', 'barProperty')
+            ->willReturn(
+                new PropertyReadInfo(
+                    type: PropertyReadInfo::TYPE_METHOD,
+                    name: 'getBarProperty',
+                    visibility: PropertyReadInfo::VISIBILITY_PUBLIC,
+                    static: false,
+                    byRef: false,
+                ),
+            );
+
+        $purgeSubscription = $this->resolveSubscription(
+            extractor: $extractor,
+            associationMapping: $associationMapping,
+            isGetAssociationMappedByTargetFieldCalled: $isGetAssociationMappedByTargetFieldCalled,
+            isAssociationInverseSide: $isAssociationInverseSide,
+            if: [IfCallables::class, 'isTrue'],
+        );
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$purgeSubscription];
+
+        self::assertTrue($purgeSubscription->getReturn());
+
+        self::assertCount(1, $subscriptions);
+        self::assertSame([IfCallables::class, 'isTrue'], $subscriptions[0]->if);
+        self::assertSame('barProperty', $subscriptions[0]->inversePropertyPath);
+    }
+
     public function testFieldNotAssociation(): void
     {
         $resolver = new AssociationResolver(
@@ -230,7 +269,8 @@ abstract class AssociationResolverTestCase extends TestCase
     abstract public static function invalidAssociationProvider(): iterable;
 
     /**
-     * @param array<string, ValuesInterface> $routeParams
+     * @param callable-array<string>|\Closure|Expression $if
+     * @param array<string, ValuesInterface>             $routeParams
      *
      * @return \Generator<int, PurgeSubscription, mixed, bool>
      */
@@ -239,7 +279,7 @@ abstract class AssociationResolverTestCase extends TestCase
         array $associationMapping,
         bool $isGetAssociationMappedByTargetFieldCalled,
         bool $isAssociationInverseSide,
-        \Closure|Expression $if,
+        array|\Closure|Expression $if,
         array $routeParams = [],
     ): \Generator {
         $resolver = new AssociationResolver(

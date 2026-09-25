@@ -32,6 +32,7 @@ use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\RouteProvider\UpdatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\IfCallables;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -500,6 +501,47 @@ final class UpdatedEntityRouteProviderTest extends TestCase
 
         self::assertSame(['name' => 'foo_route', 'params' => []], (array) $routes[0]);
         self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
+    }
+
+    public function testProvideRoutesToPurgeWithCallableIf(): void
+    {
+        $routeProvider = $this->createRouteProvider([
+            'stdClass' => [
+                [
+                    'routeName' => 'true_route',
+                    'if' => [IfCallables::class, 'isTrue'],
+                ],
+                [
+                    'routeName' => 'false_route',
+                    'if' => [IfCallables::class, 'isFalse'],
+                ],
+                [
+                    'routeName' => 'inverse_route',
+                    'if' => [IfCallables::class, 'isTrue'],
+                    'inversePropertyPath' => 'related',
+                ],
+                [
+                    'routeName' => 'inverse_null_route',
+                    'if' => [IfCallables::class, 'isTrue'],
+                    'inversePropertyPath' => 'missing',
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+        $entity->related = new \stdClass();
+        $entity->missing = null;
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Update,
+            entity: $entity,
+            entityChangeSet: [],
+        )];
+
+        self::assertSame(
+            [['name' => 'true_route', 'params' => []], ['name' => 'inverse_route', 'params' => []]],
+            array_map(static fn (PurgeRoute $route): array => (array) $route, $routes),
+        );
     }
 
     private function createRouteProvider(array $configuration, bool $withExpressionLang): UpdatedEntityRouteProvider

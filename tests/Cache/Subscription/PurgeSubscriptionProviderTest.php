@@ -11,13 +11,16 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\RequiresPhp;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
@@ -26,11 +29,13 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle\Exception\InvalidIfClosureException;
+use Sofascore\PurgatoryBundle\Exception\InvalidDynamicValuesClosureException;
+use Sofascore\PurgatoryBundle\Exception\InvalidIfCallableException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyEntity;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyTarget;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\IfCallables;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -495,6 +500,71 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
+    #[RequiresPhp('>= 8.5.0')]
+    #[DataProvider('provideValidDynamicValuesClosures')]
+    public function testValidDynamicValuesClosure(\Closure $provider): void
+    {
+        $values = new DynamicValues($provider);
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForRouteParams(['foo' => $values])->provide()];
+
+        self::assertCount(1, $subscriptions);
+        self::assertSame($values, $subscriptions[0]->routeParams['foo']);
+    }
+
+    public static function provideValidDynamicValuesClosures(): iterable
+    {
+        yield 'no parameters' => [static fn (): array => []];
+        yield 'one parameter' => [static fn (object $entity): array => []];
+        yield 'optional second parameter' => [static fn (object $entity, int $limit = 10): array => []];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    #[DataProvider('provideInvalidDynamicValuesClosures')]
+    public function testInvalidDynamicValuesClosures(ValuesInterface $values, string $expectedMessage): void
+    {
+        $this->expectException(InvalidDynamicValuesClosureException::class);
+        $this->expectExceptionMessage('Invalid "DynamicValues" closure provided for route "foo": "'.$expectedMessage.'"');
+
+        [...$this->createProviderForRouteParams(['foo' => $values])->provide()];
+    }
+
+    public static function provideInvalidDynamicValuesClosures(): iterable
+    {
+        $bound = (new class {
+            public function getProvider(): \Closure
+            {
+                return function (object $entity): array {
+                    return [$this];
+                };
+            }
+        })->getProvider();
+
+        yield 'closure bound to an instance' => [new DynamicValues($bound), 'The closure must be static.'];
+
+        $number = 1;
+        yield 'captured variable' => [
+            new DynamicValues(static fn (object $entity): array => [$number]),
+            'The closure must not capture variables.',
+        ];
+
+        yield 'first-class callable' => [
+            new DynamicValues(strlen(...)),
+            'First-class callables are not supported, use a static closure instead.',
+        ];
+
+        yield 'nested in compound values' => [
+            new CompoundValues(new RawValues(1), new DynamicValues(strlen(...))),
+            'First-class callables are not supported, use a static closure instead.',
+        ];
+
+        yield 'two required parameters' => [
+            new DynamicValues(static fn (object $entity, int $limit): array => []),
+            'The closure must not require more than one parameter.',
+        ];
+    }
+
     #[DataProvider('provideInvalidExpressions')]
     public function testExceptionIsThrownOnInvalidRouteParamsExpression(string $expression, string $expectedMessage): void
     {
@@ -629,9 +699,31 @@ final class PurgeSubscriptionProviderTest extends TestCase
         ];
     }
 
+    public function testIfCallable(): void
+    {
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForIf([IfCallables::class, 'isTrue'])->provide()];
+
+        self::assertCount(1, $subscriptions);
+        self::assertSame([IfCallables::class, 'isTrue'], $subscriptions[0]->if);
+    }
+
+    #[TestWith(['returnsInt', 'The method must declare a non-nullable bool return type.'])]
+    #[TestWith(['takesTwo', 'The method must have exactly one parameter.'])]
+    #[TestWith(['takesWrongType', 'The method parameter must be typed as "stdClass" or one of its parent types.'])]
+    public function testInvalidIfCallables(string $method, string $expectedMessage): void
+    {
+        $purgeSubscriptionProvider = $this->createProviderForIf([IfCallables::class, $method]);
+
+        $this->expectException(InvalidIfCallableException::class);
+        $this->expectExceptionMessage('Invalid "if" callable provided for route "foo": "'.$expectedMessage.'"');
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
     #[RequiresPhp('>= 8.5.0')]
-    #[DataProvider('providerRouteMetadataWithPhp85Features')]
-    public function testWithClosures(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
+    #[DataProvider('provideIfClosures')]
+    public function testIfClosures(RouteMetadata $routeMetadata, array $expectedSubscriptions): void
     {
         $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->expects(self::once())
@@ -666,7 +758,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
         }
     }
 
-    public static function providerRouteMetadataWithPhp85Features(): iterable
+    public static function provideIfClosures(): iterable
     {
         $route = new Route('/foo');
         $if = static function (DummyEntity $entity): bool {
@@ -699,8 +791,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
     #[RequiresPhp('>= 8.5.0')]
     #[RequiresFunction('deepclone_to_array')]
-    #[DataProvider('provideInvalidClosures')]
-    public function testInvalidClosures(\Closure $if, string $expectedMessage): void
+    #[DataProvider('provideInvalidIfClosures')]
+    public function testInvalidIfClosures(\Closure $if, string $expectedMessage): void
     {
         $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->expects(self::once())
@@ -725,13 +817,13 @@ final class PurgeSubscriptionProviderTest extends TestCase
             expressionLanguage: self::createStub(ExpressionLanguage::class),
         );
 
-        $this->expectException(InvalidIfClosureException::class);
-        $this->expectExceptionMessage('Invalid "if" closure provided for route "foo": "'.$expectedMessage.'"');
+        $this->expectException(InvalidIfCallableException::class);
+        $this->expectExceptionMessage('Invalid "if" callable provided for route "foo": "'.$expectedMessage.'"');
 
         [...$purgeSubscriptionProvider->provide()];
     }
 
-    public static function provideInvalidClosures(): iterable
+    public static function provideInvalidIfClosures(): iterable
     {
         yield 'invalid return type (union)' => [
             'if' => static function (DummyEntity $entity): int|string {
@@ -819,5 +911,62 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'if' => is_object(...),
             'expectedMessage' => 'First-class callables are not supported, use a static closure instead.',
         ];
+    }
+
+    /**
+     * @param non-empty-array<string, ValuesInterface> $routeParams
+     */
+    private function createProviderForRouteParams(array $routeParams, ?ExpressionLanguage $expressionLanguage = null): PurgeSubscriptionProvider
+    {
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(static function () use ($routeParams): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: \stdClass::class,
+                        routeParams: $routeParams,
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        return new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: $expressionLanguage,
+        );
+    }
+
+    /**
+     * @param callable-array<string> $if
+     */
+    private function createProviderForIf(array $if): PurgeSubscriptionProvider
+    {
+        $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->expects(self::once())
+            ->method('provide')
+            ->willReturnCallback(static function () use ($if): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/foo'),
+                    purgeOn: new PurgeOn(
+                        class: \stdClass::class,
+                        if: $if,
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        return new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: null,
+        );
     }
 }

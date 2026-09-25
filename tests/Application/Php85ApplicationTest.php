@@ -9,6 +9,7 @@ use PHPUnit\Framework\Attributes\RequiresPhp;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\PlantController;
+use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Controller\WateringController;
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Garden;
 use Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\Entity\Plant;
 
@@ -24,6 +25,18 @@ final class Php85ApplicationTest extends AbstractKernelTestCase
         self::initializeApplication(['test_case' => 'Php85TestApplication', 'config' => 'app_config.yaml']);
 
         $this->entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
+    }
+
+    /**
+     * @see WateringController::plantsByLevelAction
+     */
+    public function testDynamicValuesWithClosure(): void
+    {
+        $plant = new Plant(waterLevel: 4);
+        $this->entityManager->persist($plant);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/plants/level/40');
     }
 
     protected function tearDown(): void

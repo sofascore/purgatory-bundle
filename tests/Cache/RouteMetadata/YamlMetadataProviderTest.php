@@ -132,6 +132,30 @@ final class YamlMetadataProviderTest extends TestCase
         self::assertNull($metadata[0]->purgeOn->actions);
     }
 
+    public function testRouteMetadataWithCallableIf(): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/purge_on_with_callable_if.yaml',
+            ],
+        );
+
+        /** @var RouteMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertCount(2, $metadata);
+        self::assertSame([DummyClass::class, 'isValid'], $metadata[0]->purgeOn->if);
+        self::assertSame([DummyClass::class, 'isValid'], $metadata[1]->purgeOn->if);
+    }
+
     public function testMultipleRouteMetadata(): void
     {
         $collection = new RouteCollection();
