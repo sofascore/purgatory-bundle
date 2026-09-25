@@ -97,6 +97,18 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
+    public function testClosureIfIsHighlighted(): void
+    {
+        $this->command->execute(['--route' => 'dry_plants_list'], ['decorated' => true]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        $display = $this->command->getDisplay();
+
+        self::assertStringContainsString("\e[33mstatic\e[39m \e[33mfunction\e[39m (Plant \e[36m\$plant\e[39m): bool {", $display);
+        self::assertStringContainsString("\e[33mreturn\e[39m \e[35m0\e[39m === \e[36m\$plant\e[39m->getWaterLevel();", $display);
+    }
+
     public function testInversePropertyPathIsRendered(): void
     {
         $this->command->execute([

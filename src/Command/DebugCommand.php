@@ -319,13 +319,45 @@ final class DebugCommand extends Command
             }
         }
 
-        $condition = OutputFormatter::escape(rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ','));
+        $condition = self::highlight(rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ','));
 
         if (null !== $inversePropertyPath) {
             $condition = \sprintf('Receives "%s" of the changed entity:%s%s', $inversePropertyPath, \PHP_EOL, $condition);
         }
 
         return \sprintf('Closure defined in %s%s%s%s', $this->formatLocation($file, $startLine), \PHP_EOL, \PHP_EOL, $condition);
+    }
+
+    /**
+     * Colors PHP tokens with named console colors, so they follow the terminal's theme.
+     */
+    private static function highlight(string $source): string
+    {
+        $tokens = \PhpToken::tokenize('<?php '.$source);
+        array_shift($tokens); // the "<?php " open tag
+
+        $highlighted = '';
+
+        foreach ($tokens as $token) {
+            $style = match (true) {
+                $token->is([\T_COMMENT, \T_DOC_COMMENT]) => 'fg=gray',
+                $token->is([\T_CONSTANT_ENCAPSED_STRING, \T_ENCAPSED_AND_WHITESPACE]) => 'fg=green',
+                $token->is([\T_LNUMBER, \T_DNUMBER]) => 'fg=magenta',
+                $token->is(\T_VARIABLE) => 'fg=cyan',
+                !$token->is([\T_STRING, \T_NAME_QUALIFIED, \T_NAME_FULLY_QUALIFIED, \T_NAME_RELATIVE]) && ctype_alpha($token->text) => 'fg=yellow',
+                default => null,
+            };
+
+            // a style tag can't span the lines of a table cell, so style each line separately
+            $highlighted .= implode(\PHP_EOL, array_map(
+                static fn (string $line): string => null === $style || '' === $line
+                    ? OutputFormatter::escape($line)
+                    : \sprintf('<%s>%s</>', $style, OutputFormatter::escape($line)),
+                explode(\PHP_EOL, $token->text),
+            ));
+        }
+
+        return $highlighted;
     }
 
     private function formatLocation(string $file, int $line): string
