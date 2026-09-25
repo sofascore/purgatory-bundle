@@ -355,7 +355,7 @@ final class UpdatedEntityRouteProviderTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, $entity, []));
+        [...$routeProvider->provideRoutesFor(Action::Delete, $entity, [])];
     }
 
     public function testRouteParamsWithRawValuesAndEnumValues(): void

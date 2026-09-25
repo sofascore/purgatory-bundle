@@ -198,7 +198,7 @@ final class YamlMetadataProviderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage(\sprintf('The file "%s" does not contain valid YAML: ', $file));
 
-        iterator_to_array($provider->provide());
+        [...$provider->provide()];
     }
 
     public function testExceptionIsThrownIfParsedYamlIsNotAnArray(): void
@@ -217,7 +217,7 @@ final class YamlMetadataProviderTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage(\sprintf('Expected the parsed YAML of file "%s" to be an array, got "string".', $file));
 
-        iterator_to_array($provider->provide());
+        [...$provider->provide()];
     }
 
     public function testExceptionIsThrownForUnsupportedKeys(): void
@@ -239,7 +239,7 @@ final class YamlMetadataProviderTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Route "foo_bar" contains unsupported keys "one", "two", supported ones are');
 
-        iterator_to_array($provider->provide());
+        [...$provider->provide()];
     }
 
     public function testExceptionIsThrownForInvalidRoute(): void
@@ -258,7 +258,7 @@ final class YamlMetadataProviderTest extends TestCase
         $this->expectException(RouteNotFoundException::class);
         $this->expectExceptionMessage('The route "foo_bar" does not exist.');
 
-        iterator_to_array($provider->provide());
+        [...$provider->provide()];
     }
 
     #[TestWith(['purge_on_with_unknown_target_tag.yaml', 'Unknown YAML tag "for_unknown" provided, known tags are "for_groups", "for_properties".'])]
@@ -282,6 +282,6 @@ final class YamlMetadataProviderTest extends TestCase
         $this->expectException(UnknownYamlTagException::class);
         $this->expectExceptionMessage($message);
 
-        iterator_to_array($provider->provide());
+        [...$provider->provide()];
     }
 }
