@@ -277,6 +277,8 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('sofascore.purgatory.configuration_loader'),
                 service('doctrine'),
+                service('debug.file_link_formatter')->nullOnInvalid(),
+                param('kernel.project_dir'),
             ])
             ->tag('console.command')
     ;

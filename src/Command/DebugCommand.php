@@ -12,11 +12,13 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 
 #[AsCommand(
     name: 'purgatory:debug',
@@ -29,6 +31,8 @@ final class DebugCommand extends Command
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
         private readonly ManagerRegistry $managerRegistry,
+        private readonly ?FileLinkFormatter $fileLinkFormatter = null,
+        private readonly ?string $projectDir = null,
     ) {
         parent::__construct();
     }
@@ -266,11 +270,9 @@ final class DebugCommand extends Command
                 $if = $subscription['if'] ?? 'NONE';
 
                 if (\is_array($if)) {
-                    $if = $this->formatClosureCondition($if);
-
-                    if (isset($subscription['inversePropertyPath'])) {
-                        $if = \sprintf('Called with the value of "%s" (skipped if null):%s%s', $subscription['inversePropertyPath'], \PHP_EOL, $if);
-                    }
+                    /** @var \Closure $closure */
+                    $closure = deepclone_from_array($if);
+                    $if = $this->formatClosureCondition($closure, $subscription['inversePropertyPath'] ?? null);
                 }
 
                 $io->table(
@@ -288,13 +290,8 @@ final class DebugCommand extends Command
         }
     }
 
-    /**
-     * @param array<mixed> $serializedClosure
-     */
-    private function formatClosureCondition(array $serializedClosure): string
+    private function formatClosureCondition(\Closure $closure, ?string $inversePropertyPath): string
     {
-        /** @var \Closure $closure */
-        $closure = deepclone_from_array($serializedClosure);
         $reflection = new \ReflectionFunction($closure);
 
         $file = $reflection->getFileName();
@@ -302,7 +299,7 @@ final class DebugCommand extends Command
         $endLine = $reflection->getEndLine();
 
         if (false === $file || false === $startLine || false === $endLine || false === $lines = @file($file)) {
-            return 'CLOSURE';
+            return '(source not available)';
         }
 
         $sourceLines = array_map(
@@ -322,7 +319,82 @@ final class DebugCommand extends Command
             }
         }
 
-        return rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ',');
+        $condition = self::highlight(self::closureTokens(implode(\PHP_EOL, $sourceLines)));
+
+        if (null !== $inversePropertyPath) {
+            $condition = \sprintf('Receives "%s" of the changed entity:%s%s', $inversePropertyPath, \PHP_EOL, $condition);
+        }
+
+        return \sprintf('Closure defined in %s%s%s%s', $this->formatLocation($file, $startLine), \PHP_EOL, \PHP_EOL, $condition);
+    }
+
+    /**
+     * Drops whatever follows the closure's closing brace, e.g. other attribute arguments or closing brackets.
+     *
+     * @return array<\PhpToken>
+     */
+    private static function closureTokens(string $source): array
+    {
+        $tokens = \array_slice(\PhpToken::tokenize('<?php '.$source), 1); // without the "<?php " open tag
+        $length = \count($tokens);
+        $depth = 0;
+
+        foreach ($tokens as $i => $token) {
+            if ($token->is(['{', \T_DOLLAR_OPEN_CURLY_BRACES])) {
+                ++$depth;
+            } elseif ($token->is('}') && 0 === --$depth) {
+                $length = $i + 1;
+                break;
+            }
+        }
+
+        return \array_slice($tokens, 0, $length);
+    }
+
+    /**
+     * Colors PHP tokens with named console colors, so they follow the terminal's theme.
+     *
+     * @param array<\PhpToken> $tokens
+     */
+    private static function highlight(array $tokens): string
+    {
+        $highlighted = '';
+
+        foreach ($tokens as $token) {
+            $style = match (true) {
+                $token->is([\T_COMMENT, \T_DOC_COMMENT]) => 'fg=gray',
+                $token->is([\T_CONSTANT_ENCAPSED_STRING, \T_ENCAPSED_AND_WHITESPACE]) => 'fg=green',
+                $token->is([\T_LNUMBER, \T_DNUMBER]) => 'fg=magenta',
+                $token->is(\T_VARIABLE) => 'fg=cyan',
+                !$token->is([\T_STRING, \T_NAME_QUALIFIED, \T_NAME_FULLY_QUALIFIED, \T_NAME_RELATIVE]) && ctype_alpha($token->text) => 'fg=yellow',
+                default => null,
+            };
+
+            // a style tag can't span the lines of a table cell, so style each line separately
+            $highlighted .= implode(\PHP_EOL, array_map(
+                static fn (string $line): string => null === $style || '' === $line
+                    ? OutputFormatter::escape($line)
+                    : \sprintf('<%s>%s</>', $style, OutputFormatter::escape($line)),
+                explode(\PHP_EOL, $token->text),
+            ));
+        }
+
+        return $highlighted;
+    }
+
+    private function formatLocation(string $file, int $line): string
+    {
+        $path = null !== $this->projectDir && str_starts_with($file, $this->projectDir.\DIRECTORY_SEPARATOR)
+            ? substr($file, \strlen($this->projectDir) + 1)
+            : $file;
+
+        $location = \sprintf('%s:%d', $path, $line);
+
+        if (!$fileLink = $this->fileLinkFormatter?->format($file, $line)) {
+            return $location;
+        }
+
+        return \sprintf('<href=%s>%s</>', $fileLink, $location);
     }
 
     /**

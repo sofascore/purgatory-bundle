@@ -5,3 +5,6 @@ services:
 
     Sofascore\PurgatoryBundle\Tests\Functional\Php85TestApplication\:
         resource: '../'
+
+framework:
+    ide: 'purgatory://open?file=%%f&line=%%l'
