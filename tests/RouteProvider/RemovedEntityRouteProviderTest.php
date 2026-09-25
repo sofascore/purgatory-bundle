@@ -167,7 +167,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
 
         $this->expectException(EntityMetadataNotFoundException::class);
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), []));
+        [...$routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), [])];
     }
 
     public function testExceptionIsThrownWhenIfIsUsedWithoutExpressionLangInstalled(): void
@@ -184,7 +184,7 @@ final class RemovedEntityRouteProviderTest extends TestCase
         $this->expectException(LogicException::class);
         $this->expectExceptionMessage('You cannot use expressions because the Symfony ExpressionLanguage component is not installed.');
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), []));
+        [...$routeProvider->provideRoutesFor(Action::Delete, new \stdClass(), [])];
     }
 
     public function testRouteParamsWithRawValuesAndEnumValues(): void

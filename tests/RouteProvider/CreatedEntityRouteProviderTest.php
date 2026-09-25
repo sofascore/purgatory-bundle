@@ -162,7 +162,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
 
         $this->expectException(LogicException::class);
 
-        iterator_to_array($routeProvider->provideRoutesFor(Action::Create, $entity, []));
+        [...$routeProvider->provideRoutesFor(Action::Create, $entity, [])];
     }
 
     public function testRouteParamsWithRawValuesAndEnumValues(): void
