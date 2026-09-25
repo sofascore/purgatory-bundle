@@ -14,8 +14,10 @@ use PHPUnit\Framework\Attributes\RequiresPhp;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
 use Sofascore\PurgatoryBundle\Attribute\Target\ForProperties;
 use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterface;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
@@ -531,6 +533,36 @@ final class PurgeSubscriptionProviderTest extends TestCase
 
         $this->expectException(InvalidIfExpressionException::class);
         $this->expectExceptionMessage($expectedMessage);
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public function testExceptionIsThrownOnInvalidNestedRouteParamsExpression(): void
+    {
+        $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
+        $routeMetadataProvider->method('provide')
+            ->willReturnCallback(static function (): iterable {
+                yield new RouteMetadata(
+                    routeName: 'foo',
+                    route: new Route('/{foo}'),
+                    purgeOn: new PurgeOn(
+                        class: 'FooEntity',
+                        routeParams: ['foo' => new CompoundValues(new RawValues(1), new ExpressionValues('invalidObj.getMethod()'))],
+                    ),
+                    reflectionMethod: null,
+                );
+            });
+
+        $purgeSubscriptionProvider = new PurgeSubscriptionProvider(
+            subscriptionResolvers: [],
+            routeMetadataProviders: [$routeMetadataProvider],
+            managerRegistry: self::createStub(ManagerRegistry::class),
+            targetResolverLocator: self::createStub(ContainerInterface::class),
+            expressionLanguage: new ExpressionLanguage(),
+        );
+
+        $this->expectException(InvalidIfExpressionException::class);
+        $this->expectExceptionMessage('Variable "invalidObj" is not valid around position 1 for expression `invalidObj.getMethod()`.');
 
         [...$purgeSubscriptionProvider->provide()];
     }

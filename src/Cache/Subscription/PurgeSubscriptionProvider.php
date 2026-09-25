@@ -6,6 +6,7 @@ namespace Sofascore\PurgatoryBundle\Cache\Subscription;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
+use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ExpressionValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\ValuesInterface;
@@ -76,9 +77,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                 }
             } else {
                 foreach ($purgeOn->routeParams as $values) {
-                    if ($values instanceof ExpressionValues) {
-                        $this->validateExpression($values->expression, $routeMetadata->routeName);
-                    }
+                    $this->validateRouteParamValues($values, $routeMetadata->routeName);
                 }
                 $this->validateRouteParams(array_keys($purgeOn->routeParams), $routeMetadata);
                 $routeParams = $purgeOn->routeParams;
@@ -194,6 +193,17 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             || !is_a($entity, $parameterType->getName(), true)
         ) {
             throw new InvalidIfClosureException($routeName, \sprintf('The closure parameter must be typed as "%s" or one of its parent types.', $entity));
+        }
+    }
+
+    private function validateRouteParamValues(ValuesInterface $values, string $routeName): void
+    {
+        if ($values instanceof CompoundValues) {
+            foreach ($values->values as $nestedValues) {
+                $this->validateRouteParamValues($nestedValues, $routeName);
+            }
+        } elseif ($values instanceof ExpressionValues) {
+            $this->validateExpression($values->expression, $routeName);
         }
     }
 
