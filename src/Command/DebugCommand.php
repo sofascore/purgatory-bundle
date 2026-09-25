@@ -12,11 +12,13 @@ use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\ErrorHandler\ErrorRenderer\FileLinkFormatter;
 
 #[AsCommand(
     name: 'purgatory:debug',
@@ -29,6 +31,8 @@ final class DebugCommand extends Command
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
         private readonly ManagerRegistry $managerRegistry,
+        private readonly ?FileLinkFormatter $fileLinkFormatter = null,
+        private readonly ?string $projectDir = null,
     ) {
         parent::__construct();
     }
@@ -266,11 +270,9 @@ final class DebugCommand extends Command
                 $if = $subscription['if'] ?? 'NONE';
 
                 if (\is_array($if)) {
-                    $if = $this->formatClosureCondition($if);
-
-                    if (isset($subscription['inversePropertyPath'])) {
-                        $if = \sprintf('Called with the value of "%s" (skipped if null):%s%s', $subscription['inversePropertyPath'], \PHP_EOL, $if);
-                    }
+                    /** @var \Closure $closure */
+                    $closure = deepclone_from_array($if);
+                    $if = $this->formatClosureCondition($closure, $subscription['inversePropertyPath'] ?? null);
                 }
 
                 $io->table(
@@ -288,13 +290,8 @@ final class DebugCommand extends Command
         }
     }
 
-    /**
-     * @param array<mixed> $serializedClosure
-     */
-    private function formatClosureCondition(array $serializedClosure): string
+    private function formatClosureCondition(\Closure $closure, ?string $inversePropertyPath): string
     {
-        /** @var \Closure $closure */
-        $closure = deepclone_from_array($serializedClosure);
         $reflection = new \ReflectionFunction($closure);
 
         $file = $reflection->getFileName();
@@ -302,7 +299,7 @@ final class DebugCommand extends Command
         $endLine = $reflection->getEndLine();
 
         if (false === $file || false === $startLine || false === $endLine || false === $lines = @file($file)) {
-            return 'CLOSURE';
+            return '(source not available)';
         }
 
         $sourceLines = array_map(
@@ -322,7 +319,28 @@ final class DebugCommand extends Command
             }
         }
 
-        return rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ',');
+        $condition = OutputFormatter::escape(rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ','));
+
+        if (null !== $inversePropertyPath) {
+            $condition = \sprintf('Receives "%s" of the changed entity:%s%s', $inversePropertyPath, \PHP_EOL, $condition);
+        }
+
+        return \sprintf('Closure defined in %s%s%s%s', $this->formatLocation($file, $startLine), \PHP_EOL, \PHP_EOL, $condition);
+    }
+
+    private function formatLocation(string $file, int $line): string
+    {
+        $path = null !== $this->projectDir && str_starts_with($file, $this->projectDir.\DIRECTORY_SEPARATOR)
+            ? substr($file, \strlen($this->projectDir) + 1)
+            : $file;
+
+        $location = \sprintf('%s:%d', $path, $line);
+
+        if (!$fileLink = $this->fileLinkFormatter?->format($file, $line)) {
+            return $location;
+        }
+
+        return \sprintf('<href=%s>%s</>', $fileLink, $location);
     }
 
     /**
