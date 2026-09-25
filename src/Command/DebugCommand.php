@@ -319,7 +319,7 @@ final class DebugCommand extends Command
             }
         }
 
-        $condition = self::highlight(rtrim(rtrim(implode(\PHP_EOL, $sourceLines)), ','));
+        $condition = self::highlight(self::closureTokens(implode(\PHP_EOL, $sourceLines)));
 
         if (null !== $inversePropertyPath) {
             $condition = \sprintf('Receives "%s" of the changed entity:%s%s', $inversePropertyPath, \PHP_EOL, $condition);
@@ -329,13 +329,33 @@ final class DebugCommand extends Command
     }
 
     /**
-     * Colors PHP tokens with named console colors, so they follow the terminal's theme.
+     * Drops whatever follows the closure's closing brace, e.g. other attribute arguments or closing brackets.
+     *
+     * @return array<\PhpToken>
      */
-    private static function highlight(string $source): string
+    private static function closureTokens(string $source): array
     {
-        $tokens = \PhpToken::tokenize('<?php '.$source);
-        array_shift($tokens); // the "<?php " open tag
+        $tokens = \array_slice(\PhpToken::tokenize('<?php '.$source), 1); // without the "<?php " open tag
+        $depth = 0;
 
+        foreach ($tokens as $i => $token) {
+            if ($token->is(['{', \T_DOLLAR_OPEN_CURLY_BRACES])) {
+                ++$depth;
+            } elseif ($token->is('}') && 0 === --$depth) {
+                return \array_slice($tokens, 0, $i + 1);
+            }
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * Colors PHP tokens with named console colors, so they follow the terminal's theme.
+     *
+     * @param array<\PhpToken> $tokens
+     */
+    private static function highlight(array $tokens): string
+    {
         $highlighted = '';
 
         foreach ($tokens as $token) {

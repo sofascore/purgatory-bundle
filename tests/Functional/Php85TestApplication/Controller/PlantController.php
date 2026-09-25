@@ -47,4 +47,19 @@ class PlantController
     public function gardenPlantsAction(): void
     {
     }
+
+    #[Route('/plants/thirsty', 'thirsty_plants_list')]
+    #[PurgeOn(Plant::class, if: static function (Plant $plant): bool { return \in_array($plant->getWaterLevel(), [1, 2], true); /* 1, 2) */ }, actions: [Action::Create, Action::Update])]
+    public function thirstyPlantsAction(): void
+    {
+    }
+
+    #[Route('/plants/flooded', 'flooded_plants_list')]
+    #[PurgeOn(Plant::class, actions: Action::Update, if: static function (Plant $plant): bool {
+        // braces in comments and strings don't end the closure }
+        return $plant->getWaterLevel() > 100 && '}\'' !== (string) $plant->getWaterLevel();
+    })]
+    public function floodedPlantsAction(): void
+    {
+    }
 }

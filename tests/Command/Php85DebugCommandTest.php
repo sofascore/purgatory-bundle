@@ -109,6 +109,47 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
         self::assertStringContainsString("\e[33mreturn\e[39m \e[35m0\e[39m === \e[36m\$plant\e[39m->getWaterLevel();", $display);
     }
 
+    public function testSingleLineClosureIfIsRenderedWithoutTrailingArguments(): void
+    {
+        $this->command->execute([
+            '--route' => 'thirsty_plants_list',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: <<<'PHP'
+                Condition      Closure defined in Controller/PlantController.php:52
+
+                                 static function (Plant $plant): bool { return \in_array($plant->getWaterLevel(), [1, 2], true); /* 1, 2) */ }
+                  Actions        create, update
+                PHP,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
+
+    public function testMultiLineClosureIfIsRenderedWithoutClosingBrackets(): void
+    {
+        $this->command->execute([
+            '--route' => 'flooded_plants_list',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: <<<'PHP'
+                Condition      Closure defined in Controller/PlantController.php:58
+
+                                 static function (Plant $plant): bool {
+                                     // braces in comments and strings don't end the closure }
+                                     return $plant->getWaterLevel() > 100 && '}\'' !== (string) $plant->getWaterLevel();
+                                 }
+                  Actions        update
+                PHP,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
+
     public function testInversePropertyPathIsRendered(): void
     {
         $this->command->execute([
