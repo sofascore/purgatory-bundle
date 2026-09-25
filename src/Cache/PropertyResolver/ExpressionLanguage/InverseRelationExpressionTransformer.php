@@ -14,6 +14,21 @@ use Symfony\Component\PropertyInfo\PropertyReadInfoExtractorInterface;
  */
 final class InverseRelationExpressionTransformer
 {
+    /**
+     * Matches the "obj" variable, but not "obj" inside a string, as a hash key, after a "." (e.g. a property named "obj")
+     * or as a function name.
+     */
+    private const OBJ_VARIABLE = <<<'REGEX'
+        /
+            (?:
+                "(?:\\.|[^"\\])*+"      # a double-quoted string
+                | '(?:\\.|[^'\\])*+'    # a single-quoted string
+                | [{,]\s*obj\s*:        # an unquoted hash key
+            )(*SKIP)(*FAIL)             # are skipped
+            | (?<![\w.])obj\b(?!\s*\()  # the variable
+        /x
+        REGEX;
+
     public function __construct(
         private readonly PropertyReadInfoExtractorInterface $extractor,
     ) {
@@ -22,7 +37,7 @@ final class InverseRelationExpressionTransformer
     public function transform(Expression $expression, string $class, string $property, string $fallback): Expression
     {
         $accessor = $this->createAccessor($class, $property);
-        $inverseExpression = str_replace('obj', 'obj.'.$accessor, (string) $expression);
+        $inverseExpression = preg_replace(self::OBJ_VARIABLE, 'obj.'.$accessor, (string) $expression);
 
         return new Expression("obj.$accessor !== null ? ($inverseExpression) : $fallback");
     }
