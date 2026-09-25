@@ -251,13 +251,17 @@ abstract class AssociationResolverTestCase extends TestCase
         );
 
         $classMetadata = $this->createMock(ClassMetadata::class);
-        $classMetadata->method('hasAssociation')
+        $classMetadata->expects(self::once())
+            ->method('hasAssociation')
             ->with('fooProperty')
             ->willReturn(true);
-        $classMetadata->method('isAssociationInverseSide')
+        // only called for OneToOne associations
+        $classMetadata->expects(self::atMost(1))
+            ->method('isAssociationInverseSide')
             ->with('fooProperty')
             ->willReturn($isAssociationInverseSide);
-        $classMetadata->method('getAssociationMapping')
+        $classMetadata->expects(self::once())
+            ->method('getAssociationMapping')
             ->with('fooProperty')
             ->willReturn($this->createAssociationMapping($associationMapping));
 
@@ -271,7 +275,8 @@ abstract class AssociationResolverTestCase extends TestCase
                 ->method('getAssociationMappedByTargetField');
         }
 
-        $classMetadata->method('getAssociationTargetClass')
+        $classMetadata->expects(self::once())
+            ->method('getAssociationTargetClass')
             ->with('fooProperty')
             ->willReturn('BarEntity');
 

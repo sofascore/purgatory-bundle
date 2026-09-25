@@ -655,7 +655,15 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $propertySubscriptions = [...$purgeSubscriptionProvider->provide()];
 
         self::assertCount(\count($expectedSubscriptions), $propertySubscriptions);
-        self::assertEquals($expectedSubscriptions, $propertySubscriptions);
+
+        foreach ($expectedSubscriptions as $i => $expectedSubscription) {
+            // closures can't be compared for equality, only for identity
+            self::assertSame($expectedSubscription->if, $propertySubscriptions[$i]->if);
+            self::assertEquals(
+                [...get_object_vars($expectedSubscription), 'if' => null],
+                [...get_object_vars($propertySubscriptions[$i]), 'if' => null],
+            );
+        }
     }
 
     public static function providerRouteMetadataWithPhp85Features(): iterable
