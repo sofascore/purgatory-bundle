@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -48,6 +49,7 @@ final class PurgatoryBundleTest extends TestCase
         self::assertSame([
             'mapping_paths' => [],
             'route_ignore_patterns' => [],
+            'purge_on_entity_change' => true,
             'doctrine_middleware' => [
                 'enabled' => true,
                 'priority' => null,
@@ -172,6 +174,7 @@ final class PurgatoryBundleTest extends TestCase
             'all.xml',
             [
                 'profiler_integration' => false,
+                'purge_on_entity_change' => false,
                 'doctrine_middleware' => [
                     'priority' => 5,
                     'enabled' => true,
@@ -220,6 +223,7 @@ final class PurgatoryBundleTest extends TestCase
                 ],
                 'mapping_paths' => [],
                 'route_ignore_patterns' => [],
+                'purge_on_entity_change' => true,
                 'purger' => [
                     'name' => null,
                     'hosts' => [],
@@ -533,6 +537,33 @@ final class PurgatoryBundleTest extends TestCase
 
         self::assertCount(1, $ignoredPatterns);
         self::assertSame('/^_profiler/', $ignoredPatterns[0]);
+    }
+
+    #[TestWith([true])]
+    #[TestWith([false])]
+    public function testPurgeOnEntityChangeIsSet(bool $enabled): void
+    {
+        $container = self::getContainer();
+        $extension = $container->getExtension('purgatory');
+        $extension->load([
+            'purgatory' => [
+                'purge_on_entity_change' => $enabled,
+            ],
+        ], $container);
+
+        self::assertSame($enabled, $container->getDefinition('sofascore.purgatory.entity_change_purge_switcher')->getArgument(0));
+    }
+
+    public function testEntityChangePurgeSwitcherAliasIsSet(): void
+    {
+        $container = self::getContainer();
+        $extension = $container->getExtension('purgatory');
+        $extension->load([
+            'purgatory' => [],
+        ], $container);
+
+        self::assertTrue($container->hasAlias(EntityChangePurgeSwitcherInterface::class));
+        self::assertSame('sofascore.purgatory.entity_change_purge_switcher', (string) $container->getAlias(EntityChangePurgeSwitcherInterface::class));
     }
 
     #[TestWith([[], [[]]])]

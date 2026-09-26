@@ -535,6 +535,46 @@ public function detailsAction(Post $post)
 
 Now, the purge will only occur when the entity is updated, but not when it is created or deleted.
 
+## Disabling Purging for Batch Updates
+
+Batch updates, such as imports, can change thousands of entities at once and trigger a purge request for each of them.
+To skip purging while they run, wrap them in the `whileDisabled()` method of the
+[`EntityChangePurgeSwitcherInterface`][6] service, which restores the previous state once the callback returns or
+throws:
+
+```php
+use Doctrine\ORM\EntityManagerInterface;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
+
+class PostImporter
+{
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
+    ) {
+    }
+
+    public function import(iterable $posts): void
+    {
+        $this->entityChangePurgeSwitcher->whileDisabled(function () use ($posts): void {
+            foreach ($posts as $post) {
+                $this->entityManager->persist($post);
+            }
+
+            // the flush must happen inside the callback, see below
+            $this->entityManager->flush();
+        });
+    }
+}
+```
+
+> [!IMPORTANT]
+> The switch is checked when the changes are flushed, not when the entities are modified, so the flush must happen
+> inside the callback.
+
+The switcher is a shared service, so purging is skipped for all entity changes flushed while the callback runs. The
+`whileEnabled()` method does the opposite, e.g. to enable purging when the `purge_on_entity_change` option is disabled.
+
 ## Testing
 
 For testing purposes, you can use the `in-memory` purger, which simulates purging without interacting with external
@@ -630,3 +670,4 @@ This command provides insights into which routes and parameters are associated w
 [3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php
 [5]: https://github.com/symfony/symfony/blob/8.1/src/Symfony/Component/HttpKernel/Attribute/Serialize.php
+[6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcherInterface.php
