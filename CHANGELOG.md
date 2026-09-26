@@ -19,6 +19,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/163
 - Ability to pass a closure as a `DynamicValues` provider on PHP 8.5+ by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/163
+- Add the `purge_on_entity_change` option and the `EntityChangePurgeSwitcherInterface` to control whether entity
+  changes trigger purge requests by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/166
 
 ### Changed
 
@@ -44,6 +46,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   accessor exception as the previous exception by @klezaic in https://github.com/sofascore/purgatory-bundle/pull/110
 - `EntityChangeListener` now implements `ResetInterface` and clears queued purge requests on `kernel.reset` by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/167
+- Constructor of `EntityChangeListener` now requires an `EntityChangePurgeSwitcherInterface` by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/166
 
 ### Removed
 

@@ -29,6 +29,7 @@ final class EntityChangeListener implements ResetInterface
         private readonly iterable $routeProviders,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly PurgerInterface $purger,
+        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
     ) {
     }
 
@@ -60,6 +61,12 @@ final class EntityChangeListener implements ResetInterface
             return;
         }
 
+        if (!$this->entityChangePurgeSwitcher->isEnabled()) {
+            $this->reset();
+
+            return;
+        }
+
         $purgeRequests = array_values($this->queuedPurgeRequests);
         $this->reset();
         $this->purger->purge($purgeRequests);
@@ -75,6 +82,10 @@ final class EntityChangeListener implements ResetInterface
      */
     private function handleChanges(LifecycleEventArgs $eventArgs, Action $action): void
     {
+        if (!$this->entityChangePurgeSwitcher->isEnabled()) {
+            return;
+        }
+
         $entity = $eventArgs->getObject();
         $entityChangeSet = $eventArgs->getObjectManager()->getUnitOfWork()->getEntityChangeSet($entity);
 
