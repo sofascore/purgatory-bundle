@@ -25,7 +25,6 @@ use Sofascore\PurgatoryBundle\Command\DebugCommand;
 use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
-use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessageHandler;
@@ -200,7 +199,8 @@ return static function (ContainerConfigurator $container) {
             ->tag('purgatory.route_provider')
 
         ->set('sofascore.purgatory.entity_change_purge_switcher', EntityChangePurgeSwitcher::class)
-        ->alias(EntityChangePurgeSwitcherInterface::class, 'sofascore.purgatory.entity_change_purge_switcher')
+            ->tag('kernel.reset', ['method' => 'reset'])
+        ->alias(EntityChangePurgeSwitcher::class, 'sofascore.purgatory.entity_change_purge_switcher')
 
         ->set('sofascore.purgatory.entity_change_listener', EntityChangeListener::class)
             ->args([

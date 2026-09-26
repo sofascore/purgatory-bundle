@@ -18,6 +18,34 @@ final class EntityChangePurgeSwitcherTest extends TestCase
         self::assertFalse((new EntityChangePurgeSwitcher(false))->isEnabled());
     }
 
+    public function testEnableAndDisableLastUntilReset(): void
+    {
+        $switcher = new EntityChangePurgeSwitcher(false);
+
+        $switcher->enable();
+
+        self::assertTrue($switcher->isEnabled());
+
+        $switcher->disable();
+
+        self::assertFalse($switcher->isEnabled());
+
+        $switcher->enable();
+        $switcher->reset();
+
+        self::assertFalse($switcher->isEnabled());
+    }
+
+    public function testResetRestoresConfiguredDefault(): void
+    {
+        $switcher = new EntityChangePurgeSwitcher(true);
+
+        $switcher->disable();
+        $switcher->reset();
+
+        self::assertTrue($switcher->isEnabled());
+    }
+
     public function testWhileEnabled(): void
     {
         $switcher = new EntityChangePurgeSwitcher(false);
@@ -78,6 +106,38 @@ final class EntityChangePurgeSwitcherTest extends TestCase
         }
 
         self::assertTrue($switcher->isEnabled());
+    }
+
+    public function testCallbacksTakePrecedenceOverEnableAndDisable(): void
+    {
+        $switcher = new EntityChangePurgeSwitcher(true);
+
+        $switcher->disable();
+
+        $switcher->whileEnabled(static function () use ($switcher): void {
+            self::assertTrue($switcher->isEnabled());
+
+            // takes effect once the callback is done
+            $switcher->disable();
+
+            self::assertTrue($switcher->isEnabled());
+        });
+
+        self::assertFalse($switcher->isEnabled());
+    }
+
+    public function testResetKeepsRunningCallbackState(): void
+    {
+        $switcher = new EntityChangePurgeSwitcher(false);
+
+        $switcher->whileEnabled(static function () use ($switcher): void {
+            // e.g. services are reset between two requests of a test client
+            $switcher->reset();
+
+            self::assertTrue($switcher->isEnabled());
+        });
+
+        self::assertFalse($switcher->isEnabled());
     }
 
     public function testInstancesAreIndependent(): void

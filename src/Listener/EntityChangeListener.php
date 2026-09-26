@@ -29,7 +29,7 @@ final class EntityChangeListener implements ResetInterface
         private readonly iterable $routeProviders,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly PurgerInterface $purger,
-        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
+        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
     ) {
     }
 
@@ -58,12 +58,6 @@ final class EntityChangeListener implements ResetInterface
     public function process(): void
     {
         if (!$this->queuedPurgeRequests) {
-            return;
-        }
-
-        if (!$this->entityChangePurgeSwitcher->isEnabled()) {
-            $this->reset();
-
             return;
         }
 

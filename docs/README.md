@@ -538,19 +538,18 @@ Now, the purge will only occur when the entity is updated, but not when it is cr
 ## Disabling Purging for Batch Updates
 
 Batch updates, such as imports, can change thousands of entities at once and trigger a purge request for each of them.
-To skip purging while they run, wrap them in the `whileDisabled()` method of the
-[`EntityChangePurgeSwitcherInterface`][6] service, which restores the previous state once the callback returns or
-throws:
+To skip purging while they run, wrap them in the `whileDisabled()` method of the [`EntityChangePurgeSwitcher`][6]
+service, which restores the previous state once the callback returns or throws:
 
 ```php
 use Doctrine\ORM\EntityManagerInterface;
-use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 
 class PostImporter
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
+        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
     ) {
     }
 
@@ -569,11 +568,56 @@ class PostImporter
 ```
 
 > [!IMPORTANT]
-> The switch is checked when the changes are flushed, not when the entities are modified, so the flush must happen
-> inside the callback.
+> Creations and updates are checked when the changes are flushed, deletions when `remove()` is called, so make the
+> changes and flush them inside the callback.
 
 The switcher is a shared service, so purging is skipped for all entity changes flushed while the callback runs. The
 `whileEnabled()` method does the opposite, e.g. to enable purging when the `purge_on_entity_change` option is disabled.
+
+## Disabling Purging for Requests and Messages
+
+To disable purging for a whole request or message, call the `disable()` method of the switcher from an event listener.
+The `enable()` method does the opposite. The switcher is reset together with the other services, see
+[`kernel.reset`](https://symfony.com/doc/current/reference/dic_tags.html#kernel-reset), which restores the configured
+default. In a Symfony application that happens after each request and each Messenger message.
+
+For example, to skip purging for the routes of an import endpoint:
+
+```php
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+
+#[AsEventListener]
+class DisablePurgingForImports
+{
+    public function __construct(
+        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
+    ) {
+    }
+
+    public function __invoke(RequestEvent $event): void
+    {
+        $route = $event->getRequest()->attributes->getString('_route');
+
+        if ($event->isMainRequest() && str_starts_with($route, 'import_')) {
+            $this->entityChangePurgeSwitcher->disable();
+        }
+    }
+}
+```
+
+The same works for a Messenger transport. Since the switcher is reset after each message, the listener has to run for
+every message, e.g. on `WorkerMessageReceivedEvent`:
+
+```php
+public function __invoke(WorkerMessageReceivedEvent $event): void
+{
+    if ('imports' === $event->getReceiverName()) {
+        $this->entityChangePurgeSwitcher->disable();
+    }
+}
+```
 
 ## Testing
 
@@ -642,6 +686,8 @@ class PurgeTest extends KernelTestCase
 }
 ```
 
+If generating purge requests noticeably slows down your test suite, see [Speeding Up Tests](speeding-up-tests.md).
+
 ## Debugging
 
 The bundle includes integration with the [Symfony Profiler](https://symfony.com/doc/current/profiler.html) to help you
@@ -663,6 +709,7 @@ This command provides insights into which routes and parameters are associated w
 - [Complex Route Parameters](complex-route-params.md)
 - [Configure Purge Subscriptions Using YAML](purge-subscriptions-using-yaml.md)
 - [Custom Expression Language Functions](custom-expression-language-functions.md)
+- [Speeding Up Tests](speeding-up-tests.md)
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
 [1]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/PurgeOn.php
@@ -670,4 +717,4 @@ This command provides insights into which routes and parameters are associated w
 [3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php
 [5]: https://github.com/symfony/symfony/blob/8.1/src/Symfony/Component/HttpKernel/Attribute/Serialize.php
-[6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcherInterface.php
+[6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcher.php

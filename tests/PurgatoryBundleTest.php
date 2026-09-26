@@ -12,7 +12,7 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
-use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -562,8 +562,19 @@ final class PurgatoryBundleTest extends TestCase
             'purgatory' => [],
         ], $container);
 
-        self::assertTrue($container->hasAlias(EntityChangePurgeSwitcherInterface::class));
-        self::assertSame('sofascore.purgatory.entity_change_purge_switcher', (string) $container->getAlias(EntityChangePurgeSwitcherInterface::class));
+        self::assertTrue($container->hasAlias(EntityChangePurgeSwitcher::class));
+        self::assertSame('sofascore.purgatory.entity_change_purge_switcher', (string) $container->getAlias(EntityChangePurgeSwitcher::class));
+    }
+
+    public function testEntityChangePurgeSwitcherIsResetBetweenRequestsAndMessages(): void
+    {
+        $container = self::getContainer();
+        $extension = $container->getExtension('purgatory');
+        $extension->load([
+            'purgatory' => [],
+        ], $container);
+
+        self::assertSame([['method' => 'reset']], $container->getDefinition('sofascore.purgatory.entity_change_purge_switcher')->getTag('kernel.reset'));
     }
 
     #[TestWith([[], [[]]])]

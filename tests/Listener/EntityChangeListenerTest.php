@@ -10,6 +10,7 @@ use Doctrine\ORM\UnitOfWork;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
@@ -151,7 +152,7 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         $entityChangeListener->process();
     }
 
-    public function testQueuedPurgeRequestsAreDroppedWhenPurgingIsDisabledBeforeProcessing(): void
+    public function testPurgeRequestsQueuedWhileEnabledAreProcessedWhileDisabled(): void
     {
         $routeProvider = self::createStub(RouteProviderInterface::class);
         $routeProvider->method('supports')->willReturn(true);
@@ -159,7 +160,9 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         $urlGenerator = self::createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('http://localhost/foo');
         $purger = $this->createMock(PurgerInterface::class);
-        $purger->expects(self::never())->method('purge');
+        $purger->expects(self::once())
+            ->method('purge')
+            ->with([new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', []))]);
         $unitOfWork = self::createStub(UnitOfWork::class);
         $unitOfWork->method('getEntityChangeSet')->willReturn([]);
         $entityManager = self::createStub(EntityManagerInterface::class);
@@ -175,8 +178,10 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
 
         $entityChangeListener->postPersist(new PostPersistEventArgs(new \stdClass(), $entityManager));
 
+        // e.g. a fixture is flushed while the purges queued by the application are still pending
         $switcher->whileDisabled(static fn () => $entityChangeListener->process());
 
+        // the queue was already processed
         $entityChangeListener->process();
     }
 }
