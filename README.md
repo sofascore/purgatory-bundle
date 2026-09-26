@@ -57,6 +57,12 @@ If your project doesn't use [Symfony Flex](https://github.com/symfony/flex), con
             # Examples:
             # - /^_profiler/
             # - /^_wdt/
+
+        # Whether entity changes trigger purge requests, can be overridden at runtime using the entity change purge switcher.
+        purge_on_entity_change: true
+
+        # Enables test implementations of services, e.g. an entity change purge switcher whose state can be overridden globally.
+        test:                 false
         doctrine_middleware:
             enabled:              true
 

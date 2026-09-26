@@ -40,6 +40,8 @@
             <xsd:element name="purger" type="purger" minOccurs="0" />
             <xsd:element name="messenger" type="messenger" minOccurs="0" />
         </xsd:choice>
+        <xsd:attribute name="purge-on-entity-change" type="xsd:boolean" />
+        <xsd:attribute name="test" type="xsd:boolean" />
         <xsd:attribute name="doctrine-middleware" type="xsd:boolean" />
         <xsd:attribute name="doctrine-event-listener-priorities" type="xsd:int" />
         <xsd:attribute name="profiler-integration" type="xsd:boolean" />
