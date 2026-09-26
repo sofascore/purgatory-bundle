@@ -172,6 +172,9 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
         $container->getDefinition('sofascore.purgatory.route_metadata_provider.attribute')
             ->setArgument(2, $config['route_ignore_patterns']);
 
+        $switcherDefinition = $container->getDefinition('sofascore.purgatory.entity_change_purge_switcher');
+        $switcherDefinition->setArgument(0, $config['purge_on_entity_change']);
+
         /** @var array<DoctrineEvents::*, ?int> $doctrineEventListenerPriorities */
         $doctrineEventListenerPriorities = $config['doctrine_event_listener_priorities'];
 
