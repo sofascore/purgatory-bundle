@@ -12,10 +12,12 @@ use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Sofascore\PurgatoryBundle\Test\TestEntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyControllerWithPurgeOn;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyExpressionLanguageFunction;
@@ -50,6 +52,7 @@ final class PurgatoryBundleTest extends TestCase
             'mapping_paths' => [],
             'route_ignore_patterns' => [],
             'purge_on_entity_change' => true,
+            'test' => false,
             'doctrine_middleware' => [
                 'enabled' => true,
                 'priority' => null,
@@ -175,6 +178,7 @@ final class PurgatoryBundleTest extends TestCase
             [
                 'profiler_integration' => false,
                 'purge_on_entity_change' => false,
+                'test' => true,
                 'doctrine_middleware' => [
                     'priority' => 5,
                     'enabled' => true,
@@ -224,6 +228,7 @@ final class PurgatoryBundleTest extends TestCase
                 'mapping_paths' => [],
                 'route_ignore_patterns' => [],
                 'purge_on_entity_change' => true,
+                'test' => false,
                 'purger' => [
                     'name' => null,
                     'hosts' => [],
@@ -564,6 +569,21 @@ final class PurgatoryBundleTest extends TestCase
 
         self::assertTrue($container->hasAlias(EntityChangePurgeSwitcherInterface::class));
         self::assertSame('sofascore.purgatory.entity_change_purge_switcher', (string) $container->getAlias(EntityChangePurgeSwitcherInterface::class));
+    }
+
+    #[TestWith([false, EntityChangePurgeSwitcher::class])]
+    #[TestWith([true, TestEntityChangePurgeSwitcher::class])]
+    public function testEntityChangePurgeSwitcherClassIsSetFromTestOption(bool $test, string $expectedClass): void
+    {
+        $container = self::getContainer();
+        $extension = $container->getExtension('purgatory');
+        $extension->load([
+            'purgatory' => [
+                'test' => $test,
+            ],
+        ], $container);
+
+        self::assertSame($expectedClass, $container->getDefinition('sofascore.purgatory.entity_change_purge_switcher')->getClass());
     }
 
     #[TestWith([[], [[]]])]

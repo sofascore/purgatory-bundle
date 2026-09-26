@@ -21,6 +21,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/163
 - Add the `purge_on_entity_change` option and the `EntityChangePurgeSwitcherInterface` to control whether entity
   changes trigger purge requests by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/166
+- Add the `test` option, which enables the `TestEntityChangePurgeSwitcher`, and a PHPUnit extension with the
+  `#[WithEntityChangePurging]` attribute to enable purging on entity changes only for specific tests by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/155
 
 ### Changed
 

@@ -6,6 +6,8 @@ namespace Sofascore\PurgatoryBundle\Tests\Test;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
@@ -13,12 +15,20 @@ use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle\Purger\VoidPurger;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Test\TestEntityChangePurgeSwitcher;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class InteractsWithPurgatoryTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        TestEntityChangePurgeSwitcher::reset();
+
+        parent::tearDown();
+    }
+
     #[DataProvider('provideTraitTestCases')]
     public function testTrait(string $idInMemory, string $idAsync): void
     {
@@ -106,6 +116,59 @@ final class InteractsWithPurgatoryTest extends TestCase
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage(\sprintf('The "%s" trait can only be used if "InMemoryPurger" is set as the purger.', InteractsWithPurgatory::class));
+
+        $test->testUrlIsPurged();
+    }
+
+    public function testExceptionIsThrownWhenGlobalOverrideHasNoEffect(): void
+    {
+        $test = new class('name') extends KernelTestCase {
+            use InteractsWithPurgatory;
+
+            public function testUrlIsPurged(): void
+            {
+                self::getPurger();
+            }
+
+            protected static function getContainer(): Container
+            {
+                $container = new Container();
+                $container->set(PurgerInterface::class, new InMemoryPurger());
+                $container->set(EntityChangePurgeSwitcherInterface::class, new EntityChangePurgeSwitcher(false));
+
+                return $container;
+            }
+        };
+
+        TestEntityChangePurgeSwitcher::enable();
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage(\sprintf('The global override of "%s", e.g. by the "#[WithEntityChangePurging]" attribute, has no effect unless the "test" option is enabled.', TestEntityChangePurgeSwitcher::class));
+
+        $test->testUrlIsPurged();
+    }
+
+    public function testGlobalOverrideIsAllowedWithTestSwitcher(): void
+    {
+        $test = new class('name') extends KernelTestCase {
+            use InteractsWithPurgatory;
+
+            public function testUrlIsPurged(): void
+            {
+                self::assertNoUrlsArePurged();
+            }
+
+            protected static function getContainer(): Container
+            {
+                $container = new Container();
+                $container->set(PurgerInterface::class, new InMemoryPurger());
+                $container->set(EntityChangePurgeSwitcherInterface::class, new TestEntityChangePurgeSwitcher(false));
+
+                return $container;
+            }
+        };
+
+        TestEntityChangePurgeSwitcher::enable();
 
         $test->testUrlIsPurged();
     }

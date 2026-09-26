@@ -642,6 +642,56 @@ class PurgeTest extends KernelTestCase
 }
 ```
 
+### Enabling Purging Only for Specific Tests
+
+Generating purge requests on every flush can noticeably slow down a large test suite, even though most tests never
+assert on them. To disable it by default, set the `purge_on_entity_change` option to `false` in the test environment.
+The `test` option replaces the switcher with an implementation whose state can be overridden globally:
+
+```yaml
+# config/packages/purgatory.yaml
+when@test:
+    purgatory:
+        purger: in-memory
+        purge_on_entity_change: false
+        test: true
+```
+
+Then register the bundle's PHPUnit extension, which requires PHPUnit 10 or higher:
+
+```xml
+<!-- phpunit.xml -->
+<extensions>
+    <bootstrap class="Sofascore\PurgatoryBundle\Test\PHPUnit\PurgatoryExtension" />
+</extensions>
+```
+
+Purging can now be enabled only where it is needed with the [`#[WithEntityChangePurging]`][8] attribute. When placed on
+a test class, purging is enabled for all of its tests, from `setUpBeforeClass()` until after `tearDownAfterClass()`.
+When placed on a test method, purging is enabled for that test only, from before `setUp()` until after `tearDown()`.
+In both cases the previous state is restored afterwards, even if a test errors, fails or is skipped:
+
+```php
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Test\PHPUnit\WithEntityChangePurging;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+class PurgeTest extends KernelTestCase
+{
+    use InteractsWithPurgatory;
+
+    #[WithEntityChangePurging]
+    public function testPurgePost()
+    {
+        // ...
+    }
+}
+```
+
+The switch can also be flipped manually with the static `enable()`, `disable()` and `reset()` methods of the
+[`TestEntityChangePurgeSwitcher`][7] class, e.g. to skip purging while loading fixtures. The override applies to every
+kernel while it is set, including the ones a `KernelBrowser` reboots between requests.
+
 ## Debugging
 
 The bundle includes integration with the [Symfony Profiler](https://symfony.com/doc/current/profiler.html) to help you
@@ -671,3 +721,5 @@ This command provides insights into which routes and parameters are associated w
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php
 [5]: https://github.com/symfony/symfony/blob/8.1/src/Symfony/Component/HttpKernel/Attribute/Serialize.php
 [6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcherInterface.php
+[7]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/TestEntityChangePurgeSwitcher.php
+[8]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/PHPUnit/WithEntityChangePurging.php

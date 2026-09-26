@@ -22,6 +22,7 @@ use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessage;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\ValuesResolverInterface;
 use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
+use Sofascore\PurgatoryBundle\Test\TestEntityChangePurgeSwitcher;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\Config\Definition\Processor;
@@ -174,6 +175,10 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
 
         $switcherDefinition = $container->getDefinition('sofascore.purgatory.entity_change_purge_switcher');
         $switcherDefinition->setArgument(0, $config['purge_on_entity_change']);
+
+        if ($config['test']) {
+            $switcherDefinition->setClass(TestEntityChangePurgeSwitcher::class);
+        }
 
         /** @var array<DoctrineEvents::*, ?int> $doctrineEventListenerPriorities */
         $doctrineEventListenerPriorities = $config['doctrine_event_listener_priorities'];
