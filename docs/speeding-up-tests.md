@@ -2,7 +2,7 @@
 
 Even with the `in-memory` purger, every flush generates purge requests: the purge subscriptions of the changed entities
 are evaluated, the route providers are called and the URLs are generated. Most tests never assert on these purges, so
-in a large test suite this work can take up a noticeable part of the runtime. There are two ways to avoid it.
+in a large test suite this work can take up a noticeable part of the runtime. There are three ways to avoid it.
 
 ## Disabling Purging in Tests
 
@@ -18,12 +18,12 @@ when@test:
 
 Keep in mind that errors in the purge configuration then only surface in the tests that enable purging.
 
-To check purges in a test, wrap the changes in the `whileEnabled()` method of the [`EntityChangePurgeSwitcher`][0]
-service:
+To check purges in a test, wrap the changes in the `whileEnabled()` method of the
+[`EntityChangePurgeSwitcherInterface`][0] service:
 
 ```php
 $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
-$switcher = self::getContainer()->get(EntityChangePurgeSwitcher::class);
+$switcher = self::getContainer()->get(EntityChangePurgeSwitcherInterface::class);
 
 // purging is disabled, so creating the post doesn't purge anything
 $post = new Post();
@@ -43,14 +43,15 @@ self::assertUrlIsPurged('/post/title-new');
 ```
 
 A test client reboots the kernel before each request after the first one, which creates a new switcher. To keep
-purging enabled across several requests, call `$client->disableReboot()` and make the requests inside the callback:
+purging enabled across several requests, call `$client->disableReboot()` and make the requests inside the callback, or
+see [Enabling Purging Only for Specific Tests](#enabling-purging-only-for-specific-tests):
 
 ```php
 $client = static::createClient();
 $client->disableReboot();
 
 self::getContainer()
-    ->get(EntityChangePurgeSwitcher::class)
+    ->get(EntityChangePurgeSwitcherInterface::class)
     ->whileEnabled(static function () use ($client): void {
         $client->request('POST', '/posts', ['title' => 'Title']);
         $client->request('PATCH', '/post/title', ['title' => 'Title New']);
@@ -71,10 +72,62 @@ callback, which also works with [Foundry](https://github.com/zenstruck/foundry)'
 
 ```php
 $posts = self::getContainer()
-    ->get(EntityChangePurgeSwitcher::class)
+    ->get(EntityChangePurgeSwitcherInterface::class)
     ->whileDisabled(static fn () => flush_after(
         static fn () => PostFactory::createMany(100),
     ));
 ```
 
-[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcher.php
+## Enabling Purging Only for Specific Tests
+
+When purging is disabled in tests, the bundle's PHPUnit extension can enable it for specific tests instead. Enable the
+`test` option, which replaces the switcher with an implementation whose state can be overridden globally:
+
+```yaml
+# config/packages/purgatory.yaml
+when@test:
+    purgatory:
+        purger: in-memory
+        purge_on_entity_change: false
+        test: true
+```
+
+Then register the extension, which requires PHPUnit 10 or higher:
+
+```xml
+<!-- phpunit.xml -->
+<extensions>
+    <bootstrap class="Sofascore\PurgatoryBundle\Test\PHPUnit\PurgatoryExtension" />
+</extensions>
+```
+
+Purging can now be enabled only where it is needed with the [`#[WithEntityChangePurging]`][2] attribute. When placed on
+a test class, purging is enabled for all of its tests, from `setUpBeforeClass()` until after `tearDownAfterClass()`.
+When placed on a test method, purging is enabled for that test only, from before `setUp()` until after `tearDown()`.
+In both cases the previous state is restored afterwards, even if a test errors, fails or is skipped:
+
+```php
+use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
+use Sofascore\PurgatoryBundle\Test\PHPUnit\WithEntityChangePurging;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+class PurgeTest extends KernelTestCase
+{
+    use InteractsWithPurgatory;
+
+    #[WithEntityChangePurging]
+    public function testPurgePost()
+    {
+        // ...
+    }
+}
+```
+
+The override applies to every kernel while it is set, including the ones a test client reboots between requests, and
+isn't cleared when the services are reset. It can also be set manually with the static `enableGlobally()`,
+`disableGlobally()` and `resetGlobally()` methods of the [`TestEntityChangePurgeSwitcher`][1] class. The methods of
+the switcher service, such as `whileDisabled()`, still take precedence over it.
+
+[0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcherInterface.php
+[1]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/TestEntityChangePurgeSwitcher.php
+[2]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/PHPUnit/WithEntityChangePurging.php

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Test;
 
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -41,6 +42,11 @@ trait InteractsWithPurgatory
     {
         if (!is_a(static::class, KernelTestCase::class, true)) {
             throw new \LogicException(\sprintf('The "%s" trait can only be used with "%s".', __TRAIT__, KernelTestCase::class));
+        }
+
+        // the global override is only read by the test implementation of the switcher
+        if (null !== TestEntityChangePurgeSwitcher::getGlobalOverride() && !static::getContainer()->get(EntityChangePurgeSwitcherInterface::class) instanceof TestEntityChangePurgeSwitcher) {
+            throw new \LogicException(\sprintf('The global override of "%s", e.g. by the "#[WithEntityChangePurging]" attribute, has no effect unless the "test" option is enabled.', TestEntityChangePurgeSwitcher::class));
         }
 
         $purger = static::getContainer()->get(PurgerInterface::class);

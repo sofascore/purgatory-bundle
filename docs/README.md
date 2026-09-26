@@ -538,18 +538,19 @@ Now, the purge will only occur when the entity is updated, but not when it is cr
 ## Disabling Purging for Batch Updates
 
 Batch updates, such as imports, can change thousands of entities at once and trigger a purge request for each of them.
-To skip purging while they run, wrap them in the `whileDisabled()` method of the [`EntityChangePurgeSwitcher`][6]
-service, which restores the previous state once the callback returns or throws:
+To skip purging while they run, wrap them in the `whileDisabled()` method of the
+[`EntityChangePurgeSwitcherInterface`][6] service, which restores the previous state once the callback returns or
+throws:
 
 ```php
 use Doctrine\ORM\EntityManagerInterface;
-use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 
 class PostImporter
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
+        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
     ) {
     }
 
@@ -584,7 +585,7 @@ default. In a Symfony application that happens after each request and each Messe
 For example, to skip purging for the routes of an import endpoint:
 
 ```php
-use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
@@ -592,7 +593,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 class DisablePurgingForImports
 {
     public function __construct(
-        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
+        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
     ) {
     }
 
@@ -719,4 +720,4 @@ This command provides insights into which routes and parameters are associated w
 [3]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/Enum/Action.php
 [4]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Test/InteractsWithPurgatory.php
 [5]: https://github.com/symfony/symfony/blob/8.1/src/Symfony/Component/HttpKernel/Attribute/Serialize.php
-[6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcher.php
+[6]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Listener/EntityChangePurgeSwitcherInterface.php
