@@ -42,6 +42,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   and https://github.com/sofascore/purgatory-bundle/pull/116
 - `PropertyNotAccessibleException` is now thrown when a property path cannot be read, with the original property
   accessor exception as the previous exception by @klezaic in https://github.com/sofascore/purgatory-bundle/pull/110
+- `EntityChangeListener` now implements `ResetInterface` and clears queued purge requests on `kernel.reset` by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/167
 
 ### Removed
 
