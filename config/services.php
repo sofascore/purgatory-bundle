@@ -203,6 +203,7 @@ return static function (ContainerConfigurator $container) {
                 service('router'),
                 service('sofascore.purgatory.purger'),
             ])
+            ->tag('kernel.reset', ['method' => 'reset'])
 
         ->set('sofascore.purgatory.purger.void', VoidPurger::class)
             ->tag('purgatory.purger', ['alias' => 'void'])
