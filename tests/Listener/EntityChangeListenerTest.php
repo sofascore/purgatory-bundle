@@ -84,6 +84,37 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('http://example.test/foo');
     }
 
+    public function testQueuedPurgeRequestsAreClearedOnKernelReset(): void
+    {
+        self::initializeApplication(['test_case' => 'EntityChangeListener', 'config' => 'no_middleware.yaml']);
+
+        /** @var EntityManagerInterface $em */
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
+
+        $em->persist(new Dummy($name = 'name_'.time()));
+
+        $em->wrapInTransaction(static function () use ($em) {
+            $em->flush();
+        });
+
+        /** @var EntityChangeListener $entityChangeListener */
+        $entityChangeListener = self::getContainer()->get('sofascore.purgatory.entity_change_listener');
+        $queuedPurgeRequestsReflection = new \ReflectionProperty(EntityChangeListener::class, 'queuedPurgeRequests');
+
+        self::assertSame(
+            ['http://localhost/'.$name, 'http://example.test/foo'],
+            array_keys($queuedPurgeRequestsReflection->getValue($entityChangeListener)),
+        );
+
+        self::getContainer()->get('services_resetter')->reset();
+
+        self::assertSame([], $queuedPurgeRequestsReflection->getValue($entityChangeListener));
+
+        $entityChangeListener->process();
+
+        self::assertNoUrlsArePurged();
+    }
+
     public function testProcessWithNoPurgeRequests(): void
     {
         $urlGenerator = self::createStub(UrlGeneratorInterface::class);

@@ -15,8 +15,9 @@ use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle\RouteProvider\RouteProviderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class EntityChangeListener
+final class EntityChangeListener implements ResetInterface
 {
     /** @var array<string, PurgeRequest> */
     private array $queuedPurgeRequests = [];
