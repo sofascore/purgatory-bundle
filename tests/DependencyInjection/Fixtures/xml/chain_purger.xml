@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:purgatory="http://sofascore.com/schema/dic/purgatory"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services https://symfony.com/schema/dic/services/services-1.0.xsd
+                               http://sofascore.com/schema/dic/purgatory https://sofascore.com/schema/dic/purgatory/purgatory.xsd">
+
+    <purgatory:config>
+
+        <purgatory:purger name="chain">
+            <purgatory:chain name="varnish" http_client="foo.client">
+                <purgatory:host>http://foo.bar</purgatory:host>
+                <purgatory:host>http://baz.qux</purgatory:host>
+            </purgatory:chain>
+            <purgatory:chain name="varnish">
+                <purgatory:host>http://quux.corge</purgatory:host>
+            </purgatory:chain>
+            <purgatory:chain name="in-memory" />
+        </purgatory:purger>
+
+    </purgatory:config>
+
+</container>

@@ -6,11 +6,25 @@ namespace Symfony\Component\Config\Definition\Configurator;
 
 use Doctrine\ORM\Events as DoctrineEvents;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\Config\Definition\Builder\ScalarNodeDefinition;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 return static function (DefinitionConfigurator $definition): void {
     $rootNode = $definition->rootNode();
+
+    $hostsNode = static fn (): ArrayNodeDefinition => (new ArrayNodeDefinition('hosts'))
+        ->info('The hosts from which URLs should be purged')
+        ->scalarPrototype()
+            ->validate()->always(static fn (string $host): string => rtrim($host, '/'))->end()
+        ->end()
+        ->defaultValue([]);
+
+    $httpClientNode = static fn (): ScalarNodeDefinition => (new ScalarNodeDefinition('http_client'))
+        ->info('The service ID of the HTTP client to use, must be an instance of Symfony\'s HTTP client')
+        ->defaultNull()
+        ->cannotBeEmpty();
 
     $rootNode
         ->fixXmlConfig('mapping_path')
@@ -70,7 +84,27 @@ return static function (DefinitionConfigurator $definition): void {
                     ->then(static fn (string $purger): array => ['name' => $purger])
                 ->end()
                 ->validate()
-                    ->ifTrue(static fn (array $purger): bool => 'varnish' === $purger['name'] && !class_exists(HttpClient::class))
+                    ->ifTrue(static fn (array $purger): bool => null === $purger['name'] && $purger['chain'])
+                    ->then(static fn (array $purger): array => ['name' => 'chain'] + $purger)
+                ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $purger): bool => 'chain' === $purger['name'] && !$purger['chain'])
+                    ->thenInvalid('The chain purger requires at least one purger to be defined in the "chain" option.')
+                ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $purger): bool => 'chain' !== $purger['name'] && $purger['chain'])
+                    ->thenInvalid('The "chain" option can only be used with the chain purger.')
+                ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $purger): bool => 'chain' === $purger['name'] && ($purger['hosts'] || null !== $purger['http_client']))
+                    ->thenInvalid('The "hosts" and "http_client" options cannot be used with the chain purger, set them on each purger in the "chain" option instead.')
+                ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $purger): bool => \in_array('chain', array_column($purger['chain'], 'name'), true))
+                    ->thenInvalid('The chain purger cannot be part of the "chain" option.')
+                ->end()
+                ->validate()
+                    ->ifTrue(static fn (array $purger): bool => ('varnish' === $purger['name'] || \in_array('varnish', array_column($purger['chain'], 'name'), true)) && !class_exists(HttpClient::class))
                     ->thenInvalid('The Varnish purger requires Symfony\'s HTTP client component to be installed. Try running "composer require symfony/http-client".')
                 ->end()
                 ->children()
@@ -79,17 +113,32 @@ return static function (DefinitionConfigurator $definition): void {
                         ->example('symfony')
                         ->defaultNull()
                     ->end()
-                    ->arrayNode('hosts')
-                        ->info('The hosts from which URLs should be purged')
-                        ->scalarPrototype()
-                            ->validate()->always(static fn (string $host): string => rtrim($host, '/'))->end()
+                    ->append($hostsNode())
+                    ->append($httpClientNode())
+                    ->arrayNode('chain')
+                        ->info('The purgers to call in order when the "chain" purger is used')
+                        ->beforeNormalization()
+                            // a single <chain> XML element is not turned into a list
+                            ->ifTrue(static fn (mixed $purgerChain): bool => \is_array($purgerChain) && isset($purgerChain['name']))
+                            ->then(static fn (array $purgerChain): array => [$purgerChain])
                         ->end()
-                        ->defaultValue([])
-                    ->end()
-                    ->scalarNode('http_client')
-                        ->info('The service ID of the HTTP client to use, must be an instance of Symfony\'s HTTP client')
-                        ->defaultNull()
-                        ->cannotBeEmpty()
+                        ->arrayPrototype()
+                            ->fixXmlConfig('host')
+                            ->beforeNormalization()
+                                ->ifString()
+                                ->then(static fn (string $purger): array => ['name' => $purger])
+                            ->end()
+                            ->children()
+                                ->scalarNode('name')
+                                    ->info(\sprintf('The ID of a service that implements the "%s" interface', PurgerInterface::class))
+                                    ->example('varnish')
+                                    ->isRequired()
+                                    ->cannotBeEmpty()
+                                ->end()
+                                ->append($hostsNode())
+                                ->append($httpClientNode())
+                            ->end()
+                        ->end()
                     ->end()
                 ->end()
             ->end()

@@ -21,6 +21,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/163
 - Ability to control whether entity changes trigger purge requests with the `purge_on_entity_change` option and the
   `EntityChangePurgeSwitcher` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/166
+- `chain` purger to purge URLs using multiple purgers, configured with the `purger.chain` option by @HypeMC
+  in https://github.com/sofascore/purgatory-bundle/pull/XXX
 
 ### Changed
 

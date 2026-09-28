@@ -146,10 +146,11 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
             },
         );
 
-        /** @var array{name: ?string, hosts: list<string>, http_client: ?string} $purgerConfig */
+        /** @var array{name: ?string, hosts: list<string>, http_client: ?string, chain: list<array{name: string, hosts: list<string>, http_client: ?string}>} $purgerConfig */
         $purgerConfig = $config['purger'];
         $container->setParameter('.sofascore.purgatory.purger.name', $purgerConfig['name']);
         $container->setParameter('.sofascore.purgatory.purger.hosts', $purgerConfig['hosts']);
+        $container->setParameter('.sofascore.purgatory.purger.chain', $purgerConfig['chain']);
 
         if (null !== $purgerConfig['http_client']) {
             $container->getDefinition('sofascore.purgatory.purger.varnish')

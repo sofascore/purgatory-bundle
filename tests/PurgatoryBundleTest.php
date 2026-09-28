@@ -64,6 +64,7 @@ final class PurgatoryBundleTest extends TestCase
                 'name' => null,
                 'hosts' => [],
                 'http_client' => null,
+                'chain' => [],
             ],
             'messenger' => [
                 'transport' => null,
@@ -91,6 +92,109 @@ final class PurgatoryBundleTest extends TestCase
             'http://foo.bar',
             'https://baz-qux',
         ], $config['purger']['hosts']);
+    }
+
+    public function testPurgerChainConfiguration(): void
+    {
+        $config = $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'name' => 'chain',
+                    'chain' => [
+                        'foo_purger',
+                        [
+                            'name' => 'varnish',
+                            'hosts' => ['http://foo.bar/'],
+                            'http_client' => 'foo.client',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        self::assertSame('chain', $config['purger']['name']);
+        self::assertSame([
+            [
+                'name' => 'foo_purger',
+                'hosts' => [],
+                'http_client' => null,
+            ],
+            [
+                'name' => 'varnish',
+                'hosts' => ['http://foo.bar'],
+                'http_client' => 'foo.client',
+            ],
+        ], $config['purger']['chain']);
+    }
+
+    public function testPurgerNameDefaultsToChainWhenPurgerChainIsSet(): void
+    {
+        $config = $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'chain' => ['varnish', 'foo_purger'],
+                ],
+            ],
+        ]);
+
+        self::assertSame('chain', $config['purger']['name']);
+    }
+
+    public function testChainPurgerWithoutPurgerChainValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The chain purger requires at least one purger to be defined in the "chain" option.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'purger' => 'chain',
+            ],
+        ]);
+    }
+
+    public function testPurgerChainWithoutChainPurgerValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "chain" option can only be used with the chain purger.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'name' => 'varnish',
+                    'chain' => ['foo_purger'],
+                ],
+            ],
+        ]);
+    }
+
+    #[TestWith([['hosts' => ['http://foo.bar']]])]
+    #[TestWith([['http_client' => 'foo.client']])]
+    public function testChainPurgerWithTopLevelOptionsValidation(array $options): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The "hosts" and "http_client" options cannot be used with the chain purger, set them on each purger in the "chain" option instead.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'chain' => ['varnish'],
+                ] + $options,
+            ],
+        ]);
+    }
+
+    public function testChainPurgerInPurgerChainValidation(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('The chain purger cannot be part of the "chain" option.');
+
+        $this->processConfiguration([
+            'purgatory' => [
+                'purger' => [
+                    'chain' => ['varnish', 'chain'],
+                ],
+            ],
+        ]);
     }
 
     public function testMessengerBusWithoutTransportValidation(): void
@@ -192,6 +296,7 @@ final class PurgatoryBundleTest extends TestCase
                         'http://foo.bar',
                         'http://baz.qux',
                     ],
+                    'chain' => [],
                 ],
                 'messenger' => [
                     'transport' => 'async',
@@ -206,6 +311,57 @@ final class PurgatoryBundleTest extends TestCase
                     0 => '/^_profiler/',
                     1 => '/^_wdt/',
                 ],
+            ],
+        ];
+        yield 'purger chain' => [
+            'chain_purger.xml',
+            [
+                'purger' => [
+                    'name' => 'chain',
+                    'chain' => [
+                        [
+                            'name' => 'varnish',
+                            'http_client' => 'foo.client',
+                            'hosts' => [
+                                'http://foo.bar',
+                                'http://baz.qux',
+                            ],
+                        ],
+                        [
+                            'name' => 'varnish',
+                            'hosts' => [
+                                'http://quux.corge',
+                            ],
+                            'http_client' => null,
+                        ],
+                        [
+                            'name' => 'in-memory',
+                            'hosts' => [],
+                            'http_client' => null,
+                        ],
+                    ],
+                    'hosts' => [],
+                    'http_client' => null,
+                ],
+                'mapping_paths' => [],
+                'route_ignore_patterns' => [],
+                'purge_on_entity_change' => true,
+                'doctrine_middleware' => [
+                    'enabled' => true,
+                    'priority' => null,
+                ],
+                'doctrine_event_listener_priorities' => [
+                    'preRemove' => null,
+                    'postPersist' => null,
+                    'postUpdate' => null,
+                    'postFlush' => null,
+                ],
+                'messenger' => [
+                    'transport' => null,
+                    'bus' => null,
+                    'batch_size' => null,
+                ],
+                'profiler_integration' => true,
             ],
         ];
         yield 'short listener' => [
@@ -228,6 +384,7 @@ final class PurgatoryBundleTest extends TestCase
                     'name' => null,
                     'hosts' => [],
                     'http_client' => null,
+                    'chain' => [],
                 ],
                 'messenger' => [
                     'transport' => null,
@@ -390,6 +547,26 @@ final class PurgatoryBundleTest extends TestCase
 
         self::assertTrue($container->hasAlias(PurgerInterface::class));
         self::assertSame('sofascore.purgatory.purger', (string) $container->getAlias(PurgerInterface::class));
+    }
+
+    public function testPurgerChainConfig(): void
+    {
+        $container = self::getContainer();
+
+        $extension = $container->getExtension('purgatory');
+        $extension->load([
+            'purgatory' => [
+                'purger' => [
+                    'chain' => ['varnish', 'foo_purger'],
+                ],
+            ],
+        ], $container);
+
+        self::assertSame('chain', $container->getParameter('.sofascore.purgatory.purger.name'));
+        self::assertSame([
+            ['name' => 'varnish', 'hosts' => [], 'http_client' => null],
+            ['name' => 'foo_purger', 'hosts' => [], 'http_client' => null],
+        ], $container->getParameter('.sofascore.purgatory.purger.chain'));
     }
 
     #[TestWith([[], 'http_client'])]

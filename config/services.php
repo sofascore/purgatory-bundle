@@ -26,6 +26,7 @@ use Sofascore\PurgatoryBundle\Doctrine\DBAL\Middleware;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\Purger\AsyncPurger;
+use Sofascore\PurgatoryBundle\Purger\ChainPurger;
 use Sofascore\PurgatoryBundle\Purger\InMemoryPurger;
 use Sofascore\PurgatoryBundle\Purger\Messenger\PurgeMessageHandler;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
@@ -231,6 +232,12 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('http_client'),
                 param('.sofascore.purgatory.purger.hosts'),
+            ])
+
+        ->set('sofascore.purgatory.purger.chain', ChainPurger::class)
+            ->tag('purgatory.purger', ['alias' => 'chain'])
+            ->args([
+                abstract_arg('Purgers defined in the "chain" option'),
             ])
 
         ->set('sofascore.purgatory.purger.async', AsyncPurger::class)
