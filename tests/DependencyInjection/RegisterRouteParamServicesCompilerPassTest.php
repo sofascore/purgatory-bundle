@@ -57,7 +57,7 @@ final class RegisterRouteParamServicesCompilerPassTest extends TestCase
 
         self::assertTrue($this->container->hasDefinition('sofascore.purgatory.route_parameter_resolver.dynamic'));
         $definition = $this->container->getDefinition('sofascore.purgatory.route_parameter_resolver.dynamic');
-        self::assertCount(2, $arguments = $definition->getArguments());
+        self::assertCount(3, $arguments = $definition->getArguments());
 
         $definition = $this->container->getDefinition((string) $arguments[0]);
         self::assertSame(ServiceLocator::class, $definition->getClass());

@@ -6,8 +6,8 @@ namespace Sofascore\PurgatoryBundle\RouteParamValueResolver;
 
 use Psr\Container\ContainerInterface;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
-use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
@@ -16,12 +16,10 @@ use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
  */
 final class DynamicValuesResolver implements ValuesResolverInterface
 {
-    /** @var array<string, \Closure> */
-    private array $closures = [];
-
     public function __construct(
         private readonly ContainerInterface $routeParamServiceLocator,
         private readonly PurgatoryPropertyAccessor $propertyAccessor,
+        private readonly CallableInvoker $callableInvoker,
     ) {
     }
 
@@ -41,8 +39,7 @@ final class DynamicValuesResolver implements ValuesResolverInterface
         [$provider, $propertyPath] = $unresolvedValues;
 
         if (\is_array($provider)) {
-            // a callable array is a static method, anything else a serialized closure
-            $routeParamProvider = \is_callable($provider) ? $provider(...) : $this->getClosure($provider);
+            $routeParamProvider = $this->callableInvoker->resolve($provider);
         } else {
             try {
                 /** @var \Closure $routeParamProvider */
@@ -62,21 +59,5 @@ final class DynamicValuesResolver implements ValuesResolverInterface
         $values = $routeParamProvider($arg);
 
         return \is_array($values) ? $values : [$values];
-    }
-
-    /**
-     * @param array<mixed> $serializedClosure
-     */
-    private function getClosure(array $serializedClosure): \Closure
-    {
-        if (isset($this->closures[$key = serialize($serializedClosure)])) {
-            return $this->closures[$key];
-        }
-
-        if (!($closure = deepclone_from_array($serializedClosure)) instanceof \Closure) {
-            throw new LogicException(\sprintf('Expected the "DynamicValues" provider to be a static method callable or a closure, got %s.', get_debug_type($closure)));
-        }
-
-        return $this->closures[$key] = $closure;
     }
 }

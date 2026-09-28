@@ -197,7 +197,7 @@ final class Php85DebugCommandTest extends AbstractKernelTestCase
         $this->command->assertCommandIsSuccessful();
 
         self::assertStringContainsString(
-            needle: 'Route Params   level: Dynamic(Closure defined in Controller/WateringController.php:20, null)'.\PHP_EOL,
+            needle: 'Route Params   level: Dynamic(Closure defined in Controller/WateringController.php:22, null)'.\PHP_EOL,
             haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
         );
     }
