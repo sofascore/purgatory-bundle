@@ -67,7 +67,7 @@ cost. Everything the application does is still purged, so your tests keep catchi
 such as an expression that throws.
 
 To skip them, create the fixtures inside the `whileDisabled()` method of the switcher. The flush must happen inside the
-callback, which also works with Foundry's `flush_after()`:
+callback, which also works with [Foundry](https://github.com/zenstruck/foundry)'s `flush_after()`:
 
 ```php
 $posts = self::getContainer()
