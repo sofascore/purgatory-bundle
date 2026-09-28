@@ -611,6 +611,8 @@ The same works for a Messenger transport. Since the switcher is reset after each
 every message, e.g. on `WorkerMessageReceivedEvent`:
 
 ```php
+use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
+
 public function __invoke(WorkerMessageReceivedEvent $event): void
 {
     if ('imports' === $event->getReceiverName()) {
