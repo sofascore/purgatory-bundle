@@ -69,10 +69,12 @@
         "symfony/yaml": "To configure purge subscriptions using YAML files"
     },
     "conflict": {
+        "ext-deepclone": "<0.7.1",
         "symfony/cache": "<6.4",
         "symfony/expression-language": "<6.4",
         "symfony/http-client": "<6.4",
         "symfony/messenger": "<6.4",
+        "symfony/polyfill-deepclone": "<1.39",
         "symfony/serializer": "<6.4",
         "symfony/yaml": "<6.4"
     },
