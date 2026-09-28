@@ -29,7 +29,7 @@ final class PurgeOnEntityChangeTest extends AbstractKernelTestCase
 
         self::persistDummy();
 
-        self::assertNoUrlsArePurged();
+        self::assertSame([], self::getPurger()->getPurgedUrls());
     }
 
     public function testUrlsArePurgedWhileEnabled(): void
@@ -95,7 +95,7 @@ final class PurgeOnEntityChangeTest extends AbstractKernelTestCase
 
         self::persistDummy();
 
-        self::assertNoUrlsArePurged();
+        self::assertSame([], self::getPurger()->getPurgedUrls());
     }
 
     public function testGlobalOverrideAppliesToEveryKernel(): void

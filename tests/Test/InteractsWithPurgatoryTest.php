@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\Test;
 
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
@@ -171,5 +172,56 @@ final class InteractsWithPurgatoryTest extends TestCase
         TestEntityChangePurgeSwitcher::enableGlobally();
 
         $test->testUrlIsPurged();
+    }
+
+    #[TestWith(['assertNoUrlsArePurged', []])]
+    #[TestWith(['assertUrlIsNotPurged', ['/foo']])]
+    public function testExceptionIsThrownWhenAssertingNoPurgesWhilePurgingIsDisabled(string $assertion, array $arguments): void
+    {
+        $test = self::createTestWithSwitcher(new EntityChangePurgeSwitcher(false));
+
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Asserting that URLs were not purged has no effect while purging on entity changes is disabled, enable it with the "#[WithEntityChangePurging]" attribute or make the assertion inside the "whileEnabled()" callback of the switcher.');
+
+        $test->callAssertion($assertion, $arguments);
+    }
+
+    #[TestWith(['assertNoUrlsArePurged', []])]
+    #[TestWith(['assertUrlIsNotPurged', ['/foo']])]
+    public function testAssertingNoPurgesInsideWhileEnabled(string $assertion, array $arguments): void
+    {
+        $switcher = new EntityChangePurgeSwitcher(false);
+        $test = self::createTestWithSwitcher($switcher);
+
+        $switcher->whileEnabled(static fn () => $test->callAssertion($assertion, $arguments));
+
+        $this->addToAssertionCount(1);
+    }
+
+    private static function createTestWithSwitcher(EntityChangePurgeSwitcherInterface $switcher): KernelTestCase
+    {
+        $test = new class('name') extends KernelTestCase {
+            use InteractsWithPurgatory;
+
+            public static EntityChangePurgeSwitcherInterface $switcher;
+
+            public function callAssertion(string $assertion, array $arguments): void
+            {
+                self::{$assertion}(...$arguments);
+            }
+
+            protected static function getContainer(): Container
+            {
+                $container = new Container();
+                $container->set(PurgerInterface::class, new InMemoryPurger());
+                $container->set(EntityChangePurgeSwitcherInterface::class, self::$switcher);
+
+                return $container;
+            }
+        };
+
+        $test::$switcher = $switcher;
+
+        return $test;
     }
 }

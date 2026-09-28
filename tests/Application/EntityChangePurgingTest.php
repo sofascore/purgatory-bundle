@@ -48,7 +48,7 @@ final class EntityChangePurgingTest extends AbstractKernelTestCase
     {
         $this->persistDummy();
 
-        self::assertNoUrlsArePurged();
+        self::assertSame([], self::getPurger()->getPurgedUrls());
     }
 
     #[WithEntityChangePurging]
@@ -65,7 +65,7 @@ final class EntityChangePurgingTest extends AbstractKernelTestCase
     {
         $this->persistDummy();
 
-        self::assertNoUrlsArePurged();
+        self::assertSame([], self::getPurger()->getPurgedUrls());
     }
 
     private function persistDummy(): string
