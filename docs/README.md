@@ -88,6 +88,42 @@ purgatory:
 
 If no hosts are specified, the bundle will use the host from the URL.
 
+### Using Multiple Purgers
+
+To purge URLs from more than one HTTP cache backend, use the `chain` purger and list the purgers it should call in its
+`chain` option. The purgers are called in the given order, and each one can be a purger alias or a service ID:
+
+```yaml
+# config/packages/purgatory.yaml
+purgatory:
+    purger:
+        name: chain
+        chain:
+            - varnish
+            - cloudflare
+```
+
+The `name` option can be omitted, as setting `chain` implies the chain purger.
+
+Options such as `hosts` and `http_client` are set on each Varnish purger in the chain instead of on the `purger` node.
+This makes it possible to purge Varnish instances that use different hosts or HTTP clients:
+
+```yaml
+# config/packages/purgatory.yaml
+purgatory:
+    purger:
+        chain:
+            - name: varnish
+              hosts:
+                  - varnish1.example.com
+                  - varnish2.example.com
+            - name: varnish
+              hosts:
+                  - varnish.other-datacenter.example.com
+              http_client: other_datacenter.client
+            - cloudflare
+```
+
 ## Configuring Asynchronous Processing
 
 Purge requests can be processed asynchronously using

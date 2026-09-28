@@ -17,11 +17,20 @@
         <xsd:attribute name="postFlush" type="xsd:int" />
     </xsd:complexType>
 
-    <xsd:complexType name="purger">
+    <xsd:complexType name="chain-purger">
         <xsd:sequence>
             <xsd:element name="host" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required" />
+        <xsd:attribute name="http_client" type="xsd:string" />
+    </xsd:complexType>
+
+    <xsd:complexType name="purger">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="host" type="xsd:string" />
+            <xsd:element name="chain" type="chain-purger" />
+        </xsd:choice>
+        <xsd:attribute name="name" type="xsd:string" />
         <xsd:attribute name="http_client" type="xsd:string" />
     </xsd:complexType>
 

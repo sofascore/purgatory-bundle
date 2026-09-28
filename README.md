@@ -84,6 +84,21 @@ If your project doesn't use [Symfony Flex](https://github.com/symfony/flex), con
 
             # The service ID of the HTTP client to use, must be an instance of Symfony's HTTP client
             http_client:          null
+
+            # The purgers to call in order when the "chain" purger is used
+            chain:
+
+                # Prototype
+                -
+
+                    # The ID of a service that implements the "Sofascore\PurgatoryBundle\Purger\PurgerInterface" interface
+                    name:                 ~ # Required, Example: varnish
+
+                    # The hosts from which URLs should be purged
+                    hosts:                []
+
+                    # The service ID of the HTTP client to use, must be an instance of Symfony's HTTP client
+                    http_client:          null
         messenger:
 
             # Set the name of the messenger transport to use
