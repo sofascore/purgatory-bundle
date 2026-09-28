@@ -95,6 +95,19 @@ self::assertUrlIsPurged('/post/title');
 self::assertUrlIsPurged('/post/title-new');
 ```
 
+Asserting that nothing was purged would always pass while purging is disabled, so `assertNoUrlsArePurged()` and
+`assertUrlIsNotPurged()` throw an exception in that case. Make these assertions inside the callback:
+
+```php
+$switcher->whileEnabled(static function () use ($post, $entityManager): void {
+    $post->views = 100;
+
+    $entityManager->flush();
+
+    self::assertNoUrlsArePurged();
+});
+```
+
 A test client reboots the kernel before each request after the first one, which creates a new switcher. To keep
 purging enabled across several requests, call `$client->disableReboot()` and make the requests inside the callback:
 

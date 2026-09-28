@@ -23,6 +23,8 @@ trait InteractsWithPurgatory
 
     final protected static function assertUrlIsNotPurged(string $url): void
     {
+        self::_assertPurgingOnEntityChangesIsEnabled();
+
         self::assertNotContains(
             needle: $url,
             haystack: self::getPurgedUrls(str_contains($url, '://')),
@@ -32,6 +34,8 @@ trait InteractsWithPurgatory
 
     final protected static function assertNoUrlsArePurged(): void
     {
+        self::_assertPurgingOnEntityChangesIsEnabled();
+
         self::assertEmpty(
             actual: self::getPurger()->getPurgedUrls(),
             message: 'Failed asserting that no URLs were purged.',
@@ -80,5 +84,22 @@ trait InteractsWithPurgatory
 
             return ($parsedUrl['path'] ?? '/').(isset($parsedUrl['query']) ? '?'.$parsedUrl['query'] : '');
         }, $purgedUrls);
+    }
+
+    /**
+     * Asserting that nothing was purged would always pass while entity changes don't trigger purges.
+     *
+     * @internal
+     */
+    private static function _assertPurgingOnEntityChangesIsEnabled(): void
+    {
+        // validates the setup before the container is used
+        self::getPurger();
+
+        $container = static::getContainer();
+
+        if ($container->has(EntityChangePurgeSwitcherInterface::class) && !$container->get(EntityChangePurgeSwitcherInterface::class)->isEnabled()) {
+            throw new \LogicException('Asserting that URLs were not purged has no effect while purging on entity changes is disabled, enable it with the "#[WithEntityChangePurging]" attribute or make the assertion inside the "whileEnabled()" callback of the switcher.');
+        }
     }
 }
