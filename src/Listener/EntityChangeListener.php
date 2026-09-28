@@ -29,7 +29,7 @@ final class EntityChangeListener implements ResetInterface
         private readonly iterable $routeProviders,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly PurgerInterface $purger,
-        private readonly EntityChangePurgeSwitcher $entityChangePurgeSwitcher,
+        private readonly EntityChangePurgeSwitcherInterface $entityChangePurgeSwitcher,
     ) {
     }
 

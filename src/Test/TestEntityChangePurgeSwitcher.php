@@ -2,17 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Listener;
+namespace Sofascore\PurgatoryBundle\Test;
+
+use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcherInterface;
 
 /**
- * {@inheritDoc}
- *
- * Since the service is shared, a change applies to all entity changes flushed
- * afterwards. The service is reset after each request and message, restoring
- * the configured default.
+ * Implementation used when the "test" option is enabled. Its state can also
+ * be overridden globally, which applies to every kernel booted while a test
+ * runs and isn't cleared when the service is reset.
  */
-final class EntityChangePurgeSwitcher implements EntityChangePurgeSwitcherInterface
+final class TestEntityChangePurgeSwitcher implements EntityChangePurgeSwitcherInterface
 {
+    private static ?bool $globalOverride = null;
+
     private ?bool $override = null;
 
     /**
@@ -27,7 +29,7 @@ final class EntityChangePurgeSwitcher implements EntityChangePurgeSwitcherInterf
 
     public function isEnabled(): bool
     {
-        return $this->scopedOverride ?? $this->override ?? $this->enabled;
+        return $this->scopedOverride ?? $this->override ?? self::$globalOverride ?? $this->enabled;
     }
 
     public function enable(): void
@@ -67,6 +69,32 @@ final class EntityChangePurgeSwitcher implements EntityChangePurgeSwitcherInterf
     public function whileDisabled(callable $callback): mixed
     {
         return $this->runWith(false, $callback);
+    }
+
+    public static function enableGlobally(): void
+    {
+        self::$globalOverride = true;
+    }
+
+    public static function disableGlobally(): void
+    {
+        self::$globalOverride = false;
+    }
+
+    /**
+     * Restores the configured default.
+     */
+    public static function resetGlobally(): void
+    {
+        self::$globalOverride = null;
+    }
+
+    /**
+     * @internal
+     */
+    public static function getGlobalOverride(): ?bool
+    {
+        return self::$globalOverride;
     }
 
     /**

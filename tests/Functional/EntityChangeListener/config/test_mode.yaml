@@ -1,0 +1,3 @@
+purgatory:
+    purge_on_entity_change: false
+    test: true
