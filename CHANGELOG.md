@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - xxxx-xx-xx
+## [2.0.0] - 2026-09-29
 
 ### Added
 
@@ -32,6 +32,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/130
 - Method `AbstractValues::getValues()` is now `protected` by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
+- `CompoundValues` no longer extends `AbstractValues` by @Brajk19
+  in https://github.com/sofascore/purgatory-bundle/pull/130
 - Rename first constructor argument in `DynamicValues` to `$provider` by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/137
 - Rename second constructor argument in `DynamicValues` to `$propertyPath` by @Brajk19
@@ -52,16 +54,21 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/167
 - Constructor of `EntityChangeListener` now requires an `EntityChangePurgeSwitcher` by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/166
+- Move compiler passes to the `Sofascore\PurgatoryBundle\DependencyInjection` namespace and add the `CompilerPass`
+  suffix to their names by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/151
 
 ### Removed
 
 - Symfony v5 support by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/128
+- Symfony v8.0 support by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/153
 - `InverseValuesAwareInterface`, use dedicated builder services instead by @HypeMC
   in https://github.com/sofascore/purgatory-bundle/pull/123
 - `ValuesInterface::getValues()`, use public properties instead by @Brajk19
   in https://github.com/sofascore/purgatory-bundle/pull/130
 - `ValueNotIterableException`, `PropertyNotAccessibleException` is thrown instead by @klezaic
   in https://github.com/sofascore/purgatory-bundle/pull/110
+- `PurgatoryExtension` and `Configuration` from the `DependencyInjection` namespace, the bundle now extends
+  `AbstractBundle` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/151
 
 ## [1.6.0] - 2026-09-21
 
@@ -141,7 +148,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.0...v2.0.0
+[2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v2.0.0
 [1.6.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.2...v1.4.0
