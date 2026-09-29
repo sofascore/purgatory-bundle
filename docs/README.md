@@ -464,7 +464,7 @@ composer require symfony/polyfill-deepclone
 ```
 
 For better performance, you can instead install the [PHP extension](https://github.com/symfony/php-ext-deepclone)
-with [PIE](https://github.com/php/pie):
+(version 0.7.1 or higher) with [PIE](https://github.com/php/pie):
 
 ```sh
 pie install symfony/deepclone
