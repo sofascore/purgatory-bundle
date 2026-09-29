@@ -46,7 +46,7 @@ final class PurgeOn
                 throw new LogicException('You cannot use a closure for the "if" attribute because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
             }
 
-            if (\extension_loaded('deepclone') && version_compare((string) phpversion('deepclone'), '0.7.1', '<')) {
+            if (false !== ($version = phpversion('deepclone')) && version_compare($version, '0.7.1', '<')) {
                 throw new LogicException('You cannot use a closure for the "if" attribute because the DeepClone extension is too old. Upgrade it to 0.7.1 or higher.');
             }
         }
