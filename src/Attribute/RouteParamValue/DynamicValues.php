@@ -48,6 +48,10 @@ final class DynamicValues extends AbstractValues
                 throw new LogicException('You cannot use a closure as a "DynamicValues" provider because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
             }
 
+            if (false !== ($version = phpversion('deepclone')) && version_compare($version, '0.7.1', '<')) {
+                throw new LogicException('You cannot use a closure as a "DynamicValues" provider because the DeepClone extension is too old. Upgrade it to 0.7.1 or higher.');
+            }
+
             return $provider;
         }
 

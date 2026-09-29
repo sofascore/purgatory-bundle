@@ -41,8 +41,14 @@ final class PurgeOn
         string|array|null $route = null,
         string|array|Action|null $actions = null,
     ) {
-        if ($if instanceof \Closure && !\function_exists('deepclone_to_array')) {
-            throw new LogicException('You cannot use a closure for the "if" attribute because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
+        if ($if instanceof \Closure) {
+            if (!\function_exists('deepclone_to_array')) {
+                throw new LogicException('You cannot use a closure for the "if" attribute because DeepClone is not installed. Try running "composer require symfony/polyfill-deepclone" or "pie install symfony/deepclone".');
+            }
+
+            if (false !== ($version = phpversion('deepclone')) && version_compare($version, '0.7.1', '<')) {
+                throw new LogicException('You cannot use a closure for the "if" attribute because the DeepClone extension is too old. Upgrade it to 0.7.1 or higher.');
+            }
         }
 
         $this->target = \is_array($target) || \is_string($target) ? new ForProperties($target) : $target;
