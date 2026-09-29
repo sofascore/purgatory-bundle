@@ -2,7 +2,7 @@ version: 2
 updates:
     -   package-ecosystem: 'github-actions'
         directory: '/'
-        target-branch: '1.x'
+        target-branch: '2.x'
         schedule:
             interval: 'weekly'
         pull-request-branch-name:
