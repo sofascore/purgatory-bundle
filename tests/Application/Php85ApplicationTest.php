@@ -39,6 +39,37 @@ final class Php85ApplicationTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('/plants/level/40');
     }
 
+    /**
+     * @see WateringController::plantsByTargetLevelAction
+     */
+    public function testDynamicValuesWithClosureUsingServices(): void
+    {
+        $plant = new Plant(waterLevel: 4);
+        $this->entityManager->persist($plant);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/plants/target-level/test-9');
+    }
+
+    /**
+     * @see WateringController::plantsNeedingWaterAction
+     */
+    public function testIfWithClosureUsingService(): void
+    {
+        $plant = new Plant(waterLevel: 2);
+        $this->entityManager->persist($plant);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/plants/needing-water');
+        self::clearPurger();
+
+        $plant = new Plant(waterLevel: 3);
+        $this->entityManager->persist($plant);
+        $this->entityManager->flush();
+
+        self::assertUrlIsNotPurged('/plants/needing-water');
+    }
+
     protected function tearDown(): void
     {
         unset($this->entityManager);

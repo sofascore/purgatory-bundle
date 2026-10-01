@@ -32,6 +32,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/155
 - PHPUnit extension to enable purging on entity changes only for tests marked with the `#[WithEntityChangePurging]`
   attribute by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/155
+- Ability to inject services into static methods and closures used as the `if` condition or as a `DynamicValues`
+  provider by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/171
 
 ### Changed
 

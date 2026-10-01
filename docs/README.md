@@ -425,8 +425,10 @@ public static function isPopular(Post $post): bool
 }
 ```
 
-The method must have exactly one parameter, typed with the subscribed entity class or one of its parents, and declare a
-non-nullable `bool` return type. These requirements are validated during cache warmup.
+The first parameter must be typed with the subscribed entity class or one of its parents, and the method must declare a
+non-nullable `bool` return type. Any further parameters can
+[receive services](#injecting-services-into-static-methods-and-closures). These requirements are validated during cache
+warmup.
 
 ### Adding Conditional Logic with Closures
 
@@ -443,9 +445,10 @@ public function detailsAction(Post $post)
 }
 ```
 
-Besides the [requirements for all closures](#using-closures), the closure must have exactly one parameter, typed with
-the subscribed entity class or one of its parents, and declare a non-nullable `bool` return type. These requirements
-are validated during cache warmup.
+Besides the [requirements for all closures](#using-closures), the first parameter must be typed with the subscribed
+entity class or one of its parents, and the closure must declare a non-nullable `bool` return type. Any further
+parameters can [receive services](#injecting-services-into-static-methods-and-closures). These requirements are
+validated during cache warmup.
 
 When [targeting a `OneTo*` relation](#targeting-oneto-relations), the closure still receives the entity passed to
 `#[PurgeOn]`, not the related entity that changed. If the relation back to that entity is `null`, no purge occurs.
@@ -473,6 +476,36 @@ pie install symfony/deepclone
 Closures must be anonymous functions, first-class callables such as `Post::isPopular(...)` are not supported. This is
 validated during cache warmup. Closures can only be used with the `#[PurgeOn]` attribute and are not available in the
 YAML configuration.
+
+### Injecting Services into Static Methods and Closures
+
+Static methods and closures used as the `if` condition or as a
+[`DynamicValues` provider](complex-route-params.md#using-values-provided-by-a-service-static-method-or-closure) always
+receive the entity as their first argument. Any parameter after it receives a service, resolved the same way as
+controller arguments:
+
+```php
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+
+#[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
+#[PurgeOn(Post::class, if: static function (Post $post, FeatureFlags $flags, #[Autowire('%app.min_upvotes%')] int $minUpvotes): bool {
+    return $flags->isEnabled('purging') && $post->upvotes > $minUpvotes;
+})]
+public function detailsAction(Post $post)
+{
+}
+```
+
+A parameter typed with a class or an interface is autowired by its type, and the
+[`#[Target]`](https://symfony.com/doc/current/service_container/autowiring.html#dealing-with-multiple-implementations-of-the-same-type)
+attribute selects a named autowiring alias. The
+[`#[Autowire]`](https://symfony.com/doc/current/service_container/autowiring.html#fixing-non-autowireable-arguments)
+attribute and its variants, such as `#[AutowireIterator]` or `#[AutowireLocator]`, can inject any service or parameter.
+If the service does not exist, a nullable parameter receives `null` and an optional one keeps its default value.
+
+The services are collected when the container is compiled, so this works for static methods and closures in the
+`#[PurgeOn]` attribute as well as for static methods in the YAML configuration. A required parameter that cannot be
+resolved is reported during cache warmup.
 
 ### Using Purge on Actions with Multiple Routes
 

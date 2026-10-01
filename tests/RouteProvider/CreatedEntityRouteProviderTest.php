@@ -19,6 +19,7 @@ use Sofascore\PurgatoryBundle\RouteParamValueResolver\EnumValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Sofascore\PurgatoryBundle\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
@@ -249,6 +250,7 @@ final class CreatedEntityRouteProviderTest extends TestCase
                 CompoundValues::type() => static fn () => new CompoundValuesResolver(new ServiceLocator($routeParamValueResolvers)),
             ]),
             $propertyAccessor,
+            new CallableInvoker(new ServiceLocator([])),
         );
     }
 }

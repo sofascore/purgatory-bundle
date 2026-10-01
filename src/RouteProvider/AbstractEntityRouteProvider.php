@@ -39,6 +39,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         private readonly ?ExpressionLanguage $expressionLanguage,
         private readonly ContainerInterface $routeParamValueResolverLocator,
         protected readonly PurgatoryPropertyAccessor $propertyAccessor,
+        private readonly CallableInvoker $callableInvoker,
     ) {
     }
 
@@ -79,10 +80,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
             if (isset($subscription['if'])) {
                 if (\is_array($subscription['if'])) {
-                    // a callable array is a static method, anything else a serialized closure
-                    $closure = \is_callable($subscription['if'])
-                        ? $subscription['if'](...)
-                        : $this->getIfClosure($subscriptions->key(), $index, $subscription['if']);
+                    $closure = $this->closures[$subscriptions->key()][$index] ??= $this->callableInvoker->resolve($subscription['if']);
                     $subject = $entity;
 
                     if (isset($subscription['inversePropertyPath'])) {
@@ -184,23 +182,6 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         $this->configuration ??= $this->configurationLoader->load();
 
         return $this->configuration->has($key) ? $this->configuration->get($key) : null;
-    }
-
-    /**
-     * @param non-empty-string $key
-     * @param array<mixed>     $serializedClosure
-     */
-    private function getIfClosure(string $key, int $index, array $serializedClosure): \Closure
-    {
-        if (isset($this->closures[$key][$index])) {
-            return $this->closures[$key][$index];
-        }
-
-        if (!($closure = deepclone_from_array($serializedClosure)) instanceof \Closure) {
-            throw new LogicException(\sprintf('Expected the "if" condition for subscription "%s" to be a closure, got %s.', $key, get_debug_type($closure)));
-        }
-
-        return $this->closures[$key][$index] = $closure;
     }
 
     private function getExpressionLanguage(): ExpressionLanguage
