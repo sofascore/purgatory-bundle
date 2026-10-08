@@ -15,6 +15,8 @@ use Symfony\Component\HttpClient\DecoratorTrait;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -137,6 +139,30 @@ final class VarnishPurgerTest extends AbstractKernelTestCase
         $this->expectExceptionMessage('An error occurred while trying to purge 1 URL.');
 
         $purger->purge($purgeRequests);
+    }
+
+    public function testExceptionIsThrownWhenPurgeRequestsFailOnTransportLevel(): void
+    {
+        $httpClient = new MockHttpClient([
+            new MockResponse(info: ['error' => 'Connection refused']),
+            new MockResponse(info: ['http_code' => 500]),
+            new MockResponse(),
+        ]);
+
+        $purger = new VarnishPurger($httpClient, ['http://host1', 'http://host2', 'http://host3']);
+
+        try {
+            $purger->purge([
+                new PurgeRequest('http://example1.test/foo', new PurgeRoute('route_foo', [])),
+            ]);
+            self::fail(\sprintf('Expected "%s" to be thrown.', PurgeRequestFailedException::class));
+        } catch (PurgeRequestFailedException $e) {
+            self::assertSame('An error occurred while trying to purge 2 URLs.', $e->getMessage());
+            self::assertSame(['http://host1/foo', 'http://host2/foo'], $e->urls);
+            self::assertCount(2, $e->exceptions);
+            self::assertInstanceOf(TransportExceptionInterface::class, $e->exceptions[0]);
+            self::assertInstanceOf(HttpExceptionInterface::class, $e->exceptions[1]);
+        }
     }
 
     public function testPurgeWithHttpCache(): void
