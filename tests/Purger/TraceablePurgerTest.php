@@ -72,4 +72,40 @@ final class TraceablePurgerTest extends TestCase
         self::assertSame('symfony', $dataCollector->getPurgerName());
         self::assertSame('foo', $dataCollector->getAsyncTransport());
     }
+
+    public function testPurgeWithGeneratorWithDuplicateKeys(): void
+    {
+        $generator = (static function (): \Generator {
+            yield from (static function (): \Generator {
+                yield new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', []));
+                yield new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', []));
+            })();
+            yield from (static function (): \Generator {
+                yield new PurgeRequest('http://localhost/baz', new PurgeRoute('route_baz', []));
+                yield new PurgeRequest('http://localhost/qux', new PurgeRoute('route_qux', []));
+            })();
+        })();
+
+        $expected = ['http://localhost/foo', 'http://localhost/bar', 'http://localhost/baz', 'http://localhost/qux'];
+
+        $innerPurger = $this->createMock(PurgerInterface::class);
+        $innerPurger->expects(self::once())->method('purge')
+            ->willReturnCallback(static function (array $purgeRequests) use ($expected) {
+                self::assertSame(
+                    $expected,
+                    array_map(static fn (PurgeRequest $purgeRequest): string => $purgeRequest->url, $purgeRequests),
+                );
+            });
+
+        $purger = new TraceablePurger($innerPurger, $dataCollector = new PurgatoryDataCollector('symfony', 'foo'));
+
+        $purger->purge($generator);
+
+        self::assertCount(1, $purges = $dataCollector->getPurges());
+        self::assertSame(
+            $expected,
+            array_map(static fn (PurgeRequest $purgeRequest): string => $purgeRequest->url, $purges[0]['requests']),
+        );
+        self::assertSame(4, $dataCollector->getTotalRequests());
+    }
 }
