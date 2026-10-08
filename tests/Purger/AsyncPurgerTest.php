@@ -71,12 +71,28 @@ final class AsyncPurgerTest extends TestCase
         ];
     }
 
-    public function testPurgeWithNoPurgeRequests(): void
+    #[DataProvider('provideEmptyPurgeRequests')]
+    public function testPurgeWithNoPurgeRequests(iterable $purgeRequests): void
     {
         $messageBus = $this->createMock(MessageBusInterface::class);
         $messageBus->expects(self::never())->method('dispatch');
 
         $asyncPurger = new AsyncPurger($messageBus);
-        $asyncPurger->purge([]);
+        $asyncPurger->purge($purgeRequests);
+    }
+
+    public static function provideEmptyPurgeRequests(): iterable
+    {
+        yield 'array' => [[]];
+
+        yield 'ArrayObject' => [new \ArrayObject()];
+
+        yield 'ArrayIterator' => [new \ArrayIterator()];
+
+        yield 'Generator' => [
+            (static function () {
+                yield from [];
+            })(),
+        ];
     }
 }
