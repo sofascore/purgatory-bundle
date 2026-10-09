@@ -20,7 +20,7 @@ final class TraceablePurger implements PurgerInterface
     public function purge(iterable $purgeRequests): void
     {
         /** @var list<PurgeRequest> $purgeRequests */
-        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests);
+        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests, false);
 
         $startTime = microtime(true);
         $this->purger->purge($purgeRequests);
