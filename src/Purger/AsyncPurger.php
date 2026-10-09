@@ -20,12 +20,12 @@ final class AsyncPurger implements PurgerInterface
 
     public function purge(iterable $purgeRequests): void
     {
+        /** @var list<PurgeRequest> $purgeRequests */
+        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests, false);
+
         if (!$purgeRequests) {
             return;
         }
-
-        /** @var list<PurgeRequest> $purgeRequests */
-        $purgeRequests = \is_array($purgeRequests) ? $purgeRequests : iterator_to_array($purgeRequests, false);
 
         if (null !== $this->batchSize) {
             foreach (array_chunk($purgeRequests, $this->batchSize) as $batch) {

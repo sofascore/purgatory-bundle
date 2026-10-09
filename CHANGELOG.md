@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-10-09
+
+### Fixed
+
+- Fix `VarnishPurger` not reporting transport errors with `PurgeRequestFailedException` by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/173
+- Fix `AsyncPurger` dispatching an empty message for empty iterables by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/174
+- Fix `TraceablePurger` dropping purge requests with duplicate keys by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/175
+
 ## [2.0.1] - 2026-09-29
 
 ### Fixed
@@ -76,6 +87,17 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   in https://github.com/sofascore/purgatory-bundle/pull/110
 - `PurgatoryExtension` and `Configuration` from the `DependencyInjection` namespace, the bundle now extends
   `AbstractBundle` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/151
+
+## [1.6.1] - 2026-10-09
+
+### Fixed
+
+- Fix `VarnishPurger` not reporting transport errors with `PurgeRequestFailedException` by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/173
+- Fix `AsyncPurger` dispatching an empty message for empty iterables by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/174
+- Fix `TraceablePurger` dropping purge requests with duplicate keys by @klezaic
+  in https://github.com/sofascore/purgatory-bundle/pull/175
 
 ## [1.6.0] - 2026-09-21
 
@@ -155,8 +177,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
+[2.0.2]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v2.0.0
+[1.6.1]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.3.2...v1.4.0
