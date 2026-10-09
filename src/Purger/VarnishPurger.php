@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle\Exception\InvalidArgumentException;
 use Sofascore\PurgatoryBundle\Exception\PurgeRequestFailedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class VarnishPurger implements PurgerInterface
@@ -49,9 +50,9 @@ final class VarnishPurger implements PurgerInterface
         foreach ($responses as $response) {
             try {
                 $response->getHeaders(); // trigger concurrent requests
-            } catch (HttpExceptionInterface $e) {
+            } catch (HttpExceptionInterface|TransportExceptionInterface $e) {
                 /** @var string $failedUrl */
-                $failedUrl = $e->getResponse()->getInfo('url');
+                $failedUrl = $response->getInfo('url');
                 $failedUrls[] = $failedUrl;
                 $exceptions[] = $e;
             }
