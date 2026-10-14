@@ -29,13 +29,16 @@ use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscription;
 use Sofascore\PurgatoryBundle\Cache\Subscription\PurgeSubscriptionProvider;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle\Exception\InvalidDynamicValuesClosureException;
+use Sofascore\PurgatoryBundle\Exception\InvalidDynamicValuesProviderException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfCallableException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyController;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyEntity;
 use Sofascore\PurgatoryBundle\Tests\Cache\Subscription\Fixtures\DummyTarget;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\IfCallables;
+use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -62,6 +65,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
             expressionLanguage: null,
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
@@ -195,6 +199,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: $managerRegistry,
             targetResolverLocator: $targetResolverLocator,
             expressionLanguage: null,
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
@@ -337,6 +342,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: $managerRegistry,
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: null,
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(EntityMetadataNotFoundException::class);
@@ -362,6 +368,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: null,
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(\LogicException::class);
@@ -524,8 +531,8 @@ final class PurgeSubscriptionProviderTest extends TestCase
     #[DataProvider('provideInvalidDynamicValuesClosures')]
     public function testInvalidDynamicValuesClosures(ValuesInterface $values, string $expectedMessage): void
     {
-        $this->expectException(InvalidDynamicValuesClosureException::class);
-        $this->expectExceptionMessage('Invalid "DynamicValues" closure provided for route "foo": "'.$expectedMessage.'"');
+        $this->expectException(InvalidDynamicValuesProviderException::class);
+        $this->expectExceptionMessage('Invalid "DynamicValues" provider for route "foo": "'.$expectedMessage.'"');
 
         [...$this->createProviderForRouteParams(['foo' => $values])->provide()];
     }
@@ -557,11 +564,6 @@ final class PurgeSubscriptionProviderTest extends TestCase
         yield 'nested in compound values' => [
             new CompoundValues(new RawValues(1), new DynamicValues(strlen(...))),
             'First-class callables are not supported, use a static closure instead.',
-        ];
-
-        yield 'two required parameters' => [
-            new DynamicValues(static fn (object $entity, int $limit): array => []),
-            'The closure must not require more than one parameter.',
         ];
     }
 
@@ -599,6 +601,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     },
                 ],
             ),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(InvalidIfExpressionException::class);
@@ -629,6 +632,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: new ExpressionLanguage(),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(InvalidIfExpressionException::class);
@@ -671,6 +675,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     },
                 ],
             ),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(InvalidIfExpressionException::class);
@@ -709,7 +714,9 @@ final class PurgeSubscriptionProviderTest extends TestCase
     }
 
     #[TestWith(['returnsInt', 'The method must declare a non-nullable bool return type.'])]
-    #[TestWith(['takesTwo', 'The method must have exactly one parameter.'])]
+    #[TestWith(['takesNone', 'The method must have at least one parameter.'])]
+    #[TestWith(['takesTwo', 'The method parameter "$other" cannot be resolved, type it with a service class or use the #[Autowire] attribute.'])]
+    #[TestWith(['takesService', 'The method parameter "$service" cannot be resolved, type it with a service class or use the #[Autowire] attribute.'])]
     #[TestWith(['takesWrongType', 'The method parameter must be typed as "stdClass" or one of its parent types.'])]
     public function testInvalidIfCallables(string $method, string $expectedMessage): void
     {
@@ -719,6 +726,89 @@ final class PurgeSubscriptionProviderTest extends TestCase
         $this->expectExceptionMessage('Invalid "if" callable provided for route "foo": "'.$expectedMessage.'"');
 
         [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public function testIfCallableWithServices(): void
+    {
+        $callableInvoker = self::createCallableInvoker([IfCallables::class, 'takesService'], ['service']);
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForIf([IfCallables::class, 'takesService'], $callableInvoker)->provide()];
+
+        self::assertCount(1, $subscriptions);
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testIfClosureWithServices(): void
+    {
+        $callableInvoker = self::createCallableInvoker(ClosureIfHolder::TAKES_SERVICE, ['service']);
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForIf(ClosureIfHolder::TAKES_SERVICE, $callableInvoker)->provide()];
+
+        self::assertCount(1, $subscriptions);
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    #[DataProvider('provideIfClosuresWithUnresolvedParameters')]
+    public function testIfClosureWithUnresolvedParameters(string $closure, string $expectedMessage): void
+    {
+        /** @var \Closure $if */
+        $if = \constant(ClosureIfHolder::class.'::'.$closure);
+        $purgeSubscriptionProvider = $this->createProviderForIf($if);
+
+        $this->expectException(InvalidIfCallableException::class);
+        $this->expectExceptionMessage('Invalid "if" callable provided for route "foo": "'.$expectedMessage.'"');
+
+        [...$purgeSubscriptionProvider->provide()];
+    }
+
+    public static function provideIfClosuresWithUnresolvedParameters(): iterable
+    {
+        yield 'scalar parameter' => ['TAKES_SCALAR', 'The closure parameter "$other" cannot be resolved, type it with a service class or use the #[Autowire] attribute.'];
+        yield 'service not registered' => ['TAKES_SERVICE', 'The closure parameter "$service" cannot be resolved, type it with a service class or use the #[Autowire] attribute.'];
+    }
+
+    public function testDynamicValuesStaticMethodWithServices(): void
+    {
+        $values = new DynamicValues([IfCallables::class, 'provideWithService']);
+        $callableInvoker = self::createCallableInvoker([IfCallables::class, 'provideWithService'], ['service']);
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForRouteParams(['foo' => $values], callableInvoker: $callableInvoker)->provide()];
+
+        self::assertCount(1, $subscriptions);
+    }
+
+    #[TestWith(['provideTakesScalar', 'limit'])]
+    #[TestWith(['provideWithService', 'service'])]
+    public function testDynamicValuesStaticMethodWithUnresolvedParameters(string $method, string $parameter): void
+    {
+        $this->expectException(InvalidDynamicValuesProviderException::class);
+        $this->expectExceptionMessage(\sprintf('Invalid "DynamicValues" provider for route "foo": "The method parameter "$%s" cannot be resolved, type it with a service class or use the #[Autowire] attribute."', $parameter));
+
+        [...$this->createProviderForRouteParams(['foo' => new DynamicValues([IfCallables::class, $method])])->provide()];
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testDynamicValuesClosureWithServices(): void
+    {
+        $values = new DynamicValues(ClosureIfHolder::VALUES_WITH_SERVICE);
+        $callableInvoker = self::createCallableInvoker(ClosureIfHolder::VALUES_WITH_SERVICE, ['service']);
+
+        /** @var PurgeSubscription[] $subscriptions */
+        $subscriptions = [...$this->createProviderForRouteParams(['foo' => $values], callableInvoker: $callableInvoker)->provide()];
+
+        self::assertCount(1, $subscriptions);
+    }
+
+    #[RequiresPhp('>= 8.5.0')]
+    public function testDynamicValuesClosureWithUnresolvedParameters(): void
+    {
+        $this->expectException(InvalidDynamicValuesProviderException::class);
+        $this->expectExceptionMessage('Invalid "DynamicValues" provider for route "foo": "The closure parameter "$limit" cannot be resolved, type it with a service class or use the #[Autowire] attribute."');
+
+        [...$this->createProviderForRouteParams(['foo' => new DynamicValues(ClosureIfHolder::VALUES_TAKES_SCALAR)])->provide()];
     }
 
     #[RequiresPhp('>= 8.5.0')]
@@ -741,6 +831,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: $targetResolverLocator,
             expressionLanguage: null,
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         /** @var PurgeSubscription[] $propertySubscriptions */
@@ -815,6 +906,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: self::createStub(ExpressionLanguage::class),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(InvalidIfCallableException::class);
@@ -846,11 +938,11 @@ final class PurgeSubscriptionProviderTest extends TestCase
             'expectedMessage' => 'The closure must declare a non-nullable bool return type.',
         ];
 
-        yield 'too many parameters' => [
-            'if' => static function (DummyEntity $entity, array $options): bool {
-                return $entity->getData() > 0;
+        yield 'no parameters' => [
+            'if' => static function (): bool {
+                return true;
             },
-            'expectedMessage' => 'The closure must have exactly one parameter.',
+            'expectedMessage' => 'The closure must have at least one parameter.',
         ];
 
         yield 'invalid parameter type (union)' => [
@@ -916,7 +1008,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
     /**
      * @param non-empty-array<string, ValuesInterface> $routeParams
      */
-    private function createProviderForRouteParams(array $routeParams, ?ExpressionLanguage $expressionLanguage = null): PurgeSubscriptionProvider
+    private function createProviderForRouteParams(array $routeParams, ?ExpressionLanguage $expressionLanguage = null, ?CallableInvoker $callableInvoker = null): PurgeSubscriptionProvider
     {
         $routeMetadataProvider = self::createStub(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->method('provide')
@@ -938,13 +1030,14 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: $expressionLanguage,
+            callableInvoker: $callableInvoker ?? new CallableInvoker(new ServiceLocator([])),
         );
     }
 
     /**
-     * @param callable-array<string> $if
+     * @param callable-array<string>|\Closure $if
      */
-    private function createProviderForIf(array $if): PurgeSubscriptionProvider
+    private function createProviderForIf(array|\Closure $if, ?CallableInvoker $callableInvoker = null): PurgeSubscriptionProvider
     {
         $routeMetadataProvider = $this->createMock(RouteMetadataProviderInterface::class);
         $routeMetadataProvider->expects(self::once())
@@ -967,6 +1060,23 @@ final class PurgeSubscriptionProviderTest extends TestCase
             managerRegistry: self::createStub(ManagerRegistry::class),
             targetResolverLocator: self::createStub(ContainerInterface::class),
             expressionLanguage: null,
+            callableInvoker: $callableInvoker ?? new CallableInvoker(new ServiceLocator([])),
         );
+    }
+
+    /**
+     * @param callable-array<string>|\Closure $callable
+     * @param list<string>                    $serviceParameters
+     */
+    private static function createCallableInvoker(array|\Closure $callable, array $serviceParameters): CallableInvoker
+    {
+        $factories = [];
+        foreach ($serviceParameters as $serviceParameter) {
+            $factories[$serviceParameter] = static fn (): \ArrayObject => new \ArrayObject([1]);
+        }
+
+        return new CallableInvoker(new ServiceLocator([
+            CallableInvoker::key($callable) => static fn (): ServiceLocator => new ServiceLocator($factories),
+        ]));
     }
 }

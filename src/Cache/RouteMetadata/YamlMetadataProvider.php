@@ -20,7 +20,6 @@ use Sofascore\PurgatoryBundle\Exception\RouteNotFoundException;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Exception\UnknownYamlTagException;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
-use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Yaml\Exception\ParseException;
 use Symfony\Component\Yaml\Parser as YamlParser;
@@ -33,7 +32,6 @@ use Symfony\Component\Yaml\Yaml;
 final class YamlMetadataProvider implements RouteMetadataProviderInterface
 {
     private const ALLOWED_KEYS = ['class', 'target', 'route_params', 'if', 'actions'];
-    private ?YamlParser $yamlParser = null;
 
     /**
      * @param list<string> $files
@@ -49,14 +47,33 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      */
     public function provide(): iterable
     {
-        $this->yamlParser ??= new YamlParser();
-
         $routeCollection = $this->router->getRouteCollection();
 
-        foreach ($this->files as $file) {
+        foreach (self::loadPurgeOns($this->files) as $routeName => $purgeOn) {
+            yield new RouteMetadata(
+                routeName: $routeName,
+                route: $routeCollection->get($routeName) ?? throw new RouteNotFoundException($routeName),
+                purgeOn: $purgeOn,
+                reflectionMethod: null,
+            );
+        }
+    }
+
+    /**
+     * @internal Also used during container compilation, where the router is not available
+     *
+     * @param list<string> $files
+     *
+     * @return iterable<string, PurgeOn> Route names mapped to their purge configurations
+     */
+    public static function loadPurgeOns(array $files): iterable
+    {
+        $yamlParser = new YamlParser();
+
+        foreach ($files as $file) {
             try {
                 /** @var array<string, array<string, mixed>|list<array<string, mixed>>>|scalar|null $configuration */
-                $configuration = $this->yamlParser->parseFile($file, Yaml::PARSE_CONSTANT | Yaml::PARSE_CUSTOM_TAGS);
+                $configuration = $yamlParser->parseFile($file, Yaml::PARSE_CONSTANT | Yaml::PARSE_CUSTOM_TAGS);
             } catch (ParseException $e) {
                 throw new InvalidArgumentException(\sprintf('The file "%s" does not contain valid YAML: ', $file).$e->getMessage(), previous: $e);
             }
@@ -65,16 +82,16 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
                 throw new RuntimeException(\sprintf('Expected the parsed YAML of file "%s" to be an array, got "%s".', $file, get_debug_type($configuration)));
             }
 
-            yield from $this->provideFromFile($configuration, $routeCollection);
+            yield from self::loadPurgeOnsFromFile($configuration);
         }
     }
 
     /**
      * @param array<string, array<string, mixed>|list<array<string, mixed>>> $configuration
      *
-     * @return iterable<RouteMetadata>
+     * @return iterable<string, PurgeOn>
      */
-    private function provideFromFile(array $configuration, RouteCollection $routeCollection): iterable
+    private static function loadPurgeOnsFromFile(array $configuration): iterable
     {
         foreach ($configuration as $routeName => $purgeOns) {
             if (!array_is_list($purgeOns)) {
@@ -91,14 +108,9 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
              * } $purgeOn
              */
             foreach ($purgeOns as $purgeOn) {
-                $this->validate($purgeOn, $routeName);
+                self::validate($purgeOn, $routeName);
 
-                yield new RouteMetadata(
-                    routeName: $routeName,
-                    route: $routeCollection->get($routeName) ?? throw new RouteNotFoundException($routeName),
-                    purgeOn: $this->buildPurgeOn($purgeOn),
-                    reflectionMethod: null,
-                );
+                yield $routeName => self::buildPurgeOn($purgeOn);
             }
         }
     }
@@ -112,7 +124,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
      * } $purgeOn
      */
-    private function validate(array $purgeOn, string $routeName): void
+    private static function validate(array $purgeOn, string $routeName): void
     {
         if ($invalidKeys = array_diff(array_keys($purgeOn), self::ALLOWED_KEYS)) {
             throw new InvalidArgumentException(\sprintf(
@@ -133,12 +145,12 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *     actions?: value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null,
      * } $purgeOn
      */
-    private function buildPurgeOn(array $purgeOn): PurgeOn
+    private static function buildPurgeOn(array $purgeOn): PurgeOn
     {
         return new PurgeOn(
             class: $purgeOn['class'],
-            target: isset($purgeOn['target']) ? $this->buildTarget($purgeOn['target']) : null,
-            routeParams: isset($purgeOn['route_params']) ? array_map($this->buildRouteParam(...), $purgeOn['route_params']) : null,
+            target: isset($purgeOn['target']) ? self::buildTarget($purgeOn['target']) : null,
+            routeParams: isset($purgeOn['route_params']) ? array_map(self::buildRouteParam(...), $purgeOn['route_params']) : null,
             if: $purgeOn['if'] ?? null,
             actions: $purgeOn['actions'] ?? null,
         );
@@ -149,7 +161,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *
      * @return string|non-empty-list<string>|TargetInterface
      */
-    private function buildTarget(string|array|TaggedValue $target): string|array|TargetInterface
+    private static function buildTarget(string|array|TaggedValue $target): string|array|TargetInterface
     {
         if (!$target instanceof TaggedValue) {
             return $target;
@@ -170,7 +182,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
      *
      * @return string|non-empty-list<string>|ValuesInterface
      */
-    private function buildRouteParam(string|array|TaggedValue $routeParam): string|array|ValuesInterface
+    private static function buildRouteParam(string|array|TaggedValue $routeParam): string|array|ValuesInterface
     {
         if (!$routeParam instanceof TaggedValue) {
             return $routeParam;
@@ -180,7 +192,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
         $value = $routeParam->getValue();
 
         return match ($tag = $routeParam->getTag()) {
-            CompoundValues::type() => new CompoundValues(...array_map($this->buildRouteParam(...), $value)),
+            CompoundValues::type() => new CompoundValues(...array_map(self::buildRouteParam(...), $value)),
             DynamicValues::type() => new DynamicValues(...((array) $value)),
             EnumValues::type() => new EnumValues($value),
             ExpressionValues::type() => new ExpressionValues($value),

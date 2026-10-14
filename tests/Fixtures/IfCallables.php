@@ -26,6 +26,37 @@ final class IfCallables
         return true;
     }
 
+    public static function takesNone(): bool
+    {
+        return true;
+    }
+
+    /**
+     * @param \ArrayObject<int, int> $service
+     */
+    public static function takesService(\stdClass $entity, \ArrayObject $service): bool
+    {
+        return \count($service) > 0;
+    }
+
+    /**
+     * @param \ArrayObject<int, int> $service
+     *
+     * @return list<int>
+     */
+    public static function provideWithService(object $entity, \ArrayObject $service): array
+    {
+        return array_values($service->getArrayCopy());
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function provideTakesScalar(object $entity, int $limit): array
+    {
+        return [];
+    }
+
     public static function takesWrongType(\DateTimeInterface $entity): bool
     {
         return true;

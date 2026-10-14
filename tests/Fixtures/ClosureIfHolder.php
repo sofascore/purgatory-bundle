@@ -24,4 +24,20 @@ final class ClosureIfHolder
     public const \Closure VALUES = static function (object $entity): array {
         return [7, 8];
     };
+
+    public const \Closure TAKES_SERVICE = static function (\stdClass $entity, \ArrayObject $service): bool {
+        return \count($service) > 0;
+    };
+
+    public const \Closure TAKES_SCALAR = static function (\stdClass $entity, int $other): bool {
+        return true;
+    };
+
+    public const \Closure VALUES_WITH_SERVICE = static function (object $entity, \ArrayObject $service): array {
+        return $service->getArrayCopy();
+    };
+
+    public const \Closure VALUES_TAKES_SCALAR = static function (object $entity, int $limit): array {
+        return [];
+    };
 }

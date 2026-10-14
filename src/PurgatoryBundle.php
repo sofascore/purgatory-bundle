@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle\Cache\PropertyResolver\SubscriptionResolverInterfa
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\DependencyInjection\BundleExtensionWrapper;
 use Sofascore\PurgatoryBundle\DependencyInjection\ControllerClassMapCompilerPass;
+use Sofascore\PurgatoryBundle\DependencyInjection\RegisterCallableArgumentLocatorsCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterExpressionLanguageProvidersCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterPurgerCompilerPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterRouteParamServicesCompilerPass;
@@ -57,6 +58,7 @@ final class PurgatoryBundle extends AbstractBundle implements CompilerPassInterf
         }
 
         $container->addCompilerPass(new ControllerClassMapCompilerPass());
+        $container->addCompilerPass(new RegisterCallableArgumentLocatorsCompilerPass());
         $container->addCompilerPass(new RegisterExpressionLanguageProvidersCompilerPass());
         $container->addCompilerPass(new RegisterPurgerCompilerPass());
         $container->addCompilerPass(new RegisterRouteParamServicesCompilerPass());

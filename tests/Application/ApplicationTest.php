@@ -1071,6 +1071,58 @@ final class ApplicationTest extends AbstractKernelTestCase
     }
 
     /**
+     * @see StaticMethodController::onCallVeterinariansAction
+     */
+    public function testIfWithStaticMethodUsingService(): void
+    {
+        $vet = new Person();
+        $vet->firstName = 'Frank';
+        $vet->lastName = 'Beard';
+        $vet->gender = 'male';
+        $vet->isVeterinarian = true;
+
+        $this->entityManager->persist($vet);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/static-method/on-call-veterinarians');
+        self::clearPurger();
+
+        $otherVet = new Person();
+        $otherVet->firstName = 'John';
+        $otherVet->lastName = 'Doe';
+        $otherVet->gender = 'male';
+        $otherVet->isVeterinarian = true;
+
+        $this->entityManager->persist($otherVet);
+        $this->entityManager->flush();
+
+        self::assertUrlIsNotPurged('/static-method/on-call-veterinarians');
+    }
+
+    /**
+     * @see StaticMethodController::animalsByRatingAction
+     */
+    public function testDynamicValuesWithStaticMethodUsingServices(): void
+    {
+        $person = new Person();
+        $person->firstName = 'John';
+        $person->lastName = 'Doe';
+        $person->gender = 'male';
+
+        $animal = new Animal();
+        $animal->name = 'Floki';
+        $animal->owner = $person;
+        $animal->measurements->height = 10;
+        $animal->measurements->weight = 5;
+
+        $this->entityManager->persist($person);
+        $this->entityManager->persist($animal);
+        $this->entityManager->flush();
+
+        self::assertUrlIsPurged('/static-method/animals/test-15');
+    }
+
+    /**
      * @see StaticMethodController::veterinarianPatientsAction
      */
     public function testIfWithStaticMethodOnInverseRelation(): void

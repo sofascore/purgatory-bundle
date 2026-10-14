@@ -40,6 +40,7 @@ use Sofascore\PurgatoryBundle\RouteParamValueResolver\ExpressionValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\PropertyValuesResolver;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\RawValuesResolver;
 use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Sofascore\PurgatoryBundle\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\ExpressionLanguage\ExpressionLanguageProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
@@ -89,6 +90,7 @@ return static function (ContainerConfigurator $container) {
                 service('doctrine'),
                 tagged_locator('purgatory.target_resolver', indexAttribute: 'for'),
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
+                service('sofascore.purgatory.callable_invoker'),
             ])
 
         ->set('sofascore.purgatory.subscription_resolver.property', PropertyResolver::class)
@@ -184,6 +186,7 @@ return static function (ContainerConfigurator $container) {
                 service('sofascore.purgatory.expression_language')->nullOnInvalid(),
                 tagged_locator('purgatory.route_param_value_resolver', indexAttribute: 'for'),
                 service('sofascore.purgatory.property_accessor'),
+                service('sofascore.purgatory.callable_invoker'),
             ])
 
         ->set('sofascore.purgatory.route_provider.created_entity', CreatedEntityRouteProvider::class)
@@ -193,7 +196,7 @@ return static function (ContainerConfigurator $container) {
         ->set('sofascore.purgatory.route_provider.removed_entity', RemovedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
             ->tag('purgatory.route_provider')
-            ->arg(4, service('doctrine'))
+            ->arg(5, service('doctrine'))
 
         ->set('sofascore.purgatory.route_provider.updated_entity', UpdatedEntityRouteProvider::class)
             ->parent('sofascore.purgatory.route_provider.abstract')
@@ -268,6 +271,12 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 abstract_arg('Route param service locator'),
                 service('sofascore.purgatory.property_accessor'),
+                service('sofascore.purgatory.callable_invoker'),
+            ])
+
+        ->set('sofascore.purgatory.callable_invoker', CallableInvoker::class)
+            ->args([
+                abstract_arg('Callable service argument locators'),
             ])
 
         ->set('sofascore.purgatory.route_parameter_resolver.expression', ExpressionValuesResolver::class)

@@ -1,0 +1,5 @@
+yaml_route:
+    class: stdClass
+    if: 'Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyControllerWithCallableServices::withServices'
+    route_params:
+        foo: !dynamic 'Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyControllerWithCallableServices::provideFromYaml'

@@ -22,9 +22,10 @@ final class RemovedEntityRouteProvider extends AbstractEntityRouteProvider
         ?ExpressionLanguage $expressionLanguage,
         ContainerInterface $routeParamValueResolverLocator,
         PurgatoryPropertyAccessor $propertyAccessor,
+        CallableInvoker $callableInvoker,
         private readonly ManagerRegistry $managerRegistry,
     ) {
-        parent::__construct($configurationLoader, $expressionLanguage, $routeParamValueResolverLocator, $propertyAccessor);
+        parent::__construct($configurationLoader, $expressionLanguage, $routeParamValueResolverLocator, $propertyAccessor, $callableInvoker);
     }
 
     public function supports(Action $action, object $entity): bool

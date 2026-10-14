@@ -232,4 +232,7 @@ public function listAction()
 }
 ```
 
+Static methods and closures can also receive services in their parameters after the first one, see
+[Injecting Services into Static Methods and Closures](README.md#injecting-services-into-static-methods-and-closures).
+
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Attribute/AsRouteParamService.php

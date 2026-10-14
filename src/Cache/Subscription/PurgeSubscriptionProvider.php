@@ -17,11 +17,12 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadataProviderInterface;
 use Sofascore\PurgatoryBundle\Cache\TargetResolver\TargetResolverInterface;
 use Sofascore\PurgatoryBundle\Exception\EntityMetadataNotFoundException;
-use Sofascore\PurgatoryBundle\Exception\InvalidDynamicValuesClosureException;
+use Sofascore\PurgatoryBundle\Exception\InvalidDynamicValuesProviderException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfCallableException;
 use Sofascore\PurgatoryBundle\Exception\InvalidIfExpressionException;
 use Sofascore\PurgatoryBundle\Exception\MissingRequiredRouteParametersException;
 use Sofascore\PurgatoryBundle\Exception\TargetSubscriptionNotResolvableException;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\ExpressionLanguage\SyntaxError;
@@ -41,6 +42,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         private readonly ManagerRegistry $managerRegistry,
         private readonly ContainerInterface $targetResolverLocator,
         private readonly ?ExpressionLanguage $expressionLanguage,
+        private readonly CallableInvoker $callableInvoker,
     ) {
     }
 
@@ -156,7 +158,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
         if ($if instanceof \Closure) {
             $this->validateIfClosure($if, $routeName, $entity);
         } elseif (\is_array($if)) {
-            $this->validateIfSignature(new \ReflectionMethod($if[0], $if[1]), 'method', $routeName, $entity);
+            $this->validateIfSignature(new \ReflectionMethod($if[0], $if[1]), $if, 'method', $routeName, $entity);
         } else {
             $this->validateExpression($if, $routeName);
         }
@@ -170,10 +172,13 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             throw new InvalidIfCallableException($routeName, $violation);
         }
 
-        $this->validateIfSignature($reflection, 'closure', $routeName, $entity);
+        $this->validateIfSignature($reflection, $closure, 'closure', $routeName, $entity);
     }
 
-    private function validateIfSignature(\ReflectionFunctionAbstract $reflection, string $kind, string $routeName, string $entity): void
+    /**
+     * @param callable-array<string>|\Closure $callable
+     */
+    private function validateIfSignature(\ReflectionFunctionAbstract $reflection, array|\Closure $callable, string $kind, string $routeName, string $entity): void
     {
         $returnType = $reflection->getReturnType();
 
@@ -184,8 +189,8 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             throw new InvalidIfCallableException($routeName, \sprintf('The %s must declare a non-nullable bool return type.', $kind));
         }
 
-        if (1 !== $reflection->getNumberOfParameters()) {
-            throw new InvalidIfCallableException($routeName, \sprintf('The %s must have exactly one parameter.', $kind));
+        if (0 === $reflection->getNumberOfParameters()) {
+            throw new InvalidIfCallableException($routeName, \sprintf('The %s must have at least one parameter.', $kind));
         }
 
         $parameterType = $reflection->getParameters()[0]->getType();
@@ -195,6 +200,10 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             || !is_a($entity, $parameterType->getName(), true)
         ) {
             throw new InvalidIfCallableException($routeName, \sprintf('The %s parameter must be typed as "%s" or one of its parent types.', $kind, $entity));
+        }
+
+        if (null !== $violation = $this->getServiceParameterViolation($reflection, $callable, $kind)) {
+            throw new InvalidIfCallableException($routeName, $violation);
         }
     }
 
@@ -206,17 +215,55 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
             }
         } elseif ($values instanceof ExpressionValues) {
             $this->validateExpression($values->expression, $routeName);
-        } elseif ($values instanceof DynamicValues && $values->provider instanceof \Closure) {
-            $reflection = new \ReflectionFunction($values->provider);
+        } elseif ($values instanceof DynamicValues && !\is_string($values->provider)) {
+            $this->validateDynamicValuesProvider($values->provider, $routeName);
+        }
+    }
+
+    /**
+     * @param callable-array<string>|\Closure $provider
+     */
+    private function validateDynamicValuesProvider(array|\Closure $provider, string $routeName): void
+    {
+        if ($provider instanceof \Closure) {
+            $reflection = new \ReflectionFunction($provider);
+            $kind = 'closure';
 
             if (null !== $violation = self::getClosureViolation($reflection)) {
-                throw new InvalidDynamicValuesClosureException($routeName, $violation);
+                throw new InvalidDynamicValuesProviderException($routeName, $violation);
+            }
+        } else {
+            $reflection = new \ReflectionMethod($provider[0], $provider[1]);
+            $kind = 'method';
+        }
+
+        if (null !== $violation = $this->getServiceParameterViolation($reflection, $provider, $kind)) {
+            throw new InvalidDynamicValuesProviderException($routeName, $violation);
+        }
+    }
+
+    /**
+     * The first parameter receives the subject, any required parameter after it must get a service.
+     *
+     * @param callable-array<string>|\Closure $callable
+     */
+    private function getServiceParameterViolation(\ReflectionFunctionAbstract $reflection, array|\Closure $callable, string $kind): ?string
+    {
+        $serviceParameters = null;
+
+        foreach (\array_slice($reflection->getParameters(), 1) as $parameter) {
+            if ($parameter->isOptional()) {
+                continue;
             }
 
-            if ($reflection->getNumberOfRequiredParameters() > 1) {
-                throw new InvalidDynamicValuesClosureException($routeName, 'The closure must not require more than one parameter.');
+            $serviceParameters ??= $this->callableInvoker->getServiceParameters(CallableInvoker::key($callable));
+
+            if (!\in_array($parameter->name, $serviceParameters, true)) {
+                return \sprintf('The %s parameter "$%s" cannot be resolved, type it with a service class or use the #[Autowire] attribute.', $kind, $parameter->name);
             }
         }
+
+        return null;
     }
 
     /**

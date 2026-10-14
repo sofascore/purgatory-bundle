@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\RouteParamValueResolver\DynamicValuesResolver;
+use Sofascore\PurgatoryBundle\RouteProvider\CallableInvoker;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\ClosureIfHolder;
 use Sofascore\PurgatoryBundle\Tests\RouteParamValueResolver\Fixtures\CountingClosureHolder;
@@ -36,6 +37,7 @@ final class DynamicValuesResolverTest extends TestCase
                 ],
             ),
             propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
     }
 
@@ -138,6 +140,7 @@ final class DynamicValuesResolverTest extends TestCase
         $resolver = new DynamicValuesResolver(
             routeParamServiceLocator: new ServiceLocator([]),
             propertyAccessor: new PurgatoryPropertyAccessor(PropertyAccess::createPropertyAccessor()),
+            callableInvoker: new CallableInvoker(new ServiceLocator([])),
         );
 
         $this->expectException(RuntimeException::class);
