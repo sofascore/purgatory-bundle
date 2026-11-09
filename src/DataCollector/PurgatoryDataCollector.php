@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\DataCollector;
 
+use Sofascore\PurgatoryBundle\Purger\ContextFormatter;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 /**
  * @internal
  *
- * @property array{purger_name: string, async_transport: ?string, purges: list<array{requests: list<PurgeRequest>, time: float}>} $data
+ * @property array{purger_name: string, async_transport: ?string, purges: list<array{requests: list<PurgeRequest>, time: float, contexts?: list<string>}>, has_contexts?: bool} $data
  */
 final class PurgatoryDataCollector extends DataCollector
 {
@@ -40,7 +41,26 @@ final class PurgatoryDataCollector extends DataCollector
      */
     public function collectPurgeRequests(array $purgeRequests, float $time): void
     {
-        $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time];
+        $contexts = [];
+        foreach ($purgeRequests as $purgeRequest) {
+            $contexts[] = ContextFormatter::format($purgeRequest->contexts);
+
+            // An empty array stands for a subscription without context
+            if ([] !== array_filter($purgeRequest->contexts)) {
+                $this->data['has_contexts'] = true;
+            }
+        }
+
+        $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time, 'contexts' => $contexts];
+    }
+
+    /**
+     * Whether any purge request carries a context, so the profiler only shows the column when one does.
+     */
+    public function hasContexts(): bool
+    {
+        // Profiles stored before contexts were collected do not have the key
+        return $this->data['has_contexts'] ?? false;
     }
 
     public function getTotalRequests(): int
@@ -64,7 +84,7 @@ final class PurgatoryDataCollector extends DataCollector
     }
 
     /**
-     * @return list<array{requests: list<PurgeRequest>, time: float}>
+     * @return list<array{requests: list<PurgeRequest>, time: float, contexts?: list<string>}>
      */
     public function getPurges(): array
     {
@@ -85,6 +105,7 @@ final class PurgatoryDataCollector extends DataCollector
             'purger_name' => $this->purgerName,
             'async_transport' => $this->asyncTransport,
             'purges' => [],
+            'has_contexts' => false,
         ];
     }
 }

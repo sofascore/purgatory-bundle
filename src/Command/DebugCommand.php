@@ -11,6 +11,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
+use Sofascore\PurgatoryBundle\Purger\ContextFormatter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -296,7 +297,7 @@ final class DebugCommand extends Command
                 ];
 
                 if (isset($subscription['context'])) {
-                    $rows[] = ['Context', $this->formatContext($subscription['context'])];
+                    $rows[] = ['Context', ContextFormatter::format($subscription['context'])];
                 }
 
                 $io->table(['Option', 'Value'], $rows);
@@ -466,29 +467,6 @@ final class DebugCommand extends Command
         }
 
         return 'Closure defined in '.$this->formatLocation($file, $line);
-    }
-
-    /**
-     * Compact JSON with enums written as `Class::Case`, or `var_export` on one line for what JSON cannot
-     * hold, such as INF, NAN or invalid UTF-8.
-     *
-     * @param array<array-key, mixed> $context
-     */
-    private function formatContext(array $context): string
-    {
-        array_walk_recursive($context, static function (mixed &$value): void {
-            if ($value instanceof \UnitEnum) {
-                $value = $value::class.'::'.$value->name;
-            }
-        });
-
-        try {
-            return json_encode($context, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            $export = var_export($context, true);
-
-            return preg_replace('/\n\s*/', ' ', $export) ?? $export;
-        }
     }
 
     /**
