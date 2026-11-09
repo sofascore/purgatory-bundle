@@ -120,6 +120,7 @@ class AnimalController
                 new DynamicValues(provider: [AnimalRatingCalculator::class, 'getOtherRating']),
             ),
         ],
+        context: ['via' => 'measurements'],
     )]
     #[PurgeOn(Person::class,
         target: ['pets'],
@@ -128,6 +129,7 @@ class AnimalController
                 new DynamicValues(provider: 'purgatory.animal_rating3'),
             ),
         ],
+        context: ['via' => 'owner'],
     )]
     public function animalsForRatingAction(int $rating): void
     {

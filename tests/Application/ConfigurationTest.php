@@ -215,6 +215,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         ],
                     ],
                 ],
+                'context' => ['via' => 'owner'],
             ],
         ];
 
@@ -439,6 +440,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         ],
                     ],
                 ],
+                'context' => ['via' => 'measurements'],
             ],
         ];
 
