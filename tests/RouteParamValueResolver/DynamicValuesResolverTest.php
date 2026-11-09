@@ -106,7 +106,7 @@ final class DynamicValuesResolverTest extends TestCase
         );
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('A route parameter resolver service with the alias "foo" was not found.');
+        $this->expectExceptionMessage('A route parameter resolver service with the alias "foo" was not found. Did you forget to use the #[AsRouteParamService] attribute on your service?');
 
         $resolver->resolve(['foo', null], new \stdClass());
     }
