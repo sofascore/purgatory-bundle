@@ -18,10 +18,11 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
     {
         $routeParamServiceRefs = [];
         $usedAliases = [];
-        /** @var list<array{alias: string, method: string}> $attributes */
+        /** @var list<array{alias: string, method?: string}> $attributes */
         foreach ($container->findTaggedServiceIds('purgatory.route_parameter_service', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
-                ['alias' => $alias, 'method' => $method] = $attribute;
+                $alias = $attribute['alias'];
+                $method = $attribute['method'] ?? '__invoke';
 
                 if (isset($usedAliases[$alias])) {
                     throw new RuntimeException(\sprintf('The alias "%s" is already used by "%s".', $alias, $usedAliases[$alias]));

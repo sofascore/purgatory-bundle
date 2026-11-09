@@ -49,6 +49,11 @@ final class RegisterRouteParamServicesPassTest extends TestCase
                 name: 'purgatory.route_parameter_service',
                 attributes: ['alias' => 'three', 'method' => 'anotherMethod'],
             );
+        $this->container->register(id: 'baz', class: \stdClass::class)
+            ->addTag(
+                name: 'purgatory.route_parameter_service',
+                attributes: ['alias' => 'four'],
+            );
 
         $compilerPass = new RegisterRouteParamServicesPass();
         $compilerPass->process($this->container);
@@ -93,6 +98,16 @@ final class RegisterRouteParamServicesPassTest extends TestCase
             : $this->container->getDefinition((string) $argument['three']->getValues()[0]);
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
+        self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
+
+        self::assertArrayHasKey('four', $argument);
+        self::assertInstanceOf(ServiceClosureArgument::class, $argument['four']);
+        /** @var Definition $serviceDefinition */
+        $serviceDefinition = Kernel::MAJOR_VERSION > 5
+            ? $argument['four']->getValues()[0]
+            : $this->container->getDefinition((string) $argument['four']->getValues()[0]);
+        self::assertSame(\Closure::class, $serviceDefinition->getClass());
+        self::assertEquals([[new Reference('baz'), '__invoke']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
     }
 

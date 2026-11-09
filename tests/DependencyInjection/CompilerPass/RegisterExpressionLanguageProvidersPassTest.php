@@ -49,6 +49,11 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
                 name: 'purgatory.expression_language_function',
                 attributes: ['function' => 'three', 'method' => 'anotherMethod'],
             );
+        $this->container->register(id: 'baz', class: \stdClass::class)
+            ->addTag(
+                name: 'purgatory.expression_language_function',
+                attributes: ['function' => 'four'],
+            );
 
         $this->container->register(id: 'other_provider', class: \stdClass::class)
             ->addTag('purgatory.expression_language_provider');
@@ -96,6 +101,16 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
             : $this->container->getDefinition((string) $argument['three']->getValues()[0]);
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
         self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
+        self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
+
+        self::assertArrayHasKey('four', $argument);
+        self::assertInstanceOf(ServiceClosureArgument::class, $argument['four']);
+        /** @var Definition $serviceDefinition */
+        $serviceDefinition = Kernel::MAJOR_VERSION > 5
+            ? $argument['four']->getValues()[0]
+            : $this->container->getDefinition((string) $argument['four']->getValues()[0]);
+        self::assertSame(\Closure::class, $serviceDefinition->getClass());
+        self::assertEquals([[new Reference('baz'), '__invoke']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
         $definition = $this->container->getDefinition('sofascore.purgatory.expression_language');

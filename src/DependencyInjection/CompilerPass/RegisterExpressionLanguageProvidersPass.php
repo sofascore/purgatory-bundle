@@ -24,10 +24,11 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
 
         $functionReferences = [];
         $usedFunctionNames = [];
-        /** @var list<array{function: string, method: string}> $attributes */
+        /** @var list<array{function: string, method?: string}> $attributes */
         foreach ($container->findTaggedServiceIds('purgatory.expression_language_function', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
-                ['function' => $function, 'method' => $method] = $attribute;
+                $function = $attribute['function'];
+                $method = $attribute['method'] ?? '__invoke';
 
                 if (isset($usedFunctionNames[$function])) {
                     throw new RuntimeException(\sprintf('The function name "%s" is already used by "%s".', $function, $usedFunctionNames[$function]));
