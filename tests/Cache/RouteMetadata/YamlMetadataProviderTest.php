@@ -235,6 +235,29 @@ final class YamlMetadataProviderTest extends TestCase
         [...$provider->provide()];
     }
 
+    public function testInvalidPurgeSubscriptionNamesTheRoute(): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/purge_on_with_invalid_actions.yaml',
+            ],
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        // The rest of the message, the enum name, is quoted on PHP 8.1 only
+        $this->expectExceptionMessage('Route "foo_bar" has an invalid purge subscription: "nope" is not a valid backing value for enum');
+
+        [...$provider->provide()];
+    }
+
     public function testExceptionIsThrownForInvalidRoute(): void
     {
         $router = self::createStub(RouterInterface::class);

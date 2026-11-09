@@ -92,10 +92,16 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
             foreach ($purgeOns as $purgeOn) {
                 $this->validate($purgeOn, $routeName);
 
+                try {
+                    $builtPurgeOn = $this->buildPurgeOn($purgeOn);
+                } catch (\ValueError $e) {
+                    throw new InvalidArgumentException(\sprintf('Route "%s" has an invalid purge subscription: %s', $routeName, $e->getMessage()), previous: $e);
+                }
+
                 yield new RouteMetadata(
                     routeName: $routeName,
                     route: $routeCollection->get($routeName) ?? throw new RouteNotFoundException($routeName),
-                    purgeOn: $this->buildPurgeOn($purgeOn),
+                    purgeOn: $builtPurgeOn,
                     reflectionMethod: null,
                 );
             }
