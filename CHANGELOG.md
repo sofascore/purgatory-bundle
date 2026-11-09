@@ -11,6 +11,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fix manually tagged route parameter services and Expression Language functions requiring a `method` attribute and only
   failing at runtime when the method doesn't exist by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/178
+- Fix an invalid value in a YAML purge subscription, such as an unknown `actions` value, throwing a bare `ValueError`
+  that doesn't name the route by @petarf-sofascore in https://github.com/sofascore/purgatory-bundle/pull/179
 
 ## [1.6.1] - 2026-10-09
 
