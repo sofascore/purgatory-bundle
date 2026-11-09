@@ -81,9 +81,9 @@ purgatory:
     purger:
         name: varnish
         hosts:
-            - varnish1.example.com
-            - varnish2.example.com
-            - varnish3.example.com
+            - http://varnish1.example.com
+            - http://varnish2.example.com
+            - http://varnish3.example.com
 ```
 
 If no hosts are specified, the bundle will use the host from the URL.
@@ -527,7 +527,7 @@ You can also limit the purging to a specific action as defined in the [`Action`]
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 
 #[Route('/post/{id<\d+>}', name: 'post_details', methods: 'GET')]
-#[PurgeOn(Post::class, action: Action::Update)]
+#[PurgeOn(Post::class, actions: Action::Update)]
 public function detailsAction(Post $post)
 {
 }
@@ -694,12 +694,13 @@ If generating purge requests noticeably slows down your test suite, see [Speedin
 ## Debugging
 
 The bundle includes integration with the [Symfony Profiler](https://symfony.com/doc/current/profiler.html) to help you
-monitor and troubleshoot purge requests. To enable this integration, add the following configuration:
+monitor and troubleshoot purge requests. The integration is enabled by default and is active whenever both the profiler
+and Twig are enabled. To disable it, add the following configuration:
 
 ```yaml
 # config/packages/purgatory.yaml
 purgatory:
-    profiler_integration: true
+    profiler_integration: false
 ```
 
 Additionally, you can use the `purgatory:debug` command to display information about all configured purge subscriptions.

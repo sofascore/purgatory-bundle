@@ -23,13 +23,22 @@ final class RegisterExpressionLanguageProvidersCompilerPass implements CompilerP
 
         $functionReferences = [];
         $usedFunctionNames = [];
-        /** @var list<array{function: string, method: string}> $attributes */
+        /** @var list<array{function: string, method?: string}> $attributes */
         foreach ($container->findTaggedServiceIds('purgatory.expression_language_function', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
-                ['function' => $function, 'method' => $method] = $attribute;
+                $function = $attribute['function'];
+                $method = $attribute['method'] ?? '__invoke';
 
                 if (isset($usedFunctionNames[$function])) {
                     throw new RuntimeException(\sprintf('The function name "%s" is already used by "%s".', $function, $usedFunctionNames[$function]));
+                }
+
+                if (null !== ($class = $container->getDefinition($id)->getClass())
+                    && ($reflectionClass = $container->getReflectionClass($class, false))
+                    && !$reflectionClass->hasMethod('__call')
+                    && (!$reflectionClass->hasMethod($method) || !$reflectionClass->getMethod($method)->isPublic())
+                ) {
+                    throw new RuntimeException(\sprintf('Invalid expression language function, the method "%s::%s()" does not exist or is not public.', $reflectionClass->name, $method));
                 }
 
                 $functionReferences[$function] = (new Definition(\Closure::class, [[new Reference($id), $method]]))

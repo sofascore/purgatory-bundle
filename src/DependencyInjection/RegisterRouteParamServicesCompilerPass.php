@@ -17,13 +17,22 @@ final class RegisterRouteParamServicesCompilerPass implements CompilerPassInterf
     {
         $routeParamServiceRefs = [];
         $usedAliases = [];
-        /** @var list<array{alias: string, method: string}> $attributes */
+        /** @var list<array{alias: string, method?: string}> $attributes */
         foreach ($container->findTaggedServiceIds('purgatory.route_parameter_service', true) as $id => $attributes) {
             foreach ($attributes as $attribute) {
-                ['alias' => $alias, 'method' => $method] = $attribute;
+                $alias = $attribute['alias'];
+                $method = $attribute['method'] ?? '__invoke';
 
                 if (isset($usedAliases[$alias])) {
                     throw new RuntimeException(\sprintf('The alias "%s" is already used by "%s".', $alias, $usedAliases[$alias]));
+                }
+
+                if (null !== ($class = $container->getDefinition($id)->getClass())
+                    && ($reflectionClass = $container->getReflectionClass($class, false))
+                    && !$reflectionClass->hasMethod('__call')
+                    && (!$reflectionClass->hasMethod($method) || !$reflectionClass->getMethod($method)->isPublic())
+                ) {
+                    throw new RuntimeException(\sprintf('Invalid route parameter service, the method "%s::%s()" does not exist or is not public.', $reflectionClass->name, $method));
                 }
 
                 $routeParamServiceRefs[$alias] = (new Definition(\Closure::class, [[new Reference($id), $method]]))

@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DependencyInjection\RegisterExpressionLanguageProvidersCompilerPass;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\PurgatoryBundle;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyExpressionLanguageFunction;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInvalidExpressionLanguageFunction;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyMagicCallService;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyNonPublicMethodService;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -37,19 +42,24 @@ final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
 
     public function testProcess(): void
     {
-        $this->container->register(id: 'foo', class: \stdClass::class)
+        $this->container->register(id: 'foo', class: DummyExpressionLanguageFunction::class)
             ->addTag(
                 name: 'purgatory.expression_language_function',
                 attributes: ['function' => 'one', 'method' => '__invoke'],
             )
             ->addTag(
                 name: 'purgatory.expression_language_function',
-                attributes: ['function' => 'two', 'method' => 'someMethod'],
+                attributes: ['function' => 'two', 'method' => 'foo'],
             );
-        $this->container->register(id: 'bar', class: \stdClass::class)
+        $this->container->register(id: 'bar', class: DummyExpressionLanguageFunction::class)
             ->addTag(
                 name: 'purgatory.expression_language_function',
-                attributes: ['function' => 'three', 'method' => 'anotherMethod'],
+                attributes: ['function' => 'three', 'method' => 'foo'],
+            );
+        $this->container->register(id: 'baz', class: DummyExpressionLanguageFunction::class)
+            ->addTag(
+                name: 'purgatory.expression_language_function',
+                attributes: ['function' => 'four'],
             );
 
         $this->container->register(id: 'other_provider', class: \stdClass::class)
@@ -83,7 +93,7 @@ final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
         /** @var Definition $serviceDefinition */
         $serviceDefinition = $argument['two']->getValues()[0];
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
-        self::assertEquals([[new Reference('foo'), 'someMethod']], $serviceDefinition->getArguments());
+        self::assertEquals([[new Reference('foo'), 'foo']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
         self::assertArrayHasKey('three', $argument);
@@ -91,7 +101,15 @@ final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
         /** @var Definition $serviceDefinition */
         $serviceDefinition = $argument['three']->getValues()[0];
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
-        self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
+        self::assertEquals([[new Reference('bar'), 'foo']], $serviceDefinition->getArguments());
+        self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
+
+        self::assertArrayHasKey('four', $argument);
+        self::assertInstanceOf(ServiceClosureArgument::class, $argument['four']);
+        /** @var Definition $serviceDefinition */
+        $serviceDefinition = $argument['four']->getValues()[0];
+        self::assertSame(\Closure::class, $serviceDefinition->getClass());
+        self::assertEquals([[new Reference('baz'), '__invoke']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
         $definition = $this->container->getDefinition('sofascore.purgatory.expression_language');
@@ -125,11 +143,11 @@ final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
 
     public function testExceptionIsThrownWhenSameFunctionNameIsUsedMultipleTimes(): void
     {
-        $this->container->register(id: 'foo', class: \stdClass::class)->addTag(
+        $this->container->register(id: 'foo', class: DummyExpressionLanguageFunction::class)->addTag(
             name: 'purgatory.expression_language_function',
             attributes: ['function' => 'one', 'method' => '__invoke'],
         );
-        $this->container->register(id: 'bar', class: \stdClass::class)->addTag(
+        $this->container->register(id: 'bar', class: DummyExpressionLanguageFunction::class)->addTag(
             name: 'purgatory.expression_language_function',
             attributes: ['function' => 'one', 'method' => '__invoke'],
         );
@@ -140,5 +158,36 @@ final class RegisterExpressionLanguageProvidersCompilerPassTest extends TestCase
         $this->expectExceptionMessage('The function name "one" is already used by "foo::__invoke".');
 
         $compilerPass->process($this->container);
+    }
+
+    #[TestWith([DummyExpressionLanguageFunction::class, 'bar'])]
+    #[TestWith([DummyInvalidExpressionLanguageFunction::class, null])]
+    #[TestWith([DummyNonPublicMethodService::class, 'foo'])]
+    public function testExceptionIsThrownWhenMethodDoesNotExistOrIsNotPublic(string $class, ?string $method): void
+    {
+        $this->container->register(id: 'foo', class: $class)->addTag(
+            name: 'purgatory.expression_language_function',
+            attributes: ['function' => 'one'] + (null !== $method ? ['method' => $method] : []),
+        );
+
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(\sprintf('Invalid expression language function, the method "%s::%s()" does not exist or is not public.', $class, $method ?? '__invoke'));
+
+        $compilerPass->process($this->container);
+    }
+
+    public function testMethodHandledByMagicCallIsAllowed(): void
+    {
+        $this->container->register(id: 'foo', class: DummyMagicCallService::class)->addTag(
+            name: 'purgatory.expression_language_function',
+            attributes: ['function' => 'one', 'method' => 'bar'],
+        );
+
+        $compilerPass = new RegisterExpressionLanguageProvidersCompilerPass();
+        $compilerPass->process($this->container);
+
+        self::assertTrue($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
     }
 }

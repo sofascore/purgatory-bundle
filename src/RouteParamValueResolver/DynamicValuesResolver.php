@@ -49,7 +49,7 @@ final class DynamicValuesResolver implements ValuesResolverInterface
                 $routeParamProvider = $this->routeParamServiceLocator->get($provider);
             } catch (ServiceNotFoundException $e) {
                 throw new RuntimeException(\sprintf(
-                    'A route parameter resolver service with the alias "%s" was not found. Did you forget to use the #[AsPurgatoryResolver] attribute on your service?',
+                    'A route parameter resolver service with the alias "%s" was not found. Did you forget to use the #[AsRouteParamService] attribute on your service?',
                     $provider,
                 ), previous: $e);
             }
