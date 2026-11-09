@@ -10,6 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - `context` option on purge subscriptions to tell purgers how to process the purges they trigger by @petarf-sofascore
+  in https://github.com/sofascore/purgatory-bundle/pull/176
 
 ## [2.0.3] - 2026-11-10
 
