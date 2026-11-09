@@ -55,6 +55,10 @@ final class ConfigurationLoader implements ConfigurationLoaderInterface
                 $config['actions'] = $subscription->actions;
             }
 
+            if ([] !== $subscription->context) {
+                $config['context'] = $subscription->context;
+            }
+
             $configuration[$key][] = $config;
         }
 

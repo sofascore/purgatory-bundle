@@ -13,6 +13,7 @@ use Sofascore\PurgatoryBundle\Listener\Enum\Action;
  *     if?: string|array<mixed>,
  *     inversePropertyPath?: string,
  *     actions?: non-empty-list<Action>,
+ *     context?: non-empty-array<array-key, mixed>,
  * }>
  */
 final class Subscriptions implements \IteratorAggregate, \Countable
@@ -25,6 +26,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }> $subscriptions
      */
     public function __construct(
@@ -58,6 +60,7 @@ final class Subscriptions implements \IteratorAggregate, \Countable
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>
      */
     public function toArray(): array

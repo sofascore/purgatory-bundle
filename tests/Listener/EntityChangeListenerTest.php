@@ -67,6 +67,37 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
         self::assertUrlIsPurged('http://example.test/foo');
     }
 
+    public function testContextsOfEverySubscriptionBehindAUrlAreKept(): void
+    {
+        $throttled = new PurgeRoute('route_foo', [], ['throttle' => 8]);
+        $immediate = new PurgeRoute('route_foo', [], []);
+
+        $routeProvider = self::createStub(RouteProviderInterface::class);
+        $routeProvider->method('supports')->willReturn(true);
+        // The same URL from three subscriptions, two of them with the same context.
+        $routeProvider->method('provideRoutesFor')->willReturn([$throttled, $immediate, new PurgeRoute('route_foo', [], ['throttle' => 8])]);
+        $urlGenerator = self::createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('http://localhost/foo');
+        $purger = $this->createMock(PurgerInterface::class);
+        $purger->expects(self::once())
+            ->method('purge')
+            ->with([new PurgeRequest('http://localhost/foo', $throttled, [['throttle' => 8], []])]);
+        $unitOfWork = self::createStub(UnitOfWork::class);
+        $unitOfWork->method('getEntityChangeSet')->willReturn([]);
+        $entityManager = self::createStub(EntityManagerInterface::class);
+        $entityManager->method('getUnitOfWork')->willReturn($unitOfWork);
+
+        $entityChangeListener = new EntityChangeListener(
+            [$routeProvider],
+            $urlGenerator,
+            $purger,
+            new EntityChangePurgeSwitcher(),
+        );
+
+        $entityChangeListener->postPersist(new PostPersistEventArgs(new \stdClass(), $entityManager));
+        $entityChangeListener->process();
+    }
+
     public function testUrlsAreNotPurgedOnFlushWhenInTransaction(): void
     {
         self::initializeApplication(['test_case' => 'EntityChangeListener', 'config' => 'no_middleware.yaml']);

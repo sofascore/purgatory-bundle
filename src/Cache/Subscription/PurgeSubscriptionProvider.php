@@ -94,6 +94,7 @@ final class PurgeSubscriptionProvider implements PurgeSubscriptionProviderInterf
                     route: $routeMetadata->route,
                     actions: $purgeOn->actions,
                     if: $purgeOn->if,
+                    context: $purgeOn->context,
                 );
 
                 continue;

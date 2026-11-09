@@ -212,6 +212,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>>
      */
     private function findSubscriptions(string $subscription, bool $withProperties): array
@@ -236,6 +237,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>>
      */
     private function findSubscriptionsForRoute(string $routeName): array
@@ -258,6 +260,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>> $configuration
      */
     private function display(SymfonyStyle $io, array $configuration): void
@@ -283,17 +286,20 @@ final class DebugCommand extends Command
                     }
                 }
 
-                $io->table(
-                    ['Option', 'Value'],
-                    [
-                        ['Entity', $entity[0]],
-                        ['Property', $entity[1] ?? 'ANY'],
-                        ['Route Name', $subscription['routeName']],
-                        ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
-                        ['Condition', $if],
-                        ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
-                    ],
-                );
+                $rows = [
+                    ['Entity', $entity[0]],
+                    ['Property', $entity[1] ?? 'ANY'],
+                    ['Route Name', $subscription['routeName']],
+                    ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
+                    ['Condition', $if],
+                    ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
+                ];
+
+                if (isset($subscription['context'])) {
+                    $rows[] = ['Context', json_encode($subscription['context'], \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR)];
+                }
+
+                $io->table(['Option', 'Value'], $rows);
             }
         }
     }

@@ -55,6 +55,7 @@ final class EmbeddableResolver implements SubscriptionResolverInterface
                 route: $routeMetadata->route,
                 actions: $routeMetadata->purgeOn->actions,
                 if: $routeMetadata->purgeOn->if,
+                context: $routeMetadata->purgeOn->context,
             );
         }
 

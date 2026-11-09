@@ -59,6 +59,14 @@ post_details:
     class: App\Entity\Post
     actions: update
 
+# Passing context to the purger
+post_details:
+    class: App\Entity\Comment
+    route_params:
+        post_id: post.id
+    context:
+        throttle: 8
+
 # Complex route parameters
 posts_list:
     class: App\Entity\Post

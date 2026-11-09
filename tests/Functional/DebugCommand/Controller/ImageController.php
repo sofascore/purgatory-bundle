@@ -21,6 +21,7 @@ class ImageController
             'name' => new DynamicValues([self::class, 'getNames']),
         ],
         if: [self::class, 'hasPath'],
+        context: ['throttle' => 8, 'reasons' => ['upload']],
     )]
     public function show(): void
     {

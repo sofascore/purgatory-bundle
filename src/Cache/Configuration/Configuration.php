@@ -15,6 +15,7 @@ final class Configuration implements \Countable
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>> $configuration
      */
     public function __construct(
@@ -60,6 +61,7 @@ final class Configuration implements \Countable
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>>
      */
     public function toArray(): array

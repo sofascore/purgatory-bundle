@@ -38,6 +38,7 @@ final class PurgeOnTest extends TestCase
     #[TestWith(['actions', 'create', [Action::Create]])]
     #[TestWith(['actions', ['create', 'update'], [Action::Create, Action::Update]])]
     #[TestWith(['actions', null, null])]
+    #[TestWith(['context', ['throttle' => 8, 'reasons' => ['comment', null, 1.5, true]], ['throttle' => 8, 'reasons' => ['comment', null, 1.5, true]]])]
     public function testValueNormalization(string $property, mixed $value, mixed $expectedValue): void
     {
         $purgeOn = new PurgeOn(
@@ -46,6 +47,19 @@ final class PurgeOnTest extends TestCase
         );
 
         self::assertEquals($expectedValue, $purgeOn->$property);
+    }
+
+    public function testContextDefaultsToEmpty(): void
+    {
+        self::assertSame([], (new PurgeOn(\stdClass::class))->context);
+    }
+
+    public function testContextWithObjectIsRejected(): void
+    {
+        $this->expectException(\ValueError::class);
+        $this->expectExceptionMessage('The context may only contain scalars, nulls and arrays, got "stdClass".');
+
+        new PurgeOn(\stdClass::class, context: ['nested' => ['value' => new \stdClass()]]);
     }
 
     #[RequiresFunction('deepclone_to_array')]

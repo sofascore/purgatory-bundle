@@ -156,6 +156,30 @@ final class YamlMetadataProviderTest extends TestCase
         self::assertSame([DummyClass::class, 'isValid'], $metadata[1]->purgeOn->if);
     }
 
+    public function testRouteMetadataWithContext(): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/purge_on_with_context.yaml',
+            ],
+        );
+
+        /** @var RouteMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertCount(2, $metadata);
+        self::assertSame(['throttle' => 8, 'reasons' => ['comment', 'rating']], $metadata[0]->purgeOn->context);
+        self::assertSame([], $metadata[1]->purgeOn->context);
+    }
+
     public function testMultipleRouteMetadata(): void
     {
         $collection = new RouteCollection();
@@ -262,6 +286,28 @@ final class YamlMetadataProviderTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Route "foo_bar" contains unsupported keys "one", "two", supported ones are');
+
+        [...$provider->provide()];
+    }
+
+    public function testExceptionIsThrownForNonArrayContext(): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/purge_on_with_invalid_context.yaml',
+            ],
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Route "foo_bar" has a "context" of type "int", expected a mapping or a list.');
 
         [...$provider->provide()];
     }

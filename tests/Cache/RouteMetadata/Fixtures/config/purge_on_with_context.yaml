@@ -1,0 +1,6 @@
+foo_bar:
+    -   class: Foo
+        context:
+            throttle: 8
+            reasons: [ comment, rating ]
+    -   class: Foo

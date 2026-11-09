@@ -503,6 +503,7 @@ final class ConfigurationTest extends AbstractKernelTestCase
                         'values' => ['id'],
                     ],
                 ],
+                'context' => ['reason' => 'engines'],
             ],
         ];
 

@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Application;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\RequiresMethod;
+use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Test\InteractsWithPurgatory;
 use Sofascore\PurgatoryBundle\Tests\Functional\AbstractKernelTestCase;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\AnimalController;
@@ -673,6 +674,27 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->remove($person);
         $this->entityManager->flush();
         self::assertUrlIsPurged('/person/all-ids');
+    }
+
+    /**
+     * @see VehicleController::numberOfEnginesAction
+     */
+    public function testContextReachesThePurger(): void
+    {
+        $plane = new Plane();
+        $plane->name = 'Weeee';
+        $plane->numberOfEngines = 6;
+        $this->entityManager->persist($plane);
+        $this->entityManager->flush();
+
+        $purgeRequests = array_values(array_filter(
+            self::getPurger()->getPurgedRequests(),
+            static fn (PurgeRequest $purgeRequest): bool => str_ends_with($purgeRequest->url, '/vehicle/'.$plane->id.'/number-of-engines'),
+        ));
+
+        self::assertCount(1, $purgeRequests);
+        self::assertSame(['reason' => 'engines'], $purgeRequests[0]->route->context);
+        self::assertSame([['reason' => 'engines']], $purgeRequests[0]->contexts);
     }
 
     /**

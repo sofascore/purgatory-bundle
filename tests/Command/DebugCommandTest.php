@@ -308,6 +308,26 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
+    public function testContextIsRenderedOnlyWhenSet(): void
+    {
+        $this->command->execute([
+            '--route' => 'image_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: 'Context        {"throttle":8,"reasons":["upload"]}'.\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+
+        $this->command->execute([
+            '--route' => 'image_list_by_writer',
+        ]);
+
+        self::assertStringNotContainsString('Context', $this->command->getDisplay());
+    }
+
     private static function assertNumberOfDisplayedSubscriptions(
         CommandTester $command,
         int $expectedNumberOfSubscriptions,
