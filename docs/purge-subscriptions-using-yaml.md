@@ -52,7 +52,7 @@ post_details:
 # Limiting by action type
 post_details:
     class: App\Entity\Post
-    action: update
+    actions: update
 
 # Complex route parameters
 posts_list:

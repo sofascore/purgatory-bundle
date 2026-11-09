@@ -18,7 +18,7 @@ public function detailsAction(Author $author)
 ```
 
 If the nested object is nullable, you can use the null-safe operator (`?`) to skip generating the URL if the nested
-property is `null`:
+property is `null`. The null-safe operator requires Symfony 6.2 or later, so it is not available on Symfony 5.4:
 
 ```php
 #[Route('/author/{id<\d+>}', name: 'author_details', methods: 'GET')]
