@@ -66,6 +66,6 @@ public function purge(iterable $purgeRequests): void
 }
 ```
 
-The context ends up in the cached configuration, so it may only contain scalars, nulls and arrays.
+The context ends up in the cached configuration, so it may only contain scalars, enums, nulls and arrays.
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php

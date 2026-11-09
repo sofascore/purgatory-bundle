@@ -34,7 +34,7 @@ final class PurgeOn
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      * @param array<array-key, mixed>                                                 $context     passed as is to the purger with every
      *                                                                                             purge this subscription triggers; may only
-     *                                                                                             contain scalars, nulls and arrays
+     *                                                                                             contain scalars, enums, nulls and arrays
      */
     public function __construct(
         public readonly string $class,
@@ -72,8 +72,8 @@ final class PurgeOn
     private static function validateContext(array $context): void
     {
         array_walk_recursive($context, static function (mixed $value): void {
-            if (null !== $value && !\is_scalar($value)) {
-                throw new \ValueError(\sprintf('The context may only contain scalars, nulls and arrays, got "%s".', get_debug_type($value)));
+            if (null !== $value && !\is_scalar($value) && !$value instanceof \UnitEnum) {
+                throw new \ValueError(\sprintf('The context may only contain scalars, enums, nulls and arrays, got "%s".', get_debug_type($value)));
             }
         });
     }

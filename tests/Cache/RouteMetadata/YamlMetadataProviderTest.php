@@ -176,7 +176,7 @@ final class YamlMetadataProviderTest extends TestCase
         $metadata = [...$provider->provide()];
 
         self::assertCount(2, $metadata);
-        self::assertSame(['throttle' => 8, 'reasons' => ['comment', 'rating']], $metadata[0]->purgeOn->context);
+        self::assertSame(['throttle' => 8, 'reasons' => ['comment', 'rating'], 'action' => Action::Delete], $metadata[0]->purgeOn->context);
         self::assertSame([], $metadata[1]->purgeOn->context);
     }
 

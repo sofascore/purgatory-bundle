@@ -8,6 +8,7 @@ use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Image;
+use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Enum\LanguageCodes;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -21,7 +22,7 @@ class ImageController
             'name' => new DynamicValues([self::class, 'getNames']),
         ],
         if: [self::class, 'hasPath'],
-        context: ['throttle' => 8, 'reasons' => ['upload']],
+        context: ['throttle' => 8, 'reasons' => ['upload'], 'language' => LanguageCodes::Croatia],
     )]
     public function show(): void
     {
@@ -34,6 +35,7 @@ class ImageController
             'writer_id' => 'id',
         ],
         if: [self::class, 'hasImage'],
+        context: ['weight' => \INF],
     )]
     public function listByWriter(): void
     {

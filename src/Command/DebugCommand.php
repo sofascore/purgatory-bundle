@@ -296,7 +296,7 @@ final class DebugCommand extends Command
                 ];
 
                 if (isset($subscription['context'])) {
-                    $rows[] = ['Context', json_encode($subscription['context'], \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR)];
+                    $rows[] = ['Context', $this->formatContext($subscription['context'])];
                 }
 
                 $io->table(['Option', 'Value'], $rows);
@@ -466,6 +466,29 @@ final class DebugCommand extends Command
         }
 
         return 'Closure defined in '.$this->formatLocation($file, $line);
+    }
+
+    /**
+     * Compact JSON with enums written as `Class::Case`, or `var_export` on one line for what JSON cannot
+     * hold, such as INF, NAN or invalid UTF-8.
+     *
+     * @param array<array-key, mixed> $context
+     */
+    private function formatContext(array $context): string
+    {
+        array_walk_recursive($context, static function (mixed &$value): void {
+            if ($value instanceof \UnitEnum) {
+                $value = $value::class.'::'.$value->name;
+            }
+        });
+
+        try {
+            return json_encode($context, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE | \JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            $export = var_export($context, true);
+
+            return preg_replace('/\n\s*/', ' ', $export) ?? $export;
+        }
     }
 
     /**

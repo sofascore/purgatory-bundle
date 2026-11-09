@@ -308,7 +308,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
-    public function testContextIsRenderedOnlyWhenSet(): void
+    public function testContextIsRenderedAsJsonWithEnumsAsCases(): void
     {
         $this->command->execute([
             '--route' => 'image_show',
@@ -317,13 +317,32 @@ final class DebugCommandTest extends AbstractKernelTestCase
         $this->command->assertCommandIsSuccessful();
 
         self::assertStringContainsString(
-            needle: 'Context        {"throttle":8,"reasons":["upload"]}'.\PHP_EOL,
+            needle: 'Context        {"throttle":8,"reasons":["upload"],"language":'.json_encode(LanguageCodes::class.'::Croatia').'}'.\PHP_EOL,
             haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
         );
+    }
 
+    public function testContextThatJsonCannotHoldIsRenderedWithVarExport(): void
+    {
         $this->command->execute([
             '--route' => 'image_list_by_writer',
         ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: "Context        array ( 'weight' => INF, )".\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
+
+    public function testContextIsNotRenderedWhenNotSet(): void
+    {
+        $this->command->execute([
+            '--route' => 'post_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
 
         self::assertStringNotContainsString('Context', $this->command->getDisplay());
     }
