@@ -11,6 +11,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - An invalid value in a YAML purge subscription, such as an unknown `actions` value, now throws an
   `InvalidArgumentException` naming the route instead of a bare `ValueError` by @petarf-sofascore
+  in https://github.com/sofascore/purgatory-bundle/pull/179
 
 ### Fixed
 
