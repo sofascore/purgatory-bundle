@@ -27,4 +27,16 @@ final class PurgeRequest
     ) {
         $this->contexts = $contexts ?? [$route->context];
     }
+
+    /**
+     * A request serialized before `contexts` existed, e.g. in a queued purge message, has no value for it.
+     *
+     * @param array{url: string, route: PurgeRoute, contexts?: non-empty-list<array<array-key, mixed>>} $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->url = $data['url'];
+        $this->route = $data['route'];
+        $this->contexts = $data['contexts'] ?? [$this->route->context];
+    }
 }
