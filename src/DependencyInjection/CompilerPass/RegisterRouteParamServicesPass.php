@@ -30,9 +30,10 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
 
                 if (null !== ($class = $container->getDefinition($id)->getClass())
                     && ($reflectionClass = $container->getReflectionClass($class, false))
-                    && !$reflectionClass->hasMethod($method)
+                    && !$reflectionClass->hasMethod('__call')
+                    && (!$reflectionClass->hasMethod($method) || !$reflectionClass->getMethod($method)->isPublic())
                 ) {
-                    throw new RuntimeException(\sprintf('Invalid route parameter service, the method "%s::%s()" does not exist.', $reflectionClass->name, $method));
+                    throw new RuntimeException(\sprintf('Invalid route parameter service, the method "%s::%s()" does not exist or is not public.', $reflectionClass->name, $method));
                 }
 
                 $routeParamServiceRefs[$alias] = (new Definition(\Closure::class, [[new Reference($id), $method]]))

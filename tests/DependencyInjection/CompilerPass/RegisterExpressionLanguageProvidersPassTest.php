@@ -12,6 +12,8 @@ use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyExpressionLanguageFunction;
 use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInvalidExpressionLanguageFunction;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyMagicCallService;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyNonPublicMethodService;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -166,7 +168,8 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
 
     #[TestWith([DummyExpressionLanguageFunction::class, 'bar'])]
     #[TestWith([DummyInvalidExpressionLanguageFunction::class, null])]
-    public function testExceptionIsThrownWhenMethodDoesNotExist(string $class, ?string $method): void
+    #[TestWith([DummyNonPublicMethodService::class, 'foo'])]
+    public function testExceptionIsThrownWhenMethodDoesNotExistOrIsNotPublic(string $class, ?string $method): void
     {
         $this->container->register(id: 'foo', class: $class)->addTag(
             name: 'purgatory.expression_language_function',
@@ -176,8 +179,21 @@ final class RegisterExpressionLanguageProvidersPassTest extends TestCase
         $compilerPass = new RegisterExpressionLanguageProvidersPass();
 
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage(\sprintf('Invalid expression language function, the method "%s::%s()" does not exist.', $class, $method ?? '__invoke'));
+        $this->expectExceptionMessage(\sprintf('Invalid expression language function, the method "%s::%s()" does not exist or is not public.', $class, $method ?? '__invoke'));
 
         $compilerPass->process($this->container);
+    }
+
+    public function testMethodHandledByMagicCallIsAllowed(): void
+    {
+        $this->container->register(id: 'foo', class: DummyMagicCallService::class)->addTag(
+            name: 'purgatory.expression_language_function',
+            attributes: ['function' => 'one', 'method' => 'bar'],
+        );
+
+        $compilerPass = new RegisterExpressionLanguageProvidersPass();
+        $compilerPass->process($this->container);
+
+        self::assertTrue($this->container->hasDefinition('sofascore.purgatory.expression_language_provider'));
     }
 }
