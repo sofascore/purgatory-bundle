@@ -28,6 +28,13 @@ final class RegisterRouteParamServicesPass implements CompilerPassInterface
                     throw new RuntimeException(\sprintf('The alias "%s" is already used by "%s".', $alias, $usedAliases[$alias]));
                 }
 
+                if (null !== ($class = $container->getDefinition($id)->getClass())
+                    && ($reflectionClass = $container->getReflectionClass($class, false))
+                    && !$reflectionClass->hasMethod($method)
+                ) {
+                    throw new RuntimeException(\sprintf('Invalid route parameter service, the method "%s::%s()" does not exist.', $reflectionClass->name, $method));
+                }
+
                 $routeParamServiceRefs[$alias] = (new Definition(\Closure::class, [[new Reference($id), $method]]))
                     ->setFactory([\Closure::class, 'fromCallable']);
 

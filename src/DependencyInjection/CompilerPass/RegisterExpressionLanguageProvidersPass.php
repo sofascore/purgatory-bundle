@@ -34,6 +34,13 @@ final class RegisterExpressionLanguageProvidersPass implements CompilerPassInter
                     throw new RuntimeException(\sprintf('The function name "%s" is already used by "%s".', $function, $usedFunctionNames[$function]));
                 }
 
+                if (null !== ($class = $container->getDefinition($id)->getClass())
+                    && ($reflectionClass = $container->getReflectionClass($class, false))
+                    && !$reflectionClass->hasMethod($method)
+                ) {
+                    throw new RuntimeException(\sprintf('Invalid expression language function, the method "%s::%s()" does not exist.', $reflectionClass->name, $method));
+                }
+
                 $functionReferences[$function] = (new Definition(\Closure::class, [[new Reference($id), $method]]))
                     ->setFactory([\Closure::class, 'fromCallable']);
 

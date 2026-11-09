@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Tests\DependencyInjection\CompilerPass;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DependencyInjection\CompilerPass\RegisterRouteParamServicesPass;
 use Sofascore\PurgatoryBundle\DependencyInjection\PurgatoryExtension;
 use Sofascore\PurgatoryBundle\Exception\RuntimeException;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyInvalidRouteParamService;
+use Sofascore\PurgatoryBundle\Tests\DependencyInjection\Fixtures\DummyRouteParamService;
 use Symfony\Component\DependencyInjection\Argument\ServiceClosureArgument;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -35,21 +38,21 @@ final class RegisterRouteParamServicesPassTest extends TestCase
 
     public function testProcess(): void
     {
-        $this->container->register(id: 'foo', class: \stdClass::class)
+        $this->container->register(id: 'foo', class: DummyRouteParamService::class)
             ->addTag(
                 name: 'purgatory.route_parameter_service',
                 attributes: ['alias' => 'one', 'method' => '__invoke'],
             )
             ->addTag(
                 name: 'purgatory.route_parameter_service',
-                attributes: ['alias' => 'two', 'method' => 'someMethod'],
+                attributes: ['alias' => 'two', 'method' => 'foo'],
             );
-        $this->container->register(id: 'bar', class: \stdClass::class)
+        $this->container->register(id: 'bar', class: DummyRouteParamService::class)
             ->addTag(
                 name: 'purgatory.route_parameter_service',
-                attributes: ['alias' => 'three', 'method' => 'anotherMethod'],
+                attributes: ['alias' => 'three', 'method' => 'foo'],
             );
-        $this->container->register(id: 'baz', class: \stdClass::class)
+        $this->container->register(id: 'baz', class: DummyRouteParamService::class)
             ->addTag(
                 name: 'purgatory.route_parameter_service',
                 attributes: ['alias' => 'four'],
@@ -87,7 +90,7 @@ final class RegisterRouteParamServicesPassTest extends TestCase
             ? $argument['two']->getValues()[0]
             : $this->container->getDefinition((string) $argument['two']->getValues()[0]);
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
-        self::assertEquals([[new Reference('foo'), 'someMethod']], $serviceDefinition->getArguments());
+        self::assertEquals([[new Reference('foo'), 'foo']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
         self::assertArrayHasKey('three', $argument);
@@ -97,7 +100,7 @@ final class RegisterRouteParamServicesPassTest extends TestCase
             ? $argument['three']->getValues()[0]
             : $this->container->getDefinition((string) $argument['three']->getValues()[0]);
         self::assertSame(\Closure::class, $serviceDefinition->getClass());
-        self::assertEquals([[new Reference('bar'), 'anotherMethod']], $serviceDefinition->getArguments());
+        self::assertEquals([[new Reference('bar'), 'foo']], $serviceDefinition->getArguments());
         self::assertSame([\Closure::class, 'fromCallable'], $serviceDefinition->getFactory());
 
         self::assertArrayHasKey('four', $argument);
@@ -121,11 +124,11 @@ final class RegisterRouteParamServicesPassTest extends TestCase
 
     public function testExceptionIsThrownWhenSameAliasIsUsedMultipleTimes(): void
     {
-        $this->container->register(id: 'foo', class: \stdClass::class)->addTag(
+        $this->container->register(id: 'foo', class: DummyRouteParamService::class)->addTag(
             name: 'purgatory.route_parameter_service',
             attributes: ['alias' => 'one', 'method' => '__invoke'],
         );
-        $this->container->register(id: 'bar', class: \stdClass::class)->addTag(
+        $this->container->register(id: 'bar', class: DummyRouteParamService::class)->addTag(
             name: 'purgatory.route_parameter_service',
             attributes: ['alias' => 'one', 'method' => '__invoke'],
         );
@@ -134,6 +137,23 @@ final class RegisterRouteParamServicesPassTest extends TestCase
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('The alias "one" is already used by "foo::__invoke".');
+
+        $compilerPass->process($this->container);
+    }
+
+    #[TestWith([DummyRouteParamService::class, 'bar'])]
+    #[TestWith([DummyInvalidRouteParamService::class, null])]
+    public function testExceptionIsThrownWhenMethodDoesNotExist(string $class, ?string $method): void
+    {
+        $this->container->register(id: 'foo', class: $class)->addTag(
+            name: 'purgatory.route_parameter_service',
+            attributes: ['alias' => 'one'] + (null !== $method ? ['method' => $method] : []),
+        );
+
+        $compilerPass = new RegisterRouteParamServicesPass();
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage(\sprintf('Invalid route parameter service, the method "%s::%s()" does not exist.', $class, $method ?? '__invoke'));
 
         $compilerPass->process($this->container);
     }
