@@ -66,6 +66,9 @@ public function purge(iterable $purgeRequests): void
 }
 ```
 
+Read `$purgeRequest->contexts` rather than `$purgeRequest->route->context`. When several subscriptions lead to the
+same URL, the request keeps the route of the first one, so its context is only one of them.
+
 The context ends up in the cached configuration, so it may only contain scalars, enums, nulls and arrays.
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
