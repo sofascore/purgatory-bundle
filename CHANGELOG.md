@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.3] - 2026-11-10
 
 ### Fixed
 
@@ -97,6 +97,15 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `PurgatoryExtension` and `Configuration` from the `DependencyInjection` namespace, the bundle now extends
   `AbstractBundle` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/151
 
+## [1.6.2] - 2026-11-10
+
+### Fixed
+
+- Fix manually tagged route parameter services and Expression Language functions requiring a `method` attribute and only
+  failing at runtime when the method doesn't exist by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/178
+- Fix an invalid value in a YAML purge subscription, such as an unknown `actions` value, throwing a bare `ValueError`
+  that doesn't name the route by @petarf-sofascore in https://github.com/sofascore/purgatory-bundle/pull/179
+
 ## [1.6.1] - 2026-10-09
 
 ### Fixed
@@ -186,10 +195,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.2...2.x
+[2.0.3]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v2.0.0
+[1.6.2]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.4.0...v1.5.0
