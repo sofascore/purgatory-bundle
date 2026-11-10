@@ -133,7 +133,7 @@ final class YamlMetadataProvider implements RouteMetadataProviderInterface
 
         if (isset($purgeOn['context']) && !\is_array($purgeOn['context'])) {
             throw new InvalidArgumentException(\sprintf(
-                'Route "%s" has a "context" of type "%s", expected a mapping or a list.',
+                'Route "%s" has a "context" of type "%s", expected an array.',
                 $routeName,
                 get_debug_type($purgeOn['context']),
             ));

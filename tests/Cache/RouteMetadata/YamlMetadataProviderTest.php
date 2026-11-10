@@ -307,7 +307,7 @@ final class YamlMetadataProviderTest extends TestCase
         );
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Route "foo_bar" has a "context" of type "int", expected a mapping or a list.');
+        $this->expectExceptionMessage('Route "foo_bar" has a "context" of type "int", expected an array.');
 
         [...$provider->provide()];
     }
