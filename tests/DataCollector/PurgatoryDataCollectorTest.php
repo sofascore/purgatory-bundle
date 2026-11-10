@@ -23,7 +23,7 @@ final class PurgatoryDataCollectorTest extends TestCase
         ], 0.1);
 
         self::assertTrue($collector->hasContexts());
-        self::assertSame(['[{"throttle":8},[]]', '[[]]'], $collector->getPurges()[0]['contexts'] ?? null);
+        self::assertSame(['[{"throttle":8},[]]', ''], $collector->getPurges()[0]['contexts'] ?? null);
     }
 
     public function testNoContextsWhenEverySubscriptionHasNone(): void
@@ -43,6 +43,7 @@ final class PurgatoryDataCollectorTest extends TestCase
         $collector->collectPurgeRequests([
             new PurgeRequest('http://localhost/foo', new PurgeRoute('foo', [], ['throttle' => 8])),
         ], 0.1);
+        self::assertTrue($collector->hasContexts());
 
         $collector->reset();
 
