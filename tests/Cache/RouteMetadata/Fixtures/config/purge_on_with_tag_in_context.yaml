@@ -1,0 +1,4 @@
+foo_bar:
+    class: Foo
+    context:
+        group: !for_groups common

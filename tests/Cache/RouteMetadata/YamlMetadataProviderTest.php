@@ -335,6 +335,28 @@ final class YamlMetadataProviderTest extends TestCase
         [...$provider->provide()];
     }
 
+    public function testExceptionIsThrownForTagInContext(): void
+    {
+        $collection = new RouteCollection();
+        $collection->add(name: 'foo_bar', route: new Route(path: '/foo/bar'));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new YamlMetadataProvider(
+            router: $router,
+            files: [
+                __DIR__.'/Fixtures/config/purge_on_with_tag_in_context.yaml',
+            ],
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Route "foo_bar" has an invalid purge subscription: The context may only contain scalars, enums, nulls and arrays, got "Symfony\Component\Yaml\Tag\TaggedValue".');
+
+        [...$provider->provide()];
+    }
+
     public function testExceptionIsThrownForInvalidRoute(): void
     {
         $router = self::createStub(RouterInterface::class);

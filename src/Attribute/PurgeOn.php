@@ -65,8 +65,6 @@ final class PurgeOn
     }
 
     /**
-     * The context is stored in the cached configuration, which is exported as plain PHP.
-     *
      * @param array<array-key, mixed> $context
      */
     private static function validateContext(array $context): void
