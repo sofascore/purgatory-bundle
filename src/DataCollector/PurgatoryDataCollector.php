@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\DataCollector;
 
-use Sofascore\PurgatoryBundle\Purger\ContextFormatter;
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +24,7 @@ final class PurgatoryDataCollector extends DataCollector
     public function __construct(
         private readonly string $purgerName,
         private readonly ?string $asyncTransport,
+        private readonly ContextFormatter $contextFormatter,
     ) {
         $this->initData();
     }
@@ -44,7 +45,7 @@ final class PurgatoryDataCollector extends DataCollector
     {
         $contexts = [];
         foreach ($purgeRequests as $purgeRequest) {
-            $contexts[] = [] !== array_filter($purgeRequest->contexts) ? ContextFormatter::format($purgeRequest->contexts) : '';
+            $contexts[] = [] !== array_filter($purgeRequest->contexts) ? $this->contextFormatter->format($purgeRequest->contexts) : '';
         }
 
         $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time, 'contexts' => $contexts];

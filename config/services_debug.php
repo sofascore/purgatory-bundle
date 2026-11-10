@@ -21,6 +21,7 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 param('.sofascore.purgatory.purger.name'),
                 param('.sofascore.purgatory.purger.async_transport'),
+                service('sofascore.purgatory.context_formatter'),
             ])
 
         ->set('sofascore.purgatory.purger.traceable', TraceablePurger::class)

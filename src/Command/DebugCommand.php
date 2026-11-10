@@ -10,8 +10,8 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
-use Sofascore\PurgatoryBundle\Purger\ContextFormatter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Formatter\OutputFormatter;
@@ -35,6 +35,7 @@ final class DebugCommand extends Command
         private readonly ManagerRegistry $managerRegistry,
         private readonly ?FileLinkFormatter $fileLinkFormatter = null,
         private readonly ?string $projectDir = null,
+        private readonly ContextFormatter $contextFormatter = new ContextFormatter(),
     ) {
         parent::__construct();
     }
@@ -297,7 +298,7 @@ final class DebugCommand extends Command
                 ];
 
                 if (isset($subscription['context'])) {
-                    $rows[] = ['Context', ContextFormatter::format($subscription['context'])];
+                    $rows[] = ['Context', $this->contextFormatter->format($subscription['context'])];
                 }
 
                 $io->table(['Option', 'Value'], $rows);

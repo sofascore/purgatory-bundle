@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\Purger;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\Purger\PurgerInterface;
 use Sofascore\PurgatoryBundle\Purger\TraceablePurger;
@@ -41,7 +42,7 @@ final class TraceablePurgerTest extends TestCase
                 );
             });
 
-        $purger = new TraceablePurger($innerPurger, $dataCollector = new PurgatoryDataCollector('symfony', 'foo'));
+        $purger = new TraceablePurger($innerPurger, $dataCollector = new PurgatoryDataCollector('symfony', 'foo', new ContextFormatter()));
 
         $purger->purge($array);
         $purger->purge($generator);
@@ -97,7 +98,7 @@ final class TraceablePurgerTest extends TestCase
                 );
             });
 
-        $purger = new TraceablePurger($innerPurger, $dataCollector = new PurgatoryDataCollector('symfony', 'foo'));
+        $purger = new TraceablePurger($innerPurger, $dataCollector = new PurgatoryDataCollector('symfony', 'foo', new ContextFormatter()));
 
         $purger->purge($generator);
 

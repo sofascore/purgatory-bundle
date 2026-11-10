@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sofascore\PurgatoryBundle\Purger;
+namespace Sofascore\PurgatoryBundle\Debug;
 
 /**
  * @internal Shared by `purgatory:debug` and the profiler
@@ -15,7 +15,7 @@ final class ContextFormatter
      *
      * @param array<array-key, mixed> $context
      */
-    public static function format(array $context): string
+    public function format(array $context): string
     {
         array_walk_recursive($context, static function (mixed &$value): void {
             if ($value instanceof \UnitEnum) {

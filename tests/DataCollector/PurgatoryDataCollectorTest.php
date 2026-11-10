@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Tests\DataCollector;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Sofascore\PurgatoryBundle\DataCollector\PurgatoryDataCollector;
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 
@@ -15,7 +16,7 @@ final class PurgatoryDataCollectorTest extends TestCase
 {
     public function testContextsAreCollectedPerRequest(): void
     {
-        $collector = new PurgatoryDataCollector('symfony', null);
+        $collector = new PurgatoryDataCollector('symfony', null, new ContextFormatter());
 
         $collector->collectPurgeRequests([
             new PurgeRequest('http://localhost/foo', new PurgeRoute('foo', [], ['throttle' => 8]), [['throttle' => 8], []]),
@@ -28,7 +29,7 @@ final class PurgatoryDataCollectorTest extends TestCase
 
     public function testNoContextsWhenEverySubscriptionHasNone(): void
     {
-        $collector = new PurgatoryDataCollector('symfony', null);
+        $collector = new PurgatoryDataCollector('symfony', null, new ContextFormatter());
 
         $collector->collectPurgeRequests([
             new PurgeRequest('http://localhost/foo', new PurgeRoute('foo', [])),
@@ -39,7 +40,7 @@ final class PurgatoryDataCollectorTest extends TestCase
 
     public function testResetClearsContexts(): void
     {
-        $collector = new PurgatoryDataCollector('symfony', null);
+        $collector = new PurgatoryDataCollector('symfony', null, new ContextFormatter());
         $collector->collectPurgeRequests([
             new PurgeRequest('http://localhost/foo', new PurgeRoute('foo', [], ['throttle' => 8])),
         ], 0.1);
@@ -56,7 +57,7 @@ final class PurgatoryDataCollectorTest extends TestCase
      */
     public function testProfileStoredBeforeContextsHasNone(): void
     {
-        $collector = new PurgatoryDataCollector('symfony', null);
+        $collector = new PurgatoryDataCollector('symfony', null, new ContextFormatter());
         $data = new \ReflectionProperty(PurgatoryDataCollector::class, 'data');
         $data->setValue($collector, [
             'purger_name' => 'symfony',
