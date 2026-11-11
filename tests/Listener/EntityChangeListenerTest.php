@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostPersistEventArgs;
 use Doctrine\ORM\UnitOfWork;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Sofascore\PurgatoryBundle\Listener\EntityChangeListener;
 use Sofascore\PurgatoryBundle\Listener\EntityChangePurgeSwitcher;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
@@ -96,6 +97,56 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
 
         $entityChangeListener->postPersist(new PostPersistEventArgs(new \stdClass(), $entityManager));
         $entityChangeListener->process();
+    }
+
+    /**
+     * @param array<array-key, mixed>                 $first
+     * @param array<array-key, mixed>                 $second
+     * @param non-empty-list<array<array-key, mixed>> $expectedContexts
+     */
+    #[DataProvider('provideContextsInADifferentOrderCases')]
+    public function testContextsInADifferentOrder(array $first, array $second, array $expectedContexts): void
+    {
+        $route = new PurgeRoute('route_foo', [], $first);
+
+        $routeProvider = self::createStub(RouteProviderInterface::class);
+        $routeProvider->method('supports')->willReturn(true);
+        $routeProvider->method('provideRoutesFor')->willReturn([$route, new PurgeRoute('route_foo', [], $second)]);
+        $urlGenerator = self::createStub(UrlGeneratorInterface::class);
+        $urlGenerator->method('generate')->willReturn('http://localhost/foo');
+        $purger = $this->createMock(PurgerInterface::class);
+        $purger->expects(self::once())
+            ->method('purge')
+            ->with([new PurgeRequest('http://localhost/foo', $route, $expectedContexts)]);
+        $unitOfWork = self::createStub(UnitOfWork::class);
+        $unitOfWork->method('getEntityChangeSet')->willReturn([]);
+        $entityManager = self::createStub(EntityManagerInterface::class);
+        $entityManager->method('getUnitOfWork')->willReturn($unitOfWork);
+
+        $entityChangeListener = new EntityChangeListener(
+            [$routeProvider],
+            $urlGenerator,
+            $purger,
+            new EntityChangePurgeSwitcher(),
+        );
+
+        $entityChangeListener->postPersist(new PostPersistEventArgs(new \stdClass(), $entityManager));
+        $entityChangeListener->process();
+    }
+
+    public static function provideContextsInADifferentOrderCases(): iterable
+    {
+        yield 'keys in a different order are the same context' => [
+            ['throttle' => 8, 'limits' => ['min' => 1, 'max' => 2]],
+            ['limits' => ['max' => 2, 'min' => 1], 'throttle' => 8],
+            [['throttle' => 8, 'limits' => ['min' => 1, 'max' => 2]]],
+        ];
+
+        yield 'lists in a different order are different contexts' => [
+            ['reasons' => ['comment', 'rating']],
+            ['reasons' => ['rating', 'comment']],
+            [['reasons' => ['comment', 'rating']], ['reasons' => ['rating', 'comment']]],
+        ];
     }
 
     public function testUrlsAreNotPurgedOnFlushWhenInTransaction(): void
