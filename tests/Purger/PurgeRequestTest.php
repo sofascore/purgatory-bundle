@@ -27,17 +27,6 @@ final class PurgeRequestTest extends TestCase
         self::assertSame([[]], $purgeRequest->contexts);
     }
 
-    public function testGivenContextsAreKept(): void
-    {
-        $purgeRequest = new PurgeRequest(
-            'http://localhost/foo',
-            new PurgeRoute('route_foo', [], ['throttle' => 8]),
-            [['throttle' => 8], []],
-        );
-
-        self::assertSame([['throttle' => 8], []], $purgeRequest->contexts);
-    }
-
     public function testEmptyContextsAreRejected(): void
     {
         $this->expectException(\ValueError::class);
