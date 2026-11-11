@@ -38,6 +38,14 @@ final class PurgeRequestTest extends TestCase
         self::assertSame([['throttle' => 8], []], $purgeRequest->contexts);
     }
 
+    public function testEmptyContextsAreRejected(): void
+    {
+        $this->expectException(\ValueError::class);
+        $this->expectExceptionMessage('The list must contain at least one context.');
+
+        new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', []), []);
+    }
+
     /**
      * A purge message queued by 2.0.x is unserialized without the constructor and without these properties.
      */

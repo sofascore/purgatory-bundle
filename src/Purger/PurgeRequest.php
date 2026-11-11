@@ -25,6 +25,10 @@ final class PurgeRequest
         public readonly PurgeRoute $route,
         ?array $contexts = null,
     ) {
+        if ([] === $contexts) {
+            throw new \ValueError('The list must contain at least one context.');
+        }
+
         $this->contexts = $contexts ?? [$route->context];
     }
 
