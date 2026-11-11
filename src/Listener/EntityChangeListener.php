@@ -102,7 +102,7 @@ final class EntityChangeListener implements ResetInterface
                         url: $url,
                         route: $route,
                     );
-                } elseif (!\in_array(self::sortKeys($route->context), array_map(self::sortKeys(...), $queued->contexts), true)) {
+                } elseif (!\in_array($route->context, $queued->contexts, true)) {
                     $this->queuedPurgeRequests[$url] = new PurgeRequest(
                         url: $url,
                         route: $queued->route,
@@ -111,23 +111,5 @@ final class EntityChangeListener implements ResetInterface
                 }
             }
         }
-    }
-
-    /**
-     * @param array<array-key, mixed> $context
-     *
-     * @return array<array-key, mixed>
-     */
-    private static function sortKeys(array $context): array
-    {
-        ksort($context, \SORT_STRING);
-
-        foreach ($context as $key => $value) {
-            if (\is_array($value)) {
-                $context[$key] = self::sortKeys($value);
-            }
-        }
-
-        return $context;
     }
 }
