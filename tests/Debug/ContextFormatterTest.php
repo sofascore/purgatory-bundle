@@ -21,13 +21,26 @@ final class ContextFormatterTest extends TestCase
     public function testEnumsAreWrittenAsCases(): void
     {
         self::assertSame(
-            json_encode(['action' => Action::class.'::Delete'], \JSON_UNESCAPED_SLASHES),
-            (new ContextFormatter())->format(['action' => Action::Delete]),
+            '{"action":'.Action::class.'::Delete,"nested":['.Action::class.'::Create]}',
+            (new ContextFormatter())->format(['action' => Action::Delete, 'nested' => [Action::Create]]),
         );
     }
 
-    public function testValuesJsonCannotHoldFallBackToVarExport(): void
+    public function testStringThatLooksLikeAnEnumStaysAString(): void
     {
-        self::assertSame("array ( 'limit' => INF, )", (new ContextFormatter())->format(['limit' => \INF]));
+        self::assertSame(
+            '{"action":'.json_encode(Action::class.'::Delete', \JSON_UNESCAPED_SLASHES).'}',
+            (new ContextFormatter())->format(['action' => Action::class.'::Delete']),
+        );
+    }
+
+    public function testFloatsKeepTheirFraction(): void
+    {
+        self::assertSame('{"weight":1.0,"count":1}', (new ContextFormatter())->format(['weight' => 1.0, 'count' => 1]));
+    }
+
+    public function testInvalidUtf8IsSubstituted(): void
+    {
+        self::assertSame("{\"name\":\"a\u{FFFD}b\"}", (new ContextFormatter())->format(['name' => "a\xFFb"]));
     }
 }

@@ -317,7 +317,7 @@ final class DebugCommandTest extends AbstractKernelTestCase
         $this->command->assertCommandIsSuccessful();
 
         self::assertStringContainsString(
-            needle: 'Context        {"throttle":8,"reasons":["upload"],"language":'.json_encode(LanguageCodes::class.'::Croatia').'}'.\PHP_EOL,
+            needle: 'Context        {"throttle":8,"reasons":["upload"],"language":'.LanguageCodes::class.'::Croatia}'.\PHP_EOL,
             haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
         );
     }
