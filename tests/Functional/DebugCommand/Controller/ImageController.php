@@ -35,7 +35,6 @@ class ImageController
             'writer_id' => 'id',
         ],
         if: [self::class, 'hasImage'],
-        context: ['weight' => \INF],
     )]
     public function listByWriter(): void
     {

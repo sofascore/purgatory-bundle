@@ -102,7 +102,7 @@ final class CachedConfigurationLoaderTest extends TestCase
         );
     }
 
-    public function testContextWithEnumsAndNonFiniteFloatsIsReadBackFromTheCache(): void
+    public function testContextWithEnumsIsReadBackFromTheCache(): void
     {
         $purgeSubscriptionProvider = self::createStub(PurgeSubscriptionProviderInterface::class);
         $purgeSubscriptionProvider->method('provide')
@@ -114,7 +114,7 @@ final class CachedConfigurationLoaderTest extends TestCase
                     routeName: 'app_route_foo',
                     route: new Route('/foo'),
                     actions: null,
-                    context: ['action' => Action::Delete, 'limit' => \INF, 'nested' => [Action::Create]],
+                    context: ['action' => Action::Delete, 'nested' => [Action::Create]],
                 ),
             ]);
 
@@ -131,7 +131,7 @@ final class CachedConfigurationLoaderTest extends TestCase
 
         // The configuration is always required from the written file, so this reads the cache back.
         self::assertSame(
-            ['action' => Action::Delete, 'limit' => \INF, 'nested' => [Action::Create]],
+            ['action' => Action::Delete, 'nested' => [Action::Create]],
             $cachedConfigurationLoader->load()->toArray()['Foo'][0]['context'] ?? null,
         );
     }

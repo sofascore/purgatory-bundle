@@ -322,20 +322,6 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
-    public function testContextThatJsonCannotHoldIsRenderedWithVarExport(): void
-    {
-        $this->command->execute([
-            '--route' => 'image_list_by_writer',
-        ]);
-
-        $this->command->assertCommandIsSuccessful();
-
-        self::assertStringContainsString(
-            needle: "Context        array ( 'weight' => INF, )".\PHP_EOL,
-            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
-        );
-    }
-
     public function testContextIsNotRenderedWhenNotSet(): void
     {
         $this->command->execute([

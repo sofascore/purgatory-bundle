@@ -34,7 +34,8 @@ final class PurgeOn
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      * @param array<array-key, mixed>                                                 $context     passed as is to the purger with every
      *                                                                                             purge this subscription triggers; may only
-     *                                                                                             contain scalars, enums, nulls and arrays
+     *                                                                                             contain scalars, enums, nulls and arrays,
+     *                                                                                             but not INF or NAN
      */
     public function __construct(
         public readonly string $class,
@@ -72,6 +73,10 @@ final class PurgeOn
         array_walk_recursive($context, static function (mixed $value): void {
             if (null !== $value && !\is_scalar($value) && !$value instanceof \UnitEnum) {
                 throw new \ValueError(\sprintf('The context may only contain scalars, enums, nulls and arrays, got "%s".', get_debug_type($value)));
+            }
+
+            if (\is_float($value) && !is_finite($value)) {
+                throw new \ValueError('The context may not contain INF or NAN.');
             }
         });
     }

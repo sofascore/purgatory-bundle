@@ -63,6 +63,17 @@ final class PurgeOnTest extends TestCase
         new PurgeOn(\stdClass::class, context: ['nested' => ['value' => new \stdClass()]]);
     }
 
+    #[TestWith([\INF])]
+    #[TestWith([-\INF])]
+    #[TestWith([\NAN])]
+    public function testContextWithNonFiniteFloatIsRejected(float $value): void
+    {
+        $this->expectException(\ValueError::class);
+        $this->expectExceptionMessage('The context may not contain INF or NAN.');
+
+        new PurgeOn(\stdClass::class, context: ['nested' => ['limit' => $value]]);
+    }
+
     #[RequiresFunction('deepclone_to_array')]
     public function testIfWithClosure(): void
     {
