@@ -61,6 +61,9 @@
                     <th scope="col" class="key">#</th>
                     <th scope="col">URLs</th>
                     <th scope="col">Routes</th>
+                    {% if collector.hasContexts %}
+                        <th scope="col">Contexts</th>
+                    {% endif %}
                     <th scope="col">Time</th>
                 </tr>
                 </thead>
@@ -70,6 +73,9 @@
                         <th scope="row">{{ key + 1 }}</th>
                         <td>{{ purge.requests|map(request => request.url)|join('\n')|nl2br }}</td>
                         <td>{{ purge.requests|map(request => request.route.name)|join('\n')|nl2br }}</td>
+                        {% if collector.hasContexts %}
+                            <td>{{ (purge.contexts ?? [])|join('\n')|nl2br }}</td>
+                        {% endif %}
                         <td>{{ '%.2f'|format(purge.time * 1000) }} <span class="unit">ms</span></td>
                     </tr>
                 {% endfor %}

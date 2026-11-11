@@ -101,4 +101,37 @@ final class CachedConfigurationLoaderTest extends TestCase
             actualFile: $this->filepath,
         );
     }
+
+    public function testContextWithEnumsIsReadBackFromTheCache(): void
+    {
+        $purgeSubscriptionProvider = self::createStub(PurgeSubscriptionProviderInterface::class);
+        $purgeSubscriptionProvider->method('provide')
+            ->willReturn([
+                new PurgeSubscription(
+                    class: 'Foo',
+                    property: null,
+                    routeParams: [],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo'),
+                    actions: null,
+                    context: ['action' => Action::Delete, 'nested' => [Action::Create]],
+                ),
+            ]);
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn(new RouteCollection());
+
+        $cachedConfigurationLoader = new CachedConfigurationLoader(
+            configurationLoader: new ConfigurationLoader($purgeSubscriptionProvider),
+            router: $router,
+            buildDir: $this->tempDir,
+            debug: false,
+        );
+
+        self::assertSame(
+            ['action' => Action::Delete, 'nested' => [Action::Create]],
+            $cachedConfigurationLoader->load()->toArray()['Foo'][0]['context'] ?? null,
+        );
+    }
 }

@@ -10,6 +10,7 @@ use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\CompoundValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Cache\Configuration\Configuration;
 use Sofascore\PurgatoryBundle\Cache\Configuration\ConfigurationLoaderInterface;
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Listener\Enum\Action;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -34,6 +35,7 @@ final class DebugCommand extends Command
         private readonly ManagerRegistry $managerRegistry,
         private readonly ?FileLinkFormatter $fileLinkFormatter = null,
         private readonly ?string $projectDir = null,
+        private readonly ContextFormatter $contextFormatter = new ContextFormatter(),
     ) {
         parent::__construct();
     }
@@ -212,6 +214,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>>
      */
     private function findSubscriptions(string $subscription, bool $withProperties): array
@@ -236,6 +239,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>>
      */
     private function findSubscriptionsForRoute(string $routeName): array
@@ -258,6 +262,7 @@ final class DebugCommand extends Command
      *     if?: string|array<mixed>,
      *     inversePropertyPath?: string,
      *     actions?: non-empty-list<Action>,
+     *     context?: non-empty-array<array-key, mixed>,
      * }>> $configuration
      */
     private function display(SymfonyStyle $io, array $configuration): void
@@ -283,17 +288,20 @@ final class DebugCommand extends Command
                     }
                 }
 
-                $io->table(
-                    ['Option', 'Value'],
-                    [
-                        ['Entity', $entity[0]],
-                        ['Property', $entity[1] ?? 'ANY'],
-                        ['Route Name', $subscription['routeName']],
-                        ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
-                        ['Condition', $if],
-                        ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
-                    ],
-                );
+                $rows = [
+                    ['Entity', $entity[0]],
+                    ['Property', $entity[1] ?? 'ANY'],
+                    ['Route Name', $subscription['routeName']],
+                    ['Route Params', isset($subscription['routeParams']) ? $this->formatRouteParams($subscription['routeParams']) : 'NONE'],
+                    ['Condition', $if],
+                    ['Actions', isset($subscription['actions']) ? $this->formatActions($subscription['actions']) : 'ANY'],
+                ];
+
+                if (isset($subscription['context'])) {
+                    $rows[] = ['Context', $this->contextFormatter->format($subscription['context'])];
+                }
+
+                $io->table(['Option', 'Value'], $rows);
             }
         }
     }

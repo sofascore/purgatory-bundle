@@ -1,0 +1,7 @@
+foo_bar:
+    -   class: Foo
+        context:
+            throttle: 8
+            reasons: [ comment, rating ]
+            action: !php/enum Sofascore\PurgatoryBundle\Listener\Enum\Action::Delete
+    -   class: Foo

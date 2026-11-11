@@ -95,10 +95,20 @@ final class EntityChangeListener implements ResetInterface
                     referenceType: UrlGeneratorInterface::ABSOLUTE_URL,
                 );
 
-                $this->queuedPurgeRequests[$url] ??= new PurgeRequest(
-                    url: $url,
-                    route: $route,
-                );
+                $queued = $this->queuedPurgeRequests[$url] ?? null;
+
+                if (null === $queued) {
+                    $this->queuedPurgeRequests[$url] = new PurgeRequest(
+                        url: $url,
+                        route: $route,
+                    );
+                } elseif (!\in_array($route->context, $queued->contexts, true)) {
+                    $this->queuedPurgeRequests[$url] = new PurgeRequest(
+                        url: $url,
+                        route: $queued->route,
+                        contexts: [...$queued->contexts, $route->context],
+                    );
+                }
             }
         }
     }

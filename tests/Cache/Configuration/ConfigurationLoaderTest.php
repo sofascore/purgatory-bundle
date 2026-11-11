@@ -64,6 +64,40 @@ final class ConfigurationLoaderTest extends TestCase
             ],
         ];
 
+        yield 'purge subscription with context' => [
+            'purgeSubscriptions' => [
+                new PurgeSubscription(
+                    class: 'Foo',
+                    property: null,
+                    routeParams: [],
+                    routeName: 'app_route_foo',
+                    route: new Route('/foo'),
+                    actions: null,
+                    context: ['throttle' => 8, 'reasons' => ['comment']],
+                ),
+                new PurgeSubscription(
+                    class: 'Foo',
+                    property: null,
+                    routeParams: [],
+                    routeName: 'app_route_bar',
+                    route: new Route('/bar'),
+                    actions: null,
+                    context: [],
+                ),
+            ],
+            'expectedConfiguration' => [
+                'Foo' => [
+                    [
+                        'routeName' => 'app_route_foo',
+                        'context' => ['throttle' => 8, 'reasons' => ['comment']],
+                    ],
+                    [
+                        'routeName' => 'app_route_bar',
+                    ],
+                ],
+            ],
+        ];
+
         yield 'purge subscription with property' => [
             'purgeSubscriptions' => [
                 new PurgeSubscription(

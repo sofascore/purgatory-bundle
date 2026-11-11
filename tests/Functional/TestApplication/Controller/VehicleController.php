@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class VehicleController
 {
     #[Route('/{id}/number-of-engines', 'number_of_engines')]
-    #[PurgeOn(Vehicle::class, target: 'numberOfEngines')]
+    #[PurgeOn(Vehicle::class, target: 'numberOfEngines', context: ['reason' => 'engines'])]
     public function numberOfEnginesAction(Vehicle $vehicle): void
     {
     }

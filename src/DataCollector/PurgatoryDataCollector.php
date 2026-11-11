@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\DataCollector;
 
+use Sofascore\PurgatoryBundle\Debug\ContextFormatter;
 use Sofascore\PurgatoryBundle\Purger\PurgeRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,16 +13,18 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 /**
  * @internal
  *
- * @property array{purger_name: string, async_transport: ?string, purges: list<array{requests: list<PurgeRequest>, time: float}>} $data
+ * @property array{purger_name: string, async_transport: ?string, purges: list<array{requests: list<PurgeRequest>, time: float, contexts?: list<string>}>} $data
  */
 final class PurgatoryDataCollector extends DataCollector
 {
     private ?int $totalRequests = null;
     private ?float $totalTime = null;
+    private ?bool $hasContexts = null;
 
     public function __construct(
         private readonly string $purgerName,
         private readonly ?string $asyncTransport,
+        private readonly ContextFormatter $contextFormatter,
     ) {
         $this->initData();
     }
@@ -40,7 +43,17 @@ final class PurgatoryDataCollector extends DataCollector
      */
     public function collectPurgeRequests(array $purgeRequests, float $time): void
     {
-        $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time];
+        $contexts = [];
+        foreach ($purgeRequests as $purgeRequest) {
+            $contexts[] = [] !== array_filter($purgeRequest->contexts) ? $this->contextFormatter->format($purgeRequest->contexts) : '';
+        }
+
+        $this->data['purges'][] = ['requests' => $purgeRequests, 'time' => $time, 'contexts' => $contexts];
+    }
+
+    public function hasContexts(): bool
+    {
+        return $this->hasContexts ??= [] !== array_filter(array_merge(...array_column($this->data['purges'], 'contexts')));
     }
 
     public function getTotalRequests(): int
@@ -64,7 +77,7 @@ final class PurgatoryDataCollector extends DataCollector
     }
 
     /**
-     * @return list<array{requests: list<PurgeRequest>, time: float}>
+     * @return list<array{requests: list<PurgeRequest>, time: float, contexts?: list<string>}>
      */
     public function getPurges(): array
     {
@@ -77,6 +90,7 @@ final class PurgatoryDataCollector extends DataCollector
 
         $this->totalRequests = null;
         $this->totalTime = null;
+        $this->hasContexts = null;
     }
 
     private function initData(): void

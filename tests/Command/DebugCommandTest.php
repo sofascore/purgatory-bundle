@@ -308,6 +308,31 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
+    public function testContextIsRenderedAsJsonWithEnumsAsCases(): void
+    {
+        $this->command->execute([
+            '--route' => 'image_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: 'Context        {"throttle":8,"reasons":["upload"],"language":'.LanguageCodes::class.'::Croatia}'.\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
+
+    public function testContextIsNotRenderedWhenNotSet(): void
+    {
+        $this->command->execute([
+            '--route' => 'post_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringNotContainsString('Context', $this->command->getDisplay());
+    }
+
     private static function assertNumberOfDisplayedSubscriptions(
         CommandTester $command,
         int $expectedNumberOfSubscriptions,

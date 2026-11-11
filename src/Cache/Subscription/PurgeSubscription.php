@@ -18,6 +18,7 @@ final class PurgeSubscription
      * @param callable-array<string>|\Closure|Expression|null $if
      * @param ?string                                         $inversePropertyPath path back to the entity the `if` closure or callable expects,
      *                                                                             set on inverse subscriptions
+     * @param array<array-key, mixed>                         $context
      */
     public function __construct(
         public readonly string $class,
@@ -28,6 +29,7 @@ final class PurgeSubscription
         public readonly ?array $actions,
         public readonly array|\Closure|Expression|null $if = null,
         public readonly ?string $inversePropertyPath = null,
+        public readonly array $context = [],
     ) {
     }
 }
