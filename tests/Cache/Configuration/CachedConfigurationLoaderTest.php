@@ -129,7 +129,6 @@ final class CachedConfigurationLoaderTest extends TestCase
             debug: false,
         );
 
-        // The configuration is always required from the written file, so this reads the cache back.
         self::assertSame(
             ['action' => Action::Delete, 'nested' => [Action::Create]],
             $cachedConfigurationLoader->load()->toArray()['Foo'][0]['context'] ?? null,

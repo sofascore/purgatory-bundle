@@ -8,9 +8,7 @@ final class PurgeRoute
 {
     /**
      * @param array<string, ?scalar>  $params
-     * @param array<array-key, mixed> $context the `context` of the PurgeOn this route comes from, and only that one;
-     *                                         a purger should read PurgeRequest::$contexts, which holds the context
-     *                                         of every subscription behind the URL
+     * @param array<array-key, mixed> $context
      */
     public function __construct(
         public readonly string $name,

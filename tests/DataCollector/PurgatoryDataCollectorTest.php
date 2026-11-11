@@ -52,9 +52,6 @@ final class PurgatoryDataCollectorTest extends TestCase
         self::assertSame([], $collector->getPurges());
     }
 
-    /**
-     * Profiles are stored serialized, so one stored by an earlier version has no context data.
-     */
     public function testProfileStoredBeforeContextsHasNone(): void
     {
         $collector = new PurgatoryDataCollector('symfony', null, new ContextFormatter());

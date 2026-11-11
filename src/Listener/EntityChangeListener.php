@@ -103,7 +103,6 @@ final class EntityChangeListener implements ResetInterface
                         route: $route,
                     );
                 } elseif (!\in_array(self::sortKeys($route->context), array_map(self::sortKeys(...), $queued->contexts), true)) {
-                    // The URL is purged once, so keep what every subscription behind it asked for.
                     $this->queuedPurgeRequests[$url] = new PurgeRequest(
                         url: $url,
                         route: $queued->route,

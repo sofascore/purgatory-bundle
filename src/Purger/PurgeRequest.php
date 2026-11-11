@@ -9,9 +9,8 @@ use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
 final class PurgeRequest
 {
     /**
-     * The `context` of every PurgeOn that led to this URL, without duplicates. One URL is purged
-     * once per flush even when several subscriptions match, so a purger deciding by context
-     * must look at all of them; an empty array stands for a subscription without context.
+     * The `context` of every PurgeOn that led to this URL, without duplicates. An empty array stands for
+     * a subscription without context.
      *
      * @var non-empty-list<array<array-key, mixed>>
      */

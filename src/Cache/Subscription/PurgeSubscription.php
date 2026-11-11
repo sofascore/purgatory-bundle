@@ -18,7 +18,7 @@ final class PurgeSubscription
      * @param callable-array<string>|\Closure|Expression|null $if
      * @param ?string                                         $inversePropertyPath path back to the entity the `if` closure or callable expects,
      *                                                                             set on inverse subscriptions
-     * @param array<array-key, mixed>                         $context             the `context` of the PurgeOn this subscription comes from
+     * @param array<array-key, mixed>                         $context
      */
     public function __construct(
         public readonly string $class,

@@ -46,9 +46,6 @@ final class PurgeRequestTest extends TestCase
         new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', []), []);
     }
 
-    /**
-     * A purge message queued by 2.0.x is unserialized without the constructor and without these properties.
-     */
     public function testRequestSerializedBeforeContextsExistedGetsTheDefaults(): void
     {
         $route = \sprintf('O:%d:"%s":2:{s:4:"name";s:9:"route_foo";s:6:"params";a:0:{}}', \strlen(PurgeRoute::class), PurgeRoute::class);

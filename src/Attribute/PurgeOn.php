@@ -33,7 +33,7 @@ final class PurgeOn
      * @param string|non-empty-list<string>|null                                      $route
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      * @param array<array-key, mixed>                                                 $context     passed as is to the purger with every
-     *                                                                                             purge this subscription triggers; may only
+     *                                                                                             purge this subscription triggers. May only
      *                                                                                             contain scalars, enums, nulls and arrays,
      *                                                                                             but not INF or NAN
      */

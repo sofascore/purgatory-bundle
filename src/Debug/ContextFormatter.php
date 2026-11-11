@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Sofascore\PurgatoryBundle\Debug;
 
 /**
- * @internal Shared by `purgatory:debug` and the profiler
+ * @internal
  */
 final class ContextFormatter
 {

@@ -75,7 +75,6 @@ final class EntityChangeListenerTest extends AbstractKernelTestCase
 
         $routeProvider = self::createStub(RouteProviderInterface::class);
         $routeProvider->method('supports')->willReturn(true);
-        // The same URL from three subscriptions, two of them with the same context.
         $routeProvider->method('provideRoutesFor')->willReturn([$throttled, $immediate, new PurgeRoute('route_foo', [], ['throttle' => 8])]);
         $urlGenerator = self::createStub(UrlGeneratorInterface::class);
         $urlGenerator->method('generate')->willReturn('http://localhost/foo');
