@@ -72,8 +72,9 @@ same URL, the request keeps the route of the first one, so its context is only o
 The context ends up in the cached configuration, so it may only contain scalars, enums, nulls and arrays. `INF` and
 `NAN` aren't allowed either.
 
-When purges are processed asynchronously, the context travels in the Messenger message. The default PHP serializer keeps
-it as it is, but with the Symfony serializer (`messenger.transport.symfony_serializer`) enums reach the purger as plain
-values rather than enum cases. Keep the default serializer if your purger compares enums.
+When purges are processed asynchronously, the context travels in the Messenger message. With the Symfony serializer
+(`messenger.transport.symfony_serializer`), enums don't reach the purger as enum cases. To support any serializer, put
+the enum's value in the context and turn it back into a case in the purger, for example with
+`Priority::from($context['priority'])`.
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
