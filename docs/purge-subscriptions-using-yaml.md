@@ -63,7 +63,7 @@ post_details:
 post_details:
     class: App\Entity\Comment
     route_params:
-        post_id: post.id
+        postId: post.id
     context:
         throttle: 8
 
