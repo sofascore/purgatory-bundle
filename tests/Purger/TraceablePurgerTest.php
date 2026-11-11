@@ -20,7 +20,7 @@ final class TraceablePurgerTest extends TestCase
     public function testPurge(): void
     {
         $array = [
-            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [])),
+            new PurgeRequest('http://localhost/foo', new PurgeRoute('route_foo', [], ['throttle' => 8])),
             new PurgeRequest('http://localhost/bar', new PurgeRoute('route_bar', [])),
         ];
         $generator = (static function (): \Generator {
@@ -59,9 +59,12 @@ final class TraceablePurgerTest extends TestCase
             array_map(static fn (PurgeRequest $purgeRequest): string => $purgeRequest->url, $purges[1]['requests']),
         );
         self::assertIsFloat($purges[1]['time']);
+        self::assertSame(['[{"throttle":8}]', ''], $purges[0]['contexts']);
+        self::assertSame(['', ''], $purges[1]['contexts']);
 
         self::assertSame(4, $dataCollector->getTotalRequests());
         self::assertSame($purges[0]['time'] + $purges[1]['time'], $dataCollector->getTotalTime());
+        self::assertTrue($dataCollector->hasContexts());
         self::assertSame('symfony', $dataCollector->getPurgerName());
         self::assertSame('foo', $dataCollector->getAsyncTransport());
 
@@ -70,6 +73,7 @@ final class TraceablePurgerTest extends TestCase
         self::assertSame([], $dataCollector->getPurges());
         self::assertSame(0, $dataCollector->getTotalRequests());
         self::assertSame(0.0, $dataCollector->getTotalTime());
+        self::assertFalse($dataCollector->hasContexts());
         self::assertSame('symfony', $dataCollector->getPurgerName());
         self::assertSame('foo', $dataCollector->getAsyncTransport());
     }
@@ -108,5 +112,6 @@ final class TraceablePurgerTest extends TestCase
             array_map(static fn (PurgeRequest $purgeRequest): string => $purgeRequest->url, $purges[0]['requests']),
         );
         self::assertSame(4, $dataCollector->getTotalRequests());
+        self::assertFalse($dataCollector->hasContexts());
     }
 }
