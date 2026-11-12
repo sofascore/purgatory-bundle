@@ -10,7 +10,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixed
 
 - Fix a subscription targeting several properties being processed, and its route parameters resolved, once for every
-  one of those properties that changed
+  one of those properties that changed by @lskupnjak in https://github.com/sofascore/purgatory-bundle/pull/180
 
 ## [1.6.2] - 2026-11-10
 
