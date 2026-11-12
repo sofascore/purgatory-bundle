@@ -92,6 +92,48 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 2, 'param2' => 3]], (array) $routes[3]);
     }
 
+    public function testSubscriptionTargetingSeveralChangedPropertiesIsProcessedOnce(): void
+    {
+        $subscription = [
+            'routeName' => 'foo_route',
+            'routeParams' => [
+                'param' => [
+                    'type' => PropertyValues::type(),
+                    'values' => ['baz'],
+                ],
+            ],
+        ];
+
+        $routeProvider = $this->createRouteProvider([
+            'stdClass::foo' => [$subscription],
+            'stdClass::bar' => [
+                $subscription,
+                [
+                    'routeName' => 'bar_route',
+                    'routeParams' => [],
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+        $entity->foo = 1;
+        $entity->bar = 2;
+        $entity->baz = 3;
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Create,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => [null, 1],
+                'bar' => [null, 2],
+            ],
+        )];
+
+        self::assertCount(2, $routes);
+        self::assertSame(['name' => 'foo_route', 'params' => ['param' => 3]], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
+    }
+
     public function testProvideRoutesToPurgeWithIf(): void
     {
         $routeProvider = $this->createRouteProvider([

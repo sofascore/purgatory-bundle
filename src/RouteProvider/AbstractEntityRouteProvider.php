@@ -30,6 +30,8 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     private ?Configuration $configuration = null;
+    /** @var array<non-empty-string, array<int, string>> */
+    private array $subscriptionIds = [];
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
@@ -45,10 +47,11 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     {
         $class = $entity::class;
         $properties = $this->getChangedProperties($entity, $entityChangeSet);
+        $processedSubscriptionIds = [];
 
         do {
             if (null !== $subscriptions = $this->getSubscriptions(key: $class)) {
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action, $processedSubscriptionIds);
             }
 
             foreach ($properties as $property) {
@@ -56,19 +59,28 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                     continue;
                 }
 
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action, $processedSubscriptionIds);
             }
         } while (false !== $class = get_parent_class($class));
     }
 
     /**
      * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
+     * @param array<string, true>                                                        $processedSubscriptionIds
      *
      * @return iterable<int, PurgeRoute>
      */
-    private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
+    private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action, array &$processedSubscriptionIds): iterable
     {
-        foreach ($subscriptions as $subscription) {
+        foreach ($subscriptions as $index => $subscription) {
+            // a subscription targeting several properties is registered under each of them,
+            // it only needs to be processed once even if more of those properties changed
+            $subscriptionId = $this->subscriptionIds[$subscriptions->key()][$index] ??= hash('xxh128', serialize($subscription));
+            if (isset($processedSubscriptionIds[$subscriptionId])) {
+                continue;
+            }
+            $processedSubscriptionIds[$subscriptionId] = true;
+
             if (isset($subscription['actions']) && !\in_array($action, $subscription['actions'], true)) {
                 continue;
             }
