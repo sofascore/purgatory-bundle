@@ -30,7 +30,12 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     abstract protected function getChangedProperties(object $entity, array $entityChangeSet): array;
 
     private ?Configuration $configuration = null;
-    /** @var array<non-empty-string, array<int, string>> */
+    /**
+     * Subscription ids by configuration key and index, the configuration doesn't change once loaded,
+     * so each subscription is serialized and hashed only the first time it is seen.
+     *
+     * @var array<non-empty-string, array<int, string>>
+     */
     private array $subscriptionIds = [];
 
     public function __construct(
@@ -75,7 +80,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         foreach ($subscriptions as $index => $subscription) {
             // a subscription targeting several properties is registered under each of them,
             // it only needs to be processed once even if more of those properties changed
-            $subscriptionId = $this->subscriptionIds[$subscriptions->key()][$index] ??= hash('xxh128', serialize($subscription));
+            $subscriptionId = $this->subscriptionIds[$subscriptions->key()][$index] ??= self::createSubscriptionId($subscription);
             if (isset($processedSubscriptionIds[$subscriptionId])) {
                 continue;
             }
@@ -165,6 +170,20 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         }
 
         return $result;
+    }
+
+    /**
+     * The copies of a subscription registered under several properties are equal arrays without any identity,
+     * so they are matched by value. serialize() covers nested route params and enums and keeps value types
+     * apart ('1' vs 1), and xxh128 turns the result into a short key: no cryptographic strength is needed here,
+     * it's the fastest algorithm available, and with 128 bits a collision, which would silently skip a purge,
+     * is not a practical concern.
+     *
+     * @param array<string, mixed> $subscription
+     */
+    private static function createSubscriptionId(array $subscription): string
+    {
+        return hash('xxh128', serialize($subscription));
     }
 
     /**

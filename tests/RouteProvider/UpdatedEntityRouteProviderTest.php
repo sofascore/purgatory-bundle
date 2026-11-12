@@ -97,6 +97,48 @@ final class UpdatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 'old', 'param2' => 3]], (array) $routes[5]);
     }
 
+    public function testSubscriptionTargetingSeveralChangedPropertiesIsProcessedOnceWithAllOldValues(): void
+    {
+        $subscription = [
+            'routeName' => 'foo_route',
+            'routeParams' => [
+                'param' => [
+                    'type' => PropertyValues::type(),
+                    'values' => ['foo', 'bar'],
+                ],
+            ],
+        ];
+
+        $routeProvider = $this->createRouteProvider([
+            'stdClass::foo' => [$subscription],
+            'stdClass::bar' => [$subscription],
+        ], false);
+
+        $entity = new \stdClass();
+        $entity->foo = 'newFoo';
+        $entity->bar = 'newBar';
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Update,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => ['oldFoo', 'newFoo'],
+                'bar' => ['oldBar', 'newBar'],
+            ],
+        )];
+
+        // old values come from the whole change set, so processing the subscription once,
+        // under the first changed property, still purges the old value of the second one
+        self::assertSame([
+            ['name' => 'foo_route', 'params' => ['param' => 'newFoo']],
+            ['name' => 'foo_route', 'params' => ['param' => 'oldFoo']],
+            ['name' => 'foo_route', 'params' => ['param' => 'oldBar']],
+            ['name' => 'foo_route', 'params' => ['param' => 'newBar']],
+            ['name' => 'foo_route', 'params' => ['param' => 'oldFoo']],
+            ['name' => 'foo_route', 'params' => ['param' => 'oldBar']],
+        ], array_map(static fn (PurgeRoute $route): array => (array) $route, $routes));
+    }
+
     public function testProvideRoutesToPurgeWithIf(): void
     {
         $routeProvider = $this->createRouteProvider([
