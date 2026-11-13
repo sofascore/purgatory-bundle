@@ -14,6 +14,7 @@ use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\Animal
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\CompetitionController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PersonController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\PostController;
+use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\ShipController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\StaticMethodController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Controller\VehicleController;
 use Sofascore\PurgatoryBundle\Tests\Functional\TestApplication\Entity\Animal;
@@ -698,6 +699,43 @@ final class ApplicationTest extends AbstractKernelTestCase
     }
 
     /**
+     * @see ShipController::detailsAction
+     * @see ShipController::enginesAction
+     */
+    public function testPurgeContextIsMergedIntoTheContext(): void
+    {
+        $ship = new Ship();
+        $ship->name = 'Woosh';
+        $ship->numberOfEngines = 4;
+        $this->entityManager->persist($ship);
+        $this->entityManager->flush();
+
+        self::clearPurger();
+
+        $ship->name = 'Splash';
+        $this->entityManager->flush();
+
+        self::assertSame(
+            [['varnish' => ['tags' => ['ship'], 'ttl' => 60]]],
+            self::getPurgedContexts('/ship/'.$ship->id),
+        );
+        self::assertSame(
+            [['varnish' => ['tags' => ['ship', 'engines', 'name'], 'ttl' => 5], 'throttle' => 8]],
+            self::getPurgedContexts('/ship/'.$ship->id.'/engines'),
+        );
+
+        self::clearPurger();
+
+        $ship->numberOfEngines = 2;
+        $this->entityManager->flush();
+
+        self::assertSame(
+            [['varnish' => ['tags' => ['ship', 'engines'], 'ttl' => 5]]],
+            self::getPurgedContexts('/ship/'.$ship->id.'/engines'),
+        );
+    }
+
+    /**
      * @see PersonController::personListForCountryAction
      */
     public function testPurgeRouteWithOptionalRouteParam(): void
@@ -1136,5 +1174,20 @@ final class ApplicationTest extends AbstractKernelTestCase
             self::getPurgedUrls(false),
             static fn (string $url): bool => str_starts_with($url, '/static-method/veterinarian/'),
         ));
+    }
+
+    /**
+     * @return non-empty-list<array<array-key, mixed>>
+     */
+    private static function getPurgedContexts(string $path): array
+    {
+        $purgeRequests = array_values(array_filter(
+            self::getPurger()->getPurgedRequests(),
+            static fn (PurgeRequest $purgeRequest): bool => str_ends_with($purgeRequest->url, $path),
+        ));
+
+        self::assertCount(1, $purgeRequests);
+
+        return $purgeRequests[0]->contexts;
     }
 }
