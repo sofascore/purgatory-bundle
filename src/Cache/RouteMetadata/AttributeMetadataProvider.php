@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Cache\RouteMetadata;
 
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\InvalidPatternException;
 use Symfony\Component\Routing\RouterInterface;
@@ -46,7 +47,13 @@ final class AttributeMetadataProvider implements RouteMetadataProviderInterface
                 continue;
             }
 
-            foreach ([new \ReflectionClass($reflectionMethod->class), $reflectionMethod] as $reflection) {
+            $reflectionClass = new \ReflectionClass($reflectionMethod->class);
+            $routeContext = ContextMerger::merge(
+                self::getPurgeContext($reflectionClass),
+                self::getPurgeContext($reflectionMethod),
+            );
+
+            foreach ([$reflectionClass, $reflectionMethod] as $reflection) {
                 foreach ($reflection->getAttributes(PurgeOn::class) as $attribute) {
                     $purgeOn = $attribute->newInstance();
 
@@ -56,11 +63,26 @@ final class AttributeMetadataProvider implements RouteMetadataProviderInterface
                             route: $route,
                             purgeOn: $purgeOn,
                             reflectionMethod: $reflectionMethod,
+                            context: ContextMerger::merge($routeContext, $purgeOn->context),
                         );
                     }
                 }
             }
         }
+    }
+
+    /**
+     * @param \ReflectionClass<object>|\ReflectionMethod $reflection
+     *
+     * @return array<array-key, mixed>
+     */
+    private static function getPurgeContext(\ReflectionClass|\ReflectionMethod $reflection): array
+    {
+        if (!$attributes = $reflection->getAttributes(PurgeContext::class)) {
+            return [];
+        }
+
+        return $attributes[0]->newInstance()->context;
     }
 
     /**

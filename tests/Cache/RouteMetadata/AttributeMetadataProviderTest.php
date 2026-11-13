@@ -10,7 +10,9 @@ use Sofascore\PurgatoryBundle\Cache\RouteMetadata\AttributeMetadataProvider;
 use Sofascore\PurgatoryBundle\Cache\RouteMetadata\RouteMetadata;
 use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\BarController;
 use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\BazController;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\ContextController;
 use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\FooController;
+use Sofascore\PurgatoryBundle\Tests\Cache\RouteMetadata\Fixtures\MethodContextController;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
@@ -220,6 +222,105 @@ final class AttributeMetadataProviderTest extends TestCase
         self::assertSame('barAction', $metadata[1]->reflectionMethod->name);
         self::assertSame(BazController::class, $metadata[2]->reflectionMethod->class);
         self::assertSame('barAction', $metadata[2]->reflectionMethod->name);
+    }
+
+    public function testPurgeContextOnClassAndMethod(): void
+    {
+        $collection = new RouteCollection();
+
+        $collection->add(name: 'context_foo', route: new Route(
+            path: '/context/foo',
+            defaults: [
+                '_controller' => \sprintf('%s::%s', ContextController::class, 'fooAction'),
+            ],
+        ));
+        $collection->add(name: 'context_bar', route: new Route(
+            path: '/context/bar',
+            defaults: [
+                '_controller' => \sprintf('%s::%s', ContextController::class, 'barAction'),
+            ],
+        ));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new AttributeMetadataProvider(
+            router: $router,
+            classMap: [
+                ContextController::class => ContextController::class,
+            ],
+            routeIgnorePatterns: [],
+        );
+
+        /** @var RouteMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertCount(4, $metadata);
+
+        self::assertSame('context_foo', $metadata[0]->routeName);
+        self::assertSame('foo', $metadata[0]->purgeOn->class);
+        self::assertSame(['varnish' => ['tags' => ['social'], 'ttl' => 60]], $metadata[0]->context);
+
+        self::assertSame('context_bar', $metadata[1]->routeName);
+        self::assertSame('class_level', $metadata[1]->purgeOn->class);
+        self::assertSame(['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]], $metadata[1]->context);
+
+        self::assertSame('context_bar', $metadata[2]->routeName);
+        self::assertSame('bar', $metadata[2]->purgeOn->class);
+        self::assertSame(['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]], $metadata[2]->context);
+
+        self::assertSame('context_bar', $metadata[3]->routeName);
+        self::assertSame('baz', $metadata[3]->purgeOn->class);
+        self::assertSame(['varnish' => ['tags' => ['social', 'post', 'comment'], 'ttl' => 5], 'throttle' => 8], $metadata[3]->context);
+        self::assertSame(['varnish' => ['tags' => ['comment']], 'throttle' => 8], $metadata[3]->purgeOn->context);
+    }
+
+    public function testPurgeContextOnMethod(): void
+    {
+        $collection = new RouteCollection();
+
+        $collection->add(name: 'method_context_foo', route: new Route(
+            path: '/method-context/foo',
+            defaults: [
+                '_controller' => \sprintf('%s::%s', MethodContextController::class, 'fooAction'),
+            ],
+        ));
+        $collection->add(name: 'method_context_baz', route: new Route(
+            path: '/method-context/baz',
+            defaults: [
+                '_controller' => \sprintf('%s::%s', MethodContextController::class, 'bazAction'),
+            ],
+        ));
+
+        $router = self::createStub(RouterInterface::class);
+        $router->method('getRouteCollection')
+            ->willReturn($collection);
+
+        $provider = new AttributeMetadataProvider(
+            router: $router,
+            classMap: [
+                MethodContextController::class => MethodContextController::class,
+            ],
+            routeIgnorePatterns: [],
+        );
+
+        /** @var RouteMetadata[] $metadata */
+        $metadata = [...$provider->provide()];
+
+        self::assertCount(3, $metadata);
+
+        self::assertSame('method_context_foo', $metadata[0]->routeName);
+        self::assertSame('foo', $metadata[0]->purgeOn->class);
+        self::assertSame(['tags' => ['post']], $metadata[0]->context);
+
+        self::assertSame('method_context_foo', $metadata[1]->routeName);
+        self::assertSame('bar', $metadata[1]->purgeOn->class);
+        self::assertSame(['tags' => ['post', 'comment'], 'throttle' => 8], $metadata[1]->context);
+
+        self::assertSame('method_context_baz', $metadata[2]->routeName);
+        self::assertSame('baz', $metadata[2]->purgeOn->class);
+        self::assertSame(['throttle' => 8], $metadata[2]->context);
     }
 
     public function testNotResolvableController(): void

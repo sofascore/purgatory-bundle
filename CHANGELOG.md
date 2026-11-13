@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `#[PurgeContext]` attribute to set a `context` for every purge subscription of a controller or an action, merged with
+  the `context` of each `PurgeOn`. Custom subscription resolvers should pass `RouteMetadata::$context` to the purge
+  subscriptions they create by @petarf-sofascore
+
 ## [2.1.0] - 2026-11-11
 
 ### Added
@@ -202,6 +210,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
+[Unreleased]: https://github.com/sofascore/purgatory-bundle/compare/v2.1.0...2.x
 [2.1.0]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.1...v2.0.2
