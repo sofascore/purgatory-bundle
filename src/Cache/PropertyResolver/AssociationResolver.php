@@ -101,7 +101,7 @@ final class AssociationResolver implements SubscriptionResolverInterface
             actions: $routeMetadata->purgeOn->actions,
             if: $if,
             inversePropertyPath: $inversePropertyPath,
-            context: $routeMetadata->purgeOn->context,
+            context: $routeMetadata->context,
         );
 
         return true;

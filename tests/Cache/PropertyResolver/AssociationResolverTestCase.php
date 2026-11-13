@@ -79,6 +79,7 @@ abstract class AssociationResolverTestCase extends TestCase
         );
         self::assertEquals(new RawValues('const'), $subscription[0]->routeParams['param2']);
         self::assertSame('obj.getFoo() !== null ? (obj.getFoo().isActive() === true) : false', (string) $subscription[0]->if);
+        self::assertSame(['tags' => ['post', 'comment']], $subscription[0]->context);
     }
 
     abstract public static function associationProvider(): iterable;
@@ -328,8 +329,10 @@ abstract class AssociationResolverTestCase extends TestCase
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
                     if: $if,
+                    context: ['tags' => ['comment']],
                 ),
                 reflectionMethod: self::createStub(\ReflectionMethod::class),
+                context: ['tags' => ['post', 'comment']],
             ),
             classMetadata: $classMetadata,
             routeParams: $routeParams,

@@ -77,4 +77,57 @@ When purges are processed asynchronously, the context travels in the Messenger m
 the enum's value in the context and turn it back into a case in the purger, for example with
 `Priority::from($context['priority'])`.
 
+### Sharing Context Across a Controller
+
+To give every subscription of a controller or of an action the same context, add the `#[PurgeContext]` attribute to the
+controller class or to the action. It accepts the same values as the `context` of a `PurgeOn`. For example, to tag the
+purges of every route of a controller and give one of its routes a shorter TTL:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+
+#[PurgeContext(['varnish' => ['tags' => ['social'], 'ttl' => 60]])]
+class SocialController
+{
+    #[Route('/social/feed', 'social_feed')]
+    #[PurgeOn(Post::class)]
+    public function feedAction()
+    {
+    }
+
+    #[Route('/social/post/{id}', 'social_post')]
+    #[PurgeContext(['varnish' => ['tags' => ['post'], 'ttl' => 5]])]
+    #[PurgeOn(Post::class)]
+    #[PurgeOn(Comment::class,
+        routeParams: ['id' => 'post.id'],
+        context: ['varnish' => ['tags' => ['comment']], 'throttle' => 8],
+    )]
+    public function postAction(Post $post)
+    {
+    }
+}
+```
+
+The context of a subscription is the context of the class, merged with the context of the action, and then with the
+`context` of the `PurgeOn`. Each merge follows these rules:
+
+- Arrays with keys are merged key by key, with the same rules for their values.
+- Lists are appended, without duplicates.
+- Any other value, `null` included, replaces the previous one.
+
+So the purger receives these contexts:
+
+| Route         | Entity    | Context                                                                                 |
+|---------------|-----------|-----------------------------------------------------------------------------------------|
+| `social_feed` | `Post`    | `['varnish' => ['tags' => ['social'], 'ttl' => 60]]`                                    |
+| `social_post` | `Post`    | `['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]]`                             |
+| `social_post` | `Comment` | `['varnish' => ['tags' => ['social', 'post', 'comment'], 'ttl' => 5], 'throttle' => 8]` |
+
+The context of an action also applies to the `PurgeOn` attributes of its controller class. As lists are only appended,
+an action can't remove a single item of a list set by its controller, but it can remove the whole list by setting its
+key to `null`.
+
+The `#[PurgeContext]` attribute doesn't apply to subscriptions defined in YAML.
+
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php

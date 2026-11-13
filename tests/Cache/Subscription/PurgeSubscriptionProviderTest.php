@@ -142,6 +142,32 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 ),
             ],
         ];
+
+        $route = new Route('/foo');
+        yield 'PurgeOn with the context of the route metadata' => [
+            'routeMetadata' => new RouteMetadata(
+                routeName: 'foo',
+                route: $route,
+                purgeOn: new PurgeOn(
+                    class: 'FooEntity',
+                    context: ['tags' => ['comment']],
+                ),
+                reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
+                context: ['tags' => ['post', 'comment']],
+            ),
+            'expectedSubscriptions' => [
+                new PurgeSubscription(
+                    class: 'FooEntity',
+                    property: null,
+                    routeParams: [],
+                    routeName: 'foo',
+                    route: $route,
+                    actions: null,
+                    if: null,
+                    context: ['tags' => ['post', 'comment']],
+                ),
+            ],
+        ];
     }
 
     #[DataProvider('provideRouteMetadataWithTarget')]
