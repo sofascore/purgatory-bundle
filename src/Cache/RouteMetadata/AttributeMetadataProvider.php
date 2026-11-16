@@ -48,7 +48,7 @@ final class AttributeMetadataProvider implements RouteMetadataProviderInterface
             }
 
             $reflectionClass = new \ReflectionClass($reflectionMethod->class);
-            $routeContext = ContextMerger::merge(
+            $routeContext = array_replace(
                 self::getPurgeContext($reflectionClass),
                 self::getPurgeContext($reflectionMethod),
             );
@@ -63,7 +63,7 @@ final class AttributeMetadataProvider implements RouteMetadataProviderInterface
                             route: $route,
                             purgeOn: $purgeOn,
                             reflectionMethod: $reflectionMethod,
-                            context: ContextMerger::merge($routeContext, $purgeOn->context),
+                            context: array_replace($routeContext, $purgeOn->context),
                         );
                     }
                 }

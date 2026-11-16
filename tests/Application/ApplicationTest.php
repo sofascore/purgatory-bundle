@@ -716,11 +716,11 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         self::assertSame(
-            [['varnish' => ['tags' => ['ship'], 'ttl' => 60]]],
+            [['varnish' => ['tags' => ['ship'], 'ttl' => 60], 'throttle' => 0]],
             self::getPurgedContexts('/ship/'.$ship->id),
         );
         self::assertSame(
-            [['varnish' => ['tags' => ['ship', 'engines', 'name'], 'ttl' => 5], 'throttle' => 8]],
+            [['varnish' => ['tags' => ['ship', 'engines'], 'ttl' => 5], 'throttle' => 8]],
             self::getPurgedContexts('/ship/'.$ship->id.'/engines'),
         );
 
@@ -730,7 +730,7 @@ final class ApplicationTest extends AbstractKernelTestCase
         $this->entityManager->flush();
 
         self::assertSame(
-            [['varnish' => ['tags' => ['ship', 'engines'], 'ttl' => 5]]],
+            [['varnish' => ['tags' => ['ship', 'engines'], 'ttl' => 5], 'throttle' => 0]],
             self::getPurgedContexts('/ship/'.$ship->id.'/engines'),
         );
     }

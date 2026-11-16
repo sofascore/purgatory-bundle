@@ -7,9 +7,8 @@ namespace Sofascore\PurgatoryBundle\Attribute;
 /**
  * Used on controller classes and methods to define a context for every {@see PurgeOn} of the routes they handle.
  *
- * The context of a purge subscription is the class context, merged with the method context and then with the context
- * of the {@see PurgeOn}. On every merge, a nested array with keys is merged key by key, lists are appended without
- * duplicates, and any other value replaces the one before it.
+ * The context of a purge subscription is the class context, with its top-level keys replaced by those of the method
+ * context and then by those of the {@see PurgeOn} context. Values are replaced as a whole, nested arrays included.
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
 final class PurgeContext

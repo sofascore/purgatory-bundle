@@ -33,10 +33,11 @@ final class PurgeOn
      * @param string|non-empty-list<string>|null                                      $route
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
      * @param array<array-key, mixed>                                                 $context     passed to the purger with every purge this
-     *                                                                                             subscription triggers, merged over the
-     *                                                                                             {@see PurgeContext} of the controller. May
-     *                                                                                             only contain scalars, enums, nulls and
-     *                                                                                             arrays, but not INF or NAN
+     *                                                                                             subscription triggers. Its top-level keys
+     *                                                                                             replace those of the {@see PurgeContext}
+     *                                                                                             of the controller. May only contain
+     *                                                                                             scalars, enums, nulls and arrays, but not
+     *                                                                                             INF or NAN
      */
     public function __construct(
         public readonly string $class,

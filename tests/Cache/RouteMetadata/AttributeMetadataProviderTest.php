@@ -258,22 +258,26 @@ final class AttributeMetadataProviderTest extends TestCase
 
         self::assertCount(4, $metadata);
 
+        // the class context applies as is
         self::assertSame('context_foo', $metadata[0]->routeName);
         self::assertSame('foo', $metadata[0]->purgeOn->class);
-        self::assertSame(['varnish' => ['tags' => ['social'], 'ttl' => 60]], $metadata[0]->context);
+        self::assertSame(['varnish' => ['tags' => ['social'], 'ttl' => 60], 'throttle' => 0], $metadata[0]->context);
 
+        // the method context also applies to a class-level PurgeOn, whose own context wins
         self::assertSame('context_bar', $metadata[1]->routeName);
         self::assertSame('class_level', $metadata[1]->purgeOn->class);
-        self::assertSame(['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]], $metadata[1]->context);
+        self::assertSame(['varnish' => ['ttl' => 5], 'throttle' => 30], $metadata[1]->context);
+        self::assertSame(['throttle' => 30], $metadata[1]->purgeOn->context);
 
+        // the method context replaces whole top-level values, nested arrays included, and null replaces too
         self::assertSame('context_bar', $metadata[2]->routeName);
         self::assertSame('bar', $metadata[2]->purgeOn->class);
-        self::assertSame(['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]], $metadata[2]->context);
+        self::assertSame(['varnish' => ['ttl' => 5], 'throttle' => null], $metadata[2]->context);
 
+        // the PurgeOn context replaces the top-level values of the method context
         self::assertSame('context_bar', $metadata[3]->routeName);
         self::assertSame('baz', $metadata[3]->purgeOn->class);
-        self::assertSame(['varnish' => ['tags' => ['social', 'post', 'comment'], 'ttl' => 5], 'throttle' => 8], $metadata[3]->context);
-        self::assertSame(['varnish' => ['tags' => ['comment']], 'throttle' => 8], $metadata[3]->purgeOn->context);
+        self::assertSame(['varnish' => ['tags' => ['comment']], 'throttle' => 8], $metadata[3]->context);
     }
 
     public function testPurgeContextOnMethod(): void
@@ -316,7 +320,7 @@ final class AttributeMetadataProviderTest extends TestCase
 
         self::assertSame('method_context_foo', $metadata[1]->routeName);
         self::assertSame('bar', $metadata[1]->purgeOn->class);
-        self::assertSame(['tags' => ['post', 'comment'], 'throttle' => 8], $metadata[1]->context);
+        self::assertSame(['tags' => ['comment'], 'throttle' => 8], $metadata[1]->context);
 
         self::assertSame('method_context_baz', $metadata[2]->routeName);
         self::assertSame('baz', $metadata[2]->purgeOn->class);

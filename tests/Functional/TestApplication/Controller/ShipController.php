@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 #[Route('/ship')]
-#[PurgeContext(['varnish' => ['tags' => ['ship'], 'ttl' => 60]])]
+#[PurgeContext(['varnish' => ['tags' => ['ship'], 'ttl' => 60], 'throttle' => 0])]
 class ShipController
 {
     #[Route('/{id}', 'ship_details')]
@@ -22,9 +22,9 @@ class ShipController
     }
 
     #[Route('/{id}/engines', 'ship_engines')]
-    #[PurgeContext(['varnish' => ['tags' => ['engines'], 'ttl' => 5]])]
+    #[PurgeContext(['varnish' => ['tags' => ['ship', 'engines'], 'ttl' => 5]])]
     #[PurgeOn(Ship::class, target: 'numberOfEngines')]
-    #[PurgeOn(Ship::class, target: 'name', context: ['varnish' => ['tags' => ['name']], 'throttle' => 8])]
+    #[PurgeOn(Ship::class, target: 'name', context: ['throttle' => 8])]
     public function enginesAction(Ship $ship): void
     {
     }

@@ -150,10 +150,10 @@ final class PurgeSubscriptionProviderTest extends TestCase
                 route: $route,
                 purgeOn: new PurgeOn(
                     class: 'FooEntity',
-                    context: ['tags' => ['comment']],
+                    context: ['throttle' => 8],
                 ),
                 reflectionMethod: new \ReflectionMethod(DummyController::class, 'barAction'),
-                context: ['tags' => ['post', 'comment']],
+                context: ['priority' => 'high', 'throttle' => 8],
             ),
             'expectedSubscriptions' => [
                 new PurgeSubscription(
@@ -164,7 +164,7 @@ final class PurgeSubscriptionProviderTest extends TestCase
                     route: $route,
                     actions: null,
                     if: null,
-                    context: ['tags' => ['post', 'comment']],
+                    context: ['priority' => 'high', 'throttle' => 8],
                 ),
             ],
         ];

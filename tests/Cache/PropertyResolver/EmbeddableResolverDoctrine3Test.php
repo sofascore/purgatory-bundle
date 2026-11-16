@@ -63,10 +63,10 @@ class EmbeddableResolverDoctrine3Test extends TestCase
                 purgeOn: new PurgeOn(
                     class: 'FooEntity',
                     target: new ForProperties(['foo']),
-                    context: ['tags' => ['comment']],
+                    context: ['throttle' => 8],
                 ),
                 reflectionMethod: self::createStub(\ReflectionMethod::class),
-                context: ['tags' => ['post', 'comment']],
+                context: ['priority' => 'high', 'throttle' => 8],
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -83,11 +83,11 @@ class EmbeddableResolverDoctrine3Test extends TestCase
 
         self::assertSame('foo.foo', $subscriptions[0]->property);
         self::assertSame('FooEntity', $subscriptions[0]->class);
-        self::assertSame(['tags' => ['post', 'comment']], $subscriptions[0]->context);
+        self::assertSame(['priority' => 'high', 'throttle' => 8], $subscriptions[0]->context);
 
         self::assertSame('foo.bar', $subscriptions[1]->property);
         self::assertSame('FooEntity', $subscriptions[1]->class);
-        self::assertSame(['tags' => ['post', 'comment']], $subscriptions[1]->context);
+        self::assertSame(['priority' => 'high', 'throttle' => 8], $subscriptions[1]->context);
     }
 
     public function testEmbeddableMetadataNotFound(): void

@@ -42,10 +42,10 @@ final class PropertyResolverTest extends TestCase
                 purgeOn: new PurgeOn(
                     class: 'FooEntity',
                     target: new ForProperties(['fooProperty']),
-                    context: ['tags' => ['comment']],
+                    context: ['throttle' => 8],
                 ),
                 reflectionMethod: self::createStub(\ReflectionMethod::class),
-                context: ['tags' => ['post', 'comment']],
+                context: ['priority' => 'high', 'throttle' => 8],
             ),
             classMetadata: $classMetadata,
             routeParams: [],
@@ -62,7 +62,7 @@ final class PropertyResolverTest extends TestCase
 
         self::assertSame('fooProperty', $subscriptions[0]->property);
         self::assertSame('FooEntity', $subscriptions[0]->class);
-        self::assertSame(['tags' => ['post', 'comment']], $subscriptions[0]->context);
+        self::assertSame(['priority' => 'high', 'throttle' => 8], $subscriptions[0]->context);
     }
 
     public function testTargetNotField(): void
