@@ -11,8 +11,8 @@ Instructions for AI coding agents working on PurgatoryBundle. They complement wh
 
 ## Checks
 
-- Run `composer run-checks`, or `vendor/bin/php-cs-fixer fix`, `vendor/bin/phpunit` and `vendor/bin/phpstan analyse`
-  separately. All three run in CI.
+- Run `composer run-checks`, or `php-cs-fixer fix`, `vendor/bin/phpunit` and `phpstan analyse` separately. All three run
+  in CI. PHP CS Fixer and PHPStan are not Composer dependencies and need to be installed globally.
 - CI tests several PHP and Symfony versions. Code and doc snippets must work on the lowest PHP version in
   `composer.json`, so no syntax from later versions, such as an enum's `->value` inside an attribute argument on 8.1.
 - PHPStan runs at level 10 on `src`. When a runtime check guards a type the docblock already promises, keep the strict
