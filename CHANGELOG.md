@@ -7,10 +7,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixed
+### Changed
 
-- Fix a subscription that targets several properties resolving its route parameters again for every one of them that
-  changed by @lskupnjak in https://github.com/sofascore/purgatory-bundle/pull/180
+- Resolve the route parameters of a subscription once per entity change instead of once for every changed property it
+  targets by @lskupnjak in https://github.com/sofascore/purgatory-bundle/pull/180
 
 ## [1.6.2] - 2026-11-10
 
