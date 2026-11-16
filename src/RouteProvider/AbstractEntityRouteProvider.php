@@ -31,8 +31,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
 
     private ?Configuration $configuration = null;
     /**
-     * Subscription ids by configuration key and index, the configuration doesn't change once loaded,
-     * so each subscription is serialized and hashed only the first time it is seen.
+     * The configuration doesn't change once loaded, so a subscription is hashed once per key it is registered under.
      *
      * @var array<non-empty-string, array<int, string>>
      */
@@ -78,8 +77,8 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action, array &$processedSubscriptionIds): iterable
     {
         foreach ($subscriptions as $index => $subscription) {
-            // a subscription targeting several properties is registered under each of them,
-            // it only needs to be processed once even if more of those properties changed
+            // a subscription is registered under every property it targets, and the same one can also be
+            // configured for a parent class, it only needs to be processed once per entity change
             $subscriptionId = $this->subscriptionIds[$subscriptions->key()][$index] ??= self::createSubscriptionId($subscription);
             if (isset($processedSubscriptionIds[$subscriptionId])) {
                 continue;
@@ -173,8 +172,7 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     }
 
     /**
-     * The copies of a subscription registered under several properties are equal arrays without any identity,
-     * so they are matched by value. Two different subscriptions with the same id would silently skip a purge.
+     * Two different subscriptions with the same id would silently skip a purge.
      *
      * @param array<string, mixed> $subscription
      */
