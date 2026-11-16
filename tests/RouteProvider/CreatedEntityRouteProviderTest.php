@@ -22,6 +22,8 @@ use Sofascore\PurgatoryBundle\RouteProvider\AbstractEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\CreatedEntityRouteProvider;
 use Sofascore\PurgatoryBundle\RouteProvider\PropertyAccess\PurgatoryPropertyAccessor;
 use Sofascore\PurgatoryBundle\RouteProvider\PurgeRoute;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyChildEntity;
+use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyParentEntity;
 use Sofascore\PurgatoryBundle\Tests\Fixtures\DummyStringEnum;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
@@ -90,6 +92,87 @@ final class CreatedEntityRouteProviderTest extends TestCase
         self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
         self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 1, 'param2' => 3]], (array) $routes[2]);
         self::assertSame(['name' => 'baz_route', 'params' => ['param1' => 2, 'param2' => 3]], (array) $routes[3]);
+    }
+
+    public function testSubscriptionTargetingSeveralChangedPropertiesIsProcessedOnce(): void
+    {
+        $subscription = [
+            'routeName' => 'foo_route',
+            'routeParams' => [
+                'param' => [
+                    'type' => PropertyValues::type(),
+                    'values' => ['baz'],
+                ],
+            ],
+        ];
+
+        $routeProvider = $this->createRouteProvider([
+            'stdClass::foo' => [$subscription],
+            'stdClass::bar' => [
+                $subscription,
+                [
+                    'routeName' => 'bar_route',
+                    'routeParams' => [],
+                ],
+            ],
+        ], false);
+
+        $entity = new \stdClass();
+        $entity->foo = 1;
+        $entity->bar = 2;
+        $entity->baz = 3;
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Create,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => [null, 1],
+                'bar' => [null, 2],
+            ],
+        )];
+
+        self::assertCount(2, $routes);
+        self::assertSame(['name' => 'foo_route', 'params' => ['param' => 3]], (array) $routes[0]);
+        self::assertSame(['name' => 'bar_route', 'params' => []], (array) $routes[1]);
+    }
+
+    public function testSubscriptionRegisteredForParentAndChildClassIsProcessedOnce(): void
+    {
+        $subscription = [
+            'routeName' => 'foo_route',
+            'routeParams' => [
+                'param' => [
+                    'type' => PropertyValues::type(),
+                    'values' => ['foo'],
+                ],
+            ],
+        ];
+
+        $routeProvider = $this->createRouteProvider([
+            DummyChildEntity::class.'::foo' => [
+                $subscription,
+                [
+                    'routeName' => 'child_route',
+                    'routeParams' => [],
+                ],
+            ],
+            DummyParentEntity::class.'::foo' => [$subscription],
+        ], false);
+
+        $entity = new DummyChildEntity();
+        $entity->foo = 1;
+
+        $routes = [...$routeProvider->provideRoutesFor(
+            action: Action::Create,
+            entity: $entity,
+            entityChangeSet: [
+                'foo' => [null, 1],
+            ],
+        )];
+
+        self::assertCount(2, $routes);
+        self::assertSame(['name' => 'foo_route', 'params' => ['param' => 1]], (array) $routes[0]);
+        self::assertSame(['name' => 'child_route', 'params' => []], (array) $routes[1]);
     }
 
     public function testProvideRoutesToPurgeWithIf(): void
