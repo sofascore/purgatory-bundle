@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.2.0] - 2026-11-16
 
 ### Changed
 
@@ -111,6 +111,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `PurgatoryExtension` and `Configuration` from the `DependencyInjection` namespace, the bundle now extends
   `AbstractBundle` by @HypeMC in https://github.com/sofascore/purgatory-bundle/pull/151
 
+## [1.7.0] - 2026-11-16
+
+### Changed
+
+- Resolve the route parameters of a subscription once per entity change instead of once for every changed property it
+  targets by @lskupnjak in https://github.com/sofascore/purgatory-bundle/pull/180
+
 ## [1.6.2] - 2026-11-10
 
 ### Fixed
@@ -209,12 +216,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
-[Unreleased]: https://github.com/sofascore/purgatory-bundle/compare/v2.1.0...2.x
+[2.2.0]: https://github.com/sofascore/purgatory-bundle/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v2.0.0
+[1.7.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/sofascore/purgatory-bundle/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/sofascore/purgatory-bundle/compare/v1.5.0...v1.6.0
