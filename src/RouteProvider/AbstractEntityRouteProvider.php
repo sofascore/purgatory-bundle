@@ -33,6 +33,12 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     private ?Configuration $configuration = null;
     /** @var array<non-empty-string, array<int, \Closure>> */
     private array $closures = [];
+    /**
+     * The configuration doesn't change once loaded, so a subscription is hashed once per key it is registered under.
+     *
+     * @var array<non-empty-string, array<int, string>>
+     */
+    private array $subscriptionIds = [];
 
     public function __construct(
         private readonly ConfigurationLoaderInterface $configurationLoader,
@@ -49,10 +55,11 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
     {
         $class = $entity::class;
         $properties = $this->getChangedProperties($entity, $entityChangeSet);
+        $processedSubscriptionIds = [];
 
         do {
             if (null !== $subscriptions = $this->getSubscriptions(key: $class)) {
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action, $processedSubscriptionIds);
             }
 
             foreach ($properties as $property) {
@@ -60,19 +67,28 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
                     continue;
                 }
 
-                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action);
+                yield from $this->processValidSubscriptions($subscriptions, $entityChangeSet, $entity, $action, $processedSubscriptionIds);
             }
         } while (false !== $class = get_parent_class($class));
     }
 
     /**
      * @param array<string, array{mixed, mixed}|PersistentCollection<array-key, object>> $entityChangeSet
+     * @param array<string, true>                                                        $processedSubscriptionIds
      *
      * @return iterable<int, PurgeRoute>
      */
-    private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action): iterable
+    private function processValidSubscriptions(Subscriptions $subscriptions, array $entityChangeSet, object $entity, Action $action, array &$processedSubscriptionIds): iterable
     {
         foreach ($subscriptions as $index => $subscription) {
+            // a subscription is registered under every property it targets, and the same one can also be
+            // configured for a parent class, it only needs to be processed once per entity change
+            $subscriptionId = $this->subscriptionIds[$subscriptions->key()][$index] ??= self::createSubscriptionId($subscription);
+            if (isset($processedSubscriptionIds[$subscriptionId])) {
+                continue;
+            }
+            $processedSubscriptionIds[$subscriptionId] = true;
+
             if (isset($subscription['actions']) && !\in_array($action, $subscription['actions'], true)) {
                 continue;
             }
@@ -175,6 +191,16 @@ abstract class AbstractEntityRouteProvider implements RouteProviderInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Two different subscriptions with the same id would silently skip a purge.
+     *
+     * @param array<string, mixed> $subscription
+     */
+    private static function createSubscriptionId(array $subscription): string
+    {
+        return hash('xxh128', serialize($subscription));
     }
 
     /**

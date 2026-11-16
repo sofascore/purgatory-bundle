@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Resolve the route parameters of a subscription once per entity change instead of once for every changed property it
+  targets by @lskupnjak in https://github.com/sofascore/purgatory-bundle/pull/180
+
 ## [2.1.0] - 2026-11-11
 
 ### Added
@@ -202,6 +209,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Initial release
 
+[Unreleased]: https://github.com/sofascore/purgatory-bundle/compare/v2.1.0...2.x
 [2.1.0]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.3...v2.1.0
 [2.0.3]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/sofascore/purgatory-bundle/compare/v2.0.1...v2.0.2
