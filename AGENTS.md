@@ -5,7 +5,8 @@ Instructions for AI coding agents working on PurgatoryBundle. They complement wh
 
 ## Branches
 
-- `1.x` and `2.x` are maintained. Fixes target `1.x` and are merged into `2.x`, features target `2.x`.
+- `1.x` and `2.x` are maintained. Fixes for code that exists on `1.x` target `1.x` and are merged into `2.x`. Features,
+  and fixes for code that only exists on `2.x`, target `2.x`.
 - Work on a new branch cut from the target branch. Don't commit to `1.x` or `2.x` directly, except for the changelog
   commit of a release.
 
