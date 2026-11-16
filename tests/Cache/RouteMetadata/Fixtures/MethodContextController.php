@@ -16,7 +16,7 @@ class MethodContextController
     {
     }
 
-    #[PurgeOn('baz', context: ['throttle' => 8])]
+    #[PurgeOn('baz', context: new PurgeContext(['throttle' => 8]))]
     public function bazAction(): void
     {
     }

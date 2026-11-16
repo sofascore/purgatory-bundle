@@ -128,4 +128,8 @@ So the purger receives these contexts:
 The context of an action also applies to the `PurgeOn` attributes of its controller class, and the order of the
 attributes doesn't matter. The `#[PurgeContext]` attribute doesn't apply to subscriptions defined in YAML.
 
+The `context` of a `PurgeOn` also accepts a `PurgeContext`, so
+`#[PurgeOn(Comment::class, context: new PurgeContext(['priority' => 'high']))]` is the same as
+`#[PurgeOn(Comment::class, context: ['priority' => 'high'])]`.
+
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php
