@@ -49,13 +49,6 @@ final class PurgeOnTest extends TestCase
         self::assertEquals($expectedValue, $purgeOn->$property);
     }
 
-    public function testContextAcceptsPurgeContext(): void
-    {
-        $purgeOn = new PurgeOn(\stdClass::class, context: new PurgeContext(['priority' => 'high', 'throttle' => 8]));
-
-        self::assertSame(['priority' => 'high', 'throttle' => 8], $purgeOn->context);
-    }
-
     public function testContextWithObjectIsRejected(): void
     {
         $this->expectException(\ValueError::class);
@@ -73,6 +66,13 @@ final class PurgeOnTest extends TestCase
         $this->expectExceptionMessage('The context may not contain INF or NAN.');
 
         new PurgeOn(\stdClass::class, context: ['nested' => ['limit' => $value]]);
+    }
+
+    public function testContextAcceptsPurgeContext(): void
+    {
+        $purgeOn = new PurgeOn(\stdClass::class, context: new PurgeContext(['priority' => 'high', 'throttle' => 8]));
+
+        self::assertSame(['priority' => 'high', 'throttle' => 8], $purgeOn->context);
     }
 
     #[RequiresFunction('deepclone_to_array')]

@@ -322,6 +322,17 @@ final class DebugCommandTest extends AbstractKernelTestCase
         );
     }
 
+    public function testContextIsNotRenderedWhenNotSet(): void
+    {
+        $this->command->execute([
+            '--route' => 'post_show',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringNotContainsString('Context', $this->command->getDisplay());
+    }
+
     public function testPurgeContextIsRendered(): void
     {
         $this->command->execute([
@@ -334,17 +345,6 @@ final class DebugCommandTest extends AbstractKernelTestCase
             needle: 'Context        {"reasons":["writer"],"throttle":8}'.\PHP_EOL,
             haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
         );
-    }
-
-    public function testContextIsNotRenderedWhenNotSet(): void
-    {
-        $this->command->execute([
-            '--route' => 'post_show',
-        ]);
-
-        $this->command->assertCommandIsSuccessful();
-
-        self::assertStringNotContainsString('Context', $this->command->getDisplay());
     }
 
     private static function assertNumberOfDisplayedSubscriptions(
