@@ -333,6 +333,20 @@ final class DebugCommandTest extends AbstractKernelTestCase
         self::assertStringNotContainsString('Context', $this->command->getDisplay());
     }
 
+    public function testPurgeContextIsRendered(): void
+    {
+        $this->command->execute([
+            '--route' => 'image_list_by_writer',
+        ]);
+
+        $this->command->assertCommandIsSuccessful();
+
+        self::assertStringContainsString(
+            needle: 'Context        {"reasons":["writer"],"throttle":8}'.\PHP_EOL,
+            haystack: preg_replace('/ +$/m', '', $this->command->getDisplay()),
+        );
+    }
+
     private static function assertNumberOfDisplayedSubscriptions(
         CommandTester $command,
         int $expectedNumberOfSubscriptions,
