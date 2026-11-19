@@ -24,7 +24,13 @@ Instructions for AI coding agents working on PurgatoryBundle. They complement wh
 
 - Only add a comment when it says something the code doesn't: a contract, a non-obvious reason or a trap. Don't add
   descriptions that repeat a parameter or method name, comments that explain a line that reads fine on its own, or
-  test docblocks that repeat the test name. The reasoning behind a change belongs in the commit message.
+  test docblocks that repeat the test name.
+- Why the code changed belongs in the commit message. Why it has to stay this way can be a comment, such as why a test's
+  expected result holds.
+- Say each thing once. Don't repeat in a comment what another comment, such as the one at a call site, or a `@var` or
+  `@param` type already says.
+- Before finishing, reread every comment the change adds against the final code, including comments added in response to
+  a review. A comment has to hold for every case the code handles.
 - Parameters of attributes that applications write, such as `#[PurgeOn]`, may explain how to use them.
 - Don't use semicolons in comments, docblocks or any other prose. Use a period or a comma instead.
 
