@@ -128,8 +128,28 @@ So the purger receives these contexts:
 The context of an action also applies to the `PurgeOn` attributes of its controller class, and the order of the
 attributes doesn't matter. The `#[PurgeContext]` attribute doesn't apply to subscriptions defined in YAML.
 
-The `context` of a `PurgeOn` also accepts a `PurgeContext`, so
-`#[PurgeOn(Comment::class, context: new PurgeContext(['priority' => 'high']))]` is the same as
-`#[PurgeOn(Comment::class, context: ['priority' => 'high'])]`.
+A controller class or action can have only one `#[PurgeContext]` attribute, including your own attributes described
+below. If it has more, loading the purge subscriptions fails with an exception.
+
+#### Creating Your Own Context Attribute
+
+To give a context an attribute of its own, extend `PurgeContext`. Your attribute needs its own `#[\Attribute]`
+declaration and has to call the parent constructor:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
+
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
+final class PurgePriority extends PurgeContext
+{
+    public function __construct(Priority $priority)
+    {
+        parent::__construct(['priority' => $priority->value]);
+    }
+}
+```
+
+Then use `#[PurgePriority(Priority::High)]` on a controller class or action. The `context` of a `PurgeOn` accepts any
+`PurgeContext` too, so `#[PurgeOn(Comment::class, context: new PurgePriority(Priority::High))]` works as well.
 
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php

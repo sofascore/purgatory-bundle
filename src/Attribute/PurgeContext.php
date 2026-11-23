@@ -9,9 +9,12 @@ namespace Sofascore\PurgatoryBundle\Attribute;
  *
  * The context of a purge subscription is the class context, with its top-level keys replaced by those of the method
  * context and then by those of the {@see PurgeOn} context. Values are replaced as a whole, nested arrays included.
+ *
+ * Extend it to create your own context attribute. A subclass needs its own #[\Attribute] declaration and has to call
+ * this constructor. A controller class or method can have only one of these attributes, subclasses included.
  */
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
-final class PurgeContext
+class PurgeContext
 {
     /**
      * @param array<array-key, mixed> $context may only contain scalars, enums, nulls and arrays, but not INF or NAN

@@ -10,9 +10,10 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - `#[PurgeContext]` attribute to set a `context` for every purge subscription of a controller or an action, where the
-  top-level keys of the action context, and then of the `PurgeOn` context, take precedence. The `context` of a
-  `PurgeOn` also accepts a `PurgeContext`. Custom subscription resolvers should pass `RouteMetadata::$context` to the
-  purge subscriptions they create by @petarf-sofascore in https://github.com/sofascore/purgatory-bundle/pull/182
+  top-level keys of the action context, and then of the `PurgeOn` context, take precedence. It can be extended to create
+  your own context attributes, and the `context` of a `PurgeOn` also accepts it. Custom subscription resolvers should
+  pass `RouteMetadata::$context` to the purge subscriptions they create by @petarf-sofascore
+  in https://github.com/sofascore/purgatory-bundle/pull/182
 
 ## [2.2.0] - 2026-11-16
 

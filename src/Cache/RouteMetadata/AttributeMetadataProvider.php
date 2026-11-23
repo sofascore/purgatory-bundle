@@ -7,6 +7,7 @@ namespace Sofascore\PurgatoryBundle\Cache\RouteMetadata;
 use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Exception\InvalidPatternException;
+use Sofascore\PurgatoryBundle\Exception\LogicException;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -78,8 +79,17 @@ final class AttributeMetadataProvider implements RouteMetadataProviderInterface
      */
     private static function getPurgeContext(\ReflectionClass|\ReflectionMethod $reflection): array
     {
-        if (!$attributes = $reflection->getAttributes(PurgeContext::class)) {
+        if (!$attributes = $reflection->getAttributes(PurgeContext::class, \ReflectionAttribute::IS_INSTANCEOF)) {
             return [];
+        }
+
+        if (\count($attributes) > 1) {
+            throw new LogicException(\sprintf(
+                'The "%s" controller %s can only have one "#[PurgeContext]" attribute or subclass of it, found "%s".',
+                $reflection instanceof \ReflectionMethod ? $reflection->class.'::'.$reflection->name.'()' : $reflection->name,
+                $reflection instanceof \ReflectionMethod ? 'method' : 'class',
+                implode('", "', array_map(static fn (\ReflectionAttribute $attribute): string => $attribute->getName(), $attributes)),
+            ));
         }
 
         return $attributes[0]->newInstance()->context;
