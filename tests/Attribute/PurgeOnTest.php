@@ -8,6 +8,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RequiresFunction;
 use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\PropertyValues;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\RawValues;
@@ -65,6 +66,13 @@ final class PurgeOnTest extends TestCase
         $this->expectExceptionMessage('The context may not contain INF or NAN.');
 
         new PurgeOn(\stdClass::class, context: ['nested' => ['limit' => $value]]);
+    }
+
+    public function testContextAcceptsPurgeContext(): void
+    {
+        $purgeOn = new PurgeOn(\stdClass::class, context: new PurgeContext(['priority' => 'high', 'throttle' => 8]));
+
+        self::assertSame(['priority' => 'high', 'throttle' => 8], $purgeOn->context);
     }
 
     #[RequiresFunction('deepclone_to_array')]

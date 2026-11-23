@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Controller;
 
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
 use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
 use Sofascore\PurgatoryBundle\Attribute\RouteParamValue\DynamicValues;
 use Sofascore\PurgatoryBundle\Tests\Functional\DebugCommand\Entity\Author;
@@ -29,6 +30,7 @@ class ImageController
     }
 
     #[Route('/writer/{writer_id}', 'image_list_by_writer')]
+    #[PurgeContext(['reasons' => ['writer'], 'throttle' => 8])]
     #[PurgeOn(Author::class,
         target: 'posts',
         routeParams: [

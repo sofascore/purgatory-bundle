@@ -77,4 +77,79 @@ When purges are processed asynchronously, the context travels in the Messenger m
 the enum's value in the context and turn it back into a case in the purger, for example with
 `Priority::from($context['priority'])`.
 
+### Sharing Context Across a Controller
+
+To give every subscription of a controller or of an action the same context, add the `#[PurgeContext]` attribute to the
+controller class or to the action. It accepts the same values as the `context` of a `PurgeOn`:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
+use Sofascore\PurgatoryBundle\Attribute\PurgeOn;
+
+#[PurgeContext(['priority' => 'low', 'varnish' => ['tags' => ['social'], 'ttl' => 60]])]
+class SocialController
+{
+    #[Route('/social/feed', 'social_feed')]
+    #[PurgeOn(Post::class)]
+    public function feedAction()
+    {
+    }
+
+    #[Route('/social/post/{id}', 'social_post')]
+    #[PurgeContext(['varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]])]
+    #[PurgeOn(Post::class)]
+    #[PurgeOn(Comment::class, routeParams: ['id' => 'post.id'], context: ['priority' => 'high'])]
+    public function postAction(Post $post)
+    {
+    }
+
+    #[Route('/social/live', 'social_live')]
+    #[PurgeContext(['varnish' => null])]
+    #[PurgeOn(Post::class)]
+    public function liveAction()
+    {
+    }
+}
+```
+
+The context of a subscription starts as the context of the class. The context of the action replaces the top-level keys
+it sets, and then the `context` of the `PurgeOn` does the same. A key replaces the whole value, so nested arrays aren't
+merged: the action above repeats the `social` tag to keep it. To remove a value, set its key to `null`.
+
+So the purger receives these contexts:
+
+| Route         | Entity    | Context                                                                           |
+|---------------|-----------|-----------------------------------------------------------------------------------|
+| `social_feed` | `Post`    | `['priority' => 'low', 'varnish' => ['tags' => ['social'], 'ttl' => 60]]`         |
+| `social_post` | `Post`    | `['priority' => 'low', 'varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]]`  |
+| `social_post` | `Comment` | `['priority' => 'high', 'varnish' => ['tags' => ['social', 'post'], 'ttl' => 5]]` |
+| `social_live` | `Post`    | `['priority' => 'low', 'varnish' => null]`                                        |
+
+The context of an action also applies to the `PurgeOn` attributes of its controller class, and the order of the
+attributes doesn't matter. The `#[PurgeContext]` attribute doesn't apply to subscriptions defined in YAML.
+
+A controller class or action can have only one `#[PurgeContext]` attribute, including your own attributes described
+below. If it has more, loading the purge subscriptions fails with an exception.
+
+#### Creating Your Own Context Attribute
+
+To give a context an attribute of its own, extend `PurgeContext`. Your attribute needs its own `#[\Attribute]`
+declaration and has to call the parent constructor:
+
+```php
+use Sofascore\PurgatoryBundle\Attribute\PurgeContext;
+
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::TARGET_METHOD)]
+final class PurgePriority extends PurgeContext
+{
+    public function __construct(Priority $priority)
+    {
+        parent::__construct(['priority' => $priority->value]);
+    }
+}
+```
+
+Then use `#[PurgePriority(Priority::High)]` on a controller class or action. The `context` of a `PurgeOn` accepts any
+`PurgeContext` too, so `#[PurgeOn(Comment::class, context: new PurgePriority(Priority::High))]` works as well.
+
 [0]: https://github.com/sofascore/purgatory-bundle/blob/2.x/src/Purger/PurgerInterface.php

@@ -24,6 +24,8 @@ final class PurgeOn
     public readonly ?array $route;
     /** @var ?non-empty-list<Action> */
     public readonly ?array $actions;
+    /** @var array<array-key, mixed> */
+    public readonly array $context;
 
     /**
      * @param class-string                                                            $class
@@ -32,10 +34,12 @@ final class PurgeOn
      * @param string|callable-array<string>|\Closure|Expression|null                  $if
      * @param string|non-empty-list<string>|null                                      $route
      * @param value-of<Action>|non-empty-list<value-of<Action>|Action>|Action|null    $actions
-     * @param array<array-key, mixed>                                                 $context     passed as is to the purger with every
-     *                                                                                             purge this subscription triggers. May only
-     *                                                                                             contain scalars, enums, nulls and arrays,
-     *                                                                                             but not INF or NAN
+     * @param array<array-key, mixed>|PurgeContext                                    $context     passed to the purger with every purge this
+     *                                                                                             subscription triggers. Its top-level keys
+     *                                                                                             replace those of the {@see PurgeContext}
+     *                                                                                             of the controller. May only contain
+     *                                                                                             scalars, enums, nulls and arrays, but not
+     *                                                                                             INF or NAN
      */
     public function __construct(
         public readonly string $class,
@@ -44,9 +48,13 @@ final class PurgeOn
         string|array|\Closure|Expression|null $if = null,
         string|array|null $route = null,
         string|array|Action|null $actions = null,
-        public readonly array $context = [],
+        array|PurgeContext $context = [],
     ) {
-        self::validateContext($context);
+        if ($context instanceof PurgeContext) {
+            $context = $context->context;
+        } else {
+            PurgeContext::validate($context);
+        }
 
         if ($if instanceof \Closure) {
             if (!\function_exists('deepclone_to_array')) {
@@ -63,22 +71,7 @@ final class PurgeOn
         $this->if = \is_string($if) || \is_array($if) ? self::normalizeIf($if) : $if;
         $this->route = \is_string($route) ? [$route] : $route;
         $this->actions = null !== $actions ? self::normalizeActions($actions) : null;
-    }
-
-    /**
-     * @param array<array-key, mixed> $context
-     */
-    private static function validateContext(array $context): void
-    {
-        array_walk_recursive($context, static function (mixed $value): void {
-            if (null !== $value && !\is_scalar($value) && !$value instanceof \UnitEnum) {
-                throw new \ValueError(\sprintf('The context may only contain scalars, enums, nulls and arrays, got "%s".', get_debug_type($value)));
-            }
-
-            if (\is_float($value) && !is_finite($value)) {
-                throw new \ValueError('The context may not contain INF or NAN.');
-            }
-        });
+        $this->context = $context;
     }
 
     /**
